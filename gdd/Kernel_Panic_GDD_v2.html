@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Kernel Panic GDD v2</title>
+<style>
+  @page { size: letter; margin: 20mm 19mm 18mm 19mm; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: "Lato", "Helvetica Neue", "Segoe UI", Arial, sans-serif;
+    font-size: 10.5pt;
+    line-height: 1.42;
+    color: #1d2426;
+  }
+  h1 {
+    font-size: 26pt;
+    letter-spacing: 0.5px;
+    color: #17747c;
+    margin: 0 0 2pt 0;
+    font-weight: 800;
+  }
+  .doc-subtitle {
+    color: #a03a5d;
+    font-weight: 700;
+    font-size: 12pt;
+    margin: 0 0 6pt 0;
+    padding-bottom: 6pt;
+    border-bottom: 2px solid #a03a5d;
+  }
+  .byline { font-style: italic; color: #3d4a4d; margin: 8pt 0 2pt 0; }
+  .tagline { color: #3d4a4d; margin: 0 0 8pt 0; }
+  .revnotes { font-style: italic; color: #4c5a5e; font-size: 9.5pt; margin: 0 0 8pt 0; }
+  h2 {
+    font-size: 15pt;
+    color: #17747c;
+    font-weight: 800;
+    margin: 20pt 0 4pt 0;
+    padding-bottom: 3pt;
+    border-bottom: 1.5px solid #17747c;
+    break-after: avoid;
+  }
+  h3 {
+    font-size: 11.5pt;
+    color: #a03a5d;
+    font-weight: 800;
+    margin: 13pt 0 4pt 0;
+    break-after: avoid;
+  }
+  p { margin: 0 0 8pt 0; }
+  .rev {
+    background: #f9e9ee;
+    padding: 4pt 7pt;
+    margin: 0 0 8pt 0;
+    font-size: 9pt;
+    font-style: italic;
+    color: #5a4a50;
+    break-inside: avoid;
+  }
+  .rev b {
+    font-style: normal;
+    color: #b0244a;
+    font-size: 7.5pt;
+    letter-spacing: 0.8px;
+    margin-right: 5pt;
+  }
+  .leadword { color: #a03a5d; font-weight: 800; }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 4pt 0 10pt 0;
+    font-size: 9.5pt;
+  }
+  th {
+    background: #ddeef0;
+    color: #135e66;
+    text-align: left;
+    font-weight: 800;
+    padding: 4pt 6pt;
+    border: 1px solid #9fb8bc;
+  }
+  td { padding: 4pt 6pt; border: 1px solid #b7c6c9; vertical-align: top; }
+  tr { break-inside: avoid; }
+  .tablenote { font-size: 8.5pt; font-style: italic; color: #55646a; margin: -6pt 0 10pt 0; }
+  .small { font-size: 9.5pt; }
+  ul.scope { margin: 0 0 8pt 0; padding-left: 16pt; }
+  ul.scope li { margin-bottom: 5pt; }
+  .agent { margin: 0 0 8pt 0; }
+  .agent b.aname { color: #a03a5d; }
+  .diagram-wrap { break-inside: avoid; margin: 6pt 0 2pt 0; }
+  .mermaid { display: flex; justify-content: center; }
+  .figcap {
+    font-size: 8.5pt;
+    font-style: italic;
+    color: #55646a;
+    text-align: center;
+    margin: 2pt 0 10pt 0;
+  }
+  .kicker {
+    font-size: 8pt;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: #17747c;
+  }
+  .pagebreak { break-before: page; }
+  .avoid-break { break-inside: avoid; }
+  code {
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 9pt;
+    background: #eef3f4;
+    padding: 0 3pt;
+  }
+</style>
+<script src="mermaid.min.js"></script>
+</head>
+<body>
+
+<h1>KERNEL PANIC</h1>
+<p class="doc-subtitle">Final Game Design Document &mdash; Prototype Revision (v2)</p>
+<p class="byline">Dylan Overby &nbsp;&middot;&nbsp; Multi-Agent AI for Game Development &nbsp;&middot;&nbsp; Assignment #2 &nbsp;&middot;&nbsp; Revised 25 July 2026 (final draft submitted 23 July 2026)</p>
+<p class="tagline">Turn-based cyberpunk roguelike &nbsp;&middot;&nbsp; 2D desktop-UI presentation (&ldquo;KP/OS&rdquo;) &nbsp;&middot;&nbsp; Playable prototype: <b>kernel-panic.higgsfield.app</b></p>
+<p class="revnotes">Revision notes: since the final draft, the complete game was built and shipped as a browser-playable prototype &mdash; tutorial, nine-day arc, finale, story, sound, and save system, all live. Every section below now describes what shipped and was measured, not what was planned. Changes from the final draft are flagged inline. The AI Architecture and Technical Strategy sections are rewritten from build experience: the agent pipeline described there is no longer a proposal &mdash; each loop in it was executed by hand at least once during the build, and the section records what those loops actually caught.</p>
+<div class="rev"><b>REVISED IN PROTOTYPE</b> Sections carrying this marker explain what changed from the final draft and what playtesting or simulation data drove the change.</div>
+
+<h2>Executive Summary</h2>
+<p>Kernel Panic is a turn-based cyberpunk roguelike about inheriting your father's computer repair business and the machine in the back room he never let you touch. Your sister Rhea runs the front counter and insists the locked machine holds nothing but a nasty virus; you're certain it's more. Every run opens the same way: you dive it, you're not ready, it seals itself shut &mdash; and then you get to work, diving customers' infected devices to duel the intrusions inside. Each in-game day serves three tickets; diagnostics on every job let you plan your order before committing resources.</p>
+<p>Every duel is a race to connect a signal to the core of a shared grid of scrambled pipe junctions &mdash; the same connect-the-pipes fantasy as Watch Dogs' hacking minigame, turn-based and head-to-head. The whole board is dealt face-up and scrambled; rotating junctions is the only movement verb. Your signal floods live: the moment a chain of junctions lines up, it claims the whole chain at once, and big cascades bank bonus RAM. Alongside routing, every diver carries the same three one-RAM programs &mdash; SCAN, ATTACK, DEFEND &mdash; which upgrade in tier and reconfigure into modes over a run. Winning is primarily a test of pathing efficiency; programs disrupt the opponent's route or protect yours, but never replace reading the grid well.</p>
+<p><span class="leadword">Win condition:</span> reach the fixed finale day strong enough to win the duel against your father's machine and finally see what's inside &mdash; the AI companion he built for his son, sealed away until the son could stand on his own.</p>
+<p><span class="leadword">Loss condition:</span> one rule, everywhere: Neural Strain reaching zero &mdash; whether zeroed instantly by a lost duel or bled dry by messy wins &mdash; ends the run. Each failed run advances the story.</p>
+
+<h2>Game Mechanics</h2>
+
+<h3>Core Loop</h3>
+<div class="rev"><b>REVISED IN PROTOTYPE</b> The final draft's Analyze &rarr; Adjust Build &rarr; Dive chain shipped, then playtesting cut the mandatory Build stop: kit configuration is now an optional floating window, reachable from the ticket or the desktop, with its own dive button. The draft's random ability unlock became a curated augment draft (below).</div>
+<p>A run spans a scripted, unwinnable tutorial dive (first run only), nine working days of three tickets each, and the Day 10 finale. Each ticket runs: <b>Analyze</b> (the diagnostic names the intrusion's dominant behavior &mdash; &ldquo;Diagnostic flags halt traps. One wrong claim and you lose a whole turn. Scan early.&rdquo;) &rarr; <b>Dive</b>, with kit configuration available but never forced. Clearing a job pays credits (40 + 25&times;tier, halved on a timeout win) and opens an <b>augment draft</b>: pick one of three augments never yet owned. Closing a day grants a choice &mdash; <b>+1 RAM per turn</b> (5 base, capped at 9) <b>or +1 tier on a program of your choice</b> &mdash; plus an optional <b>Night Patch</b> (60 credits for +12 Neural Strain). Strain starts at 100; messy wins chip it; a lost duel zeroes it, ending the run.</p>
+
+<h3>The Duel</h3>
+<div class="rev"><b>REVISED IN PROTOTYPE</b> The final draft still had each side placing nodes from a draw bag. Prototype playtesting replaced placement entirely: the full grid is pre-dealt scrambled, rotation is the only verb, and claiming happens by live signal flood. Every draft mechanic that survived (traps, redirects, telegraphs) now operates on this board.</div>
+<p>The board is dealt corner-heavy (40% straights, 45% corners, rare tees and crosses) with dead slag cells for texture. You rotate junctions for 1 RAM per quarter turn &mdash; your own territory, or any open junction within <b>reach 2</b> of it. Both signals flood continuously: when rotation completes a connected chain back to a port, the whole chain claims instantly and permanently. A cascade of four or more junctions <b>banks</b> +1 RAM per four claimed (capped at 2) into your next turn. First flood to touch the core wins. Claimed territory is impassable to the enemy signal, so routing is also area denial &mdash; and if the machine ever walls you off completely, the duel ends immediately (<b>SEVERED</b>) rather than playing out a dead position, because severed routes can never heal. A 25-round cap resolves stalls toward whichever side sits closer to the core, ties to the player at extra strain cost.</p>
+<p>The opponent is scripted logic, not a live agent: it commits to a per-turn rotation plan, casts at most one program per turn, and telegraphs every cast one beat ahead (a crimson cursor marks the aim, the strike lands next step). Its dominant mode &mdash; the one Analyze reported &mdash; is guaranteed to appear early, so the diagnostic is always honest.</p>
+
+<h3>Resources</h3>
+<div class="rev"><b>REVISED IN PROTOTYPE</b> Neural Capacity is cut. With the kit fixed at three always-carried programs there is nothing left for a loadout cap to govern; the draft's three shared resources are now two plus credits.</div>
+<table>
+<tr><th>Resource</th><th>Role</th><th>Gained</th><th>Spent</th></tr>
+<tr><td><b>Neural Strain</b></td><td>The run's life bar</td><td>Restored to 100 at run start; Night Patch buys +12 for 60 credits</td><td>Chipped by messy wins &mdash; up to 40, scaling with how far the intrusion got, traps you triggered, and timeout wins; zeroed instantly by a lost duel. Zero, by any means, ends the run</td></tr>
+<tr><td><b>RAM</b></td><td>Turn-by-turn action currency</td><td>5 per turn base, +1 per end-of-day pick (cap 9); up to 2 unspent carries over; cascades bank bonus RAM into the next turn</td><td>Rotations (1 per quarter turn) and programs (1 each) compete for the same pool</td></tr>
+<tr><td><b>Credits</b></td><td>Run-scoped money</td><td>Job pay (40 + 25&times;tier, halved on timeout wins); 25-credit salvage when the augment pool runs dry</td><td>Night Patch (60 for +12 strain)</td></tr>
+</table>
+
+<h3>The Kit: Three Programs</h3>
+<div class="rev"><b>REVISED IN PROTOTYPE</b> The largest post-draft change. The draft's eight verbs with ~24 tier-gated variants, a random unlock per win, consumable copies, and purchasable restocks played as advertised &mdash; and felt incoherent: too many verbs, no identity, unlock luck determining builds. The pool collapsed into three permanent programs with modes; testers could finally narrate their turns.</div>
+<p>Every diver always carries exactly three programs. Each costs <b>1 RAM</b>, always, and casts <b>once per turn</b>. Programs never unlock and are never consumed; they <b>upgrade</b> (tier, chosen at day close) and <b>reconfigure</b> (modes, unlocked by config augments and switchable freely between dives).</p>
+<table>
+<tr><th>Program</th><th>Modes</th><th>What it does</th><th>Tier scaling</th></tr>
+<tr><td><b>SCAN</b></td><td>&mdash;</td><td>Permanently reveals every armed node near your territory, whatever the trap type. Always 1 RAM, at every tier.</td><td>Reveal range 3 &rarr; 6 &rarr; whole board</td></tr>
+<tr><td><b>ATTACK</b></td><td>REDIRECT (default) &middot; ARM: HALT &middot; ARM: SIPHON</td><td>Redirect twists an enemy or open junction a quarter turn, cutting power downstream. Halt traps cost the victim a full turn when sprung; siphon traps drain 2 RAM from their next turn into yours.</td><td>Targets per cast 1 &rarr; 2 &rarr; 3</td></tr>
+<tr><td><b>DEFEND</b></td><td>PURGE (default) &middot; LOCK &middot; WARD</td><td>Purge disarms revealed traps (scan first &mdash; you can't defuse what you can't see). Lock freezes junctions against rotation and redirects for 2 rounds. Ward blankets an area against new traps for 2 rounds.</td><td>Targets per cast 1 &rarr; 2 &rarr; 3; ward radius 1 &rarr; 2 &rarr; 3</td></tr>
+</table>
+<p class="tablenote">Every mode has a counter that the opponent also plays: scan finds arms, purge clears them, ward pre-empts them, lock stops redirects. The machine's kit is built from the same table &mdash; its tier and mode spread widen with the ticket's threat tier.</p>
+
+<div class="avoid-break">
+<h3>Augments</h3>
+<p>Fourteen augments, drafted one per cleared job from a three-card offer. The four <b>config drivers</b> unlock modes (halt, siphon, lock, ward) and are guaranteed a draft slot while any remain unowned; the ten <b>boosts</b> bend the economy around a build. Owned augments never reappear.</p>
+<table class="small">
+<tr><th>Augment</th><th>Kind</th><th>Effect</th></tr>
+<tr><td>HALT DRIVER / SIPHON DRIVER</td><td>Config</td><td>Unlock ATTACK's halt / siphon trap modes</td></tr>
+<tr><td>CLAMP DRIVER / WARD DRIVER</td><td>Config</td><td>Unlock DEFEND's lock / ward modes</td></tr>
+<tr><td>LONG ARMS</td><td>Boost</td><td>Rotate open junctions up to 3 steps out instead of 2 &mdash; bigger setups, bigger cascades</td></tr>
+<tr><td>SURGE CACHE</td><td>Boost</td><td>Every RAM-banking cascade banks +1 extra</td></tr>
+<tr><td>DEEP SIPHON / TRIPWIRE</td><td>Boost</td><td>Siphon traps steal +1 RAM / halt traps also burn 2 RAM off the victim's next active turn</td></tr>
+<tr><td>CHEAP SHOT / HOT BOOT</td><td>Boost</td><td>First ATTACK each dive is free / start every dive with +2 RAM</td></tr>
+<tr><td>BULWARK / TAP LINE</td><td>Boost</td><td>DEFEND also freezes its targets 1 round / SCAN also traces the intrusion's planned route</td></tr>
+<tr><td>CARRY CACHE / ECHO TAP</td><td>Boost</td><td>Carry 4 unspent RAM instead of 2 / each of your traps that fires banks +2 RAM</td></tr>
+</table>
+</div>
+
+<h3>Cascades</h3>
+<div class="rev"><b>REVISED IN PROTOTYPE</b> Simulation data forced one refinement: cascade RAM paid out immediately compounded into a route-finished-in-one-turn snowball (average duel length collapsed to 1.5 rounds in a 200-seed sweep). Banked into the following turn, the same reward is pure tempo without the degenerate spiral.</div>
+<p>Cascades are the game's signature satisfying moment &mdash; a long scrambled chain snapping into place and claiming six junctions at once &mdash; so they carry real utility: banked RAM, deterministic, never a coin flip between reward types. Reach-2 rotation exists substantially to serve them: being able to pre-align junctions two steps ahead of your border is what makes engineered multi-junction cascades a plannable play rather than a lucky one.</p>
+
+<h2 class="pagebreak">Structure, Presentation &amp; Finale</h2>
+<p>The game presents as <b>KP/OS</b>, a retro-futuristic pixel desktop: BIOS boot, a login screen with three deletable user slots (one save per user), desktop icons for JOBS / LOADOUT / MANUAL / LEDGER, draggable windows, and a taskbar clock showing the in-game day. The dive takes the full screen. A mid-dive refresh is the designed safe abort: the run resumes at the day board with the ticket still open. The father's journal, <b>DAD.LOG</b>, unlocks entry by entry across runs &mdash; the will, the quarantine story, Meridian Neurocare receipts dated four days before he died &mdash; keeping the mystery of the back-room machine in view between dives.</p>
+<h3>Tutorial</h3>
+<div class="rev"><b>REVISED IN PROTOTYPE</b> The draft's &ldquo;one scripted tier-0 config, no bespoke tutorial system&rdquo; failed its first real playtest: the machine won before the player touched a program. The shipped tutorial stage-manages the kit &mdash; programs boot OFFLINE and unlock as the lesson demands them (the machine plants a trap &rarr; SCAN unlocks; you scan it &rarr; DEFEND; you purge it &rarr; ATTACK) &mdash; while the machine is throttled to a fraction of its RAM. Unwinnability became structural rather than tuned: the moment your flood touches the tutorial core, every port slams shut. No generator margin math, no way to break it.</div>
+<p>The player learns all three programs by using each one for real, gets one full-kit turn to feel the complete loop, and then the machine stops pretending, plays at full speed, and seals. Neural Strain zeroes; day one begins. Losing is still the tutorial's final lesson.</p>
+<h3>Finale &amp; Story</h3>
+<p>The finale falls on Day 10, every run, ready or not: the biggest grid (13&times;11), 10 RAM per turn, every mode at full width, already four nodes deep when you sit down. Mechanically it is an ordinary duel; that is the point. Winning opens the machine &mdash; Patch, the companion the father built for his son, named for the thing that holds a broken thing together while it mends. Failed runs advance the story: Rhea's virus theory erodes run by run, and a father fragment surfaces after each attempt. Losing is how the player learns who their father was.</p>
+<h3>Difficulty (measured)</h3>
+<p>The shipped escalation curve, with win rates from the 200-seed-per-day simulation harness (a kit-less proxy player &mdash; a human with augments runs hotter):</p>
+<table class="small">
+<tr><th>Day</th><th>Grid</th><th>Machine RAM</th><th>Head start</th><th>Ticket tiers</th><th>Proxy win rate</th></tr>
+<tr><td>1</td><td>9&times;7</td><td>6</td><td>0</td><td>1 / 1 / 1</td><td>82%</td></tr>
+<tr><td>2</td><td>9&times;7</td><td>6</td><td>0</td><td>1 / 1 / 2</td><td>77%</td></tr>
+<tr><td>3</td><td>9&times;9</td><td>6</td><td>1</td><td>1 / 2 / 2</td><td>74%</td></tr>
+<tr><td>4</td><td>9&times;9</td><td>6</td><td>2</td><td>2 / 2 / 3</td><td>56%</td></tr>
+<tr><td>5</td><td>11&times;9</td><td>7</td><td>2</td><td>2 / 3 / 3</td><td>58%</td></tr>
+<tr><td>6</td><td>11&times;9</td><td>7</td><td>2</td><td>3 / 3 / 3</td><td>56%</td></tr>
+<tr><td>7</td><td>11&times;9</td><td>7</td><td>3</td><td>3 / 3 / 4</td><td>49%</td></tr>
+<tr><td>8</td><td>11&times;11</td><td>8</td><td>3</td><td>4 / 4 / 4</td><td>42%</td></tr>
+<tr><td>9</td><td>11&times;11</td><td>9</td><td>4</td><td>4 / 4 / 5</td><td>39%</td></tr>
+<tr><td>10</td><td colspan="4">Finale: 13&times;11, 10 RAM, head start 4, full kit</td><td>25%</td></tr>
+</table>
+<p class="tablenote">The tutorial config must post 0 wins in 200 seeds before any deploy; the harness enforces it.</p>
+
+<h2>AI Architecture</h2>
+<div class="rev"><b>REVISED IN PROTOTYPE</b> Rewritten from experience. The final draft proposed six agents; building the prototype exposed two missing specialists (abilities and UX), showed that dialogue is a pacing job rather than a string-generation job, and reframed &ldquo;Development&rdquo; from a line item into the orchestrating agent everything else reports through. Every loop below was executed at least once, by hand, during the build; the section records what each one caught.</div>
+<p>The principle is unchanged: every agent runs during development, not during play. Each produces content in a defined, structured format &mdash; JSON profiles, config tables, tagged copy, assets, pass/fail reports &mdash; baked into a static library the shipped game draws from. The game makes no API calls while it is being played. Prose handoffs between agents are banned: structure is the contract, and the Orchestrator is the only agent that touches the codebase.</p>
+
+<p class="agent"><b class="aname">Orchestrator &mdash; Claude Fable 5.</b> Formerly the &ldquo;Development (build)&rdquo; row. Reframed as the integrating agent: it consumes every other agent's artifacts, writes and maintains all code, keeps the engine deterministic, and runs the verification gates (typecheck, duel simulation, run-layer invariants, production build, live smoke test) before anything ships. It also arbitrates when two agents' outputs collide &mdash; a new augment that breaks a day's win-rate target, a story still that contradicts the bible. It runs on Fable 5 because integration is where all contexts meet at once: engine, balance data, canon, and UI state have to be held simultaneously, and it is the only agent whose mistakes compound.</p>
+
+<p class="agent"><b class="aname">Loremaster &mdash; canon authority.</b> Expanded: alongside the setting bible, it now keeps the <b>story ledger</b> &mdash; the ground truth of the underlying story. What actually happened to Dad, what Patch is, what Rhea believes versus what she knows, what the player can possibly know after run N. Every outward-facing artifact &mdash; customer profiles, dialogue, journal entries, story art &mdash; passes its approve/revise gate. One agent owning truth is what keeps eleven runs of drip-fed mystery from contradicting itself.</p>
+
+<p class="agent"><b class="aname">Narrative Director &mdash; story pacing.</b> Formerly &ldquo;Outcome &amp; Dialogue,&rdquo; substantially buffed. The encounter generator already covers duel-outcome flavor; this agent's job is the <b>reveal schedule</b>: how the mystery of Dad's computer unfolds, how the opening context is set, how the running conversation with Rhea erodes from &ldquo;it's just a nasty virus&rdquo; toward the truth. Its second responsibility is environmental hinting &mdash; the artifacts that keep the ultimate goal in the player's peripheral vision. The will and the hospital receipts surfacing in DAD.LOG are the template: diegetic, optional, cumulative. It drafts within the Loremaster's ledger and commissions the Art Lead for key-moment stills.</p>
+
+<p class="agent"><b class="aname">Customer/Encounter Generator &mdash; the &ldquo;One Wow.&rdquo;</b> Unchanged core: one structured JSON profile per job &mdash; customer name, device, flavor text, threat tier, dominant mode &mdash; feeding both the diagnostic readout and the duel's starting conditions, so the player meets a specific character with a specific, telegraphed opponent on every ticket. It now also consumes the Ability Agent's current catalog, so a customer's dominant mode always names a real, current mechanic and the Analyze tell stays honest.</p>
+
+<p class="agent"><b class="aname">Ability Agent &mdash; new.</b> Owns the ability catalog: attack and defend modes, scan scaling, and the augment pool. Its design brief is explicitly <b>synergy and counterplay</b> &mdash; every ability ships as part of a pair or triangle (halt traps &harr; scan/purge, redirect &harr; lock, arming &harr; ward) rather than as an isolated effect. It sits inside the balance loop: encounter generation assigns its abilities to opponents, the Arc Composer schedules them across days, Validation measures the result, and the Ability Agent adds, retunes, or retires entries in response. The prototype's kit is this loop's output run by hand: cascade banking, reach-2 rotation, and the config/boost augment split all came out of simulation findings, and the entire draft-era ability pool was retired by it.</p>
+
+<p class="agent"><b class="aname">Arc Composer.</b> Unchanged role, proven surface: the entire difficulty curve is one table &mdash; grid, machine RAM, aggression, cast frequency, route-cost target, head start, ticket tiers, per day. Every balance change of the build touched only this table, which is what made nightly retuning cheap.</p>
+
+<p class="agent"><b class="aname">Validation.</b> Now concrete rather than aspirational: it operates the two harnesses that exist in the repo &mdash; a 200-seed-per-day duel simulator reporting win/round/strain-chip distributions, and a full run-layer simulator asserting state-machine invariants across complete runs. Its report is distributions against targets, not vibes. Build evidence for why it gates everything: it caught the cascade snowball (duels collapsing to 1.5 rounds), the silently degenerate draft tutorial, and the 2% of boards where the machine's head start walled the player off before round one.</p>
+
+<p class="agent"><b class="aname">UX Agent &mdash; new.</b> This game <i>is</i> its interface &mdash; a desktop OS the player lives in &mdash; so presentation gets its own specialist rather than falling to the art or build line. It owns the layout and information hierarchy of KP/OS (windows, dock, targeting flows), interaction feel (telegraph legibility, animation timing, screen-shake tiers, cascade pops), and <b>sound design</b>: every cast, claim, trap, and cascade has a synthesized voice, and the audio palette is authored in code as part of the interaction, not attached afterward. It writes work orders to the Art Lead for the pixel assets it needs (chrome, icons, cursors) and collaborates with the Narrative Director on how story moments present (typed dialogue pacing, still framing, music cues).</p>
+
+<p class="agent"><b class="aname">Art Lead.</b> Revised pipeline: purchased icon/UI packs are cut entirely. All pixel art is generated with <b>PixelLab</b>, with the game's fixed palette hexes pinned in every prompt and a deterministic post-pass (nearest-neighbor downscale plus palette quantize) that keeps output on-model across regenerations; larger canvases (wallpaper, story stills) and music beds fall to Higgsfield generation under the same palette rules. It is deliberately a fabrication shop: it fulfills work orders from the UX Agent and Narrative Director rather than self-directing, and its outward-facing output passes the Loremaster's gate.</p>
+
+<p><span class="leadword">Where sound lives.</span> Sound design sits under the UX Agent, not a separate sound agent. In this game audio is interaction feedback &mdash; the cascade arpeggio that scales with chain length, the two-beat telegraph sting, the trap crack &mdash; and it is tuned in the same pass as the animation it accompanies. A standalone sound agent would put an organizational boundary through the tightest feedback loop in the project. The build bears this out: the prototype's worst audio bug (an entire inaudible palette) was found and fixed with UX-style instrumentation of the running interface, not with better composition. The one carve-out is music: longer beds are asset production, so the UX Agent writes the brief (mood, tempo, scene) and the generation pipeline fulfills it like any other art order.</p>
+
+<div class="diagram-wrap">
+<pre class="mermaid">
+flowchart TB
+  subgraph BAL["&nbsp;BALANCE LOOP&nbsp;"]
+    direction TB
+    EG["ENCOUNTER GENERATOR
+customer profiles, dominant modes"]
+    AC["ARC COMPOSER
+day-by-day difficulty table"]
+    VAL["VALIDATION
+sim harnesses: win curves, invariants"]
+    ABL["ABILITY AGENT
+modes + augments, synergy/counter pairs"]
+    EG --> AC
+    AC --> VAL
+    VAL -- "balance report" --> ABL
+    ABL -- "ability catalog" --> EG
+    VAL -. "curve drift" .-> AC
+  end
+  subgraph STORY["&nbsp;STORY LOOP&nbsp;"]
+    direction TB
+    LM["LOREMASTER
+setting bible + story ledger"]
+    ND["NARRATIVE DIRECTOR
+reveal pacing, Rhea comms, hints"]
+    LM <--> ND
+  end
+  subgraph PRES["&nbsp;PRESENTATION&nbsp;"]
+    direction TB
+    UX["UX AGENT
+layout, feel, animation, sound"]
+    ART["ART LEAD
+PixelLab assets, stills, music beds"]
+    UX -- "asset work orders" --> ART
+  end
+  ORCH["ORCHESTRATOR (Claude Fable 5)
+integrates all artifacts, sole code owner, runs verification gates"]
+  SHIP["STATIC CONTENT LIBRARY + BUILD
+no API calls at runtime"]
+  LM -. "approve / revise" .-> EG
+  LM -. "approve / revise" .-> ART
+  ND -- "still + music briefs" --> ART
+  ND -- "story presentation" --> UX
+  EG ~~~ ORCH
+  BAL == "configs + catalog" ==> ORCH
+  STORY == "canon + copy" ==> ORCH
+  PRES == "specs + assets" ==> ORCH
+  ORCH -- "runs harnesses" --> VAL
+  ORCH ==> SHIP
+</pre>
+<p class="figcap">The agent org. Solid heavy arrows are artifact flows into the Orchestrator; dashed arrows are review gates and feedback; the Balance Loop cycles until Validation's distributions hit the arc targets.</p>
+</div>
+
+<p><b>Pipeline order.</b> The balance loop and story loop run in parallel; the Loremaster gates everything outward-facing from either. The UX Agent and Art Lead iterate continuously against whatever mechanics and story beats are current. The Orchestrator integrates on its own cadence, and nothing enters the shipped library until Validation's harnesses pass &mdash; including the standing rule that the tutorial posts zero wins in 200 seeds.</p>
+
+<h2>Technical Strategy</h2>
+<div class="rev"><b>REVISED IN PROTOTYPE</b> Two revisions. Unity is cut: the prototype shipped as a TypeScript web app and proved the presentation needs nothing heavier &mdash; the entire game is UI, and the browser is the native home of a fake desktop OS. Purchased asset packs are cut: all art is generated (PixelLab primary), which the palette-pinning pipeline made reliable enough to bet on.</div>
+<p>Kernel Panic is a TypeScript web application: the whole game is pure reducer functions over a seeded RNG, rendered as a 2D desktop UI, deployed to the same URL every build. Determinism is the load-bearing decision, made for the agent pipeline rather than the player: the same seed always produces the same board and the same opponent decisions, which is what lets Validation regress balance numerically, lets a bug report from a live player be reproduced exactly from their seed, and lets the opponent telegraph moves without random drift between simulation and play. All balance lives in one table (the Arc Composer's surface); all kit numbers live in one content module (the Ability Agent's surface). The verification gate that ran before every deploy: typecheck, 200-seed duel sims for all ten day-configs plus tutorial, full-run invariant sims, production build, and a live smoke test.</p>
+<p>Art: PixelLab generation with palette hexes pinned in every prompt, then a deterministic downscale-and-quantize pass; Higgsfield image models for large canvases and synthesized music beds. Sound effects are code: a compact synthesizer with a preset palette, authored and tuned by the UX pass. Figures below count input and output tokens together, since both draw against plan usage.</p>
+<table class="small">
+<tr><th>Agent / task</th><th>Model</th><th>Calls</th><th>Tokens per call (in + out)</th><th>Estimated total</th></tr>
+<tr><td>Orchestrator (integrate + build)</td><td>Fable 5</td><td>~60 turns</td><td>~8,000 average per turn</td><td>~480,000</td></tr>
+<tr><td>Customer/Encounter Generator</td><td>Sonnet 5</td><td>60</td><td>~1,200 + ~1,500 = 2,700</td><td>162,000</td></tr>
+<tr><td>Ability Agent</td><td>Sonnet 5</td><td>40</td><td>~1,100 + ~900 = 2,000</td><td>80,000</td></tr>
+<tr><td>Narrative Director</td><td>Sonnet 5</td><td>50</td><td>~700 + ~500 = 1,200</td><td>60,000</td></tr>
+<tr><td>Loremaster (reviews + ledger)</td><td>Sonnet 5</td><td>100</td><td>~900 + ~250 = 1,150</td><td>115,000</td></tr>
+<tr><td>Arc Composer</td><td>Sonnet 5</td><td>12</td><td>~800 + ~500 = 1,300</td><td>15,600</td></tr>
+<tr><td>UX Agent</td><td>Sonnet 5</td><td>60</td><td>~900 + ~600 = 1,500</td><td>90,000</td></tr>
+<tr><td>Validation (harness runs + reports)</td><td>Haiku 4.5</td><td>240</td><td>~300 + ~400 = 700</td><td>168,000</td></tr>
+<tr><td>Art Lead (prompt authoring)</td><td>Haiku 4.5</td><td>120</td><td>~250 + ~150 = 400</td><td>48,000</td></tr>
+<tr><td colspan="4"><b>Total across all models</b></td><td><b>&asymp;1,218,600 tokens</b></td></tr>
+</table>
+<p class="tablenote">The Orchestrator row is the least predictable line &mdash; long coding sessions resend conversation history every turn &mdash; and is controlled by clearing context between subtasks rather than by call count. Art Lead's real budget is PixelLab generation credits, not tokens; prompt authoring is deliberately routed to Haiku.</p>
+
+<h3>Constraints &amp; Scope</h3>
+<ul class="scope">
+<li><b>One person, remaining weeks.</b> The prototype exists and is live, which retires the engine risk entirely; the remaining budget goes to content breadth (more customers, more journal, more augments), which is exactly what the agent pipeline is shaped to produce.</li>
+<li><b>Generation credits are capped.</b> PixelLab jobs are the scarce resource, not tokens. Palette pinning plus the deterministic post-pass means a regeneration is cheap to accept or reject, so the budget buys attempts, not obligations.</li>
+<li><b>Context windows are fixed.</b> The Loremaster reviews against a condensed bible and ledger summary, never the full generation history; the Orchestrator clears context between subtasks &mdash; the single most effective cost control observed during the build.</li>
+<li><b>Validation loops must terminate.</b> Generate-and-check caps at three retries before a failing config is flagged for manual review. Ability churn is bounded the same way: catalog changes enter only through the balance loop, each carrying before/after win curves, so the Ability Agent cannot thrash the meta.</li>
+<li><b>Model routing follows constraint, not prestige.</b> Haiku carries the highest-call-count lines (Validation, art prompts) to keep load off the Sonnet cap; Fable 5 is reserved for the one seat where cross-domain context cannot be split &mdash; the Orchestrator.</li>
+</ul>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: "base",
+    themeVariables: {
+      fontFamily: "Lato, Helvetica Neue, Arial, sans-serif",
+      fontSize: "12px",
+      primaryColor: "#eaf4f5",
+      primaryBorderColor: "#17747c",
+      primaryTextColor: "#1d2426",
+      lineColor: "#7d3a52",
+      clusterBkg: "#f7f4ef",
+      clusterBorder: "#b7a98e",
+      edgeLabelBackground: "#ffffff"
+    },
+    flowchart: { curve: "basis", padding: 10, nodeSpacing: 34, rankSpacing: 44 }
+  });
+</script>
+</body>
+</html>

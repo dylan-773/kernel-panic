@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bun run:*)",
+      "Bash(cd /Users/lyd0n/Development/kernel-panic/kernel-panic-site/app && bun run:*)",
+      "Bash(python3 /Users/lyd0n/Development/kernel-panic/pipeline/tools/pxpost.py:*)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/pipeline/tools/lint-proposal.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

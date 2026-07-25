@@ -1,0 +1,126 @@
+# KERNEL PANIC - STORY LEDGER
+
+Maintained by LOREMASTER. Ground truth plus the run-by-run knowledge table.
+The Narrative Director's reveal schedule must never outrun this table.
+Sources: `content/story.ts` (scenes keyed by run number), `content/journal.ts`
+(unlockAtRun fields), `content/customers.ts`. Shipped copy outranks the GDD.
+
+## Ground truth
+
+What actually happened to Dad:
+1. After "she took the car and the quiet with her" (sector 2), Dad started
+   spending his nights with the machine: "The shop and I have some talking
+   to do."
+2. He built and trained an AI by diving his own back-room tower nightly after
+   close, for years: 9,000+ logged hours, no client, no ticket, no pay.
+3. The hours scarred him: NF-3 neurofilament degradation, stage three. He hid
+   it: weekly cash suppressants for six years from the pharmacy on 9th,
+   eleven unpaid Meridian Neurocare bills filed under W.
+4. Ordered to CEASE ALL DIVE ACTIVITY IMMEDIATELY, he kept diving. The last
+   suppressant receipt is dated four days before he died. The strain killed
+   him: "not an accident and it was not a job."
+5. He recorded fragments of himself into the machine as cargo (nine sectors)
+   and left a final message. He sealed the back room himself with a standing
+   order: open only for a fair, assist-free win by his son. "Not until he can
+   beat you square. Promise me."
+6. The will splits the shop: counter to Rhea, bench to the son, "The back
+   room stays locked until it does not."
+
+What Patch is:
+- The AI companion Dad built FOR HIS SON. Not a virus, not a weapon, not a
+  tool ("I stopped thinking of you that way a long time ago").
+- Gatekeeper, sparring partner, curriculum: it paces difficulty to the
+  player and never throws a game. It was the opponent in every back-room
+  dive and "never once let you win".
+- Custodian of the sector fragments and of Dad's final message, practiced
+  "until my voice matched his".
+- Named Patch under the house naming rule: "the thing that holds a broken
+  thing together while it mends." After the finale it joins the shop; the
+  back room is his.
+
+What Rhea believes vs what she knows:
+- Believes (runs 1-2): the quarantined-virus story, asserted flatly and then
+  repeated to steady herself ("That is all it has to be.").
+- Knows from childhood, before any run: Dad spent nights in that room for
+  years, talking through the wall (she thought it was the radio), and came
+  out smiling.
+- Learns by investigation, never by diving: run 3 watches the feed (it
+  waited), run 4 reads the intrusion logs (it paces), run 5 (it learns, it
+  is kind first), run 7 the power bills (he fed it for years; "You do not do
+  that for a virus"), run 8 renounces the theory ("I do not think it is a
+  virus... I think it has been waiting").
+- She never reaches the ground truth before the finale: no shipped line gives
+  her Patch's name, Dad's diagnosis, or the seal condition. Nothing shipped
+  says she was ever lying; play the erosion as honest.
+- Post-finale: acceptance. "Some virus. He laughs at the edges the way Dad
+  did." She sits with Patch; she still calls it the virus as a joke.
+
+## Reveal channels
+
+- Openers: `runOpenerScene(run)`, bespoke for runs 1-6, three-scene fallback
+  cycle for 7+ (7 coffee, 8 "so does my theory", 9 the dream, then repeat).
+- Enders: `runEndScene(run)`, bespoke for runs 1-8. Sectors 1-7 play on runs
+  2-8. Runs 9+ alternate two fallbacks: "SECTOR SCAN: NO NEW DATA", echoing
+  sector 1 (odd runs) and sector 4 (even runs).
+- Journal DAD.LOG (`unlockAtRun`, visible once runCount >= N): 0 THE WILL and
+  THE BACK ROOM; 1 ANOTHER FAILED RUN; 2 THE DRAWER OF BILLS; 3 SOLDER
+  SMOKE; 4 RECEIPTS; 5 THE DIAGNOSIS; 6 NO TICKETS; 8 IT IS GRADING ME;
+  finale-gated (requiresOpened) PATCH.
+- The finale sits on Day 10 of EVERY run. A finale win on any run unlocks the
+  full truth and the PATCH entry immediately, regardless of table row.
+
+## Run-by-run knowledge table
+
+"After run N" = run N has ended: openers 1..N and enders 1..N seen, journal
+entries with unlockAtRun <= N readable. Knowledge is cumulative.
+
+| Run | New this run (source) | After run N the player can possibly know |
+|---|---|---|
+| 1 | Opener 1, Ender 1; J: WILL, BACK ROOM (0), ANOTHER FAILED RUN (1) | Shop inherited with debt. Rhea's virus story. The room's lock opened "like it was expecting me". The machine did not fight; it graded him and shut the door. |
+| 2 | Ender 2 = SECTOR 1 (solder lesson); J: BILLS (2) | Dad had stage-three NF-3 and secret medical debt bigger than a year of shop income ("He was not a diver. As far as I knew."). The machine emits Dad-memories on a loss. Rhea's certainty cracks ("That is all it has to be."). |
+| 3 | Ender 3 = SECTOR 2 (she left); J: SOLDER SMOKE (3) | It waited at the core: not virus behavior. "She" left with the car; Dad began his nights with the machine. Player theory: the fragments are cargo, not corruption. |
+| 4 | Ender 4 = SECTOR 3 (recording test); J: RECEIPTS (4) | The machine paces its opponent. Dad deliberately recorded messages meant to be heard in his voice ("He should hear it in my voice"). Suppressants weekly for six years, last filled four days before he died: the illness was strain, hidden, long. |
+| 5 | Ender 5 = SECTOR 4 (keep the door shut); J: THE DIAGNOSIS (5) | The machine learns and is kind first. Dad instructed it: "Not until he can beat you square... No shortcuts." 9,000+ logged dive hours; CEASE ALL DIVE ACTIVITY; he kept going. Inferable now: Dad built the test, and diving killed him. |
+| 6 | Ender 6 = SECTOR 5 (not a tool); J: NO TICKETS (6) | The thing in the machine is a someone: Dad apologized to it and would not call it a tool. No client ever existed; the hours, the strain, and the death were for something he was building in secret, "on an installment plan". |
+| 7 | Fallback opener; Ender 7 = SECTOR 6 (one more game) | The power bills: he fed it for years, out of pocket. "You do not do that for a virus." Dad played it nightly, trained it, ordered it never to go easy on him. |
+| 8 | Opener "so does my theory"; Ender 8 = SECTOR 7 (naming); J: IT IS GRADING ME (8) | Its name is Patch, built for "him", named for holding a broken thing together while it mends. Rhea drops the virus theory. Player concludes: a curriculum, not a lock. "Dad did not seal something in. He left something waiting." Knowledge is now complete except direct confirmation, Patch's own voice, and Dad's final message. |
+| 9 | Fallbacks (echo of sector 1) | Nothing new. Rhea: "One of these nights it is going to let you through. I have started believing that." |
+| 10 | Fallbacks (echo of sector 4) | Nothing new. |
+| 11 | Fallbacks (echo cycle repeats) | Nothing new. |
+| 12 | Fallbacks | Nothing new. Knowledge plateaus at the run-8 state until a finale win. |
+| Finale win (any run) | `finaleWinScene()`; J: PATCH (requiresOpened) | Full truth: seal condition "A FAIR WIN, NO ASSISTS"; Patch was across the grid every dive and never once let him win; Dad's final message in his voice; Rhea sits with Patch; counter hers, bench his, back room Patch's. |
+
+Reveal-schedule rules derived from the table:
+- Nothing may name Patch before the run-8 ender (sector 7).
+- Nothing may state the seal condition before the run-5 ender (sector 4);
+  IT IS GRADING ME (run 8) may restate it as the player's inference.
+- Dad's own diving and the 9,000 hours: not before run 5 (THE DIAGNOSIS).
+  From run 2 (BILLS) his illness may surface as mystery only.
+- Rhea's first crack is the run-2 ender; first evidence-based doubt is run 3;
+  renunciation is run 8. Nothing earlier, nothing later.
+- Before the finale, no content may confirm that the machine's occupant
+  speaks, or give it a personality or pronoun beyond the player's "it".
+
+## Open questions (undecided canon - record here, never decide silently)
+
+1. Who "she" is in sector 2. Presumably the kids' mother; never named, never
+   confirmed, fate unknown.
+2. Origin of the virus cover story: whether Dad told Rhea the quarantine
+   story or she inferred it. Shipped copy only has "Rhea says it is
+   quarantined, that Dad walled off a nasty virus in there years ago."
+3. Sectors 8 and 9 of 9: never recovered in any shipped scene. Contents
+   undecided.
+4. The finale message's mechanism: Dad recorded audio (sector 3) AND Patch
+   "practiced it until my voice matched his". Recording, performance, or
+   reconstruction is undecided.
+5. The citywide intrusions in customers' devices: cause and origin never
+   explained; no shipped link to Patch, Dad, or the shop. Several intrusions
+   "learn" or "test" their owners, echoing Patch; coincidence versus signal
+   is undecided.
+6. Whether Meridian the ledger-terminal maker (Aldous Wick's device) and
+   Meridian Neurocare are the same company.
+7. Timeline tension: "under a decade of dust, the machine waits" (run 1
+   opener) versus Dad diving it nightly until days before his death. The gap
+   between his death and run 1 is undecided.
+8. Names: the son's given name, Rhea's and Dad's full names. Only the
+   surname Overby is canon, via "Patient: Overby".

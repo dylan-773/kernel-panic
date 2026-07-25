@@ -1,0 +1,163 @@
+{
+  "agent": "narrative-director",
+  "brief": "canon-correction-mother-clutter-surname",
+  "notes": "No numbered production cycle is active in pipeline/BRIEF.md; this proposal answers four direct Loremaster canon rulings (mother excised entirely, no dust in the shop, no family surname) that require rewriting already-shipped copy. Copy-revision only, no new reveals, no new runs or journal unlocks added. Two candidates per target, preferred marked with rationale. These rulings resolve ledger Open Questions 1 (who 'she' is, now moot), 7 (the dust-versus-nightly-diving timeline tension, now resolved by removing dust and keeping the death-to-run-1 gap short), and 8 (the surname Overby, now excised). The coordinator's own case-insensitive sweep confirmed the full footprint is story.ts lines 72, 73, 143, 248 plus journal.ts:65; all five lines are now covered as targets 1 through 4 below (target 1 covers story.ts:72-73, target 4 covers story.ts:143, target 2 covers story.ts:248, target 3 covers journal.ts:65). Gate verdict as of this pass: targets 1, 3, 4 approved (preferred candidates won). Target 2 was revised twice: the first-pass pair (run-end-3-revision-a/b, both built on 'quiet') was rejected for reusing vocabulary residue from the excised 'She took the car and the quiet with her.' line, which invited the reader to reconstruct the departure. Replaced with a third pass, run-end-3-revision-a2 (preferred) and -b2, which drop 'quiet', 'used to', and all before/after or change-of-state framing in favor of a present-tense physical image (bench, hour, block). One remaining out-of-scope conflict for the Loremaster's own pass, not rewritten here: lore/bible.md lines 47-48 ('The padlock is the only thing in the shop without dust on it.') and line 61 ('Family surname Overby...') still restate the old rulings and will need the Loremaster's own edit once the ledger update lands.",
+  "items": [
+    {
+      "type": "scene",
+      "id": "run-open-1-revision-a",
+      "slot": "opener",
+      "runNumber": 1,
+      "preferred": true,
+      "rationale": "Mirrors the shipped beat's exact two-line, one-clause-each rhythm. Swaps 'under a decade of dust' for a clutter image tied directly to Dad (not Rhea, not time), and swaps 'without dust on it' for 'put away properly', which keeps the same job the line always had: the padlock is the one deliberate, cared-for exception in the room. No time markers, so it does not fight the short death-to-run-1 gap.",
+      "beats": [
+        {
+          "speaker": "system", "portrait": "none", "still": "none",
+          "lines": ["SHOP TERMINAL ONLINE.", "NEW PROPRIETOR REGISTERED.", "Ten days on the book. Make them count."]
+        },
+        {
+          "speaker": "sister", "portrait": "SISTER", "still": "none",
+          "lines": ["So the bench is yours now. Keys, tools, debt, all of it.", "He would have hated how clean I kept it."]
+        },
+        {
+          "speaker": "sister", "portrait": "SISTER", "still": "none",
+          "lines": ["One rule. The machine in the back room stays locked.", "It is just a nasty virus in there, and Dad never got around to wiping it. Leave it."]
+        },
+        {
+          "speaker": "system", "portrait": "none", "still": "STILL_LOCKED",
+          "lines": ["Behind the curtain, past drifts of Dad's clutter, the machine waits.", "The padlock is the only thing in this shop Dad ever put away properly."]
+        }
+      ]
+    },
+    {
+      "type": "scene",
+      "id": "run-open-1-revision-b",
+      "slot": "opener",
+      "runNumber": 1,
+      "preferred": false,
+      "rationale": "Same beat, three-line variant. Trades the tight parallel of candidate A for a slightly more concrete before/after image (where he dropped it versus what he closed with care), at the cost of one extra line. Offered in case the gate wants more room to breathe on the run 1 still.",
+      "beats": [
+        {
+          "speaker": "system", "portrait": "none", "still": "none",
+          "lines": ["SHOP TERMINAL ONLINE.", "NEW PROPRIETOR REGISTERED.", "Ten days on the book. Make them count."]
+        },
+        {
+          "speaker": "sister", "portrait": "SISTER", "still": "none",
+          "lines": ["So the bench is yours now. Keys, tools, debt, all of it.", "He would have hated how clean I kept it."]
+        },
+        {
+          "speaker": "sister", "portrait": "SISTER", "still": "none",
+          "lines": ["One rule. The machine in the back room stays locked.", "It is just a nasty virus in there, and Dad never got around to wiping it. Leave it."]
+        },
+        {
+          "speaker": "system", "portrait": "none", "still": "STILL_LOCKED",
+          "lines": ["Behind the curtain, past stacks Dad never got around to, the machine waits.", "Everything else in this shop is where he dropped it.", "The padlock is the one thing he closed with care."]
+        }
+      ]
+    },
+    {
+      "type": "scene",
+      "id": "run-end-3-revision-a2",
+      "slot": "ender",
+      "runNumber": 3,
+      "preferred": true,
+      "rationale": "Third pass per Loremaster citation: drops 'quiet' and every before/after or change-of-state frame entirely, since both prior candidates' load-bearing image was vocabulary residue from the excised 'She took the car and the quiet with her.' This candidate states only what IS, present tense: a physical fact about the bench and the hour, nothing about the house changing. Leaves the pull toward the machine entirely to the unchanged third line, 'The shop and I have some talking to do,' so nothing here duplicates or reinterprets that beat. No illness, no building-for-you, no machine personhood; the only thing personified, lightly, is the bench, not the tower.",
+      "beats": [
+        { "speaker": "system", "portrait": "none", "still": "none", "lines": ["NEURAL STRAIN: ZERO.", "CONNECTION SEVERED.", "RUN 3 LOGGED."] },
+        {
+          "speaker": "sister", "portrait": "SISTER", "still": "none",
+          "lines": ["I watched the feed this time. It waited for you at the core.", "Viruses do not wait. Please do not tell me it waited."]
+        },
+        { "speaker": "system", "portrait": "none", "still": "none", "lines": ["RECOVERED SECTOR 2 OF 9.", "PLAYBACK FOLLOWS."] },
+        {
+          "speaker": "father", "portrait": "FATHER", "still": "none",
+          "lines": ["This bench light is the only one on the block.", "Go back to bed, kiddo. I will be up a while yet.", "The shop and I have some talking to do."]
+        }
+      ]
+    },
+    {
+      "type": "scene",
+      "id": "run-end-3-revision-b2",
+      "slot": "ender",
+      "runNumber": 3,
+      "preferred": false,
+      "rationale": "Same third-pass constraints, alternate image: leans harder into workbench-koan dryness by personifying the bench itself ('does not mind') rather than stating a plain visual fact. Still present tense only, still no quiet, used to, absence, or shift language, still no hint toward the machine's personhood since the bench, not the tower, is the thing being addressed. Held as the backup in case the gate wants more warmth than candidate A's flatter image.",
+      "beats": [
+        { "speaker": "system", "portrait": "none", "still": "none", "lines": ["NEURAL STRAIN: ZERO.", "CONNECTION SEVERED.", "RUN 3 LOGGED."] },
+        {
+          "speaker": "sister", "portrait": "SISTER", "still": "none",
+          "lines": ["I watched the feed this time. It waited for you at the core.", "Viruses do not wait. Please do not tell me it waited."]
+        },
+        { "speaker": "system", "portrait": "none", "still": "none", "lines": ["RECOVERED SECTOR 2 OF 9.", "PLAYBACK FOLLOWS."] },
+        {
+          "speaker": "father", "portrait": "FATHER", "still": "none",
+          "lines": ["Two in the morning, and this bench does not mind.", "Go back to bed, kiddo. I will be up a while yet.", "The shop and I have some talking to do."]
+        }
+      ]
+    },
+    {
+      "type": "journal",
+      "id": "bills-revision-a",
+      "unlockAtRun": 2,
+      "requiresOpened": false,
+      "kind": "bill",
+      "title": "THE DRAWER OF BILLS",
+      "date": "bottom drawer of the bench",
+      "preferred": false,
+      "rationale": "Keeps the word 'Patient' so the sentence still names Dad as a patient, just by number instead of name. Reads a hair less cold than candidate B because 'Patient acct' is a hybrid, half-personal label.",
+      "notes": "Replaces the existing journal entry id 'bills' (journal.ts line 65). Only the 'Patient: Overby.' fragment changes; body[1] and body[2] are verbatim, including the W-for-whatever filing joke, which stays as the son's own filing observation and is not tied to this account number.",
+      "body": [
+        "MERIDIAN NEUROCARE - FINAL NOTICE. Patient acct: 118823. Diagnosis code NF-3, neurofilament degradation, stage three. Balance outstanding: more than this shop clears in a year.",
+        "There are eleven of these. He filed them under W for whatever.",
+        "Stage three of what? He fixed computers. He was not a diver. As far as I knew."
+      ]
+    },
+    {
+      "type": "journal",
+      "id": "bills-revision-b",
+      "unlockAtRun": 2,
+      "requiresOpened": false,
+      "kind": "bill",
+      "title": "THE DRAWER OF BILLS",
+      "date": "bottom drawer of the bench",
+      "preferred": true,
+      "rationale": "Drops 'Patient' entirely for 'Account No.', the coldest, most account-styled reading and the one that best matches a real hospital final-notice letterhead. Removes every trace of a personal identifier, which is the point of the ruling, and reads naturally next to 'Balance outstanding' two clauses later since both are billing-department language.",
+      "notes": "Replaces the existing journal entry id 'bills' (journal.ts line 65). Only the 'Patient: Overby.' fragment changes; body[1] and body[2] are verbatim, including the W-for-whatever filing joke, which stays as the son's own filing observation and is not tied to this account number.",
+      "body": [
+        "MERIDIAN NEUROCARE - FINAL NOTICE. Account No. 118823. Diagnosis code NF-3, neurofilament degradation, stage three. Balance outstanding: more than this shop clears in a year.",
+        "There are eleven of these. He filed them under W for whatever.",
+        "Stage three of what? He fixed computers. He was not a diver. As far as I knew."
+      ]
+    },
+    {
+      "type": "scene",
+      "id": "run-open-6-revision-a",
+      "slot": "opener",
+      "runNumber": 6,
+      "preferred": true,
+      "rationale": "Only the second line changes; RUN 6. stays verbatim per instruction. Reuses 'clutter' from the target 1 rewrite so the run 1 and run 6 openers echo each other in vocabulary as they did before. Takes the coordinator's suggestion and credits Rhea's cleanup with visible progress, which turns the line into a small mid-game beat of its own (the ordinary mess is receding) while the padlock stays the fixed, untouched exception, same contrast job the shipped line always did.",
+      "beats": [
+        { "speaker": "system", "portrait": "none", "still": "none", "lines": ["RUN 6.", "The clutter shrinks a little more every week. The padlock never has."] },
+        {
+          "speaker": "sister", "portrait": "SISTER", "still": "STILL_COUNTER",
+          "lines": ["Dad used to come out of that room smiling. I forgot that until this week.", "Go on, then. Customers first. Room later."]
+        }
+      ]
+    },
+    {
+      "type": "scene",
+      "id": "run-open-6-revision-b",
+      "slot": "opener",
+      "runNumber": 6,
+      "preferred": false,
+      "rationale": "Same single-line swap, without crediting Rhea's cleanup pace specifically. Keeps the line at the level of quiet observation rather than progress-tracking, closer in spirit to the plain, uninflected register of the shipped original. Offered in case the gate wants to hold Rhea's cleanup arc for her own dialogue rather than the system voice.",
+      "beats": [
+        { "speaker": "system", "portrait": "none", "still": "none", "lines": ["RUN 6.", "Everything in this shop keeps shifting around it. The padlock does not move."] },
+        {
+          "speaker": "sister", "portrait": "SISTER", "still": "STILL_COUNTER",
+          "lines": ["Dad used to come out of that room smiling. I forgot that until this week.", "Go on, then. Customers first. Room later."]
+        }
+      ]
+    }
+  ]
+}

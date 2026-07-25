@@ -8,17 +8,22 @@ Sources: `content/story.ts` (scenes keyed by run number), `content/journal.ts`
 ## Ground truth
 
 What actually happened to Dad:
-1. After "she took the car and the quiet with her" (sector 2), Dad started
-   spending his nights with the machine: "The shop and I have some talking
-   to do."
+1. Dad raised the two kids alone; the family's shape is never explained and
+   never will be (there is no "she"; excised from canon, Resolved ruling 1).
+   He started spending his nights with the machine, building something for
+   his son: "The shop and I have some talking to do." (sector 2; the
+   sector's opening line is being rewritten this session, see note below).
 2. He built and trained an AI by diving his own back-room tower nightly after
    close, for years: 9,000+ logged hours, no client, no ticket, no pay.
 3. The hours scarred him: NF-3 neurofilament degradation, stage three. He hid
    it: weekly cash suppressants for six years from the pharmacy on 9th,
    eleven unpaid Meridian Neurocare bills filed under W.
-4. Ordered to CEASE ALL DIVE ACTIVITY IMMEDIATELY, he kept diving. The last
-   suppressant receipt is dated four days before he died. The strain killed
-   him: "not an accident and it was not a job."
+4. Ordered to CEASE ALL DIVE ACTIVITY IMMEDIATELY, he kept diving: once the
+   diagnosis landed, finishing Patch stopped being a project and became the
+   inheritance. He would not leave his kids with nothing, and he had faith
+   they would be smart enough to reach what he built; that is why the order
+   changed nothing. The last suppressant receipt is dated four days before
+   he died. The strain killed him: "not an accident and it was not a job."
 5. He recorded fragments of himself into the machine as cargo (nine sectors)
    and left a final message. He sealed the back room himself with a standing
    order: open only for a fair, assist-free win by his son. "Not until he can
@@ -28,19 +33,28 @@ What actually happened to Dad:
 
 What Patch is:
 - The AI companion Dad built FOR HIS SON. Not a virus, not a weapon, not a
-  tool ("I stopped thinking of you that way a long time ago").
+  tool ("I stopped thinking of you that way a long time ago"). Shares the
+  same substrate as every intrusion in the city, a living AI inside a
+  machine (Resolved ruling 5), but was built and raised, not caught; "not a
+  virus" is hard law regardless.
 - Gatekeeper, sparring partner, curriculum: it paces difficulty to the
   player and never throws a game. It was the opponent in every back-room
   dive and "never once let you win".
-- Custodian of the sector fragments and of Dad's final message, practiced
-  "until my voice matched his".
+- Custodian of sectors 1-7 and of sector 8 (the day Dad died, withheld as
+  its own grief, not training cargo). The finale message is sector 9: Dad's
+  real, degraded recordings as source, reconstructed by a voice Patch
+  practiced "until it matched his" (Resolved ruling 4).
 - Named Patch under the house naming rule: "the thing that holds a broken
   thing together while it mends." After the finale it joins the shop; the
   back room is his.
 
 What Rhea believes vs what she knows:
 - Believes (runs 1-2): the quarantined-virus story, asserted flatly and then
-  repeated to steady herself ("That is all it has to be.").
+  repeated to steady herself ("That is all it has to be."). She invented
+  this story herself; Dad never told her (Resolved ruling 2). It was a
+  reasonable guess, not naivety: viruses in this world are living AI, so it
+  was the ordinary explanation for an extraordinary, locked-off machine
+  (Resolved ruling 5).
 - Knows from childhood, before any run: Dad spent nights in that room for
   years, talking through the wall (she thought it was the radio), and came
   out smiling.
@@ -78,7 +92,7 @@ entries with unlockAtRun <= N readable. Knowledge is cumulative.
 |---|---|---|
 | 1 | Opener 1, Ender 1; J: WILL, BACK ROOM (0), ANOTHER FAILED RUN (1) | Shop inherited with debt. Rhea's virus story. The room's lock opened "like it was expecting me". The machine did not fight; it graded him and shut the door. |
 | 2 | Ender 2 = SECTOR 1 (solder lesson); J: BILLS (2) | Dad had stage-three NF-3 and secret medical debt bigger than a year of shop income ("He was not a diver. As far as I knew."). The machine emits Dad-memories on a loss. Rhea's certainty cracks ("That is all it has to be."). |
-| 3 | Ender 3 = SECTOR 2 (she left); J: SOLDER SMOKE (3) | It waited at the core: not virus behavior. "She" left with the car; Dad began his nights with the machine. Player theory: the fragments are cargo, not corruption. |
+| 3 | Ender 3 = SECTOR 2 (Dad begins his nights with the machine); J: SOLDER SMOKE (3) | It waited at the core: not virus behavior. Dad started spending his nights building something in the back room. Player theory: the fragments are cargo, not corruption. (Sector 2's opening line is gated and pending integration to remove the excised "she" reference, Resolved ruling 1.) |
 | 4 | Ender 4 = SECTOR 3 (recording test); J: RECEIPTS (4) | The machine paces its opponent. Dad deliberately recorded messages meant to be heard in his voice ("He should hear it in my voice"). Suppressants weekly for six years, last filled four days before he died: the illness was strain, hidden, long. |
 | 5 | Ender 5 = SECTOR 4 (keep the door shut); J: THE DIAGNOSIS (5) | The machine learns and is kind first. Dad instructed it: "Not until he can beat you square... No shortcuts." 9,000+ logged dive hours; CEASE ALL DIVE ACTIVITY; he kept going. Inferable now: Dad built the test, and diving killed him. |
 | 6 | Ender 6 = SECTOR 5 (not a tool); J: NO TICKETS (6) | The thing in the machine is a someone: Dad apologized to it and would not call it a tool. No client ever existed; the hours, the strain, and the death were for something he was building in secret, "on an installment plan". |
@@ -100,27 +114,69 @@ Reveal-schedule rules derived from the table:
   renunciation is run 8. Nothing earlier, nothing later.
 - Before the finale, no content may confirm that the machine's occupant
   speaks, or give it a personality or pronoun beyond the player's "it".
+- No content may ever reference a mother, an absent parent, or explain the
+  family's shape beyond "Dad raised the two kids alone" (Resolved ruling 1).
+- No content may show or imply Dad ever told Rhea the quarantine story; it
+  is hers alone, invented (Resolved ruling 2).
+- Sectors 8 and 9 never appear as numbered playback fragments, in the run
+  2-8 schedule or any run 9+ fallback cycle (Resolved ruling 3).
+- No given name or surname for the son, Dad, or Rhea's family line may ever
+  appear in any content, official-document copy included (Resolved
+  ruling 8).
 
-## Open questions (undecided canon - record here, never decide silently)
+## Resolved rulings (2026-07-25)
 
-1. Who "she" is in sector 2. Presumably the kids' mother; never named, never
-   confirmed, fate unknown.
-2. Origin of the virus cover story: whether Dad told Rhea the quarantine
-   story or she inferred it. Shipped copy only has "Rhea says it is
-   quarantined, that Dad walled off a nasty virus in there years ago."
-3. Sectors 8 and 9 of 9: never recovered in any shipped scene. Contents
-   undecided.
-4. The finale message's mechanism: Dad recorded audio (sector 3) AND Patch
-   "practiced it until my voice matched his". Recording, performance, or
-   reconstruction is undecided.
-5. The citywide intrusions in customers' devices: cause and origin never
-   explained; no shipped link to Patch, Dad, or the shop. Several intrusions
-   "learn" or "test" their owners, echoing Patch; coincidence versus signal
-   is undecided.
-6. Whether Meridian the ledger-terminal maker (Aldous Wick's device) and
-   Meridian Neurocare are the same company.
-7. Timeline tension: "under a decade of dust, the machine waits" (run 1
-   opener) versus Dad diving it nightly until days before his death. The gap
-   between his death and run 1 is undecided.
-8. Names: the son's given name, Rhea's and Dad's full names. Only the
-   surname Overby is canon, via "Patient: Overby".
+All eight prior open questions are decided by the user. This record stands;
+do not reopen without a new explicit ruling.
+
+1. THE MOTHER: excised from canon entirely. There is no "she". Dad raised
+   the two kids alone; the family's shape is never explained, ever. Forbids
+   any future reference to a mother, her fate, or why it was just Dad. The
+   shipped sector 2 line "She took the car and the quiet with her." is being
+   rewritten this session (see note below).
+2. COVER STORY: Rhea invented the quarantine story herself; Dad never told
+   her. Forbids any flashback or line of Dad briefing her on it. Permits it
+   to stand as her honest, self-generated guess.
+3. SECTORS 8/9: sector 8 is the day Dad died, withheld by Patch as its own
+   grief, not training cargo; it never plays as a numbered fragment in runs
+   1-12. Sector 9 is the raw material behind the final message, delivered
+   whole at the finale, never staged separately. Forbids either sector
+   appearing in the run 2-8 schedule or any run 9+ fallback cycle.
+4. FINALE MECHANISM: reconstruction. Dad's real, degraded recordings
+   (sector 3) are the source; Patch's practiced voice carries the rest,
+   blended without a seam. Forbids any future line claiming pure archival
+   tape, or pure Patch synthesis with no real recording behind it.
+5. NATURE OF INTRUSIONS: viruses in this world are AI, dynamic and alive,
+   infecting machines the way biological viruses infect a body; clearing
+   one fights back, which is why every job is a dive. Mundane, unexplained
+   epidemic; no causal link to Patch, Dad, or the shop. Patch shares the
+   substrate (a living AI in a machine) but was built and raised, not
+   caught; "not a virus" stays hard law regardless. Bonus this buys: Rhea's
+   virus theory was always a reasonable in-world inference, not naivety,
+   supporting the erosion being played as honest.
+6. MERIDIAN: one conglomerate spanning office/ledger hardware and Meridian
+   Neurocare the clinic. Optional dark irony; never required to surface.
+7. TIMELINE: no dust. The shop is buried in Dad's clutter; he was a messy
+   genius and Rhea has been clearing it since he died. Death-to-run-1 gap is
+   short, days to weeks. The padlock survives as the one deliberately
+   cared-for thing amid the mess. Forbids any "decade of dust" or long
+   post-death gap framing. Two shipped run-1 opener lines were rewritten and
+   integrated this session (see note below).
+8. NAMES: total anonymity is permanent hard law for the whole family, given
+   name and surname, forever. Overby leaves canon. Rhea's given name stays
+   (already shipped). Forbids any bill, document, gravestone, or line ever
+   spelling out a first or last name for the son, Dad, or a surname for
+   Rhea. The journal.ts "Patient: Overby" bill line was rewritten and
+   integrated this session as cold, nameless account-style paperwork (see
+   note below).
+
+Note - shipped/canon realignment status: of the shipped lines that
+contradicted the rulings above, three are now integrated by the
+Orchestrator: story.ts run-1 opener ("under a decade of dust... the machine
+waits" and "the padlock is the only thing in this shop without dust on
+it"), story.ts run-6 opener's second line ("Dust settles on everything here
+but the padlock"), and journal.ts bills entry ("Patient: Overby"). One line
+remains outstanding: story.ts run-end-3's sector 2 opening line ("She took
+the car and the quiet with her."); a replacement is gated (see
+`pipeline/gates/loremaster-review.md`) and pending integration. Until that
+lands, shipped copy and this ledger disagree on that one line only.

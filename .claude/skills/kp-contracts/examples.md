@@ -103,6 +103,87 @@ These are shaped exactly like accepted output. Copy the structure, not the conte
 }
 ```
 
+## Teaching moment (tutorial-agent)
+
+```json
+{
+  "type": "teaching-moment", "id": "patch-cell-use",
+  "teaches": ["patchCellUse"],
+  "surface": "duel",
+  "when": "holdingCells",
+  "anchor": "screen",
+  "order": 80,
+  "notBeforeDay": 1,
+  "title": "PATCH CELL",
+  "intent": "The player is carrying a bought cell and does not know it is spent by clicking a slag block mid dive, or that it is single use.",
+  "lines": null,
+  "copyOrder": "copy-patch-cell-use",
+  "tier": "1. Not tier 0: the pouch counter can show that a cell exists but cannot show that a slag block is the target. Not tier 2: nothing is blocked if they never spend it."
+}
+```
+
+## Teach tip (tutorial-agent)
+
+```json
+{
+  "type": "teach-tip", "id": "par",
+  "teaches": ["par"],
+  "control": "the PAR readout in the dive status bar",
+  "text": "Rotation budget for a clean route. Every rotation past par costs Neural Strain when you win.",
+  "tier": "1. Not tier 0: the readout can show the ratio but cannot show the strain consequence. A tip because the player re-checks the budget every dive, so it has to stay re-readable."
+}
+```
+
+## Mechanic waiver (tutorial-agent)
+
+```json
+{
+  "type": "mechanic-waiver", "id": "reach2",
+  "waiver": "Every junction the player may legally rotate is drawn with the glowing legal ring, so the two-step reach is visible on the board at all times.",
+  "expiresIf": "the legal ring is restyled, dimmed, or applied to anything other than legal rotations"
+}
+```
+
+A blanket waiver over a whole content type carries a machine-checked premise:
+
+```json
+{
+  "type": "mechanic-waiver", "id": "augmentEffects",
+  "waiver": "Every augment carries its own desc on the draft card, in the loadout, and in MANUAL.TXT.",
+  "expiresIf": "an augment ships without a name or a usable desc",
+  "waiverPremise": "augmentDescs"
+}
+```
+
+## Copy order (tutorial-agent files, narrative-director fulfills)
+
+```json
+{
+  "id": "copy-patch-cell-use", "from": "tutorial-agent",
+  "kind": "teaching-moment",
+  "moment": "patch-cell-use",
+  "surface": "mid dive, the first turn the player is carrying a patch cell",
+  "intent": "Clicking a slag block burns the cell into a live cross junction. One use, then it is gone.",
+  "constraints": "2 lines max, 160 chars each, no dashes, terminal voice, second person",
+  "status": "open",
+  "title": null,
+  "lines": null
+}
+```
+
+## Teach copy (narrative-director)
+
+```json
+{
+  "type": "teach-copy", "id": "copy-patch-cell-use",
+  "title": "PATCH CELL",
+  "lines": [
+    "You are carrying a cell. Click any slag block to burn it into a live cross junction.",
+    "One use and it is gone. Save it for the wall you cannot route around."
+  ]
+}
+```
+
 ## Art order (narrative-director or ux-agent)
 
 ```json

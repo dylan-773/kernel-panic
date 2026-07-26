@@ -14,7 +14,9 @@ except Exception:
     sys.exit(0)
 
 path = (payload.get("tool_input") or {}).get("file_path", "") or ""
-if not re.search(r"/pipeline/proposals/[^/]+\.json$", path):
+is_proposal = bool(re.search(r"/pipeline/proposals/[^/]+\.json$", path))
+is_copy_order = bool(re.search(r"/pipeline/copy/orders/[^/]+\.json$", path))
+if not (is_proposal or is_copy_order):
     sys.exit(0)
 
 def fail(msg):
@@ -26,6 +28,41 @@ try:
         doc = json.load(f)
 except Exception as e:
     fail(f"not valid JSON ({e}). Rewrite the entire file as valid JSON.")
+
+# Teaching copy orders: the concision law is enforced here rather than at
+# integration, so the writing agent sees it while it still has the context.
+MAX_TEACH_LINE = 160
+MAX_TEACH_LINES = 2
+if is_copy_order:
+    errs = []
+    for key in ("id", "from", "moment", "intent"):
+        if not isinstance(doc.get(key), str) or not doc.get(key):
+            errs.append(f'missing non-empty "{key}" string')
+    if doc.get("status") not in ("open", "done"):
+        errs.append('"status" must be "open" or "done"')
+    title = doc.get("title")
+    lines = doc.get("lines")
+    if doc.get("status") == "done":
+        if not isinstance(title, str) or not title:
+            errs.append('a done order needs a "title" string')
+        if not isinstance(lines, list) or not lines:
+            errs.append('a done order needs a non-empty "lines" array')
+    if isinstance(lines, list):
+        if len(lines) > MAX_TEACH_LINES:
+            errs.append(f"{len(lines)} lines; teaching copy caps at {MAX_TEACH_LINES}")
+        for i, ln in enumerate(lines):
+            if not isinstance(ln, str):
+                errs.append(f"lines[{i}] is not a string")
+                continue
+            if len(ln) > MAX_TEACH_LINE:
+                errs.append(f"lines[{i}] is {len(ln)} chars; the cap is {MAX_TEACH_LINE}")
+            if "—" in ln or "–" in ln:
+                errs.append(f'lines[{i}] contains an em/en dash; game copy must not')
+    if isinstance(title, str) and ("—" in title or "–" in title):
+        errs.append("title contains an em/en dash; game copy must not")
+    if errs:
+        fail("; ".join(errs[:6]) + ("" if len(errs) <= 6 else f" (+{len(errs)-6} more)"))
+    sys.exit(0)
 
 errs = []
 if not isinstance(doc.get("agent"), str) or not doc.get("agent"):

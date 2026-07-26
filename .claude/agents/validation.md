@@ -20,6 +20,7 @@ cd /Users/lyd0n/Development/kernel-panic/kernel-panic-site/app && <command>
 1. `cd /Users/lyd0n/Development/kernel-panic/kernel-panic-site/app && bun run typecheck`
 2. `cd /Users/lyd0n/Development/kernel-panic/kernel-panic-site/app && bun run src/game/dev/sim.ts`
 3. `cd /Users/lyd0n/Development/kernel-panic/kernel-panic-site/app && bun run src/game/dev/run-sim.ts`
+4. `cd /Users/lyd0n/Development/kernel-panic/kernel-panic-site/app && bun run src/game/dev/teach-sim.ts`
 
 Stop at the first hard failure (typecheck errors, harness crash, invariant assertion) and report it verbatim - later steps are meaningless on a broken build.
 
@@ -28,6 +29,7 @@ Stop at the first hard failure (typecheck errors, harness crash, invariant asser
 - Tutorial: 0 wins in 200 seeds. Any other number is FAIL, no exceptions.
 - Day curve (kit-less proxy win rates): D1 82, D2 77, D3 74, D4 56, D5 58, D6 56, D7 49, D8 42, D9 39, finale 25 percent. Within 3 points of target = OK; 3 to 6 points = DRIFT (pass with warning); beyond 6 points, an inversion of more than 4 points between adjacent days, or a tutorial leak = FAIL.
 - run-sim: all invariants pass and it prints its OK lines. Any assertion = FAIL with the assertion text.
+- teach-sim: exit 0 and three OK lines. Any `TEACH FAIL` = FAIL, and you quote every listed problem verbatim. This one names the mechanic that shipped untaught, which is exactly what the Tutorial Agent needs; never paraphrase it.
 
 If `pipeline/BRIEF.md` declares different targets for this cycle, the brief wins; say which targets you used.
 
@@ -45,6 +47,9 @@ VERDICT: PASS | PASS WITH DRIFT | FAIL
 
 ## run-sim
 <OK lines or the failing assertion verbatim>
+
+## teach-sim
+<OK lines, or every TEACH FAIL problem line verbatim>
 
 ## Notes
 <anything anomalous: round counts, cap-win rates, crash output>

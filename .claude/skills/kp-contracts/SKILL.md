@@ -14,6 +14,7 @@ You are part of the Kernel Panic dev crew. Your output is only "game-ready" when
 2. Structured artifacts only. Prose goes in `notes`/`rationale` fields, never as a free-form handoff.
 3. Player-facing copy NEVER contains em dashes or en dashes. Use periods, commas, or "..." instead. This is a hard style law of the game's voice.
 4. Canon lives in `lore/bible.md` and `lore/ledger.md`. If your output contradicts them, it will be rejected at the Loremaster gate. Read them before writing anything a player will see.
+5. Teaching coverage lives in `tutorial/ledger.md`. Anything you add that the player must understand, a mechanic, a stat, a screen, a resource, a purchase, passes the Tutorial gate as well as the Loremaster gate. Say so in `notes` when you know your item introduces something new to learn.
 
 ## Proposal envelope
 
@@ -143,7 +144,7 @@ Mirrors the sfxr preset params in `audio.ts`. CRITICAL: envelope values (`sustai
 
 Param keys: wave (0 square, 1 saw, 2 sine, 3 noise), baseFreq, duty, sustain, decay, freqSlide, punch, arpMod, arpSpeed, vibDepth, vibSpeed, lpfCutoff, hpfCutoff, phaserOffset, phaserSweep, volume.
 
-### type: "ui-spec"  (ux-agent)
+### type: "ui-spec"  (ux-agent, and tutorial-agent for tier 0 and new teaching UI)
 
 ```json
 {
@@ -154,6 +155,12 @@ Param keys: wave (0 square, 1 saw, 2 sine, 3 noise), baseFreq, duty, sustain, de
 }
 ```
 
+The tutorial-agent files these in two cases: a **tier 0 fix**, where a
+clearer label retires the need for teaching entirely, and **new teaching UI**
+(a spotlight, a pointer, a highlighted target), where it states the need and
+the ux-agent designs the form. Position and motion are always the ux-agent's
+call, never the tutorial-agent's.
+
 ### type: "music-brief"  (ux-agent)
 
 ```json
@@ -161,6 +168,124 @@ Param keys: wave (0 square, 1 saw, 2 sine, 3 noise), baseFreq, duty, sustain, de
 ```
 
 A new track name means a `MusicTrack` union change plus an mp3 in `public/assets/sfx/music/` - flag it.
+
+### type: "mechanic"  (tutorial-agent)
+
+One row of the teaching inventory in `content/teaching.ts`. Adding a mechanic
+here is what makes the coverage harness demand a moment for it.
+
+```json
+{
+  "type": "mechanic", "id": "camelCase",
+  "label": "human name, for the ledger and the harness report",
+  "firstContact": "tutorial | duel | day | analyze | loadout | result | upgrade | desktop"
+}
+```
+
+### type: "mechanic-waiver"  (tutorial-agent)
+
+A claim that the interface already carries a mechanic unaided. Waivers expire
+when the named surface changes, so the justification must name what says it.
+
+```json
+{
+  "type": "mechanic-waiver", "id": "camelCase (the mechanic id)",
+  "waiver": "REQUIRED: what on screen already teaches this, specifically",
+  "expiresIf": "the change that would kill this waiver",
+  "waiverPremise": "optional: augmentDescs | modeDescs, for a blanket waiver over a whole content type"
+}
+```
+
+A blanket waiver (one covering every augment, every mode) must carry a
+`waiverPremise`, which names a claim the harness re-verifies on every run. A
+new premise is a `teach-sim` change: propose it, do not invent the string.
+
+### type: "teach-tip"  (tutorial-agent)
+
+Tier 1. Persistent, re-readable reference hanging off a control. Reach for
+this over a coachmark whenever the player will want the information AGAIN:
+recurring numbers, costs, thresholds, what a locked thing needs.
+
+```json
+{
+  "type": "teach-tip", "id": "camelCase",
+  "teaches": ["mechanicId"],
+  "control": "the exact control it hangs on, e.g. the PAR readout in the dive status bar",
+  "text": "one sentence or two short ones, 130 characters max",
+  "tier": "REQUIRED: 1, with why tier 0 cannot carry it"
+}
+```
+
+### type: "teaching-moment"  (tutorial-agent)
+
+Tier 2. Mirrors `TeachingMoment` in `content/teaching.ts`. Use it for a RULE
+the player needs once, at a moment, that changes what they should do. If they
+will want to re-read it later, it is a `teach-tip` instead. You specify the
+moment; the Narrative Director writes the words (see copy orders below), so
+`lines` stays null until the order comes back.
+
+```json
+{
+  "type": "teaching-moment", "id": "kebab-case",
+  "teaches": ["mechanicId", "mechanicId"],
+  "surface": "duel | day | analyze | loadout | result | upgrade | desktop",
+  "when": "firstSight | overPar | holdingCells | cascadeBanked | draftOffered",
+  "anchor": "screen | par | readout | rows | draft | grid | patch",
+  "order": 45,
+  "notBeforeDay": 1,
+  "title": "ALL CAPS SHORT",
+  "intent": "REQUIRED: what the player must understand after reading it",
+  "lines": null,
+  "copyOrder": "id of the copy order carrying the wording",
+  "tier": "REQUIRED: 2, and why tiers 0 and 1 cannot carry it",
+  "uiSpec": "optional: id of a ui-spec, when this moment needs teaching UI that does not exist yet"
+}
+```
+
+- `when` names a signal the engine already supplies. A new trigger is a
+  reducer change: say so, do not invent a string.
+- `order` must be unique across all moments; it is the tie-break when two are
+  eligible at once, and only one callout ever renders.
+- At most TWO `firstSight` moments per surface, four total. Past that, fold
+  them together.
+- Lines cap at 2 per moment and 160 characters each. The harness enforces it.
+- A new mode of teaching (a beat ladder change, a scene) is a different tier
+  and needs the Orchestrator or the Narrative Director, not this item type.
+
+### type: "teach-copy"  (narrative-director)
+
+Fulfills a copy order. The id matches the order id.
+
+```json
+{
+  "type": "teach-copy", "id": "kebab-case (the order id)",
+  "title": "ALL CAPS SHORT",
+  "lines": ["first line", "optional second line"]
+}
+```
+
+## Copy orders  (tutorial-agent files them; narrative-director fulfills)
+
+The mirror of art orders, for words instead of pixels. One file per order at
+`pipeline/copy/orders/<id>.json`:
+
+```json
+{
+  "id": "kebab-case", "from": "tutorial-agent",
+  "kind": "teaching-moment",
+  "moment": "the teaching-moment id these words belong to",
+  "surface": "where the player is standing when they read it",
+  "intent": "what the player must understand after reading it",
+  "constraints": "2 lines max, 160 chars each, no dashes, terminal voice",
+  "status": "open",
+  "title": null,
+  "lines": null
+}
+```
+
+Narrative-director sets `status` to `done` and fills `title` and `lines` in
+place, and mirrors the same content as a `teach-copy` item in its own
+proposal so the Orchestrator has one file to integrate from.
 
 ## Art orders  (narrative-director and ux-agent file them; art-lead fulfills)
 
@@ -187,7 +312,7 @@ Every generated image prompt pins these hexes (the `--kp-*` tokens): bg0 `#10121
 ## Engine invariants the sims enforce
 
 The Orchestrator integrates your JSON, then the Validation agent runs, from `kernel-panic-site/app/`:
-`bun run typecheck`, `bun run src/game/dev/sim.ts`, `bun run src/game/dev/run-sim.ts`.
+`bun run typecheck`, `bun run src/game/dev/sim.ts`, `bun run src/game/dev/run-sim.ts`, `bun run src/game/dev/teach-sim.ts`.
 
 Content that breaks any of these is bounced back to its author:
 
@@ -197,6 +322,7 @@ Content that breaks any of these is bounced back to its author:
 4. `DAY_LINES` has at least 9 entries; opener and ender scenes resolve for run numbers 1-12; the finale scene has at least 5 beats.
 5. The tutorial config posts 0 wins in 200 seeds. Always.
 6. The day curve (kit-less proxy) stays near: D1 82, D2 77, D3 74, D4 56, D5 58, D6 56, D7 49, D8 42, D9 39, finale 25 percent, unless the current brief says to move it.
+7. Every mechanic in `content/teaching.ts`'s inventory is covered by a moment, a beat, or a tip, or carries a written waiver; every moment lands on a surface a real run reaches; no surface carries more than two unconditional callouts; and every blanket waiver's `waiverPremise` still holds against the content it covers. A new mechanic with none of these is a red build.
 
 ## The tier trap
 

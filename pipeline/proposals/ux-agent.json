@@ -1,0 +1,97 @@
+{
+  "agent": "ux-agent",
+  "brief": "story-retune-1",
+  "notes": "Five ui-specs (split the PAR HUD, the two patch-cell surfaces, the day-open cutscene, and the day-close regen feedback into separate testable items) plus three sfx presets. Zero art orders filed, per the brief's zero art budget. No music-brief item, per the brief's explicit 'no new music track'. State-surface assumptions the specs depend on, flagged so the Orchestrator can wire them alongside the engine changes already described in BRIEF.md: DuelState gains `par` (int) and `rotationsUsed` (int, incremented only on the player's `rotate` action, never on casts or patch-cell placements); DuelState/RunKit gains a patch-cell held count (0-3) and a per-turn `usedPatchCell` flag; RunState gains `lastRegen` (0-10, the actual amount just auto-restored at day close, for the animate-from value). The day-open-cutscene spec renders the narrative-director's `day-open-<n>` scene items (id pattern per BRIEF.md), `day-open-10` replacing FinalePre's hardcoded morning copy. Reused existing palette/idiom throughout: gold (`--kp-gold`) for all player-cast targeting affordances (already the ability-arming/targetbar color), the pip + `kp-banked-pop` primitives for new resource counters, and screen-shake reserved for combat impacts only (patch-cell placement and day-close regen get pulse/pop feedback, never shake).",
+  "items": [
+    {
+      "type": "ui-spec",
+      "id": "duel-par-hud",
+      "area": "duel",
+      "spec": "Add a PAR readout to the duel top bar (`.kp-dive2-osk`), placed immediately to the left of the existing STRAIN widget so the causal link ('this is what costs you strain') reads left-to-right. New element: `.kp-par` (flex, gap 6px, font-size 11px, letter-spacing .12em, color var(--kp-dim), matching the existing `.kp-duel-round`/`.kp-strain` treatment), title attribute 'Every rotation past PAR costs strain on a win.' Markup: `<span>PAR</span><em>{par}</em>` (em = var(--kp-steel), the static budget) then `<b className=\"kp-par-used\">{rotationsUsed}</b>` (the live counter, default var(--kp-text)). While rotationsUsed <= par this is the whole widget. The instant rotationsUsed increments past par (first over-par rotation), add class `kp-par-over` to `.kp-par`: `em`/`b` flip to var(--kp-crimson), and append `<i className=\"kp-par-over-tag\">+{rotationsUsed - par} OVER</i>` styled like `.kp-prog-tier` (kp-display, 9px, crimson instead of gold). The crossing moment (and only that moment) plays a one-shot `kp-par-warn-pop` animation (steps(4) 180ms scale from 1.5 to 1, same shape as the existing `kp-banked-pop`/`kp-claim-in` family) -- implement by bumping a ref-tracked `overParFlashKey` counter exactly once when the over-par boolean flips false to true, and keying the pop class off that counter so subsequent over-par rotations update the number live without re-popping. rotationsUsed and par are read-only display state computed by the engine; do not derive rotationsUsed client-side from RAM spend, since patch-cell placements also cost RAM but are not rotations.",
+      "acceptance": [
+        "During phase 'playing', the top bar shows PAR and the live rotation count as one `.kp-par` widget positioned directly left of the STRAIN meter.",
+        "While rotationsUsed <= par, `.kp-par` shows no `kp-par-over` class, no crimson, no OVER tag, and never animates.",
+        "The exact rotation where rotationsUsed first exceeds par adds `kp-par-over` (crimson em/b) and plays the `kp-par-warn-pop` 180ms steps(4) scale-pop exactly once for the rest of the duel.",
+        "Every subsequent over-par rotation updates the `+{n} OVER` tag's number live without re-triggering the pop animation.",
+        "The widget and its crimson state remain visible for one readable beat under the win/lose overlay's fade-in, i.e. it is not hidden or reset before `.kp-overlay` covers the board."
+      ]
+    },
+    {
+      "type": "ui-spec",
+      "id": "patchcell-dayclose-row",
+      "area": "screens",
+      "spec": "In `UpgradeScreen` (day close), add a second row beneath the existing NIGHT PATCH `.kp-patchrow`, reusing that same row's layout: `.kp-patchrow.kp-cellrow` containing a button 'BUY PATCH CELL (35 cr)' and a 3-slot pip readout. Button disables (opacity .4, same as `.kp-btn-ghost:disabled`) when credits < 35 or held === 3; its title attribute reads 'NEED 35 CR' or 'HOLDING MAX (3)' respectively so the disabled reason is legible on hover. On a successful buy: deduct 35 cr, increment held (max 3), play the existing `granted` preset on the `ui` bus (reuse, no new sfx needed here), and the next empty pip in the readout fills using the existing `kp-banked-pop` 300ms steps(3) scale-in. The pip readout is new: `.kp-cell-pips` (flex, gap 5px, 3 fixed `.kp-pip`-sized squares always rendered regardless of held count) with a new modifier `.kp-cell-pip-on` (background/border var(--kp-gold), matching the gold used for banked-RAM and program-tier chrome -- distinct from the RAM pips' signal/cream `.kp-pip-on` so the two resources never look interchangeable). Label text 'PATCH CELLS {held}/3' sits left of the pips, same `.kp-rail-dim` treatment as the existing STRAIN/credits line below it.",
+      "acceptance": [
+        "UpgradeScreen shows a `.kp-cellrow` beneath the NIGHT PATCH row with a buy button and a 3-slot pip readout labeled PATCH CELLS {held}/3.",
+        "The buy button is disabled with title 'NEED 35 CR' when credits < 35, and with title 'HOLDING MAX (3)' when held === 3, and is otherwise clickable.",
+        "A successful purchase deducts 35 cr, increments held by exactly 1, plays `granted` on the ui bus, and the newly-filled pip uses the `kp-banked-pop` entrance.",
+        "The pip row always renders exactly 3 slots; filled slots use `.kp-cell-pip-on` (gold), never the RAM pip's signal color.",
+        "Held patch-cell count persists across days within a run (it is not reset at day close) until spent in a dive."
+      ]
+    },
+    {
+      "type": "ui-spec",
+      "id": "patchcell-duel-affordance",
+      "area": "duel",
+      "spec": "Add a 4th dock button to `.kp-dock-abilities` alongside SCAN/ATTACK/DEFEND: `.kp-ability.kp-prog-patch`, name 'PATCH CELL', meta '{held}/3 - 1R' (or 'NONE HELD' when held is 0, styled like an offline program). Clicking it (only when held > 0, not used this turn, and player's turn) arms targeting through the exact same `Targeting` flow already used for ATTACK/DEFEND in duel.tsx: opens `.kp-targetbar` reading 'PATCH CELL: pick 1 target' with the existing CANCEL (ESC) control, and adds `kp-ability-arming` to the button. While armed, legal cells are restricted to slag blocks (`kind === 'block'`) within the player's reach (same reach concept already used for free rotation); render their legal-ring in gold instead of the default cream by adding a new class `.kp-dblock-patchable` (copy of `.kp-dlegal-ring` geometry, stroke var(--kp-gold), same `kp-legal-pulse` steps(2) 1s animation) -- gold because this is a program cast in progress, matching the gold already used for `.kp-ability-arming`/`.kp-targetbar`/`.kp-rail-intent`, not a plain rotate target. If zero blocks are in reach when armed, still open the targetbar (so CANCEL/ESC stays available) with text 'PATCH CELL: no slag block in reach' and no board highlights, rather than silently failing to arm. Confirming a target: deduct 1 RAM, set the per-turn `usedPatchCell` flag (button meta becomes '... - USED' for the rest of the turn, same suffix pattern as the other three programs), convert the cell in place from a slag block to an open cross node (all four arms, unowned) using the existing `.kp-claimpop` 240ms steps(4) pop-in for the new node glyph, play the new `patchPlace` sfx on the game bus at that instant, and show a `CELL PLACED` `.kp-pulse-info` banner (same family as the existing SCANNED/DEFUSED/WARDED pulses). No screen shake: this is a utility placement, not a combat impact, and shake stays reserved for trap/siphon/turn-lost/win-lose/redirect so the telegraph vocabulary does not get diluted. After conversion the cell renders exactly like any other never-claimed open node; nothing about its later rendering marks it as former slag.",
+      "acceptance": [
+        "With held > 0 and it is the player's turn, the dock shows a 4th button PATCH CELL with meta '{held}/3 - 1R'; with held === 0 it renders disabled with meta 'NONE HELD'.",
+        "Clicking it arms targeting identically to ATTACK/DEFEND: `.kp-ability-arming` on the button, `.kp-targetbar` open with a CANCEL (ESC) control.",
+        "While armed, only in-reach slag blocks show the gold `.kp-dblock-patchable` ring; no node, port, or core cell is selectable for this cast.",
+        "If no block is in reach, the targetbar still opens with 'PATCH CELL: no slag block in reach' and CANCEL remains usable; nothing on the board is highlighted.",
+        "Confirming a target deducts 1 RAM, flips the per-turn used flag (meta gains ' - USED'), converts the block to an open cross node with the `.kp-claimpop` entrance, plays `patchPlace` on the game bus, shows a `CELL PLACED` info pulse, and triggers zero screen shake.",
+        "Held count decrements immediately in both the dock meta and (next visit) the day-close pip readout from patchcell-dayclose-row."
+      ]
+    },
+    {
+      "type": "ui-spec",
+      "id": "day-open-cutscene-presentation",
+      "area": "screens",
+      "spec": "Introduce a `dayOpen` run-screen state that renders through the existing `StoryScene` component unchanged in its core interaction (click-anywhere-or-NEXT to advance, `story` sfx per beat on the ui bus, `.kp-story-beat` 160ms steps(3) entrance) -- reusing the same component the run opener/ender and tutorial-intro/outro already use. It plays once, immediately before the `day` screen (JobBoard) mounts, for every day 1-10, rendering the narrative-director's `day-open-<n>` scene item for the corresponding day n (id pattern per BRIEF.md); day 10's `day-open-10` scene replaces the hardcoded copy block currently in `FinalePre` ('No tickets today. The counter is dark...') as the day-10 morning frame -- remove that static paragraph once this is wired. Two additions on top of the shared component: (1) a fixed top-left `.kp-story-daytag` reading 'DAY {n}' (kp-display font, 10px, var(--kp-gold), 2px border chrome matching `.kp-window-title`'s weight) present for the entire scene regardless of which beat is showing -- this is the one piece of chrome that tells the player 'this is a day-open beat', independent of the dialogue copy; tutorial-intro/outro and the run opener/ender do not get this tag. (2) `windowTitle()` gets a `dayOpen` case returning 'MORNING.LOG', distinct from 'SHOPFRONT' (run boundary) and 'JOBS.QUE' (job board itself). `dayOpen` is added to the unclosable-screen set (same treatment as `opener`): the flow window's close control is a no-op while it is showing, since it is a mandatory beat, not a dismissable one. Finishing the last beat transitions straight to the `day` screen with no intermediate frame, and the scene does not replay on returning to the job board later that same day.",
+      "acceptance": [
+        "A day-open scene uses the exact same StoryScene click/NEXT-to-advance interaction and `story` sfx as the run opener; nothing about the base component changes.",
+        "A persistent `.kp-story-daytag` reading 'DAY {n}' in gold kp-display text is visible across every beat of a day-open scene, and is absent from opener/ender/tutorial scenes.",
+        "The flow window title reads 'MORNING.LOG' while screen is `dayOpen`; its close control is inert while that screen is active.",
+        "Completing the final beat lands directly on the job board with no flash of the prior screen.",
+        "Day 10's day-open scene (badge 'DAY 10') fully replaces FinalePre's static two-paragraph copy; FinalePre keeps only its CONFIGURE KIT / OPEN THE BACK ROOM actions."
+      ]
+    },
+    {
+      "type": "ui-spec",
+      "id": "dayclose-strain-regen-feedback",
+      "area": "screens",
+      "spec": "On `UpgradeScreen`, surface the +10 (cap 100) auto-regen as a visible, once-per-mount animation instead of a silent number change. Add `.kp-regen` above the upgrade grid: the existing `.kp-strain-bar`/`.kp-strain-fill` meter (already used in the duel header, `width 300ms steps(6)` transition) plus a 'STRAIN' label. This screen depends on the reducer exposing `lastRegen` (0-10, the amount actually just granted this close -- 0 if strain was already capped before regen). On mount: render the bar pre-filled at `strain - lastRegen`; after a 150ms hold (matching the window-open beat elsewhere in this codebase), animate the fill to `strain` via the existing steps(6) transition, and at that same 150ms mark play the new `dayCloseRegen` sfx on the ui bus and pop in a `+{lastRegen} STRAIN` tag using the existing `kp-banked-pop` 300ms steps(3) treatment (reuse verbatim, do not invent a new pop). When `lastRegen` is 0, skip all of it: render the bar statically at its resting value with no fill animation, no pop tag, and no sfx -- a maxed bar never fakes a gain. This fires once per day-close mount only (UpgradeScreen is not remounted between upgrade-button clicks and the day transition, so a normal `useEffect` on mount is sufficient). Small adjacent fix while touching this screen: the NIGHT PATCH purchase button currently dispatches with no audio at all; wire its existing click handler to also play the existing `granted` preset on the ui bus (no new sfx needed) so every credit spend on this screen has a voice.",
+      "acceptance": [
+        "UpgradeScreen shows a strain meter above the upgrade grid that, on mount, visibly fills from `strain - lastRegen` to `strain` using the existing 300ms steps(6) transition, starting after a 150ms hold.",
+        "The `dayCloseRegen` sfx plays exactly once per mount, timed to the start of that fill, on the ui bus.",
+        "A `+{lastRegen} STRAIN` tag pops in using the existing `kp-banked-pop` animation, synced to the same 150ms mark.",
+        "When lastRegen is 0, the meter renders at its resting value with no animation, no pop, and no sfx.",
+        "Clicking NIGHT PATCH now plays the existing `granted` preset on the ui bus in addition to its current effect."
+      ]
+    },
+    {
+      "type": "sfx",
+      "id": "patchPlace",
+      "action": "add",
+      "params": { "wave": 0, "baseFreq": 0.34, "duty": 0.2, "freqSlide": 0.22, "arpMod": 0.4, "arpSpeed": 0.5, "sustain": 0.06, "decay": 0.22, "punch": 0.45, "lpfCutoff": 0.6, "volume": 0.5 },
+      "bus": "game",
+      "when": "The instant a targeted slag block finishes converting into an open cross junction (patch-cell placement confirmed via the duel dock's PATCH CELL cast). A mechanical unfold: square wave, rising arp, close cousin of the existing `unlock` preset but shorter, reading as 'a door opening' rather than 'a program unlocked'."
+    },
+    {
+      "type": "sfx",
+      "id": "overParTick",
+      "action": "add",
+      "params": { "wave": 3, "baseFreq": 0.55, "sustain": 0.008, "decay": 0.05, "punch": 0.25, "hpfCutoff": 0.3, "volume": 0.34 },
+      "bus": "game",
+      "when": "Every player rotation once rotationsUsed exceeds par, including the rotation that first crosses the threshold. A short noise click, deliberately quiet and short since it can repeat many times in a row; call it with jitter around 0.05 (via the existing `sfx()` opts) so a run of over-par rotations does not read as a metronome. Layers on top of the existing `rotate` sfx already played for every rotation; it does not replace it."
+    },
+    {
+      "type": "sfx",
+      "id": "dayCloseRegen",
+      "action": "add",
+      "params": { "wave": 2, "baseFreq": 0.3, "freqSlide": 0.28, "vibDepth": 0.12, "vibSpeed": 0.4, "sustain": 0.18, "decay": 0.5, "punch": 0.3, "lpfCutoff": 0.55, "volume": 0.5 },
+      "bus": "ui",
+      "when": "On UpgradeScreen (day close), the moment the strain meter begins its auto-regen fill animation (once per mount, skipped entirely when lastRegen is 0). A warm sine swell with a light upward vibrato, reading as 'restorative' rather than the sharper transactional feel of `granted`."
+    }
+  ]
+}

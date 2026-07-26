@@ -6,10 +6,10 @@ Source of truth: shipped content in `kernel-panic-site/app/src/game/content/`
 disagree. Gate citations must quote a line from these two files.
 
 Canon rulings dated 2026-07-25 are recorded in `lore/ledger.md`'s Resolved
-rulings section. Of the shipped lines that contradicted them, three are now
-integrated (story.ts run-1 opener, story.ts run-6 opener, journal.ts bills
-entry); one remains outstanding, story.ts run-end-3's sector 2 opening line,
-gated and pending integration.
+rulings section. All shipped lines that contradicted them are confirmed
+integrated as of the story-retune-1 gate (2026-07-25): story.ts run-1
+opener, story.ts run-6 opener, story.ts run-end-3's sector 2 opening line,
+and journal.ts's bills entry. Shipped copy and the lore files agree.
 
 ## The world
 

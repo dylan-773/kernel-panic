@@ -170,13 +170,15 @@ do not reopen without a new explicit ruling.
    integrated this session as cold, nameless account-style paperwork (see
    note below).
 
-Note - shipped/canon realignment status: of the shipped lines that
-contradicted the rulings above, three are now integrated by the
-Orchestrator: story.ts run-1 opener ("under a decade of dust... the machine
-waits" and "the padlock is the only thing in this shop without dust on
-it"), story.ts run-6 opener's second line ("Dust settles on everything here
-but the padlock"), and journal.ts bills entry ("Patient: Overby"). One line
-remains outstanding: story.ts run-end-3's sector 2 opening line ("She took
-the car and the quiet with her."); a replacement is gated (see
-`pipeline/gates/loremaster-review.md`) and pending integration. Until that
-lands, shipped copy and this ledger disagree on that one line only.
+Note - shipped/canon realignment status (updated 2026-07-25, story-retune-1
+gate): all four shipped lines that contradicted the rulings above are now
+confirmed integrated in the live repo. Verified directly against
+`kernel-panic-site/app/src/game/content/story.ts` during this gate: run-1
+opener no longer mentions dust ("He would have hated how clean I kept it.",
+"The padlock is the only thing in this shop Dad ever put away properly.");
+run-6 opener's second line reads "The clutter shrinks a little more every
+week. The padlock never has."; run-end-3's sector 2 opening line reads "This
+bench light is the only one on the block." with no mother reference; and
+journal.ts's bills entry carries no "Patient: Overby" line. Shipped copy and
+this ledger now agree on all four lines. No outstanding realignment items
+remain.

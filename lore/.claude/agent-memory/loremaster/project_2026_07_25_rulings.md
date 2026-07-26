@@ -50,3 +50,11 @@ of that fact. Fixed on sight. Lesson: when I add reveal-schedule text to the
 ledger under time pressure (mid-ruling edits), re-check it against the
 existing table rows for the same fact before moving on, not just against
 the new ruling I'm recording.
+
+**Fully closed as of the story-retune-1 gate (2026-07-25):** re-read the
+live `story.ts` during that gate and confirmed target 2
+(run-end-3-revision-a2) is now integrated in the shipped repo too ("This
+bench light is the only one on the block..."). All four realignment targets
+are integrated; rewrote the stale "one remains outstanding" note in both
+`lore/ledger.md` and `lore/bible.md` to say so. See
+[[project-story-retune-1-gate]] for that cycle's own gate record.

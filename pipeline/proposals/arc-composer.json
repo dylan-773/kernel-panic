@@ -1,0 +1,31 @@
+{
+  "agent": "arc-composer",
+  "brief": "story-retune-1",
+  "notes": "Round 2 of the balance loop for story-retune-1. Live table post round-1 integration plus the tier-scaled-siphon ability batch: D6 greed .95/oppRam 8, D7 greed .96/oppRam 8, D8 greed .95/oppRam 9, D9 greed .96/oppRam 9/headStart 4 (unchanged, held for reference). Orchestrator's diagnosis: oppRam +1 is measured worth roughly 10 points at D6-D8 under the new tier-scaled-siphon opponent kit, not the ~4 assumed when round 1 raised it, and the tier-scaled siphons stack extra pressure on top of that. Fix: reverse one point of oppRam on each of D6-D8 (the exact lever the diagnosis flags as oversized), then use a small greed nudge (+0.02 to +0.03, in the calibrated 2-4-point range from D4/D5 round 1: greed .85->.89 = -3.5pts, greed .88->.92 = -2pts, roughly 0.5-0.9 pts per 0.01) to trim the resulting overshoot back toward the reference numbers rather than leaving a second large gap. D8 is deliberately left landing a few points above the D9 reference (42) rather than snapped exactly to it, since D9 is untouched this round and currently reads 42.0 live; the point is to guarantee D8 > D9 (monotonically harder D8 -> D9) with real margin, not just clear it by a hair. D1-D3, D5 (within tolerance per this round's numbers) and D9 are not touched, per instruction. abilityFreq and headStart are left alone on all three days; oppRam and greed alone are sufficient and keep this batch to the smallest sufficient move per day. No jobTiers changes, so no customer-coverage consequence this round.",
+  "items": [
+    {
+      "type": "dayconfig-delta",
+      "id": "day-6",
+      "day": 6,
+      "set": { "greed": 0.98, "oppRam": 7 },
+      "targetWinPct": 56.5,
+      "rationale": "Report: D6 49.0% vs reference 56 (drift -7.0, too hard). Diagnosis says oppRam +1 is worth ~10pts at this tier band, so oppRam 8->7 reverses the main overshoot: predicted +10 (49.0 -> ~59.0). That alone would overshoot the reference by about 3, so a greed nudge of +0.03 (.95->.98, same step size as the calibrated D4/D5 round-1 moves, worth an estimated -2 to -3) trims it back: net predicted +7.0 to +7.5, landing ~56.5, matching reference 56 within noise."
+    },
+    {
+      "type": "dayconfig-delta",
+      "id": "day-7",
+      "day": 7,
+      "set": { "greed": 0.99, "oppRam": 7 },
+      "targetWinPct": 50,
+      "rationale": "Report: D7 42.5% vs reference 49 (drift -6.5, too hard, the second-largest wobble in this pass). oppRam 8->7 at the diagnosed ~10pt rate predicts +10 (42.5 -> ~52.5), overshooting reference by about 3.5. Greed +0.03 (.96->.99, same calibrated step size, worth an estimated -2 to -3) trims it: net predicted +7.0 to +7.5, landing ~49.5 to 50, matching reference 49 within noise. .99 stays below the 1.0 finale value so the pre-finale greed ceiling is preserved."
+    },
+    {
+      "type": "dayconfig-delta",
+      "id": "day-8",
+      "day": 8,
+      "set": { "greed": 0.97, "oppRam": 8 },
+      "targetWinPct": 45,
+      "rationale": "Report: D8 36.5% vs reference 42 (drift -5.5) and, per the shape-bug note, currently sits BELOW D9's 42.0 percent, inverting the intended D8->D9 difficulty ramp. oppRam 9->8 at the diagnosed ~10pt rate predicts +10 (36.5 -> ~46.5). A smaller greed nudge of +0.02 (.95->.97, worth an estimated -1.5 at the same per-0.01 rate as the D6/D7 moves) trims it slightly: net predicted +8.5, landing ~45.0. This intentionally lands a few points above the reference 42 rather than snapped to it, because D9 is untouched this round and currently reads 42.0 live; 45.0 vs D9's 42.0 restores D8 > D9 with a real margin (about 3 points) instead of a hairline fix, so the ordering holds even with normal seed-to-seed noise. oppRam 8 now equals D8's old value shifted down to sit between D7's new 7 and D9's 9, keeping the oppRam ramp monotonic (D5 7, D6 7, D7 7, D8 8, D9 9)."
+    }
+  ]
+}

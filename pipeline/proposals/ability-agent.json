@@ -1,0 +1,79 @@
+{
+  "agent": "ability-agent",
+  "brief": "story-retune-1",
+  "notes": "No pipeline/validation/report.md exists yet for this cycle (pipeline/validation/ holds only .gitkeep); this batch is diagnosed straight from the shipped reducers (kit.ts, duel-actions.ts, duel-power.ts, opponent.ts, duel-setup.ts, run-reducer.ts) plus the brief's own playtest verdict and engine-change notes, per the brief's explicit ask for a diagnosis 'grounded in the resolution code you read.' Recommend the Orchestrator run a validation pass on this batch before the next balance loop so the buffs below get numeric confirmation rather than a second round of blind retuning. Per-mode viability diagnosis: REDIRECT is a wash, it costs the caster 1 RAM to twist an enemy or open node (redirectTargetLegal has no reach limit, its one real edge over plain rotation, but that edge is never stated in its own copy) and costs the victim about 1 RAM to twist it back next turn, with claimed territory persisting regardless per duel-types.ts's own docstring, so it does nothing lasting outside the single 'block the core approach' panic-button use the opponent AI itself reserves it for (opponent.ts decideProgram priority 1). ARM SIPHON is dominated by ARM HALT on the same setup cost, same armTargetLegal legality, same DEFEND_WIDTH-sized footprint, and the post-fix engine (traps are pure tempo hits now) makes the comparison direct: HALT denies a whole turn (beginTurnEconomy's loseNextTurn path) with tripwire adding a flat 2 RAM burn on top, while SIPHON_STEAL sits at a flat 2 RAM that never scales with ATTACK tier the way ATTACK_WIDTH (trap count) or WARD_RADIUS already do, so investing tiers into a siphon build buys width, never bite. WARD's problem is scope, not power: wardTargetLegal and armTargetLegal are the only two places wardThroughRound is ever checked, so warding a zone stops new traps and nothing else, while the very engine change that nerfed traps to 'pure tempo hits' also shrank the size of the threat WARD exists to prevent, and it does not even touch REDIRECT (redirectTargetLegal checks only lockedThroughRound, never wardThroughRound), leaving LOCK as the sole real counter to both rotation-based attacks. PURGE's economics went the wrong way after the halt fix: purgeTargetLegal requires trap.revealed for the player caster, so the SCAN-then-PURGE combo already costs 2 RAM before the halt fix made a sprung trap cheaper to just eat (the cascade completes and lands regardless, purge or not, so purge now only ever saves the turn-loss or the RAM drain, never the claims themselves), a strictly worse trade than it used to be for the same 2 RAM outlay. LOCK is the one mode that needs no retune this batch: it is an unconditional 2-round freeze with no fire condition (unlike the arm traps), it already blocks REDIRECT outright via the existing lockedBy check, and opponent.ts's own buildQueue reroutes around a locked node at a real rotation-cost tax, meaning PAR's new rotation budget (kit.ts PAR_RATE/PAR_FLAT, duel-actions.ts finishDuel) has made forcing the opponent to waste rotations strictly more valuable than before without LOCK itself changing at all; recommend holding it flat this batch and revisiting only if a validation pass shows the buffs below still leave it dominant. Design approach: two retunes of existing config augments (cfgArmSiphon, cfgWard) plus four new boosts (jamAnchor, sweepCredit, cleanRun, slagWard) that give REDIRECT, PURGE, and the still-augment-less PAR and PATCH CELL systems real payoffs, all built from fields the reducers already carry (lockedThroughRound/lockedBy, wardThroughRound/wardBy, the strainChip=0 clean-win definition, run.patchCells) rather than new state. Pool math: 14 shipped augments (4 config, 10 boost) plus 4 new boosts here is 18 total, 14 boosts, still comfortably under the ~20-boost dilution line from the kp-contracts skill; nothing retired this batch.",
+  "items": [
+    {
+      "type": "augment",
+      "id": "cfgArmSiphon",
+      "name": "SIPHON DRIVER",
+      "kind": "config",
+      "attackMode": "armSiphon",
+      "desc": "ATTACK config: plant siphon traps. A sprung trap drains RAM from its next turn into yours, more at higher ATTACK tiers.",
+      "synergy": "siphonPlus (flat plus one steal) and echoTap (plus two RAM whenever any of your traps fire) now compound off a base that grows with tier investment instead of a flat number, matching how ATTACK_WIDTH already rewards tiering into ATTACK.",
+      "counter": "purge (existing) and the new sweepCredit strip an armed siphon before it ever fires; ward (existing, cfgWard) denies the plant outright in its zone.",
+      "engineNote": "Retune, not new state. kit.ts line 30, change `export const SIPHON_STEAL = 2;` to a tier record, e.g. `export const SIPHON_STEAL: Record<Tier, number> = { 1: 2, 2: 3, 3: 4 };`. Three call sites need the tier lookup: kit.ts line 87 (attackModeDesc's armSiphon case already receives `tier` as a param, change `${SIPHON_STEAL}` to `${SIPHON_STEAL[tier]}`); kit.ts line 139 (this AUGMENTS entry's own desc, which is why the desc above drops the hardcoded number instead of baking in tier 1's value); duel-actions.ts line 352 (`drain = SIPHON_STEAL + (side === \"player\" && kitHas(s, \"siphonPlus\") ? 1 : 0);` becomes `drain = SIPHON_STEAL[tierOf(s, side, \"attack\")] + ...`, tierOf is already imported in that file)."
+    },
+    {
+      "type": "augment",
+      "id": "cfgWard",
+      "name": "WARD DRIVER",
+      "kind": "config",
+      "defendMode": "ward",
+      "desc": "DEFEND config: ward an area so no new traps can land in it, and now REDIRECT cannot touch anything inside the ward either.",
+      "synergy": "Pairs directly with WARD_RADIUS tier scaling (1/2/3 in kit.ts): a tier 3 ward blankets a whole flank against both attack-side tools that currently starve it, arming and redirect, instead of just one.",
+      "counter": "LOCK still wins head to head on a single chokepoint since it also freezes plain rotation, which ward never touches; a caster willing to spend two ATTACK casts can bait the ward with one redirect and land the real one after WARD_ROUNDS lapses.",
+      "engineNote": "Retune, not new state. duel-actions.ts's redirectTargetLegal (used by attackTargetLegal for the redirect case) currently reads only `if (c.lockedThroughRound >= s.round && c.lockedBy === otherSide(caster)) return false;`. Add a symmetric check reusing the ward fields DuelCell already carries: `if (c.wardThroughRound >= s.round && c.wardBy === otherSide(caster)) return false;`. Also update kit.ts's defendModeDesc ward case and MODE_TELL.ward copy, both currently say only that traps refuse to land, to mention that rerouting is blocked too."
+    },
+    {
+      "type": "augment",
+      "id": "jamAnchor",
+      "name": "JAM ANCHOR",
+      "kind": "boost",
+      "desc": "Your REDIRECT also freezes the junction it twists for 1 round. Nothing rotates or redirects it back while it holds.",
+      "synergy": "Turns REDIRECT from a wash, 1 RAM to twist versus about 1 RAM for the target to twist back, into a real tempo swing; stacks with cheapShot's free first ATTACK cast for an opening jam that costs nothing, and with REDIRECT's own unlimited reach (redirectTargetLegal has no reach check at all, unlike plain rotation) to freeze a far node before your flood or LONG ARMS ever gets there.",
+      "counter": "A node the target already self-locked, or (after the cfgWard retune above) already warded, is untouchable by REDIRECT at all, existing legality checks deny the cast outright, so this augment does nothing against a defender already running LOCK or WARD on that spot.",
+      "engineNote": "New reducer hook. duel-actions.ts applyCast, the redirect branch (mode === \"redirect\"): after the loop that rotates each targeted cell, add, when `side === \"player\" && kitHas(s, \"jamAnchor\")`, for each idx in targets: `s.cells[idx].lockedThroughRound = Math.max(s.cells[idx].lockedThroughRound, s.round); s.cells[idx].lockedBy = \"player\";`. Same fields and pattern the existing bulwark rider already writes at the bottom of applyCast for DEFEND, just fired from the ATTACK branch instead."
+    },
+    {
+      "type": "augment",
+      "id": "sweepCredit",
+      "name": "SWEEP CREDIT",
+      "kind": "boost",
+      "desc": "PURGE refunds its own RAM cost whenever it defuses at least one trap.",
+      "synergy": "Makes SCAN into PURGE the sharp counter to arming it is supposed to be: SCAN costs 1 RAM to reveal, PURGE nets to 0 RAM when it actually lands, against the trap owner's full RAM sunk planting it, restoring the halt/siphon versus scan/purge triangle without touching either trap's numbers directly.",
+      "counter": "Traps planted outside your SCAN_RANGE stay invisible to a player caster (purgeTargetLegal requires trap.revealed for the player), so an opponent that scouts your scan tier and plants past it dodges the refund entirely; a purge cast that clears nothing still costs the full RAM.",
+      "engineNote": "New reducer hook. duel-actions.ts applyCast, the purge branch (mode === \"purge\"): after the loop that counts `n`, add: when `side === \"player\" && kitHas(s, \"sweepCredit\") && n > 0`, `econ.ram += PROGRAM_COST;` (PROGRAM_COST is already imported in this file, and DEFEND is always exactly PROGRAM_COST at every tier, so a flat refund is correct regardless of tier)."
+    },
+    {
+      "type": "augment",
+      "id": "cleanRun",
+      "name": "CLEAN RUN",
+      "kind": "boost",
+      "desc": "Win a dive at or under par with no traps sprung, and bank plus one patch cell for the rest of the run.",
+      "synergy": "Rewards PAR's own definition of a clean win (strain chip zero, per finishDuel) with the credits sink resource instead of only with strain saved, so tight trap-free play pays out twice; pairs with longArms and cheapShot, both of which make hitting par cheaper, and with the cfgWard retune above, which makes avoiding sprung traps easier without giving up tempo.",
+      "counter": "Any opponent running an arm mode only has to land one trap to deny the payout even on an otherwise perfect dive, since trapsFired counts against the same chip-zero condition; PATCH_CELL_MAX (3, run-reducer.ts) caps how far this can stockpile regardless of how many clean wins stack up.",
+      "engineNote": "New reducer hook, at the run layer not the duel layer. run-reducer.ts's duelFinished case, the non-finale win branch (around the existing `strain` and `patchCells: Math.max(0, run.patchCells - action.cellsUsed)` lines): action.chip is already the exact number finishDuel computed in duel-actions.ts, 0 only for an at-or-under-par, zero-trap win. Add, when `action.chip === 0 && run.kit.augments.includes(\"cleanRun\")`, fold `patchCells: Math.min(PATCH_CELL_MAX, run.patchCells - action.cellsUsed + 1)` into that same object (PATCH_CELL_MAX is already exported from this file)."
+    },
+    {
+      "type": "augment",
+      "id": "slagWard",
+      "name": "SLAG WARD",
+      "kind": "boost",
+      "desc": "Every patch cell you place also wards that new junction for 1 round. Nothing can trap it the instant it opens.",
+      "synergy": "Pairs PATCH CELLS, a system with no augment interaction at all today, with WARD's existing 'no new traps' rule without needing the WARD config equipped, making the credits-sink purchase safer to use right up against contested territory instead of only in safe rear nodes.",
+      "counter": "Guards only the single placed cell, only against trap planting, for exactly 1 round; a REDIRECT twist is unaffected (redirectTargetLegal never checks ward fields for a redirect, only the cfgWard retune's new addition to that same check would apply if the OPPONENT had cast a ward there first, which is a different case), and after the round lapses the fresh junction is exposed like any other.",
+      "engineNote": "New reducer hook. duel-actions.ts applyPlace: after `c.rot = 0;` and before the RAM/patch-cell bookkeeping, add, when `side === \"player\" && kitHas(s, \"slagWard\")`, `c.wardThroughRound = Math.max(c.wardThroughRound, s.round); c.wardBy = \"player\";`, the same fields WARD already writes, at a flat 1 round regardless of tier, matching bulwark's existing flat-1-round convention rather than scaling with WARD_ROUNDS."
+    },
+    {
+      "type": "augment",
+      "id": "redirectCopy",
+      "name": "REDIRECT FLAVOR TEXT",
+      "kind": "boost",
+      "desc": "Copy-only clarification, not a drafted card. Reword attackModeDesc's redirect case to state it ignores the reach limit rotation obeys, e.g. Twist any enemy or open junction anywhere on the board a quarter turn, no reach limit. Cuts power to everything downstream.",
+      "synergy": "Makes jamAnchor's payoff legible: players need to know REDIRECT already reaches across the whole board (redirectTargetLegal has no reach check, unlike canRotate) before freezing a distant node reads as useful instead of a curiosity.",
+      "counter": "None, this is a text change with no mechanical effect; if REDIRECT reads as too strong once its real range is visible to players, a reach limit could be added as a future retune.",
+      "engineNote": "existing. Pure copy edit to the redirect case of attackModeDesc in kit.ts, no reducer change, no new id in the AUGMENTS array (this is not offered in the draft)."
+    }
+  ]
+}

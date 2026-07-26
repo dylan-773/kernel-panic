@@ -1,0 +1,15 @@
+{
+  "id": "copy-cascade-bank",
+  "from": "tutorial-agent",
+  "kind": "teaching-moment",
+  "moment": "cascade-bank",
+  "surface": "mid dive, the first time the player banks a genuine cascade of 4 or more claimed nodes off one rotation",
+  "intent": "Claiming four or more nodes off a single rotation banks bonus RAM for the very next turn. The player should learn to line a chain up first, then trip it, rather than rotating opportunistically.",
+  "constraints": "2 lines max, 160 chars each, no em or en dashes, terminal voice, second person. Describe claim cascades specifically; do not describe RAM gains in general terms, since other mechanics (a sprung SIPHON trap, the ECHO TAP augment) also grant RAM but are not this moment's subject.",
+  "status": "filled",
+  "title": "CASCADE",
+  "lines": [
+    "Four or more nodes claimed off one rotation banks bonus RAM for your very next turn.",
+    "That is what just happened. Line a chain up first, then trip it, instead of one node at a time."
+  ]
+}

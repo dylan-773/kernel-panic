@@ -1,0 +1,142 @@
+{
+  "agent": "tutorial-agent",
+  "brief": "teaching-2026-07-26",
+  "notes": "Full-sweep audit, no proposals to review this cycle. Full findings and file/line citations live in pipeline/gates/tutorial-review.md; this file holds only the items that close what the gate flagged. Two pure code fixes have no item type here because no design decision is needed, so they are stated directly for the Orchestrator: (1) duel.tsx:419's cascadeBanked signal reads the sign of econ.player.drainNext, which is also touched by the SIPHON-trap and ECHO TAP augments, not just genuine cascades; derive it instead from whether a 'cascadeRam' fx (duel-actions.ts:119, already distinct from 'siphonFire') fired for the player this settle. (2) content/teaching.ts:20-28's TeachSurface union needs 'finalePre' and 'runEnd' added so the finaleGate and future waivers can name their real surface instead of borrowing an unrelated one. Retiring the day-board and kit-config coachmarks (see gate, Sweep 1) must land in the same edit as the jobBoard/kitConfig/programTiers waivers below, or teach-sim's 'both waived and taught' check fails the build.",
+  "items": [
+    {
+      "type": "mechanic",
+      "id": "ramCarry",
+      "label": "Unspent RAM carries into your next turn, capped",
+      "firstContact": "duel",
+      "rationale": "New row. duel-setup.ts:45-59 and duel-actions.ts's beginTurnEconomy/endPlayerTurn carry up to carryCap (2, or 4 with CARRY CACHE, duel-setup.ts:136) unspent RAM forward each turn; the rest is forfeit. Nothing in the inventory names this and no control states it today. Closed by the ram tip rewrite below, not a new coachmark: this is a recurring reference number, not a one-time rule."
+    },
+    {
+      "type": "teach-tip",
+      "id": "ram",
+      "teaches": ["ram", "ramCarry"],
+      "control": "the RAM readout in the dive dock (duel.tsx kp-dock-ram) and the day board's RAM per turn summary",
+      "text": "RAM refills each turn; up to 2 unspent carries into the next one (4 with CARRY CACHE). Casts and rotations cost 1 each.",
+      "tier": "1, unchanged. Not tier 0: the dock shows the number but not the carryover rule or its cap. Reissuing this tip for two reasons: the text never mentioned carryover, and the tip is currently mounted only on the day board's static ramPerTurn summary (screens.tsx:139); it is missing entirely from the live dock the player actually manages during a dive (duel.tsx:564-569, no title attribute at all). Mount title={tip(\"ram\")} on that dock label too, in addition to the existing day-board mount."
+    },
+    {
+      "type": "teach-tip",
+      "id": "manualRef",
+      "teaches": ["manualRef"],
+      "control": "the MANUAL.TXT desktop icon",
+      "text": "Full reference for the loop, the kit, and every augment. Open it any time.",
+      "tier": "1, replacing a coachmark. manualRef was previously taught by the day-board coachmark's second line; that coachmark is being retired (see gate Sweep 1) because its jobBoard content fully duplicates screens.tsx:103's permanent header. A pointer to a standing reference document is itself reference, not a one-time rule, so a persistent tip on the icon that carries it is a better fit than a coachmark that fires once on day 1, before there is anything in the manual worth looking up yet. Needs DesktopIconProps to accept a title passthrough (icons.tsx:128-146, currently has none) and the MANUAL.TXT call site (shop-os.tsx:452) to pass it."
+    },
+    {
+      "type": "mechanic-waiver",
+      "id": "jobBoard",
+      "waiver": "JobBoard's own header states this permanently, every visit: 'Three tickets. Strain is shared across all of them. Pick your order.' (screens.tsx:103).",
+      "expiresIf": "that header paragraph is removed, shortened past the point of stating the shared-strain fact, or the day board's structure changes so jobs no longer visibly share one strain meter",
+      "rationale": "Converts jobBoard from taught to waived. The day-board coachmark's first line is a near-restatement of this permanent header (see gate); retiring the coachmark and waiving the mechanic reaches for tier 0 instead of tier 2, per the placement bias rule. Must land together with removing or narrowing content/teaching.ts:201-214 (day-board) and its mount at screens.tsx:145, or teach-sim fails the both-waived-and-taught check."
+    },
+    {
+      "type": "mechanic-waiver",
+      "id": "kitConfig",
+      "waiver": "KitScreen's own header states this permanently, every visit: 'Three programs, 1 RAM each, once per turn each. Tiers come from closed days; configs come from cleared jobs. Tune it whenever; it holds until you change it.' (screens.tsx:241-244).",
+      "expiresIf": "that header paragraph is removed or no longer states the per-program cost, the once-per-turn rule, or where tiers and configs come from",
+      "rationale": "Converts kitConfig from taught to waived. The kit-config coachmark is a near-verbatim duplicate of this permanent header (see gate); recommend retiring the coachmark entirely. Must land together with removing content/teaching.ts:229-242 (kit-config) and its mount at screens.tsx:346."
+    },
+    {
+      "type": "mechanic-waiver",
+      "id": "programTiers",
+      "waiver": "The same KitScreen header covers this half of the coachmark too: 'Tiers come from closed days; configs come from cleared jobs.' (screens.tsx:241-244).",
+      "expiresIf": "that header paragraph stops stating where tiers come from, or the per-program tier display (the filled-square rows) is removed from the kit cards",
+      "rationale": "Paired with the kitConfig waiver above; both mechanics were taught by the single kit-config coachmark being retired."
+    },
+    {
+      "type": "mechanic",
+      "id": "runReset",
+      "label": "The run resets on a loss",
+      "firstContact": "duel",
+      "rationale": "Correcting firstContact from 'result' to 'duel'. duelFinished never routes a loss through the result screen (run-reducer.ts:216-221; result is win-only); the loss path goes straight to runEnd. The text that actually states the reset first appears on the duel screen's own CORE LOST overlay (duel.tsx:683-686), which is a surface already reached by every real run, so no TeachSurface change is needed for this correction."
+    },
+    {
+      "type": "mechanic-waiver",
+      "id": "runReset",
+      "waiver": "The duel screen's own loss overlay states it first, the instant it happens: 'CORE LOST... Its flood got there first. Neural Strain zeroes. The run is over.' (duel.tsx:683-686). The runEnd story scene restates it in voice immediately after: 'NEURAL STRAIN: ZERO. CONNECTION SEVERED. RUN N LOGGED.' (content/story.ts:33-38, strainBeat).",
+      "expiresIf": "either text stops stating the reset, or a third path to ending a run ships without equivalent messaging",
+      "rationale": "This waiver only covers the strain-zero loss path. The ABANDON button (shop-os.tsx:537-548, always available whenever a run exists) reaches the identical reset through neither text: it shows only a native confirm reading 'Abandon this run? Unlocked routines are kept,' which names nothing real (kit tiers, configs, augments, credits, and patch cells do not persist between runs) and could be read as promising persistence that does not exist. This mechanic is not fully covered until the Abandon path is fixed; see ui-spec abandon-confirm-accuracy. Tier 0 is the right fix, not a new coachmark: a rare, deliberate, already-interruptive native confirm just needs to say something true."
+    },
+    {
+      "type": "mechanic",
+      "id": "finaleGate",
+      "label": "Day 10 is the back room",
+      "firstContact": "finalePre",
+      "rationale": "Correcting firstContact from 'upgrade' to 'finalePre', the screen that actually shows the door and drops the job board. 'finalePre' is not yet a member of the TeachSurface union (content/teaching.ts:20-28); this correction depends on that union being widened (see top-level notes and the gate's routing section). Player-facing coverage is already fine; this is a bookkeeping-only fix so teach-sim's reachability check is actually testing the real claim instead of an unrelated screen."
+    },
+    {
+      "type": "mechanic-waiver",
+      "id": "finaleGate",
+      "waiver": "Day 10's morning scene states 'NO TICKETS ON THE SPIKE. THE BACK ROOM SETTLES UP TODAY.' (content/story.ts:892-908), and the FinalePre screen that follows shows no job board at all, only the DAY 10 header and the OPEN THE BACK ROOM door (screens.tsx:551-573).",
+      "expiresIf": "either the day-10 morning scene or the FinalePre screen stops stating or showing this",
+      "rationale": "Text and evidence unchanged from the existing waiver; only the mechanic entry's firstContact metadata is being corrected (see the paired mechanic item above)."
+    },
+    {
+      "type": "mechanic-waiver",
+      "id": "credits",
+      "waiver": "The day board (screens.tsx:103-144) and the NIGHT PATCH row on the Upgrade screen (screens.tsx:496-511) keep price and balance in the same row.",
+      "expiresIf": "any spend control's row stops showing price and balance together",
+      "rationale": "Narrowed from the previous blanket claim. The BUY PATCH CELL row on the Upgrade screen (screens.tsx:512-540) states the price and the patch-cell count but never restates the credits balance, so it currently fails this waiver's own test, exactly where the ledger predicted risk ('the night screen is the one at risk'). Filed ui-spec night-shop-credit-adjacency to restore it; re-check this waiver once that lands, at which point the blanket wording can be restored."
+    },
+    {
+      "type": "ui-spec",
+      "id": "night-shop-credit-adjacency",
+      "area": "screens",
+      "spec": "In UpgradeScreen's patch-cell row (screens.tsx, the div.kp-patchrow.kp-cellrow block, roughly lines 512-540), add the current credits balance (run.credits, in 'cr') into that row, next to or immediately below the BUY PATCH CELL button, the same way the NIGHT PATCH row directly above it already pairs its price with the balance in one row (screens.tsx:508-510). This restores the credits mechanic's waiver premise that every spend control keeps its price and the player's balance adjacent.",
+      "acceptance": [
+        "the patch-cell row visibly states {run.credits} cr in the same row as the BUY PATCH CELL button on every render",
+        "the NIGHT PATCH row's existing price/balance adjacency is unchanged",
+        "no layout regression when patch cells are already at PATCH_CELL_MAX (button disabled, balance still shown)"
+      ]
+    },
+    {
+      "type": "ui-spec",
+      "id": "ram-upgrade-cap-parity",
+      "area": "screens",
+      "spec": "In UpgradeScreen's '+1 RAM / TURN' button (screens.tsx, roughly lines 485-491), disable it and switch its label to MAXED once run.ramPerTurn reaches MAX_RAM (9, run-reducer.ts:48), exactly like the three tierBtn buttons already do at tier 3 (screens.tsx:451-468, disabled={tier >= 3}, label falls back to MAXED). Today the button never disables and never relabels; clicking it past the cap silently spends the player's one nightly upgrade for zero effect, with only a '9 to 9' label change as a hint.",
+      "acceptance": [
+        "the RAM upgrade button is disabled and reads MAXED once run.ramPerTurn is 9",
+        "the button's behavior below the cap is unchanged",
+        "visual/interaction parity with how the three tierBtn buttons handle their own cap"
+      ]
+    },
+    {
+      "type": "ui-spec",
+      "id": "abandon-confirm-accuracy",
+      "area": "desktop",
+      "spec": "The ABANDON button's native confirm string in shop-os.tsx:542 currently reads 'Abandon this run? Unlocked routines are kept.' Nothing described as 'unlocked routines' actually persists: kit tiers, program configs, augments, credits, and patch cells all reset on the next startRun (baseRunKit(), run-reducer.ts:135); only meta-level state (attempts count, whether the machine has ever opened, which teaching moments have been shown) survives, and that is true of every run end, not something Abandon specifically preserves. Rewrite the confirm string so it does not use the phrase 'unlocked routines' or otherwise imply kit or run progress carries over, and states plainly that this ends the run exactly like a loss would.",
+      "acceptance": [
+        "the confirm string does not claim any kit progress, program config, augment, or credit balance persists",
+        "the confirm string states the run ends or resets, matching the actual effect of a strain-zero loss",
+        "no em or en dash in the string"
+      ]
+    },
+    {
+      "type": "ui-spec",
+      "id": "strain-chip-breakdown",
+      "area": "screens",
+      "spec": "ResultScreen's NEURAL STRAIN row (screens.tsx:376-381) shows one combined chip number. finishDuel (duel-actions.ts:79-95) actually computes it from three independent inputs: 2 strain per rotation over par, 4 strain per trap sprung against the player (econ.trapsFired), and a flat +10 if the win came from hitting the round cap, with the total capped at 40. Break the nonzero chip down on this row into its contributing parts (e.g. rotations over par, traps sprung, turn cap) instead of a single opaque number, so a player who stayed under par but still got chipped can see it was a sprung trap, not a rotation mistake.",
+      "acceptance": [
+        "a chip caused only by over-par rotations reads the same as today (or clearly labeled as such)",
+        "a chip that includes trap or turn-cap contributions names them, with numbers matching duel-actions.ts's formula exactly (2/rotation over par, 4/trap sprung, +10 flat on a cap win, total capped at 40)",
+        "a zero chip still reads as 'clean' per the existing copy"
+      ]
+    },
+    {
+      "type": "ui-spec",
+      "id": "touch-safe-tooltips",
+      "area": "duel",
+      "spec": "Every teach-tip is wired as a plain HTML title attribute (duel.tsx:458,463; screens.tsx:126,137,139,271,298), and the mid-dive ability description panel (kp-ability-info, duel.tsx, shown via onMouseEnter/onMouseLeave on the SCAN/ATTACK/DEFEND buttons) only opens on hover. Neither survives touch input, and the Loadout window, the only other place the same mode descriptions exist as static text, is not reachable while a dive is in progress (the dive owns the whole screen). Design a touch-safe way to reveal both a title tooltip's content and the ability-info panel on tap, without stealing the tap that would otherwise cast the program or perform the control's primary action.",
+      "acceptance": [
+        "every control currently exposing a tip via title has a tap-triggered equivalent on a touch device",
+        "the ability-info panel can be opened by a tap that does not simultaneously fire the button's cast action",
+        "a second tap, or a tap outside the panel, dismisses it",
+        "desktop hover behavior is unchanged"
+      ]
+    }
+  ]
+}

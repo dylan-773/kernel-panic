@@ -1,0 +1,15 @@
+{
+  "id": "copy-analyze-readout",
+  "from": "tutorial-agent",
+  "kind": "teaching-moment",
+  "moment": "analyze-readout",
+  "surface": "the DIAGNOSTIC screen, first time it is ever opened",
+  "intent": "The readout always names the intrusion's dominant routine and its threat tier (1 to 5) before the dive starts. The player should walk away trusting it completely and knowing to configure the kit against the named tell, not just noticing the raw numbers, which are already visible on screen without this moment.",
+  "constraints": "2 lines max, 160 chars each, no em or en dashes, terminal voice, second person.",
+  "status": "filled",
+  "title": "DIAGNOSTIC",
+  "lines": [
+    "This reads the intrusion cold: its dominant routine, its threat tier. It never bluffs.",
+    "Configure your kit against the named tell before you dive, not after you meet it."
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "id": "copy-augment-draft",
+  "from": "tutorial-agent",
+  "kind": "teaching-moment",
+  "moment": "augment-draft",
+  "surface": "the result screen, the first time a draft is actually offered",
+  "intent": "Every cleared ticket offers a draft of three augments; one pick holds for the rest of the run. There are three tickets a day, so a clean day banks three picks. CONFIG augments unlock a new program mode; BOOST augments bend the economy instead.",
+  "constraints": "2 lines max, 160 chars each, no em or en dashes, terminal voice, second person. Cadence is per cleared TICKET, not per day; three tickets a day is what makes a clean day bank three, do not state it as one per day.",
+  "status": "filled",
+  "title": "AUGMENT DRAFT",
+  "lines": [
+    "Clearing a ticket offers three augments. Pick one and it holds for the rest of the run.",
+    "Three tickets a day, so a clean day banks three picks. CONFIG unlocks a mode. BOOST bends the economy."
+  ]
+}

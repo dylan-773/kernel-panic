@@ -1,0 +1,15 @@
+{
+  "id": "copy-night-shop",
+  "from": "tutorial-agent",
+  "kind": "teaching-moment",
+  "moment": "night-shop",
+  "surface": "the DAY CLOSED / upgrade screen, first time it is ever reached (alongside day-upgrade)",
+  "intent": "Credits buy two things at night: a night patch restores strain, and a patch cell is carried into the next dive to turn one dead slag block into a live junction. The player should walk away knowing both purchases exist and roughly what each is for.",
+  "constraints": "2 lines max, 160 chars each, no em or en dashes, terminal voice, second person. Do not restate the specific costs or heal amounts; the NIGHT PATCH and BUY PATCH CELL buttons already state their own price and effect permanently on screen. This moment should frame what the two purchases are for, not repeat their numbers.",
+  "status": "filled",
+  "title": "NIGHT SHOP",
+  "lines": [
+    "Credits buy two things here tonight. A night patch puts strain back on the meter.",
+    "A patch cell rides along into tomorrow's dive and turns one dead slag block into a live junction."
+  ]
+}

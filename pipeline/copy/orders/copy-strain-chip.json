@@ -1,0 +1,15 @@
+{
+  "id": "copy-strain-chip",
+  "from": "tutorial-agent",
+  "kind": "teaching-moment",
+  "moment": "strain-chip",
+  "surface": "the result screen, the first time it is ever reached, after the first cleared ticket of the run",
+  "intent": "WIDENED from the current draft. Neural Strain is the run's shared health bar across every ticket and does not regenerate on its own; hitting zero ends the run. It drops from two different things on a win: rotations past par, AND any enemy trap that actually sprung on the player, even if they stayed under par. A clean, trap-free dive at or under par costs nothing.",
+  "constraints": "2 lines max, 160 chars each, no em or en dashes, terminal voice, second person. Do not imply strain only drops from extra rotations; traps sprung against the player also chip it, independent of par. This is a correction from the previous draft, which named only the rotation cause.",
+  "status": "filled",
+  "title": "NEURAL STRAIN",
+  "lines": [
+    "Strain is shared across every ticket today and will not recover between them. Zero ends the run.",
+    "It bills you for rotations past par, and separately for any of their traps that actually sprung on you."
+  ]
+}

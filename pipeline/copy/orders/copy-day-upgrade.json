@@ -1,0 +1,15 @@
+{
+  "id": "copy-day-upgrade",
+  "from": "tutorial-agent",
+  "kind": "teaching-moment",
+  "moment": "day-upgrade",
+  "surface": "the DAY CLOSED / upgrade screen, first time it is ever reached",
+  "intent": "One upgrade per closed day, holding for the rest of the run: either +1 RAM per turn or one program pushed a tier wider. The player should walk away knowing the pick is permanent and deliberate, not which specific numbers each button grants.",
+  "constraints": "2 lines max, 160 chars each, no em or en dashes, terminal voice, second person. Do not restate the specific numbers each upgrade button already shows (the RAM count, the tier arithmetic); the header and each button already state those permanently on screen. This moment should add the framing (one a night, it holds) that the buttons do not say on their own.",
+  "status": "filled",
+  "title": "DAY CLOSED",
+  "lines": [
+    "One upgrade tonight. Whatever you take holds for the rest of the run.",
+    "There is no second pick later. Choose the one that fixes what tonight's dive actually needed."
+  ]
+}

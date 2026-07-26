@@ -1,0 +1,13 @@
+{
+  "id": "copy-kit-config",
+  "from": "tutorial-agent",
+  "kind": "teaching-moment",
+  "moment": "kit-config",
+  "surface": "the KIT CONFIG / LOADOUT window, first time it is ever opened",
+  "intent": "FLAGGED: the tutorial-agent's audit recommends retiring this coachmark entirely. KitScreen's own permanent header (screens.tsx:241-244, always visible, every visit) already states everything this moment teaches, near verbatim: three programs, 1 RAM each, once per turn each, tiers from closed days, configs from cleared jobs. Only fulfill this order if the Orchestrator decides to keep the moment rather than act on that recommendation. If kept, the intent is: three programs at 1 RAM each, once per turn each, modes swap freely any time, tiers come from closed days, new modes come from cleared-job augment drafts.",
+  "constraints": "2 lines max, 160 chars each, no em or en dashes, terminal voice, second person. If fulfilled anyway, do not simply restate the header word for word; find something the header does not already say, or this moment adds nothing.",
+  "status": "cancelled",
+  "reason": "Retired: KitScreen's permanent header (screens.tsx:241-244) already states this content verbatim on every visit.",
+  "title": null,
+  "lines": null
+}

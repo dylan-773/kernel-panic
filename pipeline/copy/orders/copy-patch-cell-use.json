@@ -1,0 +1,15 @@
+{
+  "id": "copy-patch-cell-use",
+  "from": "tutorial-agent",
+  "kind": "teaching-moment",
+  "moment": "patch-cell-use",
+  "surface": "mid dive, the first turn the player is carrying a bought patch cell",
+  "intent": "Clicking any slag block burns the carried cell into a live cross junction for 1 RAM. It is single use, so the player should learn to save it for a wall they cannot route around rather than spend it on the first slag block they see.",
+  "constraints": "2 lines max, 160 chars each, no em or en dashes, terminal voice, second person.",
+  "status": "filled",
+  "title": "PATCH CELL",
+  "lines": [
+    "You are carrying a cell. Click a slag block within reach to burn it into a live junction for 1 RAM.",
+    "One use, then it is gone. Save it for the wall you cannot route around, not the first slag you see."
+  ]
+}

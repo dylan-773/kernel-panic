@@ -1,0 +1,15 @@
+{
+  "id": "copy-par-budget",
+  "from": "tutorial-agent",
+  "kind": "teaching-moment",
+  "moment": "par-budget",
+  "surface": "mid dive, the exact rotation that first pushes the player over par",
+  "intent": "Every board has a clean route measured in rotations, called par. Going over it does not block a win, but it chips Neural Strain when the player does win. Sloppy is survivable, not free.",
+  "constraints": "2 lines max, 160 chars each, no em or en dashes, terminal voice, second person.",
+  "status": "filled",
+  "title": "OVER PAR",
+  "lines": [
+    "PAR is the clean route, measured in rotations. You just spent past it.",
+    "A win still lands, but now it costs Neural Strain. Sloppy is survivable. It is not free."
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "id": "copy-day-board",
+  "from": "tutorial-agent",
+  "kind": "teaching-moment",
+  "moment": "day-board",
+  "surface": "the day board (JOBS.QUE), first time it is ever opened",
+  "intent": "FLAGGED: the tutorial-agent's audit recommends retiring this coachmark's jobBoard content entirely, since JobBoard's own permanent header (screens.tsx:103, always visible, every visit) already states it word for word: three tickets share one strain meter, and the player picks the order. Only fulfill this order if the Orchestrator decides to keep the moment rather than act on that recommendation. If kept, the intent is: three tickets, one shared strain meter across all of them, order is the player's choice, and MANUAL.TXT on the desktop holds the full reference any time.",
+  "constraints": "2 lines max, 160 chars each, no em or en dashes, terminal voice, second person. If fulfilled, lean on the MANUAL.TXT pointer since the day-board fact alone is already covered on screen.",
+  "status": "cancelled",
+  "reason": "Retired: JobBoard's permanent header (screens.tsx:103) already states this content verbatim on every visit.",
+  "title": null,
+  "lines": null
+}

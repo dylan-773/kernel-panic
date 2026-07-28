@@ -1,0 +1,15 @@
+{
+  "id": "copy-boost-swap",
+  "from": "tutorial-agent",
+  "kind": "teaching-moment",
+  "moment": "boost-swap",
+  "surface": "result, when a BOOST draft is offered and the boost bays are already full",
+  "intent": "New coachmark, not in the brief's explicit copy-order list but filed per standing practice: every new coachmark gets a copy order. Fires the first time the player is offered a BOOST while their boost bays are already at cap. State that taking it means benching one they already have, they choose which, and that CONFIG augments are never affected since they sit outside the bay cap entirely. This is the first moment the draft behaves differently than every earlier one the player has seen (a free add becomes a forced choice), so name that change plainly rather than assuming it is obvious from the UI alone.",
+  "constraints": "2 lines max, 160 chars each, no em or en dashes, terminal voice, ALL CAPS title only. Suggested title: BAY FULL, but your call.",
+  "status": "done",
+  "title": "BAY FULL",
+  "lines": [
+    "Boost bays are full. Take this pick and you choose one installed boost to bench in its place.",
+    "CONFIGS never count against the cap and are never affected by a swap."
+  ]
+}

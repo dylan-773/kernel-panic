@@ -1,0 +1,16 @@
+{
+  "id": "icon-darknet",
+  "from": "ux-agent",
+  "kind": "icon",
+  "target": "/assets/px/ui/icon-darknet.png",
+  "size": [32, 32],
+  "brief": "A small pixel-art desktop icon for DARKNET.LNK, a bootleg dark-web vendor app the player has installed on top of native KP/OS. Every other desktop icon in the game (jobs, loadout, manual, ledger) is a clean flat vector glyph built from hard rectangles in a single ink-slate palette; this one is deliberately the odd one out, a rougher, dithered, slightly-off piece of pirated software art sitting among native OS chrome. Subject: a cracked padlock fused with a small circuit-board motif (two or three trace lines running into it) and one glitchy red signal eye or dot at its center. Hard pixel edges, no anti-aliasing, no gradients beyond simple dithering, transparent background, readable as a solid silhouette at 32x32. Palette strictly from the pinned hexes: bg0 #101218, panel #1a1e27, line #2b313d, rose #e94f6d, rose-hot #ff6d88, signal #ffe9c4, crimson #cf4b45, gold #d9a53f, steel #9fb2cc. Favor crimson or rose for the glitch eye, steel or line for the padlock body and circuit traces, so it reads as a threat/contraband object rather than a friendly utility icon. Keep the same overall silhouette weight (thick, blocky, legible at a glance) as the game's existing flat icons so it does not disappear next to them despite being intentionally grimier.",
+  "status": "done",
+  "result": "pipeline/art/done/icon-darknet.png",
+  "generation": {
+    "tool": "Higgsfield nano_banana_pro",
+    "credits_spent": 2,
+    "attempts": 1,
+    "notes": "Generated at 1024x1024 with prompt pinning the full kp-contracts palette and all brief requirements (cracked padlock, circuit motif, red glitch eye, hard edges, dithering for texture). Post-processed with pxpost.py to snap to pixel grid and palette, scaled to target 32x32. Result: crisp, legible silhouette with strong threat/contraband aesthetic that distinctly marks the icon as bootleg pirated software while maintaining weight and readability matching native KP/OS icon style."
+  }
+}

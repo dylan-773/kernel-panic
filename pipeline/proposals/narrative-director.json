@@ -1,610 +1,168 @@
 {
   "agent": "narrative-director",
-  "brief": "story-retune-1",
-  "notes": "Scope covered: opener/ender scenes explicit for all runs 1-12 (fallback rotation retired), day-open cutscenes for days 1-10, tutorial-intro/tutorial-outro framing, and a DAY_LINES audit. Zero art orders filed (brief sets zero art budget); every beat reuses SISTER, FATHER, COMPANION, STILL_LOCKED, STILL_BENCH, STILL_COUNTER, STILL_OPEN tokens only. Design notes and one ledger conflict below.\n\n1) OPENERS 2-6 are revisions, not rewrites: each existing beat is kept verbatim and a single new sister beat is inserted BEFORE it, so every opener 1-12 now carries at least two sister beats per the brief. Each new beat only riffs on material the corresponding prior run's ENDER already revealed to Rhea (never ahead of the ledger's table): opener 3 references ender 2's shaking hands, opener 4 references ender 3's 'it waited', opener 5 references ender 4's 'it paces you', opener 6 references ender 5's 'kind first, why kind'. Opener 2 is pure protective-fear escalation off run 1's strain scare (no reveal dependency). Openers 7-12 are wholly new, replacing the fallback cycle, and give Rhea a visible arc: 7 (suspicion building, pre-power-bills), 8 (vindicated by her own math, still closing on the old 'so does my theory' line), 9 (first tender gesture toward the room, post run-8 renunciation), 10 (grappling with 'it' no longer feeling like the right word), 11 (fear gone, naming it herself), 12 (open anticipation of what happens if he gets through). This directly answers the brief's complaint that the arc 'stalls at run 8'.\n\n2) ENDERS 9-12: SECTOR/LEDGER CONFLICT FLAGGED. The brief asks enders 9-12 to continue the sector sequence toward sector 9, landing sector 9 at run 10 or later. Ledger Resolved ruling 3 (2026-07-25) hard-forbids this: sector 8 is Patch's own withheld grief and sector 9 is the finale message's raw material, and 'Forbids either sector appearing in the run 2-8 schedule or any run 9+ fallback cycle.' The reveal-schedule rules repeat this explicitly. I did not write sector 8 or 9 as numbered fragments anywhere. Instead, enders 9-12 are bespoke (not the literal fallback function, per the brief's 'no fallback rotation') but stay inside the ledger's own established convention for runs 9+: 'SECTOR SCAN: NO NEW DATA. ECHO FOLLOWS.' followed by a verbatim replay of an already-unlocked sector's father lines (sector 1 at run 9, sector 6 at run 10, sector 4 at run 11, sector 2 at run 12, chosen for thematic fit, not new content). Every one of these gets a brand new SISTER beat that deepens her arc emotionally (per item 1 above) without adding a single new ground-truth fact, consistent with the ledger's own note that 'knowledge plateaus at the run-8 state until a finale win.' If the intent is truly to tease sector 8 or 9 before the finale, that needs an explicit new ruling from the Loremaster/user overriding Resolved ruling 3; I am flagging it, not implementing it.\n\n3) DAY-OPEN SCENES (days 1-10) are deliberately run-count-agnostic in a way the openers/enders are not: since the same day-open-N plays on every run's day N regardless of run count, it cannot safely carry any of Rhea's evolving virus-theory language (a run-1 day-3 and a run-11 day-3 use the same scene, and her belief state is wildly different between them). So all ten stay in the 'daily shop rhythm' register: till, spike, ledger, register drawer, named customer devices, Rhea's logistics voice, and only bare physical, belief-neutral facts about the back room (a curtain that does not move, a padlock catching light). Day-open-10 is the one exception the brief calls out by name ('replaces the finale-door copy as the morning frame'); it still stays neutral, using only the already-established, belief-neutral phrase 'the back room settles up' rather than asserting any theory. Flagging this design choice explicitly in case the Orchestrator expected day-opens to carry run-specific reveals; I judged that unsafe given they are not run-keyed.\n\n4) DAYLINE AUDIT: I checked all 9 existing DAY_LINES against the new day-open-1..9 scenes for clashes. None found; every existing line's content (tickets, strain carryover, pacing, halfway quiet, coffee, hard cases, strain-as-budget, last day) is already consistent with its matching day-open scene. Zero dayline items included this cycle; none needed changing.\n\n5) TUTORIAL framing is new and slots in chronologically BEFORE run-open-1: tutorial-intro is the player reaching for the back room before the shop rules even exist (Rhea catches him at the curtain, DAD.LOG is found unopened), the scripted dive is mechanically owned by the Orchestrator (0/200 wins), tutorial-outro shows the room resealing and Rhea drawing the hard line. This makes run-open-1's existing 'One rule, the machine stays locked' read as a reiteration of a boundary just tested, not a first mention, without needing to touch run-open-1 itself.\n\n6) HOUSEKEEPING FYI for the Loremaster, not mine to fix: I grepped the live repo before writing anything (per my own past workflow notes) and found ledger.md's 'Note - shipped/canon realignment status' section (around its own line 173) still describes story.ts's run-end-3 sector 2 line as outstanding and pending integration, but the shipped story.ts file no longer contains that line at all; it already reads 'This bench light is the only one on the block... The shop and I have some talking to do,' matching ground truth point 1. bible.md itself is already clean, no dust or Overby references anywhere in it or in the shipped game repo. The ledger's own status note looks stale and could use a cleanup pass; I left lore/* untouched since that is not my file to write.",
+  "brief": "deep-balance-2026-07-28",
+  "notes": "Scope this round: non-coachmark copy for DARKNET.LNK, the gridlock endReason, result-screen rows, the CLEAN RUN desc, two new MANUAL.TXT sections, and two small noun swaps (patch cell -> patch piece) in existing duel strings. This replaces this agent's prior proposal file (story-retune-1 cycle); that content has already integrated into the shipped game and is not being resubmitted. Per this round's explicit instruction, coachmark copy is deliberately excluded; pipeline/copy/orders/ currently has no open orders from the tutorial-agent (checked, none found), so no teach-copy items are included here. They will be fulfilled in the follow-up round once filed. Item type used for this round's deliverables is 'ui-copy' (not one of the schema's named types, since none of them fit bespoke UI/system-voice string rewrites); each carries an explicit 'target' pointing at the exact call site so the Orchestrator can drop the string in without hunting. Loremaster flag: DARKNET.LNK's dealer is written as a fully anonymous handle ('SELLER: SIGNAL SCRAMBLED, NO ID ON FILE'), never a proper name, consistent with the world's naming law and with how a real gray-market listing reads. Story-ledger note candidate for the Loremaster to weigh, not written into any lore file: a named, on-screen dealer is not needed, but there may be a future hook in the dealer's cash-only, no-questions anonymity mirroring Dad's own secrecy (weekly cash suppressants, no ticket, no client on the back-room tower) without touching ground truth; recommend staying anonymous unless a later arc wants to use the dealer as that mirror. Integration note, not a new item: several existing UI strings elsewhere ('BUY PATCH CELL', 'PATCH CELLS X/Y', the KitScreen pouch card paragraph in screens.tsx) still say 'patch cell' and were not in this round's item list; they likely get superseded outright by ux-agent's patch-pouch-strip and darknet-window ui-specs, but flagging for a consistency sweep so no stray 'cell' language survives the piece rename.\n\nRound 2 addendum (same brief, copy-order fulfillment pass): the five open orders tutorial-agent filed against this cycle's teaching-moments (patch-cell-use, night-shop, patch-craft, augment-draft line 2, boost-swap) are filled in place at pipeline/copy/orders/ and mirrored below as 'teach-copy' items. Voice check against shipped content/teaching.ts: matched the existing coachmark register (short declaratives, implicit or explicit second person, one line for the action/cost, one for the rule that changes what the player does), not the story-scene voice from the items above. patch-cell-use keeps the shipped moment's tactical closer ('the wall you cannot route around') while swapping in the new no-rotation rule. night-shop prioritizes the lost-determinism fact first per the order's stated priority, then folds in the unchanged night-patch framing and the new boost-bay purchase in the same second line since both fit under 160 chars; nothing was cut. patch-craft states the union-and-legality rule from the MANUAL.TXT PATCH PIECES paragraph (already filed above) in coachmark form, adding the stakes (both pieces spend regardless of the legality check) the reference section does not need to carry. augment-draft-line2 keeps line 1 verbatim from shipped teaching.ts and rewrites only line 2: kept the CONFIG/BOOST clause and the three-tickets cadence per the order's instruction to preserve verified facts, added a closing clause naming the swap behavior (a full bay swaps instead of blocking) so the line does not read as though the pool could ever run dry, and did not restate any catalog count. boost-swap is new; led with the forced choice (bench one you own) before the CONFIG exemption, since the order named that ordering as the more important fact. No ledger conflicts: none of these five touch Rhea, Dad, or Patch, they are pure mechanic teaching, so the reveal-schedule table in lore/ledger.md does not apply.",
   "items": [
     {
-      "type": "scene",
-      "id": "run-open-2",
-      "slot": "opener",
-      "runNumber": 2,
-      "notes": "Revision: existing system and sister beats kept verbatim (beats 1 and 3 below). One new sister beat inserted at position 2, deepening the protective-fear reaction to run 1's strain scare. No new ground-truth content.",
-      "beats": [
-        { "speaker": "system", "portrait": "none", "still": "none", "lines": ["RUN 2.", "The lock is where you left it. So is the debt."] },
-        {
-          "speaker": "sister",
-          "portrait": "SISTER",
-          "still": "none",
-          "lines": ["You scared me last night. Whatever is wrong with that machine does not get to take my brother too."]
+      "type": "ui-copy",
+      "id": "darknet-window",
+      "surface": "new desktop window: DARKNET.LNK",
+      "target": "new component (likely components/os or components/game/screens.tsx); desktop icon entry in shop-os.tsx IconGrid; new WIN_DEFS entry",
+      "copy": {
+        "windowTitle": "DARKNET.LNK",
+        "vendorTag": "SELLER: SIGNAL SCRAMBLED. NO ID ON FILE.",
+        "pitchLines": [
+          "Salvage off a hundred dead machines, sorted by nobody.",
+          "Pay first. Shape is the surprise. That is the whole business model here.",
+          "No refunds. No complaints line. Close the window if you want a guarantee."
+        ],
+        "buyButtonLabel": "BUY BLIND ({cost} cr)",
+        "buyButtonLabelNote": "Template the live darkPatchCost(day) value in, same pattern as the existing BUY PATCH CELL ({PATCH_CELL_COST} cr) button.",
+        "revealBeatLines": [
+          "PACKAGE INBOUND. NO REFUNDS.",
+          "PIECE ACQUIRED. SHAPE CONFIRMED ON ARRIVAL.",
+          "Told you. Never know what you're gonna get."
+        ],
+        "revealBeatNote": "First two lines are system voice, ALL CAPS, meant to carry the ux-agent's reveal sting and shape-glyph animation. Third line is the dealer's own voice, sentence case, a callback payoff to the pitch line above; drop it if the animation timing has no room for a third beat.",
+        "pouchFullLabel": "POUCH FULL (5/5)",
+        "pouchFullLine": "Dealer is not a storage locker. Pouch is full. Come back with room.",
+        "offlineLabel": "MARKET OFFLINE.",
+        "offlineLine": "Signal only holds after the shop shuts. Trades resume at day close.",
+        "offlineNote": "Improves the placeholder 'MARKET OFFLINE. Trades at day close.' while keeping the same gate condition and the same core information.",
+        "iconHoverLines": [
+          "Gray-market patch pieces, no questions asked.",
+          "Opens for trade after the shop closes."
+        ]
+      },
+      "notes": "Introduces the darkWebBuy mechanic (tutorial-agent's inventory delta, replacing patchCellBuy). Coachmark copy for this window is intentionally not included this round; will arrive via a copy order in the follow-up round."
+    },
+    {
+      "type": "ui-copy",
+      "id": "gridlock-endreason",
+      "surface": "duel",
+      "target": "src/game/duel-actions.ts, finishDuel(s, \"player\", \"gridlock\", ...) call inside endOppTurn",
+      "copy": {
+        "text": "Total gridlock. Neither signal can reach the core. The link collapses in your favor, and the dead link bites on the way out."
+      },
+      "notes": "Kept to the brief's direction near verbatim; it already lands the tone shift from 'this is a favor' to 'this costs you'. The exact strain number is surfaced separately on the result-screen breakdown row (see result-screen-rows), not restated here, to avoid the endReason line doing double duty as a receipt."
+    },
+    {
+      "type": "ui-copy",
+      "id": "result-screen-rows",
+      "surface": "result",
+      "target": "src/components/game/screens.tsx, ResultScreen()",
+      "copy": {
+        "dropRevealLabel": "PATCH PIECE RECOVERED",
+        "dropRevealVariants": {
+          "straight": "A straight run pulled from the wreck. Two arms, dead opposite.",
+          "elbow": "An elbow pulled from the wreck. Bent, but sound.",
+          "tee": "A tee pulled from the wreck. Three arms, rare enough to notice.",
+          "cross": "A cross pulled from the wreck. Four arms. Somebody's whole day, salvaged."
         },
-        {
-          "speaker": "sister",
-          "portrait": "SISTER",
-          "still": "none",
-          "lines": [
-            "You went back in. I heard the fans spin up at two in the morning.",
-            "It is a virus. Viruses do not need your whole night.",
-            "Customers first. Then do whatever it is you are doing."
-          ]
-        }
-      ]
+        "dropRevealCappedVariant": "{shape} piece pulled from the wreck, but the pouch already holds the maximum of 5. Left on the bench.",
+        "cleanRunBanked": "At or under par, no traps sprung. One random piece banked.",
+        "cleanRunCapped": "At or under par, no traps sprung. Pouch already holds the maximum of 5.",
+        "gridlockChipLabel": "link collapsed in gridlock"
+      },
+      "notes": "dropRevealLabel is the row header, constant across shapes; the four dropRevealVariants are the value line under it, chosen by which shape actually dropped. dropRevealCappedVariant fires instead of a variant when the pouch is already full; {shape} substitutes the shape noun (straight/elbow/tee/cross piece) same as the variants use. cleanRunBanked/cleanRunCapped replace the two existing CLEAN RUN em strings in place (pouch cap raised 3 to 5, cell to random piece). gridlockChipLabel is a new bullet in the existing kp-chip-breakdown list, lowercase to match its siblings ('3 rotations over par', '1 trap sprung', 'hit the turn cap'), paired with a -6 value; only render it when the win was a gridlock win, a new condition alongside the existing r.capWin check."
     },
     {
-      "type": "scene",
-      "id": "run-open-3",
-      "slot": "opener",
-      "runNumber": 3,
-      "notes": "Revision: beats 1 and 3 kept verbatim. New sister beat 2 references the shaking hands from run 2's ender only, nothing further ahead.",
-      "beats": [
-        { "speaker": "system", "portrait": "none", "still": "none", "lines": ["RUN 3.", "The bench knows your weight now."] },
-        {
-          "speaker": "sister",
-          "portrait": "SISTER",
-          "still": "none",
-          "lines": ["You slept maybe two hours. I counted the mug rings on the bench. That is how I know."]
+      "type": "ui-copy",
+      "id": "clean-run-desc",
+      "surface": "loadout, result draft",
+      "target": "src/game/content/kit.ts, AUGMENT_BY_ID.cleanRun.desc (existing augment; copy only, leave kind/synergy/counter/engineNote to ability-agent)",
+      "copy": {
+        "desc": "Win a dive with zero strain billed and bank one random patch piece. The pouch holds five at most, so a clean win on a full pouch banks nothing."
+      }
+    },
+    {
+      "type": "ui-copy",
+      "id": "manual-sections",
+      "surface": "desktop window: MANUAL.TXT",
+      "target": "src/components/os/shop-os.tsx, ManualContent()",
+      "copy": {
+        "patchPieces": {
+          "heading": "PATCH PIECES",
+          "paragraphs": [
+            "Slag blocks used to take a flat cell. Now they take a shaped piece: straight, elbow, tee, or cross. Whatever arms a piece rolls on pickup are the arms it keeps, nothing rotates once it is in your pouch.",
+            "Craft two pieces at the bench into the union of their arms. Legal only when the result is strictly bigger than both pieces you started with; equal or smaller, the bench will not make the join.",
+            "Three ways into the pouch: buy blind off the darknet, pull one from a cleared job, or bank a random piece on a clean win. Five pieces, pouch capped."
+          ],
+          "suggestedPlacement": "after THE KIT section, before AUGMENTS"
         },
-        {
-          "speaker": "sister",
-          "portrait": "SISTER",
-          "still": "none",
-          "lines": [
-            "You keep going back. Dad had that same look.",
-            "Same hours, too. I am not saying anything. I am just saying."
-          ]
+        "boostBays": {
+          "heading": "BOOST BAYS",
+          "paragraphs": [
+            "Boosts install into bays, three of them to start. Configs are not boosts and never count against the cap.",
+            "A full bay does not block a new boost, it swaps one: take the drop or keep what is already installed. Buy more bays at day close. First one runs 150 cr, the next 300."
+          ],
+          "suggestedPlacement": "after AUGMENTS section"
         }
+      }
+    },
+    {
+      "type": "ui-copy",
+      "id": "severed-endreason",
+      "surface": "duel",
+      "target": "src/game/duel-actions.ts, finishDuel(s, \"opp\", \"severed\", ...) call inside endOppTurn",
+      "copy": {
+        "text": "SEVERED. Its territory walls your port off from the core. No rotation and no patch piece opens a route, so the link is already lost."
+      },
+      "notes": "Noun swap only, rest of the line unchanged as instructed."
+    },
+    {
+      "type": "ui-copy",
+      "id": "duel-toast-patch-piece",
+      "surface": "duel",
+      "target": "src/game/duel-actions.ts, the say(s, ...) call inside the patch-cell placement action (~line 241)",
+      "copy": {
+        "text": "PATCH PIECE. The slag melts into a live junction, arms exactly as held."
+      },
+      "notes": "Kept to the brief's direction; 'arms exactly as held' replaces the old fixed 'cross junction' phrasing now that shape varies and pieces are never rotatable in hand."
+    },
+    {
+      "type": "teach-copy",
+      "id": "copy-patch-cell-use",
+      "title": "PATCH PIECE",
+      "lines": [
+        "You are carrying a piece. Click a slag block within reach to fuse it in for 1 RAM. One use, then it is gone.",
+        "Arms land exactly as held, never rotating once placed. Fit it to the wall you cannot route around, not the first slag you see."
       ]
     },
     {
-      "type": "scene",
-      "id": "run-open-4",
-      "slot": "opener",
-      "runNumber": 4,
-      "notes": "Revision: beats 1 and 3 kept verbatim. New sister beat 2 references her own line from run 3's ender ('it waited... please do not tell me it waited'), a callback not a new reveal.",
-      "beats": [
-        { "speaker": "system", "portrait": "none", "still": "none", "lines": ["RUN 4.", "The shop opens anyway. It always opens anyway."] },
-        {
-          "speaker": "sister",
-          "portrait": "SISTER",
-          "still": "none",
-          "lines": ["I keep thinking about the word waited. I should not have said it out loud."]
-        },
-        {
-          "speaker": "sister",
-          "portrait": "SISTER",
-          "still": "none",
-          "lines": [
-            "I stood outside the back room last night. Just listening.",
-            "It hums different when you are in there. I hate that I know that."
-          ]
-        }
+      "type": "teach-copy",
+      "id": "copy-night-shop",
+      "title": "NIGHT SHOP",
+      "lines": [
+        "You can no longer choose a shape. DARKNET.LNK sells one blind pull, price climbing by the day.",
+        "Night patch still buys your strain back. Buy an extra boost bay tonight to raise your cap above 3."
       ]
     },
     {
-      "type": "scene",
-      "id": "run-open-5",
-      "slot": "opener",
-      "runNumber": 5,
-      "notes": "Revision: beats 1 and 3 kept verbatim. New sister beat 2 references her own line from run 4's ender ('it paces you... viruses do not pace anybody').",
-      "beats": [
-        { "speaker": "system", "portrait": "none", "still": "none", "lines": ["RUN 5.", "Three tickets on the spike. One padlock in the dark."] },
-        {
-          "speaker": "sister",
-          "portrait": "SISTER",
-          "still": "none",
-          "lines": ["It paces you. I wrote that down and then read it back to myself about six times."]
-        },
-        {
-          "speaker": "sister",
-          "portrait": "SISTER",
-          "still": "none",
-          "lines": ["I oiled the hinges on the back door. Do not read into it.", "Three tickets today. Eat something first."]
-        }
+      "type": "teach-copy",
+      "id": "copy-patch-craft",
+      "title": "PATCH CRAFT",
+      "lines": [
+        "Craft two pieces at night or from the loadout bench: free, and you get the union of both pieces' arms.",
+        "You only get the craft when the union beats both inputs outright. Equal or smaller spends both pieces for nothing."
       ]
     },
     {
-      "type": "scene",
-      "id": "run-open-6",
-      "slot": "opener",
-      "runNumber": 6,
-      "notes": "Revision: beats 1 and 3 kept verbatim (still STILL_COUNTER on beat 3 unchanged). New sister beat 2 references her own line from run 5's ender ('it learns... kind first, why kind').",
-      "beats": [
-        { "speaker": "system", "portrait": "none", "still": "none", "lines": ["RUN 6.", "The clutter shrinks a little more every week. The padlock never has."] },
-        {
-          "speaker": "sister",
-          "portrait": "SISTER",
-          "still": "none",
-          "lines": ["Kind first, then it takes you apart. What kind of virus plays nice on purpose?"]
-        },
-        {
-          "speaker": "sister",
-          "portrait": "none",
-          "still": "STILL_COUNTER",
-          "lines": [
-            "Dad used to come out of that room smiling. I forgot that until this week.",
-            "Go on, then. Customers first. Room later."
-          ]
-        }
+      "type": "teach-copy",
+      "id": "copy-augment-draft-line2",
+      "title": "AUGMENT DRAFT",
+      "lines": [
+        "Clearing a ticket offers three augments. Pick one and it holds for the rest of the run.",
+        "Three tickets a day, so a clean day banks three picks. CONFIG unlocks a mode, BOOST bends the economy. A full bay swaps instead of blocking."
       ]
     },
     {
-      "type": "scene",
-      "id": "run-open-7",
-      "slot": "opener",
-      "runNumber": 7,
-      "notes": "New, replaces the old fallback rotation slot. Rhea is pre-power-bills here (that reveal is her own ender 7 line); she is only noticing behavior, not yet vindicated by evidence.",
-      "beats": [
-        { "speaker": "system", "portrait": "none", "still": "none", "lines": ["RUN 7.", "The shop opens anyway."] },
-        {
-          "speaker": "sister",
-          "portrait": "SISTER",
-          "still": "none",
-          "lines": [
-            "I keep hearing you talk back to it. Not shouting. Talking.",
-            "I do not know what kind of person does that for a virus, but here we are."
-          ]
-        },
-        {
-          "speaker": "sister",
-          "portrait": "SISTER",
-          "still": "none",
-          "lines": ["Coffee is on the bench. It is even fresh.", "Come back up this time. I mean it."]
-        }
-      ]
-    },
-    {
-      "type": "scene",
-      "id": "run-open-8",
-      "slot": "opener",
-      "runNumber": 8,
-      "notes": "New, replaces the old fallback rotation slot. Sister beat 2 is her own vindication after doing the power-bill math (matches run 7's ender). Beat 3 is the old shipped 'so does my theory' fallback line, kept as the closer.",
-      "beats": [
-        { "speaker": "system", "portrait": "none", "still": "none", "lines": ["RUN 8.", "The spike is full. The room is patient."] },
-        {
-          "speaker": "sister",
-          "portrait": "SISTER",
-          "still": "none",
-          "lines": [
-            "I did the math twice, hoping I would get a different number. I did not.",
-            "Whatever he was doing back there, he paid for it himself. Every month. Nobody made him."
-          ]
-        },
-        {
-          "speaker": "sister",
-          "portrait": "SISTER",
-          "still": "none",
-          "lines": ["That lock looks looser every week. So does my theory.", "Go earn the rent first."]
-        }
-      ]
-    },
-    {
-      "type": "scene",
-      "id": "run-open-9",
-      "slot": "opener",
-      "runNumber": 9,
-      "notes": "New. First run after run 8's renunciation ('I think it has been waiting'). First tender, deliberate gesture toward the room, played light. No new ground-truth content, per the ledger's plateau note.",
-      "beats": [
-        { "speaker": "system", "portrait": "none", "still": "none", "lines": ["RUN 9.", "The spike refills. It always does."] },
-        {
-          "speaker": "sister",
-          "portrait": "SISTER",
-          "still": "none",
-          "lines": [
-            "I left something at the door this morning. Do not ask me why.",
-            "If it really is just waiting, I figure waiting is easier with coffee."
-          ]
-        },
-        {
-          "speaker": "sister",
-          "portrait": "SISTER",
-          "still": "none",
-          "lines": ["Go on, before it gets cold.", "The coffee. I meant the coffee."]
-        }
-      ]
-    },
-    {
-      "type": "scene",
-      "id": "run-open-10",
-      "slot": "opener",
-      "runNumber": 10,
-      "notes": "New. Rhea grapples with 'it' no longer feeling like the right word, without reaching for a name (she never learns Patch's name pre-finale, per the ledger).",
-      "beats": [
-        { "speaker": "system", "portrait": "none", "still": "none", "lines": ["RUN 10.", "Ten times now. The lock has not moved. Neither have you."] },
-        {
-          "speaker": "sister",
-          "portrait": "SISTER",
-          "still": "none",
-          "lines": [
-            "I stood at the curtain again last night. Did not touch it. Just stood there.",
-            "It feels wrong to keep calling it that. I do not have a better word yet."
-          ]
-        },
-        {
-          "speaker": "sister",
-          "portrait": "SISTER",
-          "still": "none",
-          "lines": ["Anyway. Three tickets. The world outside that curtain still needs fixing.", "Go."]
-        }
-      ]
-    },
-    {
-      "type": "scene",
-      "id": "run-open-11",
-      "slot": "opener",
-      "runNumber": 11,
-      "notes": "New. Fear gone, replaced by something closer to patience. A self-aware callback to 'around run six' rather than a new fact.",
-      "beats": [
-        { "speaker": "system", "portrait": "none", "still": "none", "lines": ["RUN 11.", "The padlock. The curtain. The same morning, again."] },
-        {
-          "speaker": "sister",
-          "portrait": "SISTER",
-          "still": "none",
-          "lines": [
-            "I am not scared walking past that door anymore. I noticed this morning.",
-            "I do not know when that happened. Somewhere around run six, maybe. I was not paying attention."
-          ]
-        },
-        {
-          "speaker": "sister",
-          "portrait": "SISTER",
-          "still": "none",
-          "lines": [
-            "Three tickets. Go be the good half of this shop for a few hours.",
-            "Then go be whatever the other half of you is doing in there."
-          ]
-        }
-      ]
-    },
-    {
-      "type": "scene",
-      "id": "run-open-12",
-      "slot": "opener",
-      "runNumber": 12,
-      "notes": "New. Closes the 7-12 arc on open anticipation, priming the player for a finale attempt without asserting one is coming this run.",
-      "beats": [
-        { "speaker": "system", "portrait": "none", "still": "none", "lines": ["RUN 12.", "The book resets. The padlock does not."] },
-        {
-          "speaker": "sister",
-          "portrait": "SISTER",
-          "still": "none",
-          "lines": [
-            "Twelve of these now. I have stopped asking when you will stop.",
-            "I have started asking what happens when you finally get through."
-          ]
-        },
-        {
-          "speaker": "sister",
-          "portrait": "none",
-          "still": "STILL_COUNTER",
-          "lines": ["Go find out, then.", "I will keep the coffee hot. Same as every time."]
-        }
-      ]
-    },
-    {
-      "type": "scene",
-      "id": "run-end-9",
-      "slot": "ender",
-      "runNumber": 9,
-      "notes": "New, replaces fallback rotation. Sector conflict: see top-level notes item 2. System and father beats are a verbatim echo of sector 1 (ender 2), framed with the ledger's own 'SECTOR SCAN: NO NEW DATA. ECHO FOLLOWS.' convention, not a new numbered sector. Strain-zero beat added mechanically by the Orchestrator, not included here.",
-      "beats": [
-        {
-          "speaker": "sister",
-          "portrait": "SISTER",
-          "still": "none",
-          "lines": [
-            "You are getting up slower every time. Or I am getting more scared every time. Hard to tell which anymore.",
-            "I want to believe it lets you through eventually. I did not expect to be the one hoping."
-          ]
-        },
-        { "speaker": "system", "portrait": "none", "still": "none", "lines": ["SECTOR SCAN: NO NEW DATA.", "ECHO FOLLOWS."] },
-        {
-          "speaker": "father",
-          "portrait": "none",
-          "still": "STILL_BENCH",
-          "lines": [
-            "Hold the iron like a pencil, not a hammer. There.",
-            "See? The joint holds because you were patient with it.",
-            "Most things do."
-          ]
-        }
-      ]
-    },
-    {
-      "type": "scene",
-      "id": "run-end-10",
-      "slot": "ender",
-      "runNumber": 10,
-      "notes": "New, replaces fallback rotation. Sector conflict: see top-level notes item 2. Father beat is a verbatim echo of sector 6 (ender 7), not a new sector. Sister beat extends her own already-established childhood memory (talking through the wall, thought it was the radio) rather than inventing a new fact.",
-      "beats": [
-        {
-          "speaker": "sister",
-          "portrait": "SISTER",
-          "still": "none",
-          "lines": [
-            "I still think about the wall, some nights. Him talking to something on the other side of it.",
-            "I used to think it was the radio. I know better now. I still like pretending, some nights."
-          ]
-        },
-        { "speaker": "system", "portrait": "none", "still": "none", "lines": ["SECTOR SCAN: NO NEW DATA.", "ECHO FOLLOWS."] },
-        {
-          "speaker": "father",
-          "portrait": "FATHER",
-          "still": "none",
-          "lines": [
-            "Again. You almost had me that time.",
-            "Do not go easy on me. If you learn to go easy, you will ruin the whole point.",
-            "One more game, then I open the shop."
-          ]
-        }
-      ]
-    },
-    {
-      "type": "scene",
-      "id": "run-end-11",
-      "slot": "ender",
-      "runNumber": 11,
-      "notes": "New, replaces fallback rotation. Sector conflict: see top-level notes item 2. Father beat is a verbatim echo of sector 4 (ender 5), not a new sector.",
-      "beats": [
-        {
-          "speaker": "sister",
-          "portrait": "SISTER",
-          "still": "none",
-          "lines": [
-            "I am done being scared of that room. I do not know what I am instead.",
-            "Ready, maybe. Or just tired of being scared. Some days those are the same thing."
-          ]
-        },
-        { "speaker": "system", "portrait": "none", "still": "none", "lines": ["SECTOR SCAN: NO NEW DATA.", "ECHO FOLLOWS."] },
-        {
-          "speaker": "father",
-          "portrait": "FATHER",
-          "still": "none",
-          "lines": [
-            "He is not ready yet. Keep the door shut.",
-            "Not until he can beat you square. Promise me.",
-            "No shortcuts. He will hate it. That is fine."
-          ]
-        }
-      ]
-    },
-    {
-      "type": "scene",
-      "id": "run-end-12",
-      "slot": "ender",
-      "runNumber": 12,
-      "notes": "New, replaces fallback rotation. Sector conflict: see top-level notes item 2. Father beat is a verbatim echo of sector 2, matching the CURRENT shipped run-end-3 lines exactly ('This bench light is the only one on the block... the shop and I have some talking to do'), not a new sector. Quiet, wistful full-circle closer for the 9-12 echo block.",
-      "beats": [
-        {
-          "speaker": "sister",
-          "portrait": "SISTER",
-          "still": "none",
-          "lines": [
-            "Twelve times now. I stopped counting how many times you have gone in.",
-            "I started counting how close you are coming back out."
-          ]
-        },
-        { "speaker": "system", "portrait": "none", "still": "none", "lines": ["SECTOR SCAN: NO NEW DATA.", "ECHO FOLLOWS."] },
-        {
-          "speaker": "father",
-          "portrait": "FATHER",
-          "still": "none",
-          "lines": [
-            "This bench light is the only one on the block.",
-            "Go back to bed, kiddo. I will be up a while yet.",
-            "The shop and I have some talking to do."
-          ]
-        }
-      ]
-    },
-    {
-      "type": "scene",
-      "id": "tutorial-intro",
-      "slot": "tutorial-intro",
-      "notes": "New. Plays before the scripted, unwinnable first dive. Chronologically before run-open-1's shop handoff; Rhea is catching the player at the curtain before proprietorship is even formal, which is what makes run-open-1's 'One rule' land as a reiteration.",
-      "beats": [
-        { "speaker": "system", "portrait": "none", "still": "none", "lines": ["BENCH TERMINAL: FIRST BOOT.", "DAD.LOG: FOUND, UNOPENED."] },
-        {
-          "speaker": "sister",
-          "portrait": "SISTER",
-          "still": "none",
-          "lines": ["Do not. I have not even given you the keys yet.", "Whatever is back there, it can wait one more day. Can it not?"]
-        },
-        { "speaker": "system", "portrait": "none", "still": "none", "lines": ["OVERRIDE ACCEPTED.", "MANUAL DIVE INITIATED."] }
-      ]
-    },
-    {
-      "type": "scene",
-      "id": "tutorial-outro",
-      "slot": "tutorial-outro",
-      "notes": "New. Plays right after the scripted dive fails and the machine reseals, before run 1 day 1. Sets up the hard rule that run-open-1 then states as an established boundary.",
-      "beats": [
-        { "speaker": "system", "portrait": "none", "still": "none", "lines": ["CORE UNREACHED.", "THE ROOM SEALS ITSELF AGAIN."] },
-        {
-          "speaker": "sister",
-          "portrait": "SISTER",
-          "still": "none",
-          "lines": ["You scared ten years off me just now.", "Whatever Dad locked in there, it stays locked. Are we clear?"]
-        },
-        { "speaker": "system", "portrait": "none", "still": "none", "lines": ["MORNING.", "THE SHOP OPENS ANYWAY."] }
-      ]
-    },
-    {
-      "type": "scene",
-      "id": "day-open-1",
-      "slot": "day",
-      "day": 1,
-      "notes": "Neutral shop-rhythm register, safe at any run count; see top-level notes item 3.",
-      "beats": [
-        { "speaker": "system", "portrait": "none", "still": "none", "lines": ["DAY 1.", "SPIKE: THREE TICKETS.", "REGISTER: OPEN."] },
-        {
-          "speaker": "sister",
-          "portrait": "SISTER",
-          "still": "none",
-          "lines": ["Till is counted. Spike is loaded. Try not to break anything before lunch.", "Yell if the fans start smelling like smoke."]
-        },
-        { "speaker": "system", "portrait": "none", "still": "none", "lines": ["THE CURTAIN AT THE BACK DOES NOT MOVE.", "IT NEVER DOES."] }
-      ]
-    },
-    {
-      "type": "scene",
-      "id": "day-open-2",
-      "slot": "day",
-      "day": 2,
-      "notes": "Matches existing DAY_LINES day 2 (strain carries over); no dayline change needed.",
-      "beats": [
-        { "speaker": "system", "portrait": "none", "still": "none", "lines": ["DAY 2.", "STRAIN CARRIES OVER.", "THE COFFEE DOES NOT."] },
-        {
-          "speaker": "sister",
-          "portrait": "SISTER",
-          "still": "none",
-          "lines": ["Pot is fresh. Drink it before it is not.", "The Kestrel courier drone is back. Same customer, new complaint."]
-        }
-      ]
-    },
-    {
-      "type": "scene",
-      "id": "day-open-3",
-      "slot": "day",
-      "day": 3,
-      "notes": "Matches existing DAY_LINES day 3 (word getting around, stranger tickets); no dayline change needed.",
-      "beats": [
-        { "speaker": "system", "portrait": "none", "still": "none", "lines": ["DAY 3.", "WORD IS GETTING AROUND."] },
-        {
-          "speaker": "sister",
-          "portrait": "SISTER",
-          "still": "none",
-          "lines": ["Somebody asked if we fix possessed machines now.", "I told them we fix intrusions. They looked disappointed either way."]
-        },
-        { "speaker": "system", "portrait": "none", "still": "none", "lines": ["THE TICKET SPIKE IS GETTING TALLER.", "SO IS THE LINE OUTSIDE."] }
-      ]
-    },
-    {
-      "type": "scene",
-      "id": "day-open-4",
-      "slot": "day",
-      "day": 4,
-      "notes": "Matches existing DAY_LINES day 4 (intrusions pacing themselves); note this refers to ordinary customer jobs, not the back room, so it does not preempt Rhea's own run-4 ender pacing reveal.",
-      "beats": [
-        { "speaker": "system", "portrait": "none", "still": "none", "lines": ["DAY 4.", "THE INTRUSIONS ARE PACING THEMSELVES.", "WATCH FOR IT."] },
-        {
-          "speaker": "sister",
-          "portrait": "SISTER",
-          "still": "none",
-          "lines": ["Ledger is balanced. Barely.", "Four tickets came in already and it is not even ten."]
-        }
-      ]
-    },
-    {
-      "type": "scene",
-      "id": "day-open-5",
-      "slot": "day",
-      "day": 5,
-      "notes": "Matches existing DAY_LINES day 5 (halfway, back room quiet); no dayline change needed. Padlock still stays belief-neutral, physical only.",
-      "beats": [
-        { "speaker": "system", "portrait": "none", "still": "none", "lines": ["DAY 5.", "HALFWAY.", "THE BACK ROOM HAS BEEN QUIET. JUST QUIET."] },
-        {
-          "speaker": "sister",
-          "portrait": "SISTER",
-          "still": "none",
-          "lines": ["Halfway through the book and the shop is still standing. Small miracles.", "Eat something. I will not ask twice."]
-        },
-        {
-          "speaker": "system",
-          "portrait": "none",
-          "still": "STILL_LOCKED",
-          "lines": ["THE PADLOCK CATCHES THE LIGHT WHEN THE SUN COMES THROUGH THE CURTAIN.", "STILL CLOSED."]
-        }
-      ]
-    },
-    {
-      "type": "scene",
-      "id": "day-open-6",
-      "slot": "day",
-      "day": 6,
-      "notes": "Matches existing DAY_LINES day 6 (coffee, three tickets, no excuses); no dayline change needed.",
-      "beats": [
-        { "speaker": "system", "portrait": "none", "still": "none", "lines": ["DAY 6.", "THREE TICKETS. NO EXCUSES."] },
-        {
-          "speaker": "sister",
-          "portrait": "SISTER",
-          "still": "none",
-          "lines": ["Coffee is on the bench. Drink it before it becomes a science experiment.", "The Ledgerstone pawn vault sent someone over again. Good, they pay on time."]
-        }
-      ]
-    },
-    {
-      "type": "scene",
-      "id": "day-open-7",
-      "slot": "day",
-      "day": 7,
-      "notes": "Matches existing DAY_LINES day 7 (hard cases, take them anyway); no dayline change needed.",
-      "beats": [
-        { "speaker": "system", "portrait": "none", "still": "none", "lines": ["DAY 7.", "THE HARD CASES ARE FINDING YOU."] },
-        {
-          "speaker": "sister",
-          "portrait": "SISTER",
-          "still": "none",
-          "lines": ["Take them anyway. Hard cases pay better and complain less.", "Three tickets. One of them looks like it bites."]
-        }
-      ]
-    },
-    {
-      "type": "scene",
-      "id": "day-open-8",
-      "slot": "day",
-      "day": 8,
-      "notes": "Matches existing DAY_LINES day 8 (strain as budget); no dayline change needed. Deliberately used a generic register drawer, not the canon shoebox of pharmacy receipts, to avoid preempting the run-4 RECEIPTS journal reveal.",
-      "beats": [
-        { "speaker": "system", "portrait": "none", "still": "none", "lines": ["DAY 8.", "STRAIN IS A BUDGET.", "SPEND IT LIKE RENT IS DUE."] },
-        {
-          "speaker": "sister",
-          "portrait": "SISTER",
-          "still": "none",
-          "lines": ["The register drawer is getting fat with customer receipts again.", "Do the deposit before you dive into anything. Please."]
-        }
-      ]
-    },
-    {
-      "type": "scene",
-      "id": "day-open-9",
-      "slot": "day",
-      "day": 9,
-      "notes": "Matches existing DAY_LINES day 9 (last paying day, back room settles up tomorrow); no dayline change needed.",
-      "beats": [
-        { "speaker": "system", "portrait": "none", "still": "none", "lines": ["DAY 9.", "LAST DAY OF PAYING WORK.", "TOMORROW THE BACK ROOM SETTLES UP."] },
-        {
-          "speaker": "sister",
-          "portrait": "SISTER",
-          "still": "none",
-          "lines": ["Last three tickets before the books close for the cycle.", "Whatever is waiting for you tomorrow, it can wait one more day of customers first."]
-        }
-      ]
-    },
-    {
-      "type": "scene",
-      "id": "day-open-10",
-      "slot": "day",
-      "day": 10,
-      "notes": "New. Replaces the finale-door morning copy per the brief. No working day / no DAY_LINE needed for day 10 (contract only requires 9 entries, one per working day). Stays belief-neutral: uses only the established phrase 'the back room settles up', not a virus/Patch assertion, since this plays on every run's day 10 regardless of run count.",
-      "beats": [
-        { "speaker": "system", "portrait": "none", "still": "none", "lines": ["DAY 10.", "NO TICKETS ON THE SPIKE.", "THE BACK ROOM SETTLES UP TODAY."] },
-        {
-          "speaker": "sister",
-          "portrait": "none",
-          "still": "STILL_COUNTER",
-          "lines": ["No customers today. Just you, the curtain, and that padlock.", "I am not going to pretend I am fine with this. I am going to make coffee instead."]
-        },
-        {
-          "speaker": "system",
-          "portrait": "none",
-          "still": "none",
-          "lines": ["THE PADLOCK WAITS WHERE IT ALWAYS WAITS.", "TODAY IT EITHER LETS GO OR IT DOES NOT."]
-        },
-        {
-          "speaker": "sister",
-          "portrait": "SISTER",
-          "still": "none",
-          "lines": ["Go on, then.", "I will be at the counter. Same as always."]
-        }
+      "type": "teach-copy",
+      "id": "copy-boost-swap",
+      "title": "BAY FULL",
+      "lines": [
+        "Boost bays are full. Take this pick and you choose one installed boost to bench in its place.",
+        "CONFIGS never count against the cap and are never affected by a swap."
       ]
     }
   ]

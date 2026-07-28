@@ -1,141 +1,195 @@
 {
   "agent": "tutorial-agent",
-  "brief": "teaching-2026-07-26",
-  "notes": "Full-sweep audit, no proposals to review this cycle. Full findings and file/line citations live in pipeline/gates/tutorial-review.md; this file holds only the items that close what the gate flagged. Two pure code fixes have no item type here because no design decision is needed, so they are stated directly for the Orchestrator: (1) duel.tsx:419's cascadeBanked signal reads the sign of econ.player.drainNext, which is also touched by the SIPHON-trap and ECHO TAP augments, not just genuine cascades; derive it instead from whether a 'cascadeRam' fx (duel-actions.ts:119, already distinct from 'siphonFire') fired for the player this settle. (2) content/teaching.ts:20-28's TeachSurface union needs 'finalePre' and 'runEnd' added so the finaleGate and future waivers can name their real surface instead of borrowing an unrelated one. Retiring the day-board and kit-config coachmarks (see gate, Sweep 1) must land in the same edit as the jobBoard/kitConfig/programTiers waivers below, or teach-sim's 'both waived and taught' check fails the build.",
+  "brief": "deep-balance-2026-07-28",
+  "notes": "Gates and specs teaching for the two player-facing systems in this cycle's scope (shaped patch pieces, boost bays) plus the gridlock strain chip. This replaces the prior cycle's tutorial-agent.json (brief teaching-2026-07-26); that content has already shipped per the repo's git history. Everything below is PLANNED, not TAUGHT: none of these surfaces exist in shipped code yet, so tutorial/ledger.md records the plan with status PLANNED and a real audit is owed once the Orchestrator integrates and teach-sim can actually check it. Full reasoning and tier-by-tier verdicts live in pipeline/gates/tutorial-review.md.\n\nEngine changes needed before these items are literal in code (no design decision, stating directly): (1) content/teaching.ts:37-42's TeachWhen union needs two new members, 'craftReady' (fires true when the pouch holds at least two owned patch pieces whose shapes have a legal union, i.e. the geometric union of their arms is strictly bigger than either input alone; this mirrors the same legality check the craft action itself must enforce) and 'swapOffered' (fires true when the current augment draft includes a BOOST-kind card while the player's owned boost count already equals their current bay cap, so accepting it requires benching one already installed; never true for a CONFIG card, which sits outside the cap). (2) content/teaching.ts:128's patchCellBuy entry and content/teaching.ts:188-193's augmentPoolDry entry both come OUT of MECHANIC_INVENTORY entirely, not converted to a waiver; see tutorial/ledger.md's waiver log for why each is genuinely retired rather than re-explained. (3) The patch-craft moment's anchor ('craft') has no CSS position rule yet (styles.css:2080-2086 defines screen/par/readout/rows/draft/grid/patch only); position is the ux-agent's call per standing practice, referenced via this item's uiSpec (patch-craft-flow, expected from ux-agent this cycle, not yet filed as of this proposal).\n\nSurface budget check (teach-sim's caps): upgrade carries 3 moments after this pass (day-upgrade, night-shop, patch-craft), 2 of them firstSight (day-upgrade, night-shop), at the cap of 2 but not over it; patch-craft is intentionally NOT firstSight so it does not add a third. result carries 3 moments (strain-chip, augment-draft, boost-swap), 1 firstSight. duel is unchanged at 3 moments (par-budget, cascade-bank, patch-cell-use), 0 firstSight, since patchShapes folds into the existing patch-cell-use moment rather than adding a new one. All within the 4-moment / 2-firstSight caps.\n\nDid not file a copy order for the ram tip's CARRY CACHE clause removal, even though the brief's phrasing listed one: tips are self-written by this seat per standing practice (pipeline/gates/tutorial-review.md from teaching-2026-07-26, 'Tips are not routed through copy orders'), and a five-word deletion is exactly the case that practice exists for. Filed five copy orders instead of the brief's five: dropped copy-ram-tip, added copy-boost-swap for the new boost-swap coachmark, which is not in the brief's explicit list but earns one under the standing rule that every new coachmark gets a copy order.\n\nDependency note: this proposal's patchDrop and gridlockChip waivers, and the patch-cell-use/night-shop/patch-craft moments' uiSpec references, depend on ux-agent items (patch-ghost-preview, patch-craft-flow, darknet-window, pick-to-swap-flow, result-drop-reveal) that the brief assigns to ux-agent but that had not been filed as of this proposal (pipeline/proposals/ux-agent.json on disk is still the prior cycle's file). Narrative-director has already run for this cycle and filed supporting copy this proposal cites directly (pipeline/proposals/narrative-director.json): result-screen-rows (drop naming, gridlockChipLabel), gridlock-endreason, manual-sections (PATCH PIECES, BOOST BAYS), duel-toast-patch-piece.",
   "items": [
     {
       "type": "mechanic",
-      "id": "ramCarry",
-      "label": "Unspent RAM carries into your next turn, capped",
+      "id": "patchShapes",
+      "label": "Patch pieces roll a fixed shape and orientation; they never rotate in hand",
       "firstContact": "duel",
-      "rationale": "New row. duel-setup.ts:45-59 and duel-actions.ts's beginTurnEconomy/endPlayerTurn carry up to carryCap (2, or 4 with CARRY CACHE, duel-setup.ts:136) unspent RAM forward each turn; the rest is forfeit. Nothing in the inventory names this and no control states it today. Closed by the ram tip rewrite below, not a new coachmark: this is a recurring reference number, not a one-time rule."
+      "rationale": "Folded into the existing patch-cell-use coachmark rather than a new moment: same trigger (holdingCells), same surface, same audience. Closed by the patch-cell-use rewrite below."
+    },
+    {
+      "type": "mechanic",
+      "id": "patchCraft",
+      "label": "Combine two patch pieces into the union of their arms, at night or from the loadout bench",
+      "firstContact": "upgrade",
+      "rationale": "New mechanic, new coachmark. Closed by the patch-craft moment below, gated on the new craftReady trigger so it only fires once the player actually has a legal pair, not on first sight of an empty bench."
+    },
+    {
+      "type": "mechanic",
+      "id": "darkWebBuy",
+      "label": "Buying a random patch piece from the darknet, price rising by day",
+      "firstContact": "upgrade",
+      "rationale": "REPLACES patchCellBuy (see the mechanic-waiver-adjacent retirement note in tutorial/ledger.md; patchCellBuy is removed from MECHANIC_INVENTORY outright, not waived). Closed by the night-shop rewrite below."
+    },
+    {
+      "type": "mechanic",
+      "id": "slotBuy",
+      "label": "Buying an extra boost bay at night, raising the boost cap",
+      "firstContact": "upgrade",
+      "rationale": "Folded into the night-shop rewrite rather than a third coachmark on the upgrade surface, which is already at the 2-firstSight cap (day-upgrade, night-shop). A one-clause pointer here is enough; the deeper consequence of the cap (a full bay forces a swap) is boostSwap's job, taught separately at the moment it actually happens."
+    },
+    {
+      "type": "mechanic",
+      "id": "boostSlots",
+      "label": "Boost bays cap ownership at 3, buyable up to 5; configs sit outside the cap",
+      "firstContact": "result",
+      "rationale": "Tier 1, a tip, not a coachmark: the cap and buyable ceiling are numbers the player will want to recheck every time they draft a boost or weigh buying a bay, the textbook 'will they want this again' case. Closed by the boostSlots tip below."
+    },
+    {
+      "type": "mechanic",
+      "id": "boostSwap",
+      "label": "A full boost bay swaps a new BOOST in for one already installed instead of refusing it",
+      "firstContact": "result",
+      "rationale": "Tier 2, a new coachmark: this is a rule that changes what the player does at a specific moment (pick which to bench), not a recurring number, and it only matters the first time it actually happens, which is exactly what the new swapOffered trigger targets. Closed by the boost-swap moment below."
+    },
+    {
+      "type": "mechanic",
+      "id": "patchDrop",
+      "label": "Post-dive piece rewards, a general drop and the reworked CLEAN RUN bonus",
+      "firstContact": "result"
+    },
+    {
+      "type": "mechanic-waiver",
+      "id": "patchDrop",
+      "waiver": "The result screen's drop row names the recovered piece by shape and shows its glyph inline, the only screen this can occur on, the same precedent as the turnCap waiver. Covers both a general post-dive drop and the reworked CLEAN RUN bonus, since both land through the same row: narrative-director's result-screen-rows copy (already filed, pipeline/proposals/narrative-director.json) supplies dropRevealLabel 'PATCH PIECE RECOVERED', the four dropRevealVariants naming straight, elbow, tee, and cross by name, dropRevealCappedVariant for a full pouch, and the rewritten cleanRunBanked/cleanRunCapped strings.",
+      "expiresIf": "the drop row stops naming the shape in visible text, drops the glyph, or a piece ever first appears to the player on a screen other than the result screen without equivalent naming",
+      "rationale": "PROVISIONAL. The naming half is real and already written (narrative-director's copy, cited above); the glyph half is not yet, it depends on ux-agent's forthcoming result-drop-reveal ui-spec (brief-assigned, not yet filed as of this proposal). Filed ui-spec patch-drop-row-naming this cycle to lock the specific acceptance criteria (name plus glyph, both paths) this waiver needs to actually hold. Do not mark this waiver earned in the ledger until both land; tutorial/ledger.md flags it PLANNED for exactly this reason."
+    },
+    {
+      "type": "mechanic",
+      "id": "gridlockChip",
+      "label": "Gridlock wins now chip a flat 6 strain despite paying full rate",
+      "firstContact": "duel",
+      "rationale": "firstContact is duel, not result, on the runReset precedent: the fact is first stated on the duel screen's own end overlay the instant the dive ends, before the player ever reaches the result screen."
+    },
+    {
+      "type": "mechanic-waiver",
+      "id": "gridlockChip",
+      "waiver": "Two texts carry this, the same shape as the runReset waiver. The duel's own end overlay states the cost the instant it happens (narrative-director's gridlock-endreason copy, already filed: 'Total gridlock. Neither signal can reach the core. The link collapses in your favor, and the dead link bites on the way out.'). The result screen's strain breakdown then itemizes the exact number as its own row, the same way the turn cap already gets its own '-10, hit the turn cap' row.",
+      "expiresIf": "either text stops stating the cost, or the itemized breakdown row (ui-spec gridlock-chip-breakdown) does not land",
+      "rationale": "PROVISIONAL. The end-overlay half is real and already written (narrative-director's copy, cited above); the itemized-row half does not exist in code yet. Filed ui-spec gridlock-chip-breakdown this cycle, which also specs the gridlockWin plumbing needed to render narrative-director's already-filed gridlockChipLabel copy ('link collapsed in gridlock', pipeline/proposals/narrative-director.json, result-screen-rows). Do not mark this waiver earned until that row ships; tutorial/ledger.md flags it PLANNED for exactly this reason. Considered and rejected: a coachmark. The turn cap sets direct precedent for a chip cause living entirely in the itemized row with no coachmark of its own, and gridlock is rare enough (7 of 3800 dives measured last cycle for the sibling turn-cap case) that a one-time rule beats a callout most players will never trigger."
+    },
+    {
+      "type": "teach-tip",
+      "id": "boostSlots",
+      "teaches": ["boostSlots"],
+      "control": "the boost bay counter on a BOOST draft card, and the boost list in LOADOUT.CFG",
+      "text": "Boost bays hold 3 at once. Buy more at night, up to 5. Configs never count against this cap.",
+      "tier": "1. The cap and the buyable ceiling are numbers the player will want to recheck every time they draft or consider buying a bay, reference rather than a one-time rule. The consequence of a full bay, a forced swap, gets its own coachmark (boost-swap) instead of living here."
     },
     {
       "type": "teach-tip",
       "id": "ram",
       "teaches": ["ram", "ramCarry"],
-      "control": "the RAM readout in the dive dock (duel.tsx kp-dock-ram) and the day board's RAM per turn summary",
-      "text": "RAM refills each turn; up to 2 unspent carries into the next one (4 with CARRY CACHE). Casts and rotations cost 1 each.",
-      "tier": "1, unchanged. Not tier 0: the dock shows the number but not the carryover rule or its cap. Reissuing this tip for two reasons: the text never mentioned carryover, and the tip is currently mounted only on the day board's static ramPerTurn summary (screens.tsx:139); it is missing entirely from the live dock the player actually manages during a dive (duel.tsx:564-569, no title attribute at all). Mount title={tip(\"ram\")} on that dock label too, in addition to the existing day-board mount."
+      "control": "the RAM readout in the dive dock, and the day board's per turn summary",
+      "text": "Refills every turn. A rotation or a cast costs 1. Up to 2 unspent carries over. The rest is lost.",
+      "tier": "1, unchanged tier, text-only edit. CARRY CACHE is cut this cycle (ability-agent's four-augment surgery per the brief), so the clause naming its 4-carry exception is no longer true and is removed. The base 2-carry rule is unaffected by the cut and needs no other change. Written directly rather than routed through a copy order; see the top-level notes."
     },
     {
-      "type": "teach-tip",
-      "id": "manualRef",
-      "teaches": ["manualRef"],
-      "control": "the MANUAL.TXT desktop icon",
-      "text": "Full reference for the loop, the kit, and every augment. Open it any time.",
-      "tier": "1, replacing a coachmark. manualRef was previously taught by the day-board coachmark's second line; that coachmark is being retired (see gate Sweep 1) because its jobBoard content fully duplicates screens.tsx:103's permanent header. A pointer to a standing reference document is itself reference, not a one-time rule, so a persistent tip on the icon that carries it is a better fit than a coachmark that fires once on day 1, before there is anything in the manual worth looking up yet. Needs DesktopIconProps to accept a title passthrough (icons.tsx:128-146, currently has none) and the MANUAL.TXT call site (shop-os.tsx:452) to pass it."
+      "type": "teaching-moment",
+      "id": "patch-cell-use",
+      "teaches": ["patchCellUse", "patchShapes"],
+      "surface": "duel",
+      "when": "holdingCells",
+      "anchor": "screen",
+      "order": 80,
+      "notBeforeDay": 1,
+      "title": "PATCH PIECE",
+      "intent": "Player is holding a shaped patch piece for the first time this run. State the action (click a slag block in reach, 1 RAM, one use) and the new rule that changes how they should use it: the piece's arms land exactly as held, it never rotates once placed, so the right move is picking a slag block the shape actually fits, not saving it and hoping to turn it later.",
+      "lines": null,
+      "copyOrder": "copy-patch-cell-use",
+      "tier": "2, a coachmark, unchanged tier from the shipped moment. Both facts are rules that change what the player does the moment they first hold a piece (which slag to burn it on), not numbers to re-check later, so a tip is the wrong tier for either half.",
+      "uiSpec": "patch-ghost-preview"
     },
     {
-      "type": "mechanic-waiver",
-      "id": "jobBoard",
-      "waiver": "JobBoard's own header states this permanently, every visit: 'Three tickets. Strain is shared across all of them. Pick your order.' (screens.tsx:103).",
-      "expiresIf": "that header paragraph is removed, shortened past the point of stating the shared-strain fact, or the day board's structure changes so jobs no longer visibly share one strain meter",
-      "rationale": "Converts jobBoard from taught to waived. The day-board coachmark's first line is a near-restatement of this permanent header (see gate); retiring the coachmark and waiving the mechanic reaches for tier 0 instead of tier 2, per the placement bias rule. Must land together with removing or narrowing content/teaching.ts:201-214 (day-board) and its mount at screens.tsx:145, or teach-sim fails the both-waived-and-taught check."
+      "type": "teaching-moment",
+      "id": "night-shop",
+      "teaches": ["nightPatch", "darkWebBuy", "slotBuy"],
+      "surface": "upgrade",
+      "when": "firstSight",
+      "anchor": "patch",
+      "order": 71,
+      "notBeforeDay": 1,
+      "title": "NIGHT SHOP",
+      "intent": "First sight of the closed-day screen. Night patch still buys strain back, unchanged. New: the deterministic 35cr piece buy is gone, replaced by a random draw off the darknet whose price climbs by day, so the player can no longer shop for an exact shape. Also new: an extra boost bay can be bought here at night, raising the boost cap; keep this to one short clause since its own consequence (a full bay swaps) is taught separately the moment it first happens.",
+      "lines": null,
+      "copyOrder": "copy-night-shop",
+      "tier": "2, a coachmark, unchanged tier from the shipped moment. Each purchase button already prints its own live price (tier 0 covers the recurring numbers); what tier 0 cannot say is that the piece buy lost its determinism, a rule that changes how the player plans a purchase, needed once, right when they first see this screen.",
+      "uiSpec": "darknet-window"
     },
     {
-      "type": "mechanic-waiver",
-      "id": "kitConfig",
-      "waiver": "KitScreen's own header states this permanently, every visit: 'Three programs, 1 RAM each, once per turn each. Tiers come from closed days; configs come from cleared jobs. Tune it whenever; it holds until you change it.' (screens.tsx:241-244).",
-      "expiresIf": "that header paragraph is removed or no longer states the per-program cost, the once-per-turn rule, or where tiers and configs come from",
-      "rationale": "Converts kitConfig from taught to waived. The kit-config coachmark is a near-verbatim duplicate of this permanent header (see gate); recommend retiring the coachmark entirely. Must land together with removing content/teaching.ts:229-242 (kit-config) and its mount at screens.tsx:346."
+      "type": "teaching-moment",
+      "id": "patch-craft",
+      "teaches": ["patchCraft"],
+      "surface": "upgrade",
+      "when": "craftReady",
+      "anchor": "craft",
+      "order": 75,
+      "notBeforeDay": 1,
+      "title": "PATCH CRAFT",
+      "intent": "Fires the first time the pouch actually holds a legal craftable pair (a union of two owned pieces' arms strictly bigger than either alone). State that crafting fuses two pieces into that union, free, at night or from the loadout bench, and only works when the result is strictly bigger; both pieces are spent either way.",
+      "lines": null,
+      "copyOrder": "copy-patch-craft",
+      "tier": "2, a coachmark. This is a rule, not a number, and it only matters once the player has a real choice in front of them, which is exactly what the craftReady trigger targets instead of firing on first sight of an empty bench with nothing craftable yet.",
+      "uiSpec": "patch-craft-flow"
     },
     {
-      "type": "mechanic-waiver",
-      "id": "programTiers",
-      "waiver": "The same KitScreen header covers this half of the coachmark too: 'Tiers come from closed days; configs come from cleared jobs.' (screens.tsx:241-244).",
-      "expiresIf": "that header paragraph stops stating where tiers come from, or the per-program tier display (the filled-square rows) is removed from the kit cards",
-      "rationale": "Paired with the kitConfig waiver above; both mechanics were taught by the single kit-config coachmark being retired."
+      "type": "teaching-moment",
+      "id": "augment-draft",
+      "teaches": ["augmentDraft", "augmentCadence"],
+      "surface": "result",
+      "when": "draftOffered",
+      "anchor": "draft",
+      "order": 61,
+      "notBeforeDay": 1,
+      "title": "AUGMENT DRAFT",
+      "intent": "Line 1 unchanged: clearing a ticket offers three augments, one holds for the run. Line 2 rewrite only: keep the real cadence (three tickets a day, a clean day banks three) but drop the implication that the pool can run dry. With boost bays capped at 3 to 5 and only 4 config augments total, the player can never own more than bays-plus-4 at once, and a full bay swaps instead of blocking, so the well cannot empty the way the old copy's premise implied.",
+      "lines": null,
+      "copyOrder": "copy-augment-draft-line2",
+      "tier": "2, unchanged. This coachmark already earned its slot; only its second line's premise needs correcting so it does not go on teaching a fact that stopped being true this cycle."
     },
     {
-      "type": "mechanic",
-      "id": "runReset",
-      "label": "The run resets on a loss",
-      "firstContact": "duel",
-      "rationale": "Correcting firstContact from 'result' to 'duel'. duelFinished never routes a loss through the result screen (run-reducer.ts:216-221; result is win-only); the loss path goes straight to runEnd. The text that actually states the reset first appears on the duel screen's own CORE LOST overlay (duel.tsx:683-686), which is a surface already reached by every real run, so no TeachSurface change is needed for this correction."
-    },
-    {
-      "type": "mechanic-waiver",
-      "id": "runReset",
-      "waiver": "The duel screen's own loss overlay states it first, the instant it happens: 'CORE LOST... Its flood got there first. Neural Strain zeroes. The run is over.' (duel.tsx:683-686). The runEnd story scene restates it in voice immediately after: 'NEURAL STRAIN: ZERO. CONNECTION SEVERED. RUN N LOGGED.' (content/story.ts:33-38, strainBeat).",
-      "expiresIf": "either text stops stating the reset, or a third path to ending a run ships without equivalent messaging",
-      "rationale": "This waiver only covers the strain-zero loss path. The ABANDON button (shop-os.tsx:537-548, always available whenever a run exists) reaches the identical reset through neither text: it shows only a native confirm reading 'Abandon this run? Unlocked routines are kept,' which names nothing real (kit tiers, configs, augments, credits, and patch cells do not persist between runs) and could be read as promising persistence that does not exist. This mechanic is not fully covered until the Abandon path is fixed; see ui-spec abandon-confirm-accuracy. Tier 0 is the right fix, not a new coachmark: a rare, deliberate, already-interruptive native confirm just needs to say something true."
-    },
-    {
-      "type": "mechanic",
-      "id": "finaleGate",
-      "label": "Day 10 is the back room",
-      "firstContact": "finalePre",
-      "rationale": "Correcting firstContact from 'upgrade' to 'finalePre', the screen that actually shows the door and drops the job board. 'finalePre' is not yet a member of the TeachSurface union (content/teaching.ts:20-28); this correction depends on that union being widened (see top-level notes and the gate's routing section). Player-facing coverage is already fine; this is a bookkeeping-only fix so teach-sim's reachability check is actually testing the real claim instead of an unrelated screen."
-    },
-    {
-      "type": "mechanic-waiver",
-      "id": "finaleGate",
-      "waiver": "Day 10's morning scene states 'NO TICKETS ON THE SPIKE. THE BACK ROOM SETTLES UP TODAY.' (content/story.ts:892-908), and the FinalePre screen that follows shows no job board at all, only the DAY 10 header and the OPEN THE BACK ROOM door (screens.tsx:551-573).",
-      "expiresIf": "either the day-10 morning scene or the FinalePre screen stops stating or showing this",
-      "rationale": "Text and evidence unchanged from the existing waiver; only the mechanic entry's firstContact metadata is being corrected (see the paired mechanic item above)."
-    },
-    {
-      "type": "mechanic-waiver",
-      "id": "credits",
-      "waiver": "The day board (screens.tsx:103-144) and the NIGHT PATCH row on the Upgrade screen (screens.tsx:496-511) keep price and balance in the same row.",
-      "expiresIf": "any spend control's row stops showing price and balance together",
-      "rationale": "Narrowed from the previous blanket claim. The BUY PATCH CELL row on the Upgrade screen (screens.tsx:512-540) states the price and the patch-cell count but never restates the credits balance, so it currently fails this waiver's own test, exactly where the ledger predicted risk ('the night screen is the one at risk'). Filed ui-spec night-shop-credit-adjacency to restore it; re-check this waiver once that lands, at which point the blanket wording can be restored."
+      "type": "teaching-moment",
+      "id": "boost-swap",
+      "teaches": ["boostSwap"],
+      "surface": "result",
+      "when": "swapOffered",
+      "anchor": "draft",
+      "order": 62,
+      "notBeforeDay": 1,
+      "title": "BAY FULL",
+      "intent": "Fires the first time a drafted BOOST would exceed the player's current bay cap. State that taking it means benching one already installed, they choose which, and that configs are never affected since they sit outside the bay cap.",
+      "lines": null,
+      "copyOrder": "copy-boost-swap",
+      "tier": "2, a coachmark. This is the first moment the pouch behaves differently than every earlier draft the player has seen (a free add becomes a forced choice), a once-needed rule, not a recurring number; the cap number itself is the boostSlots tip's job, not this moment's.",
+      "uiSpec": "pick-to-swap-flow"
     },
     {
       "type": "ui-spec",
-      "id": "night-shop-credit-adjacency",
+      "id": "gridlock-chip-breakdown",
       "area": "screens",
-      "spec": "In UpgradeScreen's patch-cell row (screens.tsx, the div.kp-patchrow.kp-cellrow block, roughly lines 512-540), add the current credits balance (run.credits, in 'cr') into that row, next to or immediately below the BUY PATCH CELL button, the same way the NIGHT PATCH row directly above it already pairs its price with the balance in one row (screens.tsx:508-510). This restores the credits mechanic's waiver premise that every spend control keeps its price and the player's balance adjacent.",
+      "spec": "Extends the strain breakdown list the prior cycle's strain-chip-breakdown ui-spec already put on ResultScreen (screens.tsx, the kp-chip-breakdown block itemizing rotations over par, traps sprung, and the turn cap). Gridlock wins now chip a flat 6 strain at full pay (BRIEF deep-balance-2026-07-28). Add a fourth conditional line, keyed off a new gridlockWin boolean threaded the same way capWin already is: duel.tsx's DuelFinish interface gains gridlockWin: boolean (true when state.winKind === 'gridlock'); finish() populates it; shop-os.tsx's onFinish passes it through to the duelFinished dispatch; run-reducer.ts's duelFinished RunAction variant and its lastResult object carry it; save.ts's RunState.lastResult shape gains the field. The rendered row uses narrative-director's already-filed gridlockChipLabel copy ('link collapsed in gridlock', pipeline/proposals/narrative-director.json, result-screen-rows item), paired with a -6 value, shown only when r.gridlockWin is true, folded into the same running total that decides whether the 40-cap 'strain billed, capped' line appears.",
       "acceptance": [
-        "the patch-cell row visibly states {run.credits} cr in the same row as the BUY PATCH CELL button on every render",
-        "the NIGHT PATCH row's existing price/balance adjacency is unchanged",
-        "no layout regression when patch cells are already at PATCH_CELL_MAX (button disabled, balance still shown)"
+        "a gridlock win's payout row still reads full rate, never the halved turn-cap rate",
+        "a gridlock win's strain breakdown shows its own 'link collapsed in gridlock' line at -6, distinct from over-par, trap, and turn-cap lines",
+        "a non-gridlock win never renders the gridlock line",
+        "the 40-strain cap's running total includes the gridlock 6 when deciding whether the capped line appears",
+        "gridlockWin threads unchanged in value from duel.tsx's finish() through duelFinished into RunState.lastResult, the same path overRotations and trapsFired already take"
       ]
     },
     {
       "type": "ui-spec",
-      "id": "ram-upgrade-cap-parity",
+      "id": "patch-drop-row-naming",
       "area": "screens",
-      "spec": "In UpgradeScreen's '+1 RAM / TURN' button (screens.tsx, roughly lines 485-491), disable it and switch its label to MAXED once run.ramPerTurn reaches MAX_RAM (9, run-reducer.ts:48), exactly like the three tierBtn buttons already do at tier 3 (screens.tsx:451-468, disabled={tier >= 3}, label falls back to MAXED). Today the button never disables and never relabels; clicking it past the cap silently spends the player's one nightly upgrade for zero effect, with only a '9 to 9' label change as a hint.",
+      "spec": "Narrows the acceptance for ux-agent's forthcoming result-drop-reveal ui-spec (brief-assigned, deep-balance-2026-07-28) so the patchDrop mechanic can stay a waiver rather than needing a coachmark, on the turnCap precedent: the payout row already names its own cause inline, the only screen it can occur on. The result screen's drop row must print the piece's shape NAME, not only a glyph or icon, using narrative-director's already-filed copy (pipeline/proposals/narrative-director.json, result-screen-rows: dropRevealLabel 'PATCH PIECE RECOVERED' plus the four dropRevealVariants naming straight, elbow, tee, and cross by name) and render the piece's shape glyph next to it. The same requirement applies to the reworked CLEAN RUN reward path (cleanRunBanked/cleanRunCapped, same copy item), since both are the same underlying patchDrop mechanic under one waiver.",
       "acceptance": [
-        "the RAM upgrade button is disabled and reads MAXED once run.ramPerTurn is 9",
-        "the button's behavior below the cap is unchanged",
-        "visual/interaction parity with how the three tierBtn buttons handle their own cap"
-      ]
-    },
-    {
-      "type": "ui-spec",
-      "id": "abandon-confirm-accuracy",
-      "area": "desktop",
-      "spec": "The ABANDON button's native confirm string in shop-os.tsx:542 currently reads 'Abandon this run? Unlocked routines are kept.' Nothing described as 'unlocked routines' actually persists: kit tiers, program configs, augments, credits, and patch cells all reset on the next startRun (baseRunKit(), run-reducer.ts:135); only meta-level state (attempts count, whether the machine has ever opened, which teaching moments have been shown) survives, and that is true of every run end, not something Abandon specifically preserves. Rewrite the confirm string so it does not use the phrase 'unlocked routines' or otherwise imply kit or run progress carries over, and states plainly that this ends the run exactly like a loss would.",
-      "acceptance": [
-        "the confirm string does not claim any kit progress, program config, augment, or credit balance persists",
-        "the confirm string states the run ends or resets, matching the actual effect of a strain-zero loss",
-        "no em or en dash in the string"
-      ]
-    },
-    {
-      "type": "ui-spec",
-      "id": "strain-chip-breakdown",
-      "area": "screens",
-      "spec": "ResultScreen's NEURAL STRAIN row (screens.tsx:376-381) shows one combined chip number. finishDuel (duel-actions.ts:79-95) actually computes it from three independent inputs: 2 strain per rotation over par, 4 strain per trap sprung against the player (econ.trapsFired), and a flat +10 if the win came from hitting the round cap, with the total capped at 40. Break the nonzero chip down on this row into its contributing parts (e.g. rotations over par, traps sprung, turn cap) instead of a single opaque number, so a player who stayed under par but still got chipped can see it was a sprung trap, not a rotation mistake.",
-      "acceptance": [
-        "a chip caused only by over-par rotations reads the same as today (or clearly labeled as such)",
-        "a chip that includes trap or turn-cap contributions names them, with numbers matching duel-actions.ts's formula exactly (2/rotation over par, 4/trap sprung, +10 flat on a cap win, total capped at 40)",
-        "a zero chip still reads as 'clean' per the existing copy"
-      ]
-    },
-    {
-      "type": "ui-spec",
-      "id": "touch-safe-tooltips",
-      "area": "duel",
-      "spec": "Every teach-tip is wired as a plain HTML title attribute (duel.tsx:458,463; screens.tsx:126,137,139,271,298), and the mid-dive ability description panel (kp-ability-info, duel.tsx, shown via onMouseEnter/onMouseLeave on the SCAN/ATTACK/DEFEND buttons) only opens on hover. Neither survives touch input, and the Loadout window, the only other place the same mode descriptions exist as static text, is not reachable while a dive is in progress (the dive owns the whole screen). Design a touch-safe way to reveal both a title tooltip's content and the ability-info panel on tap, without stealing the tap that would otherwise cast the program or perform the control's primary action.",
-      "acceptance": [
-        "every control currently exposing a tip via title has a tap-triggered equivalent on a touch device",
-        "the ability-info panel can be opened by a tap that does not simultaneously fire the button's cast action",
-        "a second tap, or a tap outside the panel, dismisses it",
-        "desktop hover behavior is unchanged"
+        "any post-dive piece reward names the shape (straight, elbow, tee, or cross) in visible text, not only an icon",
+        "the same row also renders the piece's shape glyph",
+        "a capped pouch still names the shape that was left on the bench, using the dropRevealCappedVariant / cleanRunCapped copy",
+        "no screen other than the result screen is the first place a player learns their pouch grew or a piece was left on the bench"
       ]
     }
   ]

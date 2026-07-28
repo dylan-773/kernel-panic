@@ -1,73 +1,98 @@
-# Brief: teaching-2026-07-26
+# Brief: deep-balance-2026-07-28
 
-A teaching pass, not a production cycle. Scope is what the player
-understands, swept across the WHOLE shipped surface, not just one cycle's
-proposals. No new mechanics are being added by this brief.
+The deferred balance pass, plus the two systems it was waiting on. This is
+a production cycle with engine work: the Orchestrator lands three systems
+(kitted sim profile, shaped patch pieces, boost bays) and the crew supplies
+the content, copy, teaching, and curve numbers that make them ship-ready.
 
-Context: the teaching layer itself is one cycle old. It was stood up during
-`story-retune-1` alongside PAR, patch cells, strain regen, the halt trap fix,
-four new augments, and the mode retune. That means every inventory entry,
-every waiver, and every coachmark in `content/teaching.ts` was authored in a
-single sitting against a surface that was still moving. This pass is the
-first chance to check that work against the game as it actually shipped.
+Context: the playtest note "late game is too easy, patches trivialize
+entire levels" has been unmeasurable because `sim.ts` runs a kit-less,
+rotation-only proxy. The validation report (playtest-repair-2026-07-27)
+names the kitted profile as this pass's first task. Design decisions are
+locked by the user and recorded in the Orchestrator's plan:
+
+- Patch cells become shaped pieces (straight, elbow, tee, cross) with a
+  fixed orientation rolled at acquisition, never rotatable in hand.
+  Crafting combines two pieces into the geometric union of their arms,
+  legal only when the union is strictly bigger than both inputs. The
+  deterministic 35cr buy dies; acquisition is a dark-web random purchase,
+  post-dive drops, and a reworked CLEAN RUN. Roll weights mirror board
+  generation: I 40 / L 45 / T 12 / X 3.
+- Boosts are capped at 3 bays, purchasable to 5 (150cr then 300cr).
+  Configs stay outside the cap. Full bays draft as pick-to-swap.
+- Catalog surgery from the user's tier list: surge, bulwark, carryCache,
+  slagWard are cut and replaced; A/B tier gets buff analysis; above-S
+  (hotBoot, echoTap) gets tone-down candidates. S is the target ceiling.
+- Gridlock wins take a flat +6 strain chip at full pay.
+- Economy is retuned sink-side only: nightPatchCost(day) = 45 + 5*day,
+  bay costs above, darkPatchCost(day) = 25 + 5*(day - 1) as the opening
+  values. Income is untouched.
 
 ## Scope
 
-- **tutorial-agent**: full-sweep audit. Three questions, in this order.
-  1. **Inventory completeness.** Walk the shipped surface against
-     `MECHANIC_INVENTORY`. What exists in code that no inventory entry
-     names? Read the reducers (`run-reducer.ts`, `duel-reducer.ts`,
-     `duel-actions.ts`, `duel-power.ts`), the content modules, and every
-     screen. A mechanic the player must understand that is absent from the
-     inventory is invisible to `teach-sim`, which is the exact failure the
-     ledger exists to prevent.
-  2. **Waiver re-check.** Nine waivers, eight of them written the same day
-     as the interfaces they describe. Open each named surface and confirm
-     the claim is still literally true. A waiver whose surface has been
-     restyled, shortened, or moved is dead. Say so and specify the moment
-     that replaces it.
-  3. **Firing correctness.** Every moment's `when`, `order`, `surface`, and
-     `notBeforeDay` against where its `<Teach>` is actually mounted and
-     what signals that call site supplies. Two known traps: only one callout
-     renders at a time (lowest `order` across everything mounted wins), and
-     `notBeforeDay` gates day 0. A moment that can never win its tie, or
-     whose signal is never passed, is dead code that reads as coverage.
+- **ability-agent**: the surgery. Confirm the four cuts. Author ~4
+  replacement boosts as full proposals (synergy, counter, engineNote,
+  desc >= 20 chars) from the directions in the plan: patch refund, pouch
+  extension, clean-pay bender, first-trap forgiveness, overtime clause
+  (tone flag), dark-web discount. New schema fields are available:
+  `requires` ({kind:"augment"|"pouch"}) and `weight`. Buff/nerf proposals
+  for the named A/B and above-S augments, each with the exact player-side
+  call site: never touch SIPHON_STEAL, LOCK_ROUNDS, or WARD_ROUNDS, which
+  are shared with the opponent.
 
-  Also close the ledger's own open item: file copy orders at
-  `pipeline/copy/orders/<id>.json` for all ten existing coachmarks. Every
-  line currently in `teaching.ts` is an Orchestrator draft standing the
-  surface up; the words belong to the narrative-director. Include the tips
-  if their wording needs the same treatment.
+- **arc-composer**: waits for Checkpoint A (the BEFORE kitted curve in the
+  validation report). Then DayConfig deltas against the kitted targets
+  (D1-3 86/84/82, D4-6 70/72/70, D7-9 64/58/55, finale 48) using the new
+  levers: per-day `slag` density, `patchDrop` rates, late-day and finale
+  grid growth (the "grid size almost never" default is waived by the user
+  for this pass), and a finale package with an explicit parFlat. Hard
+  gate: zero round-1 finale closes for the kitted profile.
 
-  Write `pipeline/gates/tutorial-review.md`,
-  `pipeline/proposals/tutorial-agent.json`, and update `tutorial/ledger.md`.
+- **ux-agent**: ui-specs for patch-pouch-strip, patch-ghost-preview,
+  patch-craft-flow, darknet-window (the reveal beat is THE sfx/animation
+  moment), result-drop-reveal, boost-bay card, and the pick-to-swap flow.
+  Sfx orders: darknet reveal sting, craft success. Dock overflow on small
+  screens is an acceptance criterion.
 
-- **ux-agent**: tier 0 items only, on re-spawn after the audit. A clearer
-  readout beats a coachmark every time, so anything the audit can push up to
-  tier 0 should go there instead of into `TEACHING`.
+- **tutorial-agent**: mechanic inventory deltas (patchShapes, patchCraft,
+  darkWebBuy replacing patchCellBuy, boostSlots, boostSwap, slotBuy,
+  patchDrop as a waiver candidate), the new `swapOffered` and `craftReady`
+  triggers (pre-authorized engine changes), retirement of the
+  augmentPoolDry waiver, and the CARRY CACHE clause in the ram tip. Gate
+  every artifact of this pass for teaching coverage.
 
-- **narrative-director**: fulfills every open copy order. Fills `title` and
-  `lines` in place. Owns the words, not the moment. Also takes any tier 3
-  item the audit raises, as a scene request rather than a coachmark.
+- **narrative-director**: copy orders for the rewritten night-shop and
+  patch-cell-use coachmarks, the new patch-craft coachmark, darknet window
+  flavor (vendor and offline states), the gridlock endReason (it currently
+  reads as a favor; it now costs strain), drop-row and capped variants,
+  cleanRun desc rewrite, MANUAL sections (PATCH PIECES, boost bays).
 
-- **loremaster**: gates the new copy. Teaching copy is player-facing and
-  passes the same canon gate as everything else.
+- **loremaster**: gates the DARKNET framing (new outward-facing fiction),
+  the overtime-clause tone flag, and all new copy.
 
-- **ability-agent, arc-composer, encounter-generator**: NOT in scope.
+- **validation**: runs the gate at every checkpoint; Checkpoint A records
+  the first kitted curve as the BEFORE table; Checkpoint D adopts the
+  final kitted bands and re-publishes the kit-less baseline (grid/slag
+  changes are the one sanctioned re-baselining).
+
+- **encounter-generator**: NOT in scope.
 
 ## Constraints
 
-- No new mechanics. This pass explains what exists.
-- Placement bias holds: reach for the highest tier that works. A proposal
-  that skips a tier says why.
-- The opening dive takes no coachmarks by construction (`notBeforeDay`
-  gates day 0). Teaching goes at first contact, never crammed into day one.
-- No em or en dashes in game copy.
-- No art budget.
+- Iron rules hold: agents propose, the Orchestrator integrates; ability
+  and curve numbers enter only through the balance loop with before/after
+  sim numbers.
+- Augments bend the economy; they do not add verbs. Programs stay 1 RAM.
+  SCAN never gains modes.
+- Only engine-passive boosts enter the sim's BOOST_SCHEDULE.
+- No em or en dashes in game copy. ALL CAPS titles. Coachmark caps hold.
+- Art budget: darknet icons plus approved orders only. SVG-first for
+  piece glyphs.
 
 ## Gate
 
-Unchanged and non-negotiable: `bun run typecheck`, `sim.ts` (tutorial 0/200,
-curve ~82/77/74/56/58/56/49/42/39, finale ~25), `run-sim.ts`, `teach-sim.ts`.
-A `teach-sim` failure means a mechanic is uncovered: author the moment or
-write the waiver. Never loosen the harness to make it pass.
+`bun run typecheck`, `sim.ts` (tutorial 0/200; kit-less rows byte-identical
+until Checkpoint D; kitted block with finale round-1 closes = 0),
+`run-sim.ts` (new invariants: pouch cap, piece conservation, craft union,
+severed under shaped rescue, bays <= slots, buySlot debit, gridlock chip),
+`teach-sim.ts`. Never loosen a harness to make it pass.

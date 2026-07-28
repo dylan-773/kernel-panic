@@ -3,13 +3,13 @@
   "from": "tutorial-agent",
   "kind": "teaching-moment",
   "moment": "night-shop",
-  "surface": "the DAY CLOSED / upgrade screen, first time it is ever reached (alongside day-upgrade)",
-  "intent": "Credits buy two things at night: a night patch restores strain, and a patch cell is carried into the next dive to turn one dead slag block into a live junction. The player should walk away knowing both purchases exist and roughly what each is for.",
-  "constraints": "2 lines max, 160 chars each, no em or en dashes, terminal voice, second person. Do not restate the specific costs or heal amounts; the NIGHT PATCH and BUY PATCH CELL buttons already state their own price and effect permanently on screen. This moment should frame what the two purchases are for, not repeat their numbers.",
-  "status": "filled",
+  "surface": "upgrade, first sight of the closed-day screen",
+  "intent": "Rewrite of the existing night-shop coachmark for the shaped-pieces and boost-bays cycle (deep-balance-2026-07-28), now teaching three purchases instead of two. Night patch still buys strain back, unchanged, keep that framing short since it is not new. New and most important: the fixed 35cr piece buy is gone, replaced by a random draw off the darknet whose price climbs by day, so the player can no longer shop for an exact shape, they are buying blind. Also new, lower priority: an extra boost bay can be bought here at night too, raising the boost cap; one short clause is enough, its own consequence (a full bay forces a swap) is taught separately the first time it actually happens, not here. If the 2 line cap forces a cut, prioritize in this order: the loss of determinism in the piece buy first, night patch's existing framing second, the boost bay pointer third. Do not print exact prices, they scale by day and already show live on each button (darkPatchCost(day), nightPatchCost(day), bay cost). Reference material: narrative-director's darknet-window copy item (windowTitle DARKNET.LNK, buyButtonLabel 'BUY BLIND ({cost} cr)') for the vendor's own voice, and the MANUAL.TXT BOOST BAYS section for the swap rule's own wording, both already filed in pipeline/proposals/narrative-director.json.",
+  "constraints": "2 lines max, 160 chars each, no em or en dashes, terminal voice, ALL CAPS title only.",
+  "status": "done",
   "title": "NIGHT SHOP",
   "lines": [
-    "Credits buy two things here tonight. A night patch puts strain back on the meter.",
-    "A patch cell rides along into tomorrow's dive and turns one dead slag block into a live junction."
+    "You can no longer choose a shape. DARKNET.LNK sells one blind pull, price climbing by the day.",
+    "Night patch still buys your strain back. Buy an extra boost bay tonight to raise your cap above 3."
   ]
 }

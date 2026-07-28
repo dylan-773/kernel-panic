@@ -5,3 +5,5 @@
 - [Flagged followups 2026-07](flagged_followups_2026_07.md) — RESOLVED/stale: bible.md dust/Overby lines confirmed clean, kept as pointer only
 - [Copy revision workflow](copy_revision_workflow.md) — how to shape a proposal for "rewrite this exact shipped line" tasks: full-beat drop-ins, 2 candidates + preferred + rationale, grep for other instances
 - [Excision vocabulary residue](feedback_excision_vocabulary_residue.md) — when a line is excised, its load-bearing word is radioactive too; rebuild replacements in a different sensory register, not the same emotional shape minus the noun
+- [Deep-balance 2026-07-28 cycle](cycle_deep-balance-2026-07-28.md) — patch pieces + boost bays + DARKNET.LNK; round 1 (ui-copy) and round 2 (teach-copy) both done, same proposal file
+- [Teach-copy voice register](teach_copy_voice_register.md) — coachmark wording matches shipped content/teaching.ts's clipped register, not story-scene voice; preserve verbatim lines exactly; hand-count chars near 160

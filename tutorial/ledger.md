@@ -43,7 +43,13 @@ agent names the control; the ux-agent decides where the box sits.
 ## Coverage
 
 Status is what the harness sees. `TAUGHT` means a moment or beat covers it;
-`WAIVED` means the interface is claimed to carry it unaided.
+`WAIVED` means the interface is claimed to carry it unaided. `PLANNED` is a
+third status, used only for mechanics whose engine support has not shipped
+yet: the moment, tip, or waiver is specified and gated this cycle, but
+`teach-sim` cannot confirm it until the Orchestrator lands the code and the
+moment actually mounts in `content/teaching.ts`. A `PLANNED` row graduates to
+`TAUGHT` or `WAIVED` the cycle its surface ships; until then it is a standing
+flag in the loop history, not a mechanic the harness has actually checked.
 
 | mechanic | first contact | how | status |
 |---|---|---|---|
@@ -58,6 +64,7 @@ Status is what the harness sees. `TAUGHT` means a moment or beat covers it;
 | ram | opening dive | beats, plus tip `ram` on the per-turn readout | TAUGHT* |
 | ramCarry | duel | tip `ram` (rewritten this cycle to also name the carryover cap) | TAUGHT |
 | patchCellUse | duel | coachmark `patch-cell-use`, while carrying a cell | TAUGHT |
+| patchShapes | duel | coachmark `patch-cell-use` (rewrite planned this cycle: same trigger, now also teaches fixed orientation) | PLANNED |
 | strainChip | result | coachmark `strain-chip`, plus tip `strain` on both meters | TAUGHT* |
 | jobBoard | day board | JobBoard's own permanent header states it every visit (screens.tsx:103) | WAIVED |
 | manualRef | day board | tip on the MANUAL.TXT desktop icon | TAUGHT |
@@ -66,17 +73,23 @@ Status is what the harness sees. `TAUGHT` means a moment or beat covers it;
 | kitConfig | loadout | KitScreen's permanent header carries the basics (screens.tsx:241-244); tip `modeLocked` carries the locked-mode case | TAUGHT |
 | programTiers | loadout | same KitScreen header | WAIVED |
 | augmentDraft | result | coachmark `augment-draft`, when a draft is offered | TAUGHT |
-| augmentCadence | result | coachmark `augment-draft`: one per cleared TICKET, three tickets a day | TAUGHT |
+| augmentCadence | result | coachmark `augment-draft` (line 2 rewrite planned this cycle, drops the dead pool-dry premise): one per cleared TICKET, three tickets a day | TAUGHT |
+| boostSlots | result | tip `boostSlots` on the boost bay counter | PLANNED |
+| boostSwap | result | new coachmark `boost-swap`, trigger `swapOffered` (new TeachWhen) | PLANNED |
 | dayUpgrade | night screen | coachmark `day-upgrade` | TAUGHT |
-| nightPatch | night screen | coachmark `night-shop` | TAUGHT |
-| patchCellBuy | night screen | coachmark `night-shop` | TAUGHT |
+| nightPatch | night screen | coachmark `night-shop` (rewrite planned this cycle, folds in darkWebBuy + slotBuy) | TAUGHT |
+| patchCellBuy | RETIRED 2026-07-28 | replaced by `darkWebBuy`; the deterministic buy no longer exists. See waiver log retirement entry. | RETIRED |
+| patchCraft | night screen (bench, also loadout) | new coachmark `patch-craft`, trigger `craftReady` (new TeachWhen) | PLANNED |
+| darkWebBuy | night screen | coachmark `night-shop` (rewrite), replaces `patchCellBuy` | PLANNED |
+| slotBuy | night screen | coachmark `night-shop` (rewrite, folded in per surface firstSight cap) | PLANNED |
 | reach2 | opening dive | glowing junctions are the affordance | WAIVED |
 | turnCap | result | payout row names the halved rate inline | WAIVED |
+| patchDrop | result | drop row names the piece's shape and glyph inline, the only screen it can occur on (turnCap precedent); provisional on ui-spec `patch-drop-row-naming` | PLANNED |
+| gridlockChip | duel | two texts: the duel end overlay states the cost, the result strain breakdown itemizes it (runReset precedent); provisional on ui-spec `gridlock-chip-breakdown` | PLANNED |
 | credits | day board | price and balance share a row, except the BUY PATCH CELL row (fix pending, see Open work) | WAIVED* |
 | saveSlots | login | standard affordance; slots state attempts and day | WAIVED |
 | runReset | duel | the duel screen's own CORE LOST overlay states it first, the run-end scene restates it in voice; the Abandon path does not yet (fix pending, see Open work) | WAIVED* |
 | finaleGate | the back room door (FinalePre) | day 10 replaces the board with the door, and the morning scene frames it | WAIVED |
-| augmentPoolDry | result | the result screen says so in place of the draft, as it happens | WAIVED |
 | augmentEffects | result | blanket: every augment carries its own desc (premise `augmentDescs`) | WAIVED |
 | modeEffects | loadout | blanket: modes are variations on three taught programs, each with its own desc (premise `modeDescs`) | WAIVED |
 
@@ -180,6 +193,49 @@ changes. Re-check these whenever the named surface is touched.
 - **programTiers** (2026-07-26, new). Same KitScreen header as `kitConfig`
   above, the half stating "tiers come from closed days." Paired with the
   `kit-config` coachmark's retirement.
+- **patchDrop** (2026-07-28, new, PROVISIONAL). Same shape as the `turnCap`
+  waiver: the result screen's drop row names the recovered piece by shape
+  and shows its glyph inline, the only screen a drop can occur on. Covers
+  both a general post-dive drop and the reworked CLEAN RUN bonus, since both
+  land through the same row (narrative-director's `result-screen-rows` copy,
+  `pipeline/proposals/narrative-director.json`: `dropRevealLabel`, the four
+  `dropRevealVariants`, `cleanRunBanked`/`cleanRunCapped`). Provisional
+  because the naming half has copy but the glyph half is still an open
+  `ui-spec` (`patch-drop-row-naming`, this cycle) waiting on the ux-agent's
+  `result-drop-reveal` design; do not treat this waiver as earned until both
+  the copy and the glyph are live on the row.
+- **gridlockChip** (2026-07-28, new, PROVISIONAL). Same shape as the
+  `runReset` waiver: two texts, not one. The duel's own end overlay states
+  the cost the instant it happens (narrative-director's `gridlock-endreason`
+  copy: "Total gridlock... The link collapses in your favor, and the dead
+  link bites on the way out."), and the result screen's strain breakdown
+  itemizes the exact number as its own row, the same way the turn cap
+  already gets one. Provisional because the itemized row does not exist yet;
+  `ui-spec` `gridlock-chip-breakdown` (this cycle) specs the `gridlockWin`
+  plumbing and the row. Do not treat this waiver as earned until that row
+  ships and renders the narrative-director's `gridlockChipLabel` copy.
+- **patchCellBuy, RETIRED** (2026-07-28). The deterministic 35cr patch-cell
+  buy this waiver never applied to (it was TAUGHT, not waived) is gone
+  outright, not merely re-explained: acquisition moves to a random dark-web
+  purchase (`darkWebBuy`). Removed from `MECHANIC_INVENTORY`
+  (`content/teaching.ts:128` prior to this cycle's edit) rather than left as
+  a dead row; the `night-shop` coachmark that used to teach it is being
+  rewritten to teach `darkWebBuy` and `slotBuy` instead. See the mechanic
+  inventory delta in `pipeline/proposals/tutorial-agent.json`.
+- **augmentPoolDry, RETIRED** (2026-07-28). The scenario this waiver
+  described, the draft offering nothing because every augment in the pool
+  is already owned, can no longer happen under this cycle's design: boost
+  bays cap ownership at 3 to 5 and there are only 4 config augments total,
+  so a player can never hold more than bays-plus-4 augments at once, and a
+  full bay swaps a new BOOST in for an old one instead of refusing it. As
+  long as the boost catalog stays larger than the bay cap (5), the draft
+  always has an unowned boost left to offer. Removed from
+  `MECHANIC_INVENTORY` entirely (`content/teaching.ts:188-193` prior to this
+  edit) rather than left as an unreachable waiver; the "Augment cache is
+  dry" fallback line in `ResultScreen` may now be dead code, flagged for the
+  Orchestrator to confirm and prune when integrating. Paired with retiring
+  the "augment cache empties around day 6" entry under Flagged to other
+  seats, below.
 
 ## Open work
 
@@ -226,15 +282,16 @@ and green. What remains here is the interface work and one standing item.
 
 ## Flagged to other seats
 
-- **The augment cache empties around day 6.** Measured over 60 simulated
-  runs: augments owned at day close run 3, 6, 9, 12, 15, 18, then flat. The
-  pool is 18 (4 config, 14 boost) and the cadence is 3 a day, so a player
-  clearing every ticket exhausts it on day 6 and days 7 through 9, the
-  hardest third of the run, offer zero drafts and pay 25cr salvage instead.
-  A player who drops tickets depletes slower, but the ceiling is hard. This
-  is a progression question for the ability-agent and arc-composer via the
-  balance loop, not a teaching one. Teaching currently handles the symptom
-  honestly (the dry-cache line) and no more.
+- **RESOLVED 2026-07-28: the augment cache empties around day 6.** This
+  cycle's design (BRIEF `deep-balance-2026-07-28`) caps boost ownership at
+  the bay count (3 to 5) and lets a full bay swap instead of refuse a new
+  BOOST, so the draft can no longer run dry: config augments are the only
+  hard ceiling (4 total, unaffected by bays), and the boost portion of the
+  pool always has an unowned card to offer as long as the catalog stays
+  bigger than 5. The `augmentPoolDry` mechanic is retired outright (see the
+  waiver log retirement entry above), not just re-waived. If a future
+  catalog cut ever shrinks the boost list to 5 or fewer, this stops being
+  true and the mechanic needs to come back.
 - **No tip or hover panel survives touch input** (2026-07-26, full-sweep
   audit). Every `teach-tip` is a plain HTML `title`; the mid-dive ability
   description panel (`kp-ability-info`, `duel.tsx`) only opens on
@@ -254,6 +311,59 @@ and green. What remains here is the interface work and one standing item.
   `dayUpgrade` mechanic's own claim stays true regardless.
 
 ## Loop history
+
+- **2026-07-28, patch shapes, crafting, dark-web buy, and boost bays,
+  proposed ahead of the engine.** Brief `deep-balance-2026-07-28`. The
+  Orchestrator lands three systems this cycle (shaped patch pieces, boost
+  bays, plus a kitted sim profile that is not this seat's concern); this
+  pass specs the teaching for the two that are, before the code ships. Eight
+  mechanic-inventory deltas: `patchShapes` and `patchDrop` extend the
+  existing patch-cell story now that pieces have fixed shapes and drop
+  post-dive; `patchCraft` is genuinely new (a bench that fuses two pieces);
+  `darkWebBuy` REPLACES `patchCellBuy` outright, the deterministic buy is
+  gone; `boostSlots`, `boostSwap`, and `slotBuy` cover the new bay cap, its
+  swap-at-full rule, and buying more bays. Two retired: `patchCellBuy`
+  (superseded) and `augmentPoolDry` (the scenario it described can no
+  longer happen under the new bay math). Every new row is `PLANNED`, not
+  `TAUGHT`, since none of the surfaces exist in shipped code yet; this
+  ledger update is the gate's judgment on the teaching PLAN, not a
+  post-hoc audit of a live surface, and a real audit is owed once the
+  Orchestrator integrates and `teach-sim` can actually check it.
+  Tier decisions: `patch-cell-use` (rewrite, folds in `patchShapes`) and
+  `night-shop` (rewrite, folds in `darkWebBuy` and `slotBuy`) stay
+  coachmarks, since each teaches a RULE that changes a decision (pieces
+  never rotate once placed; the piece buy lost its determinism), not a
+  number. `patch-craft` and `boost-swap` are new coachmarks for the same
+  reason (fuse-when-strictly-bigger; a full bay forces a bench choice), each
+  gated on a purpose-built trigger (`craftReady`, `swapOffered`) rather than
+  first sight, so neither fires before the player has a real decision in
+  front of them. `boostSlots` is a tip, not a coachmark: the bay cap is a
+  number worth re-checking every draft, the textbook case for reference over
+  a one-shot rule. `patchDrop` and `gridlockChip` are waivers on the turnCap
+  and runReset precedents respectively (the interface names the cause
+  inline, on the only screen it can happen), each provisional on a
+  same-cycle `ui-spec` (`patch-drop-row-naming`, `gridlock-chip-breakdown`)
+  that has not landed yet. Folded `slotBuy` into the `night-shop` rewrite
+  rather than giving it a third coachmark on the `upgrade` surface: that
+  surface is already at the 2-`firstSight` cap (`day-upgrade`, `night-shop`)
+  and a third unconditional callout would have blown the budget for no
+  reason `night-shop`'s existing real estate could not absorb with one
+  clause. Two new `TeachWhen` triggers requested as pre-authorized engine
+  changes: `craftReady` (a legal craftable pair exists in the pouch, i.e.
+  two owned pieces whose shape union is strictly bigger than either alone)
+  and `swapOffered` (the current draft includes a BOOST while owned boosts
+  already equal the bay cap, so accepting it requires benching one). Five
+  copy orders filed for the follow-up round, the same count the brief
+  named but not the same five: dropped `copy-ram-tip`, added
+  `copy-boost-swap` for the new coachmark that was not in the brief's
+  explicit list but earns one by standing rule (every new coachmark gets
+  a copy order). Did NOT file a copy order for the `ram` tip's CARRY CACHE
+  clause removal (the brief's phrasing suggested one); tips are self-written
+  per standing practice (see the `tutorial-review.md` gate from
+  `teaching-2026-07-26`, "Tips are not routed through copy orders"), and the
+  five-word fix here is exactly the case that practice exists for. Rewrote
+  it directly instead: dropped "4 with CARRY CACHE" now that the augment is
+  cut, kept the base 2-carry rule, which is unaffected by the cut.
 
 - **2026-07-26, the opening dive was not teaching rotation.** The single most
   important beat in the game, missing from 23.9% of dives. `first-rotation`

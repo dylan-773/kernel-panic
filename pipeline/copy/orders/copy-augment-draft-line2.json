@@ -1,0 +1,15 @@
+{
+  "id": "copy-augment-draft-line2",
+  "from": "tutorial-agent",
+  "kind": "teaching-moment",
+  "moment": "augment-draft",
+  "surface": "result, when a draft is offered",
+  "intent": "Rewrite line 2 only of the existing augment-draft coachmark; line 1 is unchanged and stays as shipped (three augments offered per cleared ticket, one holds for the run). Line 2 currently states the cadence (three tickets a day, a clean day banks three picks) plus what CONFIG and BOOST each do; the cadence fact is correct and verified, keep it. What has to go: any implication that the augment pool can run dry. It cannot anymore: boost bays cap ownership at 3 to 5 and there are only 4 config augments total, so the player can never hold more than bays-plus-4 at once, and a full bay swaps a new BOOST in rather than refusing it, so the draft always has something left to offer. If there is room after stating the cadence, a brief note that a BOOST pick swaps into a full bay rather than freely stacking is welcome, but that rule gets its own coachmark (boost-swap) the moment it first actually happens, so it is fine to leave out here if line 2 is tight. Do not restate exact augment counts (do not say '18' or similar), the catalog size is not the point and changes independently of this coachmark.",
+  "constraints": "2 lines total for the whole moment (both lines count against the cap), 160 chars each, no em or en dashes, terminal voice. Line 1 should be reproduced verbatim or near-verbatim from the shipped copy unless you see a reason to touch it.",
+  "status": "done",
+  "title": "AUGMENT DRAFT",
+  "lines": [
+    "Clearing a ticket offers three augments. Pick one and it holds for the rest of the run.",
+    "Three tickets a day, so a clean day banks three picks. CONFIG unlocks a mode, BOOST bends the economy. A full bay swaps instead of blocking."
+  ]
+}

@@ -182,3 +182,32 @@ bench light is the only one on the block." with no mother reference; and
 journal.ts's bills entry carries no "Patient: Overby" line. Shipped copy and
 this ledger now agree on all four lines. No outstanding realignment items
 remain.
+
+9. DARKNET (added 2026-07-28, Loremaster gate on the deep-balance-2026-07-28
+   cycle, ruling a gap the brief exposed rather than a direct user call): a
+   gray-market trade in patch pieces exists in the city, salvage off
+   scrapped and dead machines, reachable by signal only after the shop
+   closes. The dealer is permanently anonymous, no name, no ID on file; no
+   causal link to Patch, Dad, or the shop's back room, the same pattern as
+   Resolved ruling 5 (mundane, unexplained, no causal tie). The dealer's
+   cash-only anonymity may mirror Dad's own secrecy in a future arc; that is
+   a hook, not a commitment. No named character attaches to this market
+   without a later explicit ruling.
+10. OVERTIME BILLING (added 2026-07-28, Loremaster gate 2 on the
+    deep-balance-2026-07-28 cycle, ruling the OVERTIME CLAUSE tone flag the
+    brief named): the shop may bill a cap win (a job that ran past its
+    deadline) at full overtime rate instead of splitting the loss with the
+    client. This is ordinary trade practice, not exploitative labor
+    framing, and it is well within motive for a shop this precarious
+    ("Debt: the Meridian balance alone is more than the shop clears in a
+    year"; "Small businesses run close to the bone"). The lever is back
+    office only: it changes no customer facing line (win lines, loss lines,
+    and every customer's flavor text are untouched by it), so it does not
+    contradict "Customers are fond of their machines; the intrusion is a
+    betrayal, not an inconvenience." A build that farms the bonus by
+    stalling to the round cap on purpose is a balance-loop incentive
+    question, not a canon one; no line forbids a player-optimal strategy
+    from reading as hard invoicing. Forbids: any future scene or customer
+    line where a client is shown resenting, disputing, or calling out the
+    shop for overbilling; that reading would need its own explicit ruling
+    first.

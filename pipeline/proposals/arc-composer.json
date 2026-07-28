@@ -1,31 +1,129 @@
 {
   "agent": "arc-composer",
-  "brief": "story-retune-1",
-  "notes": "Round 2 of the balance loop for story-retune-1. Live table post round-1 integration plus the tier-scaled-siphon ability batch: D6 greed .95/oppRam 8, D7 greed .96/oppRam 8, D8 greed .95/oppRam 9, D9 greed .96/oppRam 9/headStart 4 (unchanged, held for reference). Orchestrator's diagnosis: oppRam +1 is measured worth roughly 10 points at D6-D8 under the new tier-scaled-siphon opponent kit, not the ~4 assumed when round 1 raised it, and the tier-scaled siphons stack extra pressure on top of that. Fix: reverse one point of oppRam on each of D6-D8 (the exact lever the diagnosis flags as oversized), then use a small greed nudge (+0.02 to +0.03, in the calibrated 2-4-point range from D4/D5 round 1: greed .85->.89 = -3.5pts, greed .88->.92 = -2pts, roughly 0.5-0.9 pts per 0.01) to trim the resulting overshoot back toward the reference numbers rather than leaving a second large gap. D8 is deliberately left landing a few points above the D9 reference (42) rather than snapped exactly to it, since D9 is untouched this round and currently reads 42.0 live; the point is to guarantee D8 > D9 (monotonically harder D8 -> D9) with real margin, not just clear it by a hair. D1-D3, D5 (within tolerance per this round's numbers) and D9 are not touched, per instruction. abilityFreq and headStart are left alone on all three days; oppRam and greed alone are sufficient and keep this batch to the smallest sufficient move per day. No jobTiers changes, so no customer-coverage consequence this round.",
+  "brief": "deep-balance-2026-07-28",
+  "notes": "Round 1 of the arc side of the kitted-curve loop, against Checkpoint C (measured after shaped WELDED patch pieces, boost bays, catalog surgery, gridlock chip; kit-less unchanged from baseline). Day 1 gets no item: kitted delta over kit-less is already +0.0 there and design intent says not to chase it. Lever priority this round: patchDrop first wherever cells/win is material (it is kit-less-neutral, since the kit-less proxy is rotation-only and never touches patches), then slag as the shared structural lever, then small greed nudges bounded by known kit-less calibration (~0.5-0.9 pts per 0.01), with oppRam deliberately withheld at D4-D8 (the lever that overshot ~10 pts/point at D6-D8 in the original balance loop's Round 1) and spent only once, at D9, where kit-less headroom is largest. Grid/minCost growth begins at D9 and lands hardest at the finale, per the user's waiver on 'grid almost never' for this pass. RECOMMENDATION: pull the ability-agent's hotBoot +2->+1 sim-gated candidate into round 1 alongside these deltas. Evidence: the kit's advantage over kit-less jumps from +0.0 at day 1 (no boosts) to +16.5 at day 2, the exact day hotBoot@2 activates and the day before patches or mode pairs exist to explain it; and the finale round-1-kill math (opening RAM 9 + hotBoot +2 = 11 rotation RAM turn 1) names hotBoot specifically as a term in the closability inequality. Arc levers (abilityFreq, greed) can only blunt the downstream symptom at day 2; they cannot touch the root cause the way a boost-value tone-down can, and every day from 2 onward inherits whatever hotBoot leaves unfixed.",
   "items": [
+    {
+      "type": "dayconfig-delta",
+      "id": "day-2",
+      "day": 2,
+      "set": { "grid": [9, 7], "oppRam": 6, "greed": 0.76, "abilityFreq": 0.32, "minCost": 16, "headStart": 0, "parFlat": 5, "slag": 0.18, "patchDrop": 0.35, "jobTiers": [1, 1, 2] },
+      "changedKeys": ["greed", "abilityFreq"],
+      "targetWinPct": 84,
+      "rationale": "Checkpoint C kitted 97.0 vs target 84 (+13.0). The kit's advantage over kit-less jumps from +0.0 at day 1 to +16.5 at day 2, exactly when hotBoot@2 lands in the boost schedule (hotBoot@2, longArms@4). Days 1-2 carry 0 patch cells in the profile (0/0/1/1/2/2/3/3/3), so patchDrop and slag are inert here; this is an ability-driven spike, not a patch-driven one. Countering with the ability-facing levers I own rather than a blunt greed hike: abilityFreq 0.25->0.32 (opponent counters the boosted player more often) plus a small greed nudge. Kit-less d2 is currently 80.5 vs target 77 (+3.5, near tolerance ceiling); both moves push it toward target, not past it, at the known ~1.5-2.7 pt greed cost.",
+      "leverNotes": [
+        { "lever": "abilityFreq", "from": 0.25, "to": 0.32, "reason": "Directly counters the hotBoot@2-driven spike by making the opponent cast more against a freshly boosted player.", "expectedKittedDelta": "-4 to -8 pts, unmeasured, targeted specifically at the day-2 boost jump", "expectedKitlessImpact": "small, a few points at most; kit-less already casts against a live opponent regardless of player boosts" },
+        { "lever": "greed", "from": 0.73, "to": 0.76, "reason": "Smallest lever, known calibration, closes the gap on the shared route contest.", "expectedKittedDelta": "-1.5 to -2.7 pts (kit-less calibration as a floor estimate)", "expectedKitlessImpact": "-1.5 to -2.7 pts, moves 80.5 toward the 77 target" }
+      ]
+    },
+    {
+      "type": "dayconfig-delta",
+      "id": "day-3",
+      "day": 3,
+      "set": { "grid": [9, 9], "oppRam": 6, "greed": 0.88, "abilityFreq": 0.45, "minCost": 18, "headStart": 1, "parFlat": 5, "slag": 0.19, "patchDrop": 0.24, "jobTiers": [1, 2, 2] },
+      "changedKeys": ["greed", "slag", "patchDrop"],
+      "targetWinPct": 82,
+      "rationale": "Checkpoint C kitted 93.0 vs target 82 (+11.0), kit advantage +16.5 over kit-less. Day 3 is where the kitted profile first carries a patch cell and first plays RP/SP/HL mode pairs; cells/win goes nonzero here. Cut with the two levers built for exactly this transition: patchDrop 0.30->0.24 trims piece income right as cells enter play (kit-less-neutral, the rotation-only proxy never spends patches), and a first slag step 0.18->0.19 begins the late-board taper. Small greed nudge 0.86->0.88 for a known, low-risk kit-less trim. Kit-less d3 is currently 76.5 vs target 74 (+2.5); expected net move is -1 to -2 pts from greed plus a negligible slag contribution, landing close to target.",
+      "leverNotes": [
+        { "lever": "patchDrop", "from": 0.30, "to": 0.24, "reason": "First day patches matter; cut piece income at the moment cells/win goes nonzero.", "expectedKittedDelta": "unmeasured, hypothesis-strength; primary lever for the mid-late cuts overall", "expectedKitlessImpact": "none, kit-less never acquires or uses patch pieces" },
+        { "lever": "slag", "from": 0.18, "to": 0.19, "reason": "Opening move on the late-board taper; denser boards make each patch piece cover a smaller share of the route.", "expectedKittedDelta": "small, unmeasured", "expectedKitlessImpact": "small, shared structural lever" },
+        { "lever": "greed", "from": 0.86, "to": 0.88, "reason": "Known calibration, low risk.", "expectedKittedDelta": "-1 to -1.8 pts (floor estimate)", "expectedKitlessImpact": "-1 to -1.8 pts, toward the 74 target" }
+      ]
+    },
+    {
+      "type": "dayconfig-delta",
+      "id": "day-4",
+      "day": 4,
+      "set": { "grid": [9, 9], "oppRam": 6, "greed": 0.91, "abilityFreq": 0.45, "minCost": 18, "headStart": 2, "parFlat": 4, "slag": 0.20, "patchDrop": 0.22, "jobTiers": [2, 2, 3] },
+      "changedKeys": ["greed", "slag", "patchDrop"],
+      "targetWinPct": 70,
+      "rationale": "Checkpoint C kitted 94.0 vs target 70, the first of the largest gaps (+24.0). Kit-less currently 58.0 vs target 56 (+2.0, some headroom left). Deliberately not touching oppRam this round: the known kit-less calibration (~10 pts per +1 at D6-D8) is exactly the lever that overshot in the original balance loop's Round 1, and its kitted sensitivity is unmeasured, so I am not spending it blind at four days at once. Using patchDrop 0.30->0.22 and slag 0.18->0.20 (kit-less-neutral plus shared-structural, stacking without the overshoot risk) and a small greed nudge. Expect a real cut but likely still above target; flagging as a probable oppRam candidate for round 2 once this round's effect is measured.",
+      "leverNotes": [
+        { "lever": "patchDrop", "from": 0.30, "to": 0.22, "reason": "cells/win rising fast from day 3 into day 4; steepest early cut in the table.", "expectedKittedDelta": "unmeasured, expected larger than day 3's cut", "expectedKitlessImpact": "none" },
+        { "lever": "slag", "from": 0.18, "to": 0.20, "reason": "Continues the taper.", "expectedKittedDelta": "unmeasured", "expectedKitlessImpact": "small" },
+        { "lever": "greed", "from": 0.89, "to": 0.91, "reason": "Small, known-calibration trim.", "expectedKittedDelta": "-1 to -1.8 pts", "expectedKitlessImpact": "-1 to -1.8 pts" }
+      ]
+    },
+    {
+      "type": "dayconfig-delta",
+      "id": "day-5",
+      "day": 5,
+      "set": { "grid": [11, 9], "oppRam": 7, "greed": 0.94, "abilityFreq": 0.55, "minCost": 20, "headStart": 2, "parFlat": 4, "slag": 0.21, "patchDrop": 0.18, "jobTiers": [2, 3, 3] },
+      "changedKeys": ["greed", "slag", "patchDrop"],
+      "targetWinPct": 72,
+      "rationale": "Checkpoint C kitted 90.5 vs target 72 (+18.5). Kit-less 62.0 vs target 58 (+4.0, headroom tightening). patchDrop 0.25->0.18 and slag 0.18->0.21 do the heavy lifting; greed still has some room before it caps out at d6/d7 so it takes a modest nudge (0.92->0.94) rather than none. No oppRam: headroom is thin enough that the known-large, kitted-unmeasured lever is not worth the risk this round.",
+      "leverNotes": [
+        { "lever": "patchDrop", "from": 0.25, "to": 0.18, "reason": "Two patch cells carried from day 5; cut proportional to rising cell count.", "expectedKittedDelta": "unmeasured", "expectedKitlessImpact": "none" },
+        { "lever": "slag", "from": 0.18, "to": 0.21, "reason": "Continues the taper at a slightly steeper step than d3/d4.", "expectedKittedDelta": "unmeasured", "expectedKitlessImpact": "small, contributes toward closing the +4.0 kit-less gap" },
+        { "lever": "greed", "from": 0.92, "to": 0.94, "reason": "Last day with real greed headroom before d6/d7 cap out near 1.0.", "expectedKittedDelta": "-1 to -1.8 pts", "expectedKitlessImpact": "-1 to -1.8 pts" }
+      ]
+    },
     {
       "type": "dayconfig-delta",
       "id": "day-6",
       "day": 6,
-      "set": { "greed": 0.98, "oppRam": 7 },
-      "targetWinPct": 56.5,
-      "rationale": "Report: D6 49.0% vs reference 56 (drift -7.0, too hard). Diagnosis says oppRam +1 is worth ~10pts at this tier band, so oppRam 8->7 reverses the main overshoot: predicted +10 (49.0 -> ~59.0). That alone would overshoot the reference by about 3, so a greed nudge of +0.03 (.95->.98, same step size as the calibrated D4/D5 round-1 moves, worth an estimated -2 to -3) trims it back: net predicted +7.0 to +7.5, landing ~56.5, matching reference 56 within noise."
+      "set": { "grid": [11, 9], "oppRam": 7, "greed": 0.98, "abilityFreq": 0.6, "minCost": 20, "headStart": 2, "parFlat": 3, "slag": 0.22, "patchDrop": 0.16, "jobTiers": [3, 3, 3] },
+      "changedKeys": ["slag", "patchDrop"],
+      "targetWinPct": 70,
+      "rationale": "Checkpoint C kitted 93.5 vs target 70 (+23.5). Kit-less 60.0 vs target 56 (+4.0), the same thin ceiling as day 5 and day 7. Greed is already 0.98, effectively capped (day 7 sits at 0.99); no room to push it without collapsing the d6/d7 distinction. Relying entirely on the kit-less-neutral and shared-structural pair: patchDrop 0.25->0.16, the largest single cut so far, since d6-d9 carry the highest cells/win band per Checkpoint C ('cells/win 0.35 to 0.89 rising by day'), and slag 0.18->0.22. Deliberately no oppRam here: this is exactly the day the original balance loop's Round 1 overshot by ~10 points on a +1 bump; not repeating that against an unmeasured kitted response.",
+      "leverNotes": [
+        { "lever": "patchDrop", "from": 0.25, "to": 0.16, "reason": "Highest cells/win band starts here; largest cut in the table so far.", "expectedKittedDelta": "unmeasured, expected to be the single largest contributor at this day", "expectedKitlessImpact": "none" },
+        { "lever": "slag", "from": 0.18, "to": 0.22, "reason": "Continues the taper.", "expectedKittedDelta": "unmeasured", "expectedKitlessImpact": "small, should absorb most of the remaining +4.0 kit-less gap on its own" }
+      ]
     },
     {
       "type": "dayconfig-delta",
       "id": "day-7",
       "day": 7,
-      "set": { "greed": 0.99, "oppRam": 7 },
-      "targetWinPct": 50,
-      "rationale": "Report: D7 42.5% vs reference 49 (drift -6.5, too hard, the second-largest wobble in this pass). oppRam 8->7 at the diagnosed ~10pt rate predicts +10 (42.5 -> ~52.5), overshooting reference by about 3.5. Greed +0.03 (.96->.99, same calibrated step size, worth an estimated -2 to -3) trims it: net predicted +7.0 to +7.5, landing ~49.5 to 50, matching reference 49 within noise. .99 stays below the 1.0 finale value so the pre-finale greed ceiling is preserved."
+      "set": { "grid": [11, 9], "oppRam": 7, "greed": 0.99, "abilityFreq": 0.65, "minCost": 21, "headStart": 3, "parFlat": 2, "slag": 0.23, "patchDrop": 0.13, "jobTiers": [3, 3, 4] },
+      "changedKeys": ["slag", "patchDrop"],
+      "targetWinPct": 64,
+      "rationale": "Checkpoint C kitted 93.5 vs target 64 (+29.5). Kit-less sits at the tightest ceiling in the whole table: 53.5 vs target 49 (+4.5). Greed is already at the table's max (0.99), no lever room there. Using only the two safest levers left: slag 0.18->0.23 and patchDrop 0.20->0.13. patchDrop is kit-less-neutral by construction; slag's kit-less sensitivity is unmeasured but only needs to hold the existing +4.5 overshoot, not add to it. This is the least-aggressive day in the mid-late block on purpose and the most likely candidate for an oppRam or headStart follow-up once Checkpoint D remeasures kit-less headroom.",
+      "leverNotes": [
+        { "lever": "patchDrop", "from": 0.20, "to": 0.13, "reason": "cells/win at its highest band; matches d6/d8/d9 in aggressiveness since greed has no room here.", "expectedKittedDelta": "unmeasured", "expectedKitlessImpact": "none" },
+        { "lever": "slag", "from": 0.18, "to": 0.23, "reason": "Largest slag step so far, standing in for the greed room this day does not have.", "expectedKittedDelta": "unmeasured", "expectedKitlessImpact": "small; the day with the least margin for error, sized to hold rather than chase the existing +4.5" }
+      ]
     },
     {
       "type": "dayconfig-delta",
       "id": "day-8",
       "day": 8,
-      "set": { "greed": 0.97, "oppRam": 8 },
-      "targetWinPct": 45,
-      "rationale": "Report: D8 36.5% vs reference 42 (drift -5.5) and, per the shape-bug note, currently sits BELOW D9's 42.0 percent, inverting the intended D8->D9 difficulty ramp. oppRam 9->8 at the diagnosed ~10pt rate predicts +10 (36.5 -> ~46.5). A smaller greed nudge of +0.02 (.95->.97, worth an estimated -1.5 at the same per-0.01 rate as the D6/D7 moves) trims it slightly: net predicted +8.5, landing ~45.0. This intentionally lands a few points above the reference 42 rather than snapped to it, because D9 is untouched this round and currently reads 42.0 live; 45.0 vs D9's 42.0 restores D8 > D9 with a real margin (about 3 points) instead of a hairline fix, so the ordering holds even with normal seed-to-seed noise. oppRam 8 now equals D8's old value shifted down to sit between D7's new 7 and D9's 9, keeping the oppRam ramp monotonic (D5 7, D6 7, D7 7, D8 8, D9 9)."
+      "set": { "grid": [11, 11], "oppRam": 8, "greed": 0.98, "abilityFreq": 0.7, "minCost": 22, "headStart": 3, "parFlat": 2, "slag": 0.24, "patchDrop": 0.12, "jobTiers": [4, 4, 4] },
+      "changedKeys": ["greed", "slag", "patchDrop"],
+      "targetWinPct": 58,
+      "rationale": "Checkpoint C kitted 90.5 vs target 58 (+32.5). Kit-less 44.0 vs target 42 (+2.0). patchDrop 0.20->0.12, slag 0.18->0.24, and a small greed tick 0.97->0.98 (thin remaining headroom, kept minimal so it does not collide with day 7's 0.99 cap). No grid or oppRam move here: reserving that structural budget for day 9 so the grid/oppRam growth reads as one deliberate ramp into the finale rather than every day jumping at once.",
+      "leverNotes": [
+        { "lever": "patchDrop", "from": 0.20, "to": 0.12, "reason": "Same high cells/win band as d6/d7/d9.", "expectedKittedDelta": "unmeasured", "expectedKitlessImpact": "none" },
+        { "lever": "slag", "from": 0.18, "to": 0.24, "reason": "Continues the taper, second-largest step before the day-9/finale jump.", "expectedKittedDelta": "unmeasured", "expectedKitlessImpact": "small" },
+        { "lever": "greed", "from": 0.97, "to": 0.98, "reason": "Minimal, thin headroom (+2.0 kit-less margin).", "expectedKittedDelta": "-0.5 to -0.9 pts", "expectedKitlessImpact": "-0.5 to -0.9 pts" }
+      ]
+    },
+    {
+      "type": "dayconfig-delta",
+      "id": "day-9",
+      "day": 9,
+      "set": { "grid": [13, 11], "oppRam": 10, "greed": 0.97, "abilityFreq": 0.75, "minCost": 24, "headStart": 4, "parFlat": 1, "slag": 0.25, "patchDrop": 0.11, "jobTiers": [4, 4, 5] },
+      "changedKeys": ["grid", "oppRam", "greed", "slag", "patchDrop", "minCost"],
+      "targetWinPct": 55,
+      "rationale": "Checkpoint C kitted 91.0 vs target 55 (+36.0), the largest non-finale gap. Kit-less 42.0 vs target 39 (+3.0), the most headroom in the D6-D9 block, which makes this the safest place in the mid-late run to spend the known-strong oppRam lever. Stacks every remaining lever at moderate strength: patchDrop 0.20->0.11 (steepest cut in the table; day 9 carries 3 patch cells and sits in the highest cells/win band), slag 0.18->0.25 (largest day-level step before the finale), a first structural move (grid [11,11]->[13,11], minCost 22->24) beginning the staircase into the finale's bigger board so that jump does not land all at once at the very last config, and oppRam 9->10 (+1, spent here specifically because this day has the most kit-less room to absorb the known ~10 pt cost). Small greed tick 0.96->0.97.",
+      "leverNotes": [
+        { "lever": "patchDrop", "from": 0.20, "to": 0.11, "reason": "3 patch cells carried, highest cells/win band; steepest cut in the table.", "expectedKittedDelta": "unmeasured, largest expected patchDrop contribution", "expectedKitlessImpact": "none" },
+        { "lever": "slag", "from": 0.18, "to": 0.25, "reason": "Largest per-day slag step before the finale.", "expectedKittedDelta": "unmeasured", "expectedKitlessImpact": "moderate, contributes toward the +3.0 gap" },
+        { "lever": "grid", "from": [11, 11], "to": [13, 11], "reason": "First rung of the grid staircase into the finale (d8 11x11, d9 13x11, finale 15x13); matches the player's late-run RAM ramp and lengthens routes structurally rather than through win-rate levers alone.", "expectedKittedDelta": "unmeasured, expected meaningful given route-length is the dominant driver of the fast kitted closes", "expectedKitlessImpact": "moderate; flagged for Checkpoint D re-baselining" },
+        { "lever": "minCost", "from": 22, "to": 24, "reason": "Synchronizes the target route cost with the wider grid (old finale minCost).", "expectedKittedDelta": "unmeasured", "expectedKitlessImpact": "small to moderate" },
+        { "lever": "oppRam", "from": 9, "to": 10, "reason": "Only oppRam bump in the D1-D9 block this round; day 9 has the most kit-less headroom (+3.0) to absorb the known ~10 pt/point cost at this RAM tier.", "expectedKittedDelta": "unmeasured for kitted", "expectedKitlessImpact": "roughly -10 pts by kit-less calibration; expected to land kit-less near or slightly under the 39 target, which Checkpoint D will re-baseline along with the slag/grid changes" },
+        { "lever": "greed", "from": 0.96, "to": 0.97, "reason": "Small trim, remaining room before the table max.", "expectedKittedDelta": "-0.5 to -0.9 pts", "expectedKitlessImpact": "-0.5 to -0.9 pts" }
+      ]
+    },
+    {
+      "type": "dayconfig-delta",
+      "id": "finale",
+      "day": 10,
+      "set": { "grid": [15, 13], "oppRam": 11, "greed": 1, "abilityFreq": 0.85, "minCost": 30, "headStart": 2, "parFlat": 0, "slag": 0.27 },
+      "changedKeys": ["grid", "oppRam", "abilityFreq", "minCost", "headStart", "parFlat", "slag"],
+      "targetWinPct": 48,
+      "requiresUserSignOff": true,
+      "rationale": "FLAG: charter rule reserves finale changes for explicit user sign-off; this item exists because BRIEF.md scopes it explicitly ('a finale package with an explicit parFlat... HARD GATE: zero round-1 finale closes') as a user-locked decision for this cycle. Confirm before integration regardless. ROUND-1-KILL REASONING: Checkpoint C finale kitted is 80.5 vs target 48 (+32.5), with round-1 closes at 107 of 161 wins (66.5%) and the highest cells/win in the game. The kitted profile opens with 9 rotation RAM; hotBoot@2 adds +2, giving 11 RAM available on turn 1. At the current finale minCost 24 with headStart 4 (4 nodes of the route already pre-completed at dive start) on a 13x11 grid, the remaining route is short enough that 11 RAM closes it in a single turn most of the time, even with only a shortcut cross piece in hand. This is a route-length problem, not a win-rate problem, so it needs structural levers: (1) grid 13x11 -> 15x13, the single largest jump in the whole table, lengthening minimum node-to-node distances; (2) minCost 24 -> 30 (+6, 25% higher, the largest minCost jump in the curve); (3) headStart 4 -> 2, removing 2 nodes of pre-completed progress so more of the now-longer route remains open at turn 1 rather than less. These three together should push the turn-1-affordable fraction of the route well below what 11 RAM buys, independent of any win-rate lever. Secondary, non-structural contributions stacked on top: oppRam 10 -> 11 (+1, general resistance, unmeasured for kitted), abilityFreq 0.8 -> 0.85 (more opponent counters against a fully maxed kit), and slag 0.18 -> 0.27 (+0.09, denser board means the finale's 3 patch pieces cover a smaller share of the now-longer route, directly targeting the cells/win 0.35-0.89 pattern). Also setting an explicit parFlat of 0, replacing the current default (constant PAR_FLAT=2), which the brief flags as an existing inconsistency: 2 is looser than day 9's parFlat of 1, and the finale should be the tightest margin in the game, not the loosest. NOTE ON THE INVERSION: finale headStart (2) now sits below day 9's (4) by design. This is the one dimension deliberately decoupled from the day9-to-finale escalation because it is the specific lever the round-1-kill needs; the grid, minCost, oppRam, and slag jumps carry the 'father's machine, hardest fight in the game' framing instead, and together they leave the finale harder than day 9 on every other axis. This is a conservative first-round structural move: if round-1 closes are not fully at zero after remeasurement, the next lever to pull is a further headStart cut (to 0 or 1) or a further minCost increase, in that order, before touching grid size again."
     }
   ]
 }

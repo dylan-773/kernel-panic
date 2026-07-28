@@ -1,0 +1,15 @@
+{
+  "id": "copy-patch-craft",
+  "from": "tutorial-agent",
+  "kind": "teaching-moment",
+  "moment": "patch-craft",
+  "surface": "upgrade, the first time the pouch holds a legal craftable pair (also usable from the loadout bench, but this is where it is first taught)",
+  "intent": "New coachmark. Fires only once the player actually has a real choice: two owned patch pieces whose shapes combine into a union strictly bigger than either alone. State that crafting fuses two pieces into that union, free of charge, at night or from the loadout bench, and only works when the result is strictly bigger, an equal or smaller pair cannot be joined. Both input pieces are spent either way, win or lose the size check, so make clear the legality gate matters before they commit two pieces to a join that will not improve on what they already had. Reference: narrative-director's MANUAL.TXT PATCH PIECES section already states this rule in reference form ('Craft two pieces at the bench into the union of their arms. Legal only when the result is strictly bigger than both pieces you started with; equal or smaller, the bench will not make the join.'), pipeline/proposals/narrative-director.json. This coachmark says the same rule once, at the moment it first matters, not as a lookup.",
+  "constraints": "2 lines max, 160 chars each, no em or en dashes, terminal voice, ALL CAPS title only.",
+  "status": "done",
+  "title": "PATCH CRAFT",
+  "lines": [
+    "Craft two pieces at night or from the loadout bench: free, and you get the union of both pieces' arms.",
+    "You only get the craft when the union beats both inputs outright. Equal or smaller spends both pieces for nothing."
+  ]
+}

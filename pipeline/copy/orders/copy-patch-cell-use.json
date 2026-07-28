@@ -3,13 +3,13 @@
   "from": "tutorial-agent",
   "kind": "teaching-moment",
   "moment": "patch-cell-use",
-  "surface": "mid dive, the first turn the player is carrying a bought patch cell",
-  "intent": "Clicking any slag block burns the carried cell into a live cross junction for 1 RAM. It is single use, so the player should learn to save it for a wall they cannot route around rather than spend it on the first slag block they see.",
-  "constraints": "2 lines max, 160 chars each, no em or en dashes, terminal voice, second person.",
-  "status": "filled",
-  "title": "PATCH CELL",
+  "surface": "duel, while the player is holding a patch piece mid dive",
+  "intent": "Rewrite of the existing patch-cell-use coachmark for the shaped-pieces cycle (deep-balance-2026-07-28). Player is holding a shaped patch piece for the first time this run and needs two things at once: the action (click a slag block within reach, 1 RAM, single use, then it is gone), and the new rule that changes how they should use it, the piece's arms land exactly as held, it never rotates once placed, so the right move is finding the slag block the shape actually fits, not saving the piece and hoping to turn it later. Keep the existing tactical framing that this is worth saving for the wall you cannot route around, not the first slag block seen. Player-facing term is now piece, not cell, matching the duel toast already integrated this cycle ('PATCH PIECE. The slag melts into a live junction, arms exactly as held.', narrative-director's duel-toast-patch-piece item) and the MANUAL.TXT PATCH PIECES section. Suggested title: PATCH PIECE, but the exact word is your call.",
+  "constraints": "2 lines max, 160 chars each, no em or en dashes, terminal voice, ALL CAPS title only.",
+  "status": "done",
+  "title": "PATCH PIECE",
   "lines": [
-    "You are carrying a cell. Click a slag block within reach to burn it into a live junction for 1 RAM.",
-    "One use, then it is gone. Save it for the wall you cannot route around, not the first slag you see."
+    "You are carrying a piece. Click a slag block within reach to fuse it in for 1 RAM. One use, then it is gone.",
+    "Arms land exactly as held, never rotating once placed. Fit it to the wall you cannot route around, not the first slag you see."
   ]
 }

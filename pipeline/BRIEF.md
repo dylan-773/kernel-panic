@@ -1,98 +1,128 @@
-# Brief: deep-balance-2026-07-28
+# Brief: ui-integration-2026-07-29
 
-The deferred balance pass, plus the two systems it was waiting on. This is
-a production cycle with engine work: the Orchestrator lands three systems
-(kitted sim profile, shaped patch pieces, boost bays) and the crew supplies
-the content, copy, teaching, and curve numbers that make them ship-ready.
+Goal: the kpos-shell v2 desktop (user-approved) becomes THE game UI. Fully
+integrate the new desktop shell, the four study windows (INBOX, LOADOUT.CFG,
+SOLDER.BAY, REPAIR.LOG), and the DIVE.EXE duel view from `ui-demos/kpos-shell/`
+into `kernel-panic-site/app/` as native React surfaces bound to live run
+state. Bring every remaining surface to the same standard: DARKNET.LNK,
+LEDGER.LOG, DAD.LOG, MANUAL.TXT, story windows, DIAG, NIGHT.SYS (end of
+day), BACKROOM.LCK + the finale (the machine) presentation, DesktopIdle,
+the abandon dialog, boot/login. Everything on every new window must
+FUNCTION: live data, working buttons, working charts/logs. New dialogue
+where surfaces need it (inbox subjects are real Rhea lines about the order,
+not riffs). New art fills the windows in the established mixed language:
+pixel art for icons/glyphs, 1-bit dithered anime-esque imagery for window
+cells (dither.py recipes).
 
-Context: the playtest note "late game is too easy, patches trivialize
-entire levels" has been unmeasurable because `sim.ts` runs a kit-less,
-rotation-only proxy. The validation report (playtest-repair-2026-07-27)
-names the kitted profile as this pass's first task. Design decisions are
-locked by the user and recorded in the Orchestrator's plan:
+SOURCE OF TRUTH: `ui-demos/kpos-shell/` and its README.md rulings. The demo
+is approved; nothing re-litigates its look. Agents extend its grammar to
+the surfaces it does not cover and supply the copy and art it stubbed.
 
-- Patch cells become shaped pieces (straight, elbow, tee, cross) with a
-  fixed orientation rolled at acquisition, never rotatable in hand.
-  Crafting combines two pieces into the geometric union of their arms,
-  legal only when the union is strictly bigger than both inputs. The
-  deterministic 35cr buy dies; acquisition is a dark-web random purchase,
-  post-dive drops, and a reworked CLEAN RUN. Roll weights mirror board
-  generation: I 40 / L 45 / T 12 / X 3.
-- Boosts are capped at 3 bays, purchasable to 5 (150cr then 300cr).
-  Configs stay outside the cap. Full bays draft as pick-to-swap.
-- Catalog surgery from the user's tier list: surge, bulwark, carryCache,
-  slagWard are cut and replaced; A/B tier gets buff analysis; above-S
-  (hotBoot, echoTap) gets tone-down candidates. S is the target ceiling.
-- Gridlock wins take a flat +6 strain chip at full pay.
-- Economy is retuned sink-side only: nightPatchCost(day) = 45 + 5*day,
-  bay costs above, darkPatchCost(day) = 25 + 5*(day - 1) as the opening
-  values. Income is untouched.
+## Integration architecture (Orchestrator, for reference)
 
-## Scope
+- Native React ports, no iframes. Demo CSS (kp.css/system.css/windows.css +
+  study styles) lands as the app's game stylesheet; class vocabulary is the
+  demo's `kp-*`.
+- INBOX becomes the day-loop front door: subject list; opening a ticket
+  shows the CUSTOMER.REC card. The reducer's `analyze` screen RENDERS AS
+  the expanded card inside INBOX (same surface id, same teaching anchors)
+  with READOUT datarows (tell, dominant routine, threat, grid, intrusion
+  RAM, head-start warning) and actions: CONFIGURE KIT / DIVE. The card's
+  DIVE dispatches the real dive. JOBS.QUE icon and badge fold into INBOX.
+- REPAIR.LOG renders the `result` screen (dossier: verdict, strain trace,
+  itemized payout, AUGMENT CACHE draft, patch poster, pouch strip, dive
+  log rail, sparklines). All widgets live: the log lists the actual duel
+  events of the finished dive, charts draw from the actual result numbers.
+- DIVE.EXE replaces the duel presentation wholesale (schematic board,
+  BUS.LOG, program rail, telemetry, console strip, INTRUSION naming, the
+  countless threat banner). Finale and tutorial get dressed variants.
+- NIGHT.SYS, story framing (MORNING.LOG), DARKNET.LNK, LEDGER.LOG,
+  DAD.LOG, MANUAL.TXT port from the demo's w-* windows, bound to live
+  state.
 
-- **ability-agent**: the surgery. Confirm the four cuts. Author ~4
-  replacement boosts as full proposals (synergy, counter, engineNote,
-  desc >= 20 chars) from the directions in the plan: patch refund, pouch
-  extension, clean-pay bender, first-trap forgiveness, overtime clause
-  (tone flag), dark-web discount. New schema fields are available:
-  `requires` ({kind:"augment"|"pouch"}) and `weight`. Buff/nerf proposals
-  for the named A/B and above-S augments, each with the exact player-side
-  call site: never touch SIPHON_STEAL, LOCK_ROUNDS, or WARD_ROUNDS, which
-  are shared with the opponent.
+## Scope: ux-agent
 
-- **arc-composer**: waits for Checkpoint A (the BEFORE kitted curve in the
-  validation report). Then DayConfig deltas against the kitted targets
-  (D1-3 86/84/82, D4-6 70/72/70, D7-9 64/58/55, finale 48) using the new
-  levers: per-day `slag` density, `patchDrop` rates, late-day and finale
-  grid growth (the "grid size almost never" default is waived by the user
-  for this pass), and a finale package with an explicit parFlat. Hard
-  gate: zero round-1 finale closes for the kitted profile.
+Round-2 revision of `pipeline/proposals/ux-agent.json` (the v2 system
+supersedes the per-window channel assignments of round 1). Items:
 
-- **ux-agent**: ui-specs for patch-pouch-strip, patch-ghost-preview,
-  patch-craft-flow, darknet-window (the reveal beat is THE sfx/animation
-  moment), result-drop-reveal, boost-bay card, and the pick-to-swap flow.
-  Sfx orders: darknet reveal sting, craft success. Dock overflow on small
-  screens is an acceptance criterion.
+1. A `ui-spec` codifying the v2 token/system block for the app (hue sets,
+   inverse-video danger, ink-tint imagery, solid-ink title bars, X-only
+   chrome, no-scrollbar law, window footprints).
+2. Specs for surfaces WITHOUT a study, extending demo grammar (each with
+   acceptance checks): INBOX analyze-card absorb (card + READOUT + DIVE
+   button placement), NIGHT.SYS (from w-shopfront paintNight), MORNING.LOG
+   story framing (paintStory), BACKROOM.LCK finale-eve screen, finale
+   DIVE.EXE dressing (vs the standard skin), DesktopIdle (no-run desktop +
+   OPEN THE SHOP moment), abandon dialog, tutorial dive dressing (bench
+   coach line form), REPAIR.LOG live-widget bindings (what each chart and
+   the dive log show, empty/edge states), LEDGER.LOG and MANUAL.TXT and
+   DAD.LOG deltas if the demo versions need live-state adjustments.
+3. The leader-line teach callout as an integrated spec (form only; anchor
+   classes preserved so existing moments re-anchor).
+4. SFX: port list for the demo sound.ts additions into audio.ts presets
+   (ids, buses, when), flagged add vs tune.
+5. Art orders (`pipeline/art/orders/`, treatment field per kp-contracts):
+   the customer roster's card imagery (1-bit portrait + device macro per
+   customer missing one), REPAIR.LOG happy-client figures for the roster,
+   MANUAL.TXT diagram pages (the banked solder-bench art is available in
+   `ui-demos/kpos-shell/art/`), DARKNET.LNK vendor cell if the window
+   wants one, story still re-treatments only if the pixel originals fail
+   the ink-tint. Sizes are exact cell px per the spec you write.
 
-- **tutorial-agent**: mechanic inventory deltas (patchShapes, patchCraft,
-  darkWebBuy replacing patchCellBuy, boostSlots, boostSwap, slotBuy,
-  patchDrop as a waiver candidate), the new `swapOffered` and `craftReady`
-  triggers (pre-authorized engine changes), retirement of the
-  augmentPoolDry waiver, and the CARRY CACHE clause in the ram tip. Gate
-  every artifact of this pass for teaching coverage.
+Constraint: structure and interaction of the studies are settled; specs
+cover only what integration needs decided. No mechanics changes.
 
-- **narrative-director**: copy orders for the rewritten night-shop and
-  patch-cell-use coachmarks, the new patch-craft coachmark, darknet window
-  flavor (vendor and offline states), the gridlock endReason (it currently
-  reads as a favor; it now costs strain), drop-row and capped variants,
-  cleanRun desc rewrite, MANUAL sections (PATCH PIECES, boost bays).
+## Scope: narrative-director
 
-- **loremaster**: gates the DARKNET framing (new outward-facing fiction),
-  the overtime-clause tone flag, and all new copy.
+New player-facing copy, filed as proposal items (envelope per contracts;
+`scene`/`journal` types only if a gap demands them, this is a copy pass):
 
-- **validation**: runs the gate at every checkpoint; Checkpoint A records
-  the first kitted curve as the BEFORE table; Checkpoint D adopts the
-  final kitted bands and re-publishes the kit-less baseline (grid/slag
-  changes are the one sanctioned re-baselining).
+1. INBOX subject lines: real one-line subjects FROM RHEA about each
+   pending order, one per customer job (subject format the spec names,
+   e.g. "RE: <device>"). Cover every customer in `content/customers.ts`
+   for every tier they appear at; subjects read as Rhea routing work to
+   the bench, terminal voice.
+2. Replacement lines for every demo-mock string in the kpos-shell README
+   inventory that ships: LOADOUT.CFG ("DIVE KIT", load/ready status
+   lines, photo tags, "SEVERS AT ZERO."), SOLDER.BAY dialogue-box status
+   lines and SCHEMATIC/WORKPIECE/LAST WELD labels, DIVE.EXE console
+   default hints, route-row labels and states (YOUR ROUTE / ITS ROUTE,
+   OPEN / SEVERED / CLOSING / CUT / AT THE CORE), the countless threat
+   banner, the BUS.LOG vocabulary (tap spliced / bus live / twist /
+   charging / round dividers), result bill framing, NEW DIVE, the device
+   cell tag, REPAIR.LOG dive-log flavor lines, INBOX footer hint. Where a
+   demo line is already right, adopt it verbatim as your item so it gets
+   gated on the record.
+3. The INTRUSION rename: the machine is INTRUSION on every duel surface
+   (replaces SIG-0). Present it as an item for the loremaster to rule on.
+4. Any copy orders the tutorial gate files this cycle.
 
-- **encounter-generator**: NOT in scope.
+## Gates
 
-## Constraints
+- loremaster: everything above, PLUS the standing demo-mock inventory in
+  the kpos-shell README (it ships this cycle), the INTRUSION rename, the
+  Rhea subject lines (is this how Rhea talks? does she route orders?),
+  customer figure likenesses (no appearance canon exists; ruling or bible
+  addendum needed before art-lead draws the roster), diegetic claims (the
+  BENCH FEED camera, the device cell "the OS shows what the bench is
+  tapped into").
+- tutorial-agent: the INBOX analyze-card absorb (anchors and moments
+  survive the move), BUS.LOG and route-row legibility, REPAIR.LOG widget
+  comprehension, the owed solder-bay-intro moment (the demo's gain-arm
+  blink is claimed as partial tier-0 coverage; rule on it), night/darknet
+  flow, teach callout form change, and whether any new surface adds a
+  mechanic row or waiver.
 
-- Iron rules hold: agents propose, the Orchestrator integrates; ability
-  and curve numbers enter only through the balance loop with before/after
-  sim numbers.
-- Augments bend the economy; they do not add verbs. Programs stay 1 RAM.
-  SCAN never gains modes.
-- Only engine-passive boosts enter the sim's BOOST_SCHEDULE.
-- No em or en dashes in game copy. ALL CAPS titles. Coachmark caps hold.
-- Art budget: darknet icons plus approved orders only. SVG-first for
-  piece glyphs.
+## Budgets
 
-## Gate
+- Art: up to 60 Higgsfield credits this cycle (nano_banana_pro, ~2/img).
+  PixelLab stays reserved. Two attempts per order max, per art-lead rules.
+- Copy: no line count cap, but every line passes both gates.
+- Balance: ZERO. No curve, kit, or arc changes. Curve targets unchanged
+  (D1 82 ... finale 25). Sims must stay green through integration.
 
-`bun run typecheck`, `sim.ts` (tutorial 0/200; kit-less rows byte-identical
-until Checkpoint D; kitted block with finale round-1 closes = 0),
-`run-sim.ts` (new invariants: pouch cap, piece conservation, craft union,
-severed under shaped rescue, bays <= slots, buySlot debit, gridlock chip),
-`teach-sim.ts`. Never loosen a harness to make it pass.
+## Copy rules
+
+Terminal voice, clipped, diegetic. No em or en dashes anywhere in game
+copy. Rhea calls the machine "the virus" until the story says otherwise;
+duel surfaces name it INTRUSION pending the loremaster ruling.

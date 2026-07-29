@@ -1,0 +1,13 @@
+{
+  "id": "cust-card-sable-device",
+  "from": "ux-agent",
+  "kind": "window-image",
+  "treatment": "dither-fine",
+  "target": "/assets/px/portraits/card/sable-okonkwo-device.png",
+  "size": [304, 304],
+  "invert": false,
+  "brief": "CUSTOMER.REC card device macro for Sable Okonkwo's Kestrel courier drone (customers.ts), matching the existing Dex Marlowe card's cram-deck macro construction (ui-demos/kpos-shell/art/dex-cramdeck.png / card.html): an extreme close-up macro of the drone's nose sensor cluster and one rotor arm, 1990s anime OVA ink style, flat cel shading, no text or speech bubbles or panel borders or lettering anywhere. Compact quad-rotor courier build, a small waypoint-status light on the nose cluster lit slightly wrong, scuffed matte casing from real use. Background a plain soft dark gradient only.",
+  "status": "done",
+  "result": "pipeline/art/done/cust-card-sable-device.png",
+  "generation": "Higgsfield nano_banana_pro, 1 attempt, ~2 credits. Generated at 1024x1024, post-processed with dither.py --variant fine to 304x304."
+}

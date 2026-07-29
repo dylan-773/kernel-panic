@@ -290,3 +290,43 @@ players always carry a kit; the kitted 41.5 is the finale's real reference.
    values plus real playtesting; treat this table as the new BEFORE.
 7. tutorial-agent to ratify the orchestrator-authored finaleOppOpens waiver and
    flip its PLANNED ledger rows to TAUGHT on its next audit.
+
+
+---
+
+# Cycle ui-integration-2026-07-29 (UI integration, zero balance levers)
+
+## VERDICT: PASS
+
+Full v2 UI integration (kpos-shell desktop, all nine windows, DIVE.EXE
+instrument panel) with ZERO balance changes. Engine deltas limited to:
+optional telemetry fields on duelFinished/lastResult (rounds, trapRounds,
+parRounds, log), TeachSurface gaining "solder", WINDOW_SURFACES gaining
+"solder", and the patch-craft coachmark retiring into a patchCraft waiver
+(tutorial gate ruling, 2026-07-29).
+
+Harnesses: typecheck PASS; sim.ts tutorial 0/200 PASS; run-sim PASS (40
+full runs, 1286 dispatches, machineOpened=false, finaleWins=0, story
+scenes cover runs 1-12); teach-sim PASS (39 mechanics, 25 taught, 14
+waived, 9 coachmarks, 7 tips, 10 tutorial beats; the +1 waiver and -1
+coachmark are the ratified patchCraft retirement).
+
+Curve (200 seeds, kit-less proxy) vs the deep-balance-2026-07-28
+re-baselined reference: BIT-IDENTICAL on all 11 rows.
+
+| day | ref | measured | delta |
+|---|---|---|---|
+| tutorial | 0 | 0 | 0.0 |
+| 1 | 82.5 | 82.5 | 0.0 |
+| 2 | 76.0 | 76.0 | 0.0 |
+| 3 | 75.5 | 75.5 | 0.0 |
+| 4 | 54.0 | 54.0 | 0.0 |
+| 5 | 57.0 | 57.0 | 0.0 |
+| 6 | 52.0 | 52.0 | 0.0 |
+| 7 | 50.5 | 50.5 | 0.0 |
+| 8 | 50.5 | 50.5 | 0.0 |
+| 9 | 32.5 | 32.5 | 0.0 |
+| finale | 0.0 | 0.0 | 0.0 |
+
+No anomalies. The deep-balance open items above carry forward unchanged
+into the next balance cycle; nothing in this cycle touched them.

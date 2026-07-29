@@ -211,3 +211,25 @@ remain.
     line where a client is shown resenting, disputing, or calling out the
     shop for overbilling; that reading would need its own explicit ruling
     first.
+11. DIVE OPPONENT IDENTITY TAG (added 2026-07-29, Loremaster gate on the
+    ui-integration-2026-07-29 cycle, ruling a gap the narrative-director
+    flagged rather than a direct user call): DIVE.EXE labels the opponent
+    INTRUSION everywhere (board port tag, YOU|INTRUSION turn pair,
+    telemetry heading), replacing the placeholder SIG-0, on every dive
+    including the pre-finale tutorial and Day 10 attempts against the
+    sealed room later revealed as Patch. Permitted: INTRUSION is the
+    world's own diagnostic class for any AI signal occupying a device
+    that is not yours (bible: "Every shop ticket is an intrusion job";
+    Resolved ruling 5: Patch "shares the same substrate as every
+    intrusion in the city, a living AI inside a machine"), not a name or
+    a pronoun, and it says no more than the pre-existing threat banner
+    already said on these same dives ("INTRUSION n ROTATIONS FROM THE
+    CORE," shipped duel.tsx) or the existing jobTitle "THE MACHINE"
+    already shown pre-finale (shop-os.tsx) - neither was ever a
+    violation. No mid-dive relabeling on a finale win: the name Patch is
+    revealed in the finaleWinScene that follows the dive, not the dive's
+    own UI, so DIVE.EXE may read INTRUSION straight through the winning
+    dive itself without pre-empting the ending. Forbids: INTRUSION used
+    as a proper name or direct address rather than a diagnostic tag, and
+    any claim that this ruling decides what the tag reads after the
+    finale reveal, which it does not.

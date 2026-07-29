@@ -1,0 +1,220 @@
+/* KP/OS phosphor redesign v2 (ux-2026-07-28-kpos-redesign, round 2).
+ * ONE unified scheme: near-black void + a single ink accent doing all the
+ * work (text, borders, fills, imagery tint), a support tone, one hot
+ * highlight. Hue set switchable via <html data-hue="...">; default magenta
+ * (ref-1, the game-frame reference). Danger is inverse video, never a
+ * second hue. Game-compat tokens (--kp-*) remap into the scheme so the
+ * shipped glyph/shake classes unify without edits. */
+
+/* default: lavender, sampled from ref-4 (hot #d8e3f6, glyphs #8684c0
+ * under scanlines, support #3a3966), compensated for CRT darkening */
+:root, :root[data-hue="lavender"] {
+  --px-void: #0a0913;
+  --ch: #b3b0f2;
+  --ch2: #6d63d8;
+  --ch-hot: #eceafd;
+}
+
+:root[data-hue="magenta"] {
+  --px-void: #070309;
+  --ch: #ff2fa6;
+  --ch2: #8d5bff;
+  --ch-hot: #ffdff1;
+}
+
+:root[data-hue="phosphor"] {
+  --px-void: #030704;
+  --ch: #35e66f;
+  --ch2: #9dff3d;
+  --ch-hot: #eaffe6;
+}
+
+:root {
+  /* derived tones: every "grey" in the old UI becomes a dimmed ink */
+  --ch-dim: color-mix(in srgb, var(--ch) 52%, var(--px-void));
+  --ch-faint: color-mix(in srgb, var(--ch) 26%, var(--px-void));
+  --ch-soft: color-mix(in srgb, var(--ch) 14%, transparent);
+  --ch2-dim: color-mix(in srgb, var(--ch2) 45%, var(--px-void));
+  --px-glow: color-mix(in srgb, var(--ch) 45%, transparent);
+
+  /* layout scale (kpos-window-sizing, unchanged) */
+  --kp-win-w-floor: 420px;
+  --kp-win-w-narrow: 480px;
+  --kp-win-w-standard: 760px;
+  --kp-win-w-wide: 860px;
+  --kp-win-w-hero: 940px;
+  --kp-win-h-ceiling: min(calc(100vh - 120px), 760px);
+  --kp-fs-hero: clamp(40px, 6vw, 88px);
+
+  --kp-display: "Silkscreen", "IBM Plex Mono", monospace;
+  --kp-term: "VT323", "IBM Plex Mono", monospace;
+  --kp-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* game-compat remaps: shipped classes read these names */
+  --kp-bg0: var(--px-void);
+  --kp-bg1: color-mix(in srgb, var(--ch) 6%, var(--px-void));
+  --kp-panel: color-mix(in srgb, var(--ch) 8%, var(--px-void));
+  --kp-panel2: color-mix(in srgb, var(--ch) 12%, var(--px-void));
+  --kp-line: var(--ch-dim);
+  --kp-line-soft: var(--ch-faint);
+  --kp-text: var(--ch);
+  --kp-dim: var(--ch-dim);
+  --kp-rose: var(--ch);
+  --kp-rose-hot: var(--ch-hot);
+  --kp-rose-soft: var(--ch-soft);
+  --kp-signal: var(--ch-hot);
+  --kp-signal-hot: var(--ch-hot);
+  --kp-signal-glow: var(--px-glow);
+  --kp-crimson: var(--ch-dim);
+  --kp-crimson-soft: var(--ch-soft);
+  --kp-gold: var(--ch-hot);
+  --kp-steel: var(--ch);
+}
+
+* { box-sizing: border-box; margin: 0; }
+
+html, body { height: 100%; }
+
+body {
+  background-color: var(--px-void);
+  color: var(--ch);
+  font-family: var(--kp-mono);
+  font-size: 16px;
+  line-height: 1.55;
+  overflow: hidden;
+}
+
+::selection { background: var(--ch); color: var(--px-void); }
+
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible { outline: 2px solid var(--ch-hot); outline-offset: 2px; }
+
+/* ---------- stepped pixel corners (the chrome silhouette) ---------- */
+
+.px-corner {
+  clip-path: polygon(
+    0 12px, 4px 12px, 4px 4px, 12px 4px, 12px 0,
+    calc(100% - 12px) 0, calc(100% - 12px) 4px, calc(100% - 4px) 4px, calc(100% - 4px) 12px, 100% 12px,
+    100% calc(100% - 12px), calc(100% - 4px) calc(100% - 12px), calc(100% - 4px) calc(100% - 4px), calc(100% - 12px) calc(100% - 4px), calc(100% - 12px) 100%,
+    12px 100%, 12px calc(100% - 4px), 4px calc(100% - 4px), 4px calc(100% - 12px), 0 calc(100% - 12px)
+  );
+}
+
+.px-corner-sm {
+  clip-path: polygon(
+    0 6px, 3px 6px, 3px 3px, 6px 3px, 6px 0,
+    calc(100% - 6px) 0, calc(100% - 6px) 3px, calc(100% - 3px) 3px, calc(100% - 3px) 6px, 100% 6px,
+    100% calc(100% - 6px), calc(100% - 3px) calc(100% - 6px), calc(100% - 3px) calc(100% - 3px), calc(100% - 6px) calc(100% - 3px), calc(100% - 6px) 100%,
+    6px 100%, 6px calc(100% - 3px), 3px calc(100% - 3px), 3px calc(100% - 6px), 0 calc(100% - 6px)
+  );
+}
+
+/* ---------- dither / halftone vocabulary (three pixel scales) ---------- */
+
+.px-dither-fine {
+  background-image: repeating-linear-gradient(
+    0deg, var(--ch-soft) 0 1px, transparent 1px 3px);
+}
+
+.px-dither-check {
+  background-image:
+    repeating-conic-gradient(var(--ch-soft) 0% 25%, transparent 0% 50%);
+  background-size: 4px 4px;
+}
+
+.px-dither-coarse {
+  background-image:
+    repeating-conic-gradient(color-mix(in srgb, var(--ch2) 20%, transparent) 0% 25%, transparent 0% 50%);
+  background-size: 8px 8px;
+}
+
+/* three-density pixel gradient band (ref-1's dithered fades) */
+.px-fade {
+  background-image:
+    repeating-conic-gradient(var(--ch-soft) 0% 25%, transparent 0% 50%),
+    repeating-conic-gradient(var(--ch-soft) 0% 25%, transparent 0% 50%),
+    repeating-conic-gradient(var(--ch-soft) 0% 25%, transparent 0% 50%);
+  background-size: 2px 2px, 4px 4px, 8px 8px;
+  background-position: 0 0, 0 33%, 0 66%;
+}
+
+/* ---------- CRT overlay: heavier per refs ---------- */
+
+.kp-crt {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 400;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.22) 0px,
+    rgba(0, 0, 0, 0.22) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  mix-blend-mode: multiply;
+}
+
+.kp-crt::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.06) 0 1px,
+    transparent 1px 3px
+  );
+}
+
+.kp-crt::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(115% 88% at 50% 45%, transparent 55%, rgba(0, 0, 0, 0.62) 100%);
+}
+
+/* ---------- shake tiers (shipped, unchanged) ---------- */
+
+.kp-shake-1 { animation: kp-shake-sm 180ms steps(4); }
+.kp-shake-2 { animation: kp-shake-md 260ms steps(6); }
+
+@keyframes kp-shake-sm {
+  25% { transform: translate(2px, -1px); }
+  50% { transform: translate(-2px, 1px); }
+  75% { transform: translate(1px, 1px); }
+}
+
+@keyframes kp-shake-md {
+  20% { transform: translate(4px, -2px); }
+  40% { transform: translate(-4px, 3px); }
+  60% { transform: translate(3px, 2px); }
+  80% { transform: translate(-2px, -2px); }
+}
+
+/* ---------- patch glyphs: unified ink ---------- */
+
+.kp-patch-glyph { vertical-align: middle; flex: none; }
+.kp-patch-glyph .kp-pp-arm { stroke-linecap: square; }
+
+.kp-pp-arm { stroke: var(--ch); shape-rendering: crispEdges; }
+.kp-pp-node { fill: var(--ch-hot); }
+
+.kp-glyph-gold .kp-pp-arm { stroke: var(--ch-hot); }
+.kp-glyph-gold .kp-pp-node { fill: var(--ch-hot); }
+.kp-glyph-dim { opacity: 0.35; }
+
+@keyframes kp-slot-in {
+  from { opacity: 0; transform: translateY(16px) scale(0.94); }
+  to { opacity: 1; transform: none; }
+}
+.kp-slot-anim { animation: kp-slot-in 300ms steps(5) both; }
+
+.kp-dweld { fill: var(--ch-hot); opacity: 0.9; }
+
+/* blinking terminal cursor */
+.kp-boot-cursor { animation: kp-cursor-blink 0.9s steps(2) infinite; }
+@keyframes kp-cursor-blink { 50% { opacity: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .kp-shake-1, .kp-shake-2, .kp-slot-anim { animation: none; }
+}

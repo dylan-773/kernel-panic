@@ -294,20 +294,24 @@ One file per order at `pipeline/art/orders/<id>.json`:
 ```json
 {
   "id": "kebab-case", "from": "narrative-director | ux-agent",
-  "kind": "portrait | still | icon | wallpaper",
+  "kind": "portrait | still | icon | wallpaper | window-image",
+  "treatment": "pixel | dither-fine | dither-heavy | dither-bayer",
   "target": "/assets/px/portraits/cust-07.png",
   "size": [64, 64],
+  "invert": false,
   "brief": "subject, composition, mood - concrete, one paragraph",
   "status": "open",
   "result": null
 }
 ```
 
-Art-lead updates `status` to `done` and sets `result` to the finished PNG path under `pipeline/art/done/`. Sizes in play today: portraits 64x64, stills 192x128, wallpaper 320x180.
+Art-lead updates `status` to `done` and sets `result` to the finished PNG path under `pipeline/art/done/`. `treatment: "pixel"` sizes in play: portraits 64x64, stills 192x128, wallpaper 320x180, icons 16x16/32x32. Dither orders carry the destination cell's EXACT inner CSS pixel size in `size` (one dither dot = one CSS pixel; the Orchestrator or the spec supplies it), and `invert: true` only for schematic plates (luminous lines on void).
 
 ## Palette and asset conventions
 
-Every generated image prompt pins these hexes (the `--kp-*` tokens): bg0 `#101218`, bg1 `#14171e`, panel `#1a1e27`, line `#2b313d`, text `#e8ebf2`, dim `#8f97a8`, rose `#e94f6d`, rose-hot `#ff6d88`, signal `#ffe9c4`, crimson `#cf4b45`, gold `#d9a53f`, steel `#9fb2cc`. Asset paths are absolute from the public root: `/assets/px/portraits/...`, `/assets/px/stills/...`, `/assets/px/ui/...`, `/assets/sfx/music/...`. Post-processing (`pipeline/tools/pxpost.py`) snaps generations to a real pixel grid and palette.
+The KP/OS v2 look (source of truth `ui-demos/kpos-shell/`, its README.md carries the rulings): near-black void plus ONE ink accent channel that does text, borders, fills, meters, and imagery, a support tone, one hot highlight, switched wholesale by a `data-hue` attribute (lavender default). Danger is inverse video, never a second hue. Window imagery is DIEGETIC-ONLY (the OS needs an in-fiction reason to show a picture), strict 1-bit dithered monochrome, ink-tinted live by the app - so dither-treatment art is generated as pure black-and-white (1990s anime OVA ink style, flat cel shading, no text/bubbles/frames) and dithered by `pipeline/tools/dither.py` at the exact cell size.
+
+`treatment: "pixel"` prompts still pin the legacy hexes (the `--kp-*` tokens): bg0 `#101218`, bg1 `#14171e`, panel `#1a1e27`, line `#2b313d`, text `#e8ebf2`, dim `#8f97a8`, rose `#e94f6d`, rose-hot `#ff6d88`, signal `#ffe9c4`, crimson `#cf4b45`, gold `#d9a53f`, steel `#9fb2cc`; `pipeline/tools/pxpost.py` snaps them to a real pixel grid and palette. Asset paths are absolute from the public root: `/assets/px/portraits/...`, `/assets/px/stills/...`, `/assets/px/ui/...`, `/assets/sfx/music/...`.
 
 ## Engine invariants the sims enforce
 

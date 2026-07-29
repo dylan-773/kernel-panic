@@ -1,0 +1,923 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>KP demo: DIVE.EXE</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=VT323&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" />
+<link rel="stylesheet" href="kp.css" />
+<link rel="stylesheet" href="system.css" />
+<style>
+/* DIVE.EXE poster study, standalone (the shell is untouched by it).
+ * The flood-claim duel as a full-screen instrument panel: the board drawn
+ * as a white-line circuit schematic, framed by the ship-diagnostic OS
+ * anatomy (title strip, breadcrumb, key rail, telemetry rail, console).
+ * The whole duel runs on the shipped engine, imported by dive.ts. */
+
+:root {
+  /* the intrusion's tone: the scheme's support ink, never a second hue */
+  --ch2-hot: color-mix(in srgb, var(--ch2) 55%, var(--ch-hot));
+  --ch2-dimm: color-mix(in srgb, var(--ch2) 55%, var(--px-void));
+  --ch2-glow: color-mix(in srgb, var(--ch2) 50%, transparent);
+}
+
+body { overflow: hidden; }
+
+/* ================= shell frame ================= */
+
+.dv-shell {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  background: var(--px-void);
+}
+
+/* fine checker over the whole panel interior */
+.dv-shell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: repeating-conic-gradient(color-mix(in srgb, var(--ch) 4%, transparent) 0% 25%, transparent 0% 50%);
+  background-size: 4px 4px;
+}
+.dv-shell > * { position: relative; }
+
+.dv-shake-1 { animation: kp-shake-sm 180ms steps(4); }
+.dv-shake-2 { animation: kp-shake-md 260ms steps(6); }
+.dv-shake-3 { animation: dv-shake-lg 320ms steps(6); }
+@keyframes dv-shake-lg {
+  16% { transform: translate(6px, -3px); }
+  33% { transform: translate(-6px, 4px); }
+  50% { transform: translate(5px, 3px); }
+  66% { transform: translate(-4px, -4px); }
+  83% { transform: translate(2px, 2px); }
+}
+
+/* ---- title strip: solid ink, void pixel text ---- */
+
+.dv-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--ch);
+  padding: 8px 14px 8px 18px;
+}
+.dv-bar h1 {
+  font-family: var(--kp-display);
+  font-size: 15px;
+  letter-spacing: 0.16em;
+  color: var(--px-void);
+  font-weight: 400;
+}
+.dv-bar-right { display: flex; align-items: center; gap: 14px; }
+.dv-bar-dev {
+  font-family: var(--kp-display);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: var(--px-void);
+}
+.dv-bar-glyphs { display: flex; gap: 7px; align-items: center; }
+.dv-bar-glyphs i { display: block; background: var(--px-void); }
+.dv-bar-glyphs i:nth-child(1) { width: 11px; height: 3px; margin-top: 8px; }
+.dv-bar-glyphs i:nth-child(2) { width: 11px; height: 11px; background: transparent; border: 3px solid var(--px-void); }
+.dv-bar-glyphs i:nth-child(3) { width: 11px; height: 11px; }
+
+/* ---- breadcrumb strip: path left, round meter + day right ---- */
+
+.dv-crumb {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 6px 14px 6px 18px;
+  border-bottom: 2px solid var(--ch-faint);
+  min-height: 34px;
+}
+.dv-crumb-path {
+  font-family: var(--kp-display);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: var(--ch-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dv-crumb-right { display: flex; align-items: center; gap: 14px; }
+
+.dv-round { display: inline-flex; align-items: center; gap: 8px; }
+.dv-round > span {
+  font-family: var(--kp-display);
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  color: var(--ch);
+}
+.dv-round > span::before { content: "// "; opacity: 0.7; }
+.dv-round > em {
+  font-style: normal;
+  font-family: var(--kp-mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ch-hot);
+}
+.dv-roundsegs { display: inline-flex; gap: 2px; height: 12px; }
+.dv-roundsegs i { width: 5px; background: var(--ch-faint); }
+.dv-roundsegs i.dv-seg-on { background: var(--ch); }
+.dv-roundsegs i.dv-seg-now { background: var(--ch-hot); animation: dv-blink 0.9s steps(2) infinite; }
+.dv-roundsegs i.dv-seg-late { box-shadow: inset 0 2px 0 var(--ch-dim); }
+.dv-roundsegs i.dv-seg-late.dv-seg-on { background: var(--ch-hot); }
+@keyframes dv-blink { 50% { opacity: 0.25; } }
+
+.dv-day {
+  font-family: var(--kp-display);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: var(--px-void);
+  background: var(--ch);
+  padding: 4px 9px;
+}
+.dv-snd {
+  font-family: var(--kp-display);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  padding: 5px 9px;
+  background: transparent;
+  border: 2px solid var(--ch-dim);
+  color: var(--ch);
+}
+.dv-snd:hover { background: var(--ch); color: var(--px-void); }
+
+/* ================= stage ================= */
+
+.dv-stage {
+  display: grid;
+  grid-template-columns: 236px minmax(0, 1fr) 264px;
+  gap: 16px;
+  padding: 14px 16px;
+  min-height: 0;
+}
+
+.dv-rail { display: flex; flex-direction: column; gap: 10px; min-height: 0; }
+.dv-rail-r { overflow: hidden; }
+.dv-rail-idle { opacity: 0.55; }
+.dv-rail-l { transition: opacity 160ms steps(4); }
+
+/* ---- RAM box ---- */
+
+.dv-rambox { --tick: var(--ch-dim); padding: 10px 12px 12px; }
+.dv-ram-top { display: flex; align-items: baseline; gap: 10px; }
+.dv-ram-label {
+  font-family: var(--kp-display);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  color: var(--ch);
+}
+.dv-ram-label::before { content: "// "; opacity: 0.7; }
+.dv-ram-num {
+  font-style: normal;
+  font-family: var(--kp-display);
+  font-size: 30px;
+  line-height: 1;
+  color: var(--ch-hot);
+  text-shadow: 0 0 14px var(--px-glow);
+}
+.dv-ram-banked {
+  font-style: normal;
+  font-family: var(--kp-display);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: var(--px-void);
+  background: var(--ch-hot);
+  padding: 2px 6px;
+  margin-left: auto;
+}
+.dv-ram-banked:empty { display: none; }
+.dv-ram-pips { display: flex; gap: 4px; margin-top: 9px; flex-wrap: wrap; }
+.dv-ram-pips i {
+  display: block;
+  width: 14px;
+  height: 14px;
+  border: 3px solid var(--ch-faint);
+  background: transparent;
+}
+.dv-ram-pips i.dv-pip-on {
+  border-color: var(--ch);
+  background: var(--ch);
+  box-shadow: 0 0 8px var(--px-glow);
+}
+
+/* ---- program keys ---- */
+
+.dv-key {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  text-align: left;
+  padding: 10px 12px;
+  border: 3px solid var(--ch-dim);
+  background: color-mix(in srgb, var(--ch) 4%, var(--px-void));
+  color: var(--ch);
+}
+.dv-key:hover:not(:disabled) { border-color: var(--ch); }
+.dv-key:active:not(:disabled) { transform: translate(1px, 1px); }
+.dv-key:disabled { cursor: not-allowed; opacity: 0.45; }
+.dv-key-arming,
+.dv-key-arming:hover:not(:disabled) {
+  background: var(--ch);
+  border-color: var(--ch);
+  color: var(--px-void);
+  animation: dv-blink 1.1s steps(2) infinite;
+}
+.dv-key-name { display: flex; align-items: center; gap: 8px; }
+.dv-key-name b {
+  font-family: var(--kp-display);
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  font-weight: 400;
+}
+.dv-key-pips { display: inline-flex; gap: 3px; }
+.dv-key-pips i { width: 7px; height: 7px; background: var(--ch-faint); }
+.dv-key-pips i.dv-on { background: currentColor; }
+.dv-key-chip {
+  margin-left: auto;
+  font-style: normal;
+  font-family: var(--kp-display);
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  padding: 3px 6px;
+  box-shadow: inset 0 0 0 2px currentColor;
+}
+.dv-key-chip.dv-chip-used { box-shadow: none; background: var(--ch-dim); color: var(--px-void); }
+.dv-key-arming .dv-key-chip.dv-chip-arm { box-shadow: none; background: var(--px-void); color: var(--ch); }
+.dv-key-meta {
+  font-family: var(--kp-term);
+  font-size: 17px;
+  line-height: 1.1;
+  color: color-mix(in srgb, currentColor 75%, transparent);
+}
+
+/* ---- patch strip ---- */
+
+.dv-patch { border: 3px solid var(--ch-dim); padding: 9px 12px 11px; background: color-mix(in srgb, var(--ch) 4%, var(--px-void)); }
+.dv-patch-empty { border-style: dashed; }
+.dv-patch-head { display: flex; align-items: baseline; gap: 8px; }
+.dv-patch-head span {
+  font-family: var(--kp-display);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  color: var(--ch);
+}
+.dv-patch-head span::before { content: "// "; opacity: 0.7; }
+.dv-patch-head i {
+  font-style: normal;
+  font-family: var(--kp-term);
+  font-size: 16px;
+  color: var(--ch-dim);
+}
+.dv-patch-slots { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+.dv-patch-slots:empty { display: none; }
+.dv-piece {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--ch-dim);
+  background: var(--px-void);
+  padding: 0;
+}
+.dv-piece:hover:not(:disabled) { border-color: var(--ch-hot); }
+.dv-piece:disabled { cursor: not-allowed; opacity: 0.4; }
+.dv-piece-armed, .dv-piece-armed:hover:not(:disabled) {
+  background: var(--ch);
+  border-color: var(--ch);
+  animation: dv-blink 1.1s steps(2) infinite;
+}
+.dv-piece-armed .kp-pp-arm { stroke: var(--px-void); }
+.dv-piece-armed .kp-pp-node { fill: var(--px-void); }
+
+.dv-end { width: 100%; }
+
+/* ---- BUS.LOG: the left rail's realtime tap ---- */
+
+.dv-logbox {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border: 2px solid var(--ch-faint);
+  background: color-mix(in srgb, var(--ch) 3%, var(--px-void));
+  padding: 8px 10px 9px;
+}
+.dv-log-head {
+  flex: none;
+  font-family: var(--kp-display);
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  color: var(--ch-dim);
+}
+.dv-log-head::before { content: "// "; opacity: 0.7; }
+.dv-log-head::after { content: " _"; opacity: 0.7; }
+/* bottom-anchored, never scrolls: old lines clip off the top edge */
+.dv-log-lines {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 1px;
+  overflow: hidden;
+  font-family: var(--kp-term);
+  font-size: 16px;
+  line-height: 1.15;
+  color: var(--ch-dim);
+}
+.dv-log-lines > span {
+  flex: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dv-log-lines b { font-weight: 400; margin-right: 7px; }
+.dv-log-you b { color: var(--ch-hot); }
+.dv-log-int b { color: var(--ch2-hot); }
+.dv-log-sys b { color: var(--ch-dim); }
+.dv-log-lines > span:last-child { color: var(--ch); }
+.dv-log-lines > span:last-child:not(.dv-log-div)::after {
+  content: "_";
+  margin-left: 3px;
+  animation: kp-cursor-blink 0.9s steps(2) infinite;
+}
+.dv-log-div { color: var(--ch-faint); letter-spacing: 0.08em; }
+
+/* ================= board ================= */
+
+.dv-boardwrap {
+  --tick: var(--ch);
+  position: relative;
+  min-height: 0;
+  min-width: 0;
+  border: 2px solid var(--ch-faint);
+  /* the whole surface is textured, not just the SVG sheet: a full-bleed
+   * pixel dot grid over the center glow */
+  background-image:
+    radial-gradient(color-mix(in srgb, var(--ch) 26%, transparent) 1px, transparent 1.5px),
+    radial-gradient(90% 80% at 50% 45%, color-mix(in srgb, var(--ch) 5%, transparent), transparent 70%);
+  background-size: 16px 16px, 100% 100%;
+  background-color: var(--px-void);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  overflow: hidden;
+}
+
+.dv-board { width: 100%; height: 100%; position: relative; z-index: 1; }
+
+/* dithered haze pooling at the frame edges, clean center (a real
+ * element, not ::before - the frame ticks own those slots) */
+.dv-boardtex {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    repeating-conic-gradient(color-mix(in srgb, var(--ch) 13%, transparent) 0% 25%, transparent 0% 50%),
+    repeating-conic-gradient(color-mix(in srgb, var(--ch2) 11%, transparent) 0% 25%, transparent 0% 50%);
+  background-size: 4px 4px, 10px 10px;
+  -webkit-mask-image: radial-gradient(115% 100% at 50% 46%, transparent 36%, black 95%);
+  mask-image: radial-gradient(115% 100% at 50% 46%, transparent 36%, black 95%);
+}
+
+.dv-gridline { fill: color-mix(in srgb, var(--ch) 7%, transparent); }
+
+/* margin furniture: all under the SVG sheet (z 0 vs the board's z 1) */
+.dv-wm {
+  position: absolute;
+  left: 20px;
+  bottom: 10px;
+  z-index: 0;
+  font-family: var(--kp-display);
+  font-size: clamp(38px, 5.4vw, 76px);
+  line-height: 1;
+  letter-spacing: 0.04em;
+  color: transparent;
+  -webkit-text-stroke: 2px color-mix(in srgb, var(--ch) 24%, transparent);
+  pointer-events: none;
+  user-select: none;
+}
+.dv-hexcorner {
+  position: absolute;
+  top: 12px;
+  right: 18px;
+  z-index: 0;
+  text-align: right;
+  font-family: var(--kp-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  line-height: 1.75;
+  color: color-mix(in srgb, var(--ch) 34%, transparent);
+  white-space: pre;
+  pointer-events: none;
+}
+.dv-ruler-b {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 7px;
+  height: 8px;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(90deg, color-mix(in srgb, var(--ch) 30%, transparent) 0 1px, transparent 1px 13px),
+    linear-gradient(0deg, transparent 0 3px, color-mix(in srgb, var(--ch) 18%, transparent) 3px 4px, transparent 4px);
+}
+.dv-ruler-r {
+  position: absolute;
+  top: 16px;
+  bottom: 24px;
+  right: 7px;
+  width: 8px;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(0deg, color-mix(in srgb, var(--ch) 30%, transparent) 0 1px, transparent 1px 13px),
+    linear-gradient(90deg, transparent 0 3px, color-mix(in srgb, var(--ch) 18%, transparent) 3px 4px, transparent 4px);
+}
+
+.dv-cell-in { animation: dv-cell-in 260ms steps(4) both; }
+@keyframes dv-cell-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.dv-griddot { fill: color-mix(in srgb, var(--ch) 14%, transparent); }
+.dv-hatchline { fill: color-mix(in srgb, var(--ch) 30%, transparent); }
+.dv-checkdot { fill: color-mix(in srgb, var(--ch) 16%, transparent); }
+
+.dv-cell.dv-legal { cursor: pointer; }
+
+/* arms: the circuit traces */
+.dv-arm {
+  stroke: color-mix(in srgb, var(--ch) 34%, var(--px-void));
+  shape-rendering: crispEdges;
+  stroke-linecap: square;
+}
+.dv-own-p .dv-arm { stroke: var(--ch); }
+.dv-own-o .dv-arm { stroke: var(--ch2); }
+.dv-arm-core { stroke: var(--ch-dim); }
+
+/* powered overlay: hot core line + marching current. The dash march
+ * follows the flood: dv-flow-out runs hub-to-edge on arms feeding
+ * downstream, dv-flow-in runs edge-to-hub on the arm the current arrives
+ * by, and a powered dead stub holds steady light with no march. */
+.dv-armlit {
+  stroke: var(--ch-hot);
+  shape-rendering: crispEdges;
+  stroke-linecap: square;
+  display: none;
+}
+.dv-lit-p .dv-armlit { display: inline; filter: drop-shadow(0 0 5px var(--px-glow)); }
+.dv-lit-o .dv-armlit {
+  display: inline;
+  stroke: var(--ch2-hot);
+  filter: drop-shadow(0 0 5px var(--ch2-glow));
+}
+.dv-armlit.dv-flow-out { stroke-dasharray: 4 4; animation: dv-current 600ms linear infinite; }
+.dv-armlit.dv-flow-in { stroke-dasharray: 4 4; animation: dv-current-rev 600ms linear infinite; }
+@keyframes dv-current { to { stroke-dashoffset: -8; } }
+@keyframes dv-current-rev { to { stroke-dashoffset: 8; } }
+
+/* CSS transforms on SVG elements pivot on the LOCAL origin, which after
+ * the parent translate is exactly the hub - the shipped board relies on
+ * this too. Never add transform-box: fill-box here: an asymmetric arm set
+ * (I, L, T) has an off-hub bounding box and every rotated junction drifts
+ * off the grid, so nothing connects. */
+.dv-arms { transition: transform 160ms steps(4); }
+@media (prefers-reduced-motion: reduce) { .dv-arms { transition: none; } }
+
+/* junction hubs: pixel squares */
+.dv-node {
+  fill: var(--px-void);
+  stroke: color-mix(in srgb, var(--ch) 40%, var(--px-void));
+  stroke-width: 2;
+  shape-rendering: crispEdges;
+}
+.dv-own-p .dv-node { fill: var(--ch); stroke: var(--ch); }
+.dv-own-p.dv-lit-p .dv-node { fill: var(--ch-hot); stroke: var(--ch-hot); }
+.dv-own-o .dv-node { fill: var(--ch2); stroke: var(--ch2); }
+.dv-own-o.dv-lit-o .dv-node { fill: var(--ch2-hot); stroke: var(--ch2-hot); }
+
+.dv-weld { display: none; fill: var(--px-void); shape-rendering: crispEdges; }
+.dv-fused .dv-weld { display: inline; }
+/* a weld on unclaimed ground still needs to read: hot dot on the hollow hub */
+.dv-own-n.dv-fused .dv-weld { fill: var(--ch-hot); }
+.dv-own-n.dv-fused .dv-node { stroke: var(--ch-dim); }
+
+/* the machine's territory carries signal rot: monochrome glitch jitter */
+.dv-own-o .dv-jit { animation: dv-jitter 1.4s steps(1) infinite; }
+@keyframes dv-jitter {
+  0%, 88%, 100% { transform: translate(0, 0); }
+  90% { transform: translate(1px, 0); }
+  93% { transform: translate(-1px, 1px); }
+  96% { transform: translate(0, -1px); }
+}
+
+/* claim pop (scales about the hub via the default local origin) */
+.dv-pop { animation: dv-pop 300ms steps(4) both; }
+@keyframes dv-pop {
+  0% { transform: scale(0.4); }
+  60% { transform: scale(1.25); }
+  100% { transform: scale(1); }
+}
+
+/* legality + selection */
+.dv-legalring {
+  fill: transparent;
+  stroke: none;
+  shape-rendering: crispEdges;
+}
+.dv-legal .dv-legalring {
+  stroke: color-mix(in srgb, var(--ch) 55%, transparent);
+  stroke-width: 1.5;
+  stroke-dasharray: 4 4;
+}
+.dv-legal:hover .dv-legalring { stroke: var(--ch-hot); fill: color-mix(in srgb, var(--ch) 10%, transparent); }
+.dv-picked .dv-legalring { stroke: var(--ch-hot); stroke-width: 2.5; stroke-dasharray: none; }
+
+/* opponent telegraph: blinking brackets in its tone */
+.dv-aimed .dv-legalring {
+  stroke: var(--ch2-hot);
+  stroke-width: 2.5;
+  stroke-dasharray: 7 5;
+  animation: dv-blink 0.5s steps(2) infinite;
+}
+
+/* TAP LINE trace */
+.dv-trace { display: none; fill: none; shape-rendering: crispEdges; }
+.dv-traced .dv-trace {
+  display: inline;
+  stroke: var(--ch-hot);
+  stroke-width: 1.5;
+  stroke-dasharray: 3 3;
+  animation: dv-current 700ms linear infinite;
+}
+
+/* locks, wards, traps */
+.dv-lock { display: none; }
+.dv-locked .dv-lock { display: inline; }
+.dv-lockb { fill: none; stroke: var(--ch-hot); stroke-width: 2.5; shape-rendering: crispEdges; }
+.dv-lockrect { fill: var(--ch-hot); shape-rendering: crispEdges; }
+
+.dv-ward { display: none; fill: none; shape-rendering: crispEdges; }
+.dv-warded .dv-ward { display: inline; stroke: var(--ch); stroke-width: 1.5; stroke-dasharray: 4 3; opacity: 0.85; }
+
+.dv-trap { display: none; }
+.dv-trapped .dv-trap { display: inline; }
+.dv-trap-p .dv-trap { fill: var(--px-void); stroke: var(--ch-hot); stroke-width: 2; }
+.dv-trap-o .dv-trap { fill: var(--px-void); stroke: var(--ch2-hot); stroke-width: 2; animation: dv-blink 1.3s steps(2) infinite; }
+.dv-trap-siphon .dv-trap { fill: color-mix(in srgb, var(--ch2) 30%, var(--px-void)); }
+
+/* slag: dead sectors as checker-fill debris */
+.dv-slagbody { fill: url(#dvCheck); stroke: color-mix(in srgb, var(--ch) 26%, var(--px-void)); stroke-width: 1.5; }
+.dv-crack { fill: none; stroke: color-mix(in srgb, var(--ch) 30%, var(--px-void)); stroke-width: 1.5; }
+.dv-ghostarm { stroke: var(--ch-hot); stroke-dasharray: 3 3; opacity: 0.6; shape-rendering: crispEdges; }
+.dv-ghostnode { fill: var(--ch-hot); opacity: 0.6; shape-rendering: crispEdges; }
+.dv-legal:hover .dv-ghostarm, .dv-legal:hover .dv-ghostnode { opacity: 1; }
+
+/* ports */
+.dv-portbody { fill: var(--px-void); stroke-width: 3; shape-rendering: crispEdges; }
+.dv-k-entryP .dv-portbody { stroke: var(--ch); }
+.dv-k-entryO .dv-portbody { stroke: var(--ch2); }
+.dv-porteye { shape-rendering: crispEdges; }
+.dv-k-entryP .dv-porteye { fill: var(--ch-hot); }
+.dv-k-entryO .dv-porteye { fill: var(--ch2-hot); }
+.dv-k-entryP .dv-arm { stroke: var(--ch); }
+.dv-k-entryO .dv-arm { stroke: var(--ch2); }
+.dv-k-entryO .dv-arms, .dv-k-entryO .dv-portbody { animation: dv-jitter 1.7s steps(1) infinite; }
+
+.dv-tag {
+  font-family: var(--kp-display);
+  font-size: 8px;
+  letter-spacing: 0.14em;
+  fill: var(--ch-dim);
+}
+.dv-tag-o { fill: var(--ch2-dimm); }
+
+/* the core: hatched component block, brackets flare when a flood arrives */
+.dv-corebody { fill: url(#dvHatch); stroke: var(--ch); stroke-width: 2.5; shape-rendering: crispEdges; }
+.dv-coreeye { fill: var(--ch); shape-rendering: crispEdges; }
+.dv-coreb { fill: none; stroke: var(--ch-dim); stroke-width: 2.5; shape-rendering: crispEdges; }
+.dv-lit-p .dv-corebody, .dv-lit-o .dv-corebody { stroke: var(--ch-hot); filter: drop-shadow(0 0 9px var(--px-glow)); }
+.dv-lit-p .dv-coreeye, .dv-lit-o .dv-coreeye { fill: var(--ch-hot); }
+.dv-lit-p .dv-coreb, .dv-lit-o .dv-coreb { stroke: var(--ch-hot); animation: dv-blink 0.7s steps(2) infinite; }
+
+/* ---- board overlays ---- */
+
+.dv-pulses {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+  z-index: 6;
+}
+.dv-pulse {
+  font-family: var(--kp-display);
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  padding: 7px 14px;
+  background: var(--px-void);
+  color: var(--ch-hot);
+  box-shadow: inset 0 0 0 2px var(--ch-hot), 6px 6px 0 rgba(0, 0, 0, 0.7);
+  animation: dv-pulse-in 1500ms steps(5) both;
+}
+.dv-pulse-bad { background: var(--ch); color: var(--px-void); box-shadow: inset 0 0 0 2px var(--ch), 6px 6px 0 rgba(0, 0, 0, 0.7); }
+@keyframes dv-pulse-in {
+  0% { opacity: 0; transform: translateY(8px); }
+  8% { opacity: 1; transform: none; }
+  80% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-8px); }
+}
+
+.dv-virus {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 7;
+  max-width: 80%;
+  text-align: center;
+  font-family: var(--kp-term);
+  font-size: 30px;
+  line-height: 1.1;
+  padding: 12px 22px;
+  color: var(--ch2-hot);
+  background: var(--px-void);
+  box-shadow: inset 0 0 0 2px var(--ch2), 8px 8px 0 rgba(0, 0, 0, 0.75);
+  text-shadow: 2px 0 0 color-mix(in srgb, var(--ch2) 60%, transparent);
+  animation: dv-virus-in 2400ms steps(2) both;
+  pointer-events: none;
+}
+@keyframes dv-virus-in {
+  0% { opacity: 0; transform: translate(-52%, -50%); }
+  4% { opacity: 1; transform: translate(-50%, -51%); }
+  8% { transform: translate(-50%, -50%); }
+  86% { opacity: 1; }
+  100% { opacity: 0; transform: translate(-50%, -49%); }
+}
+
+.dv-sweep {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent 0%, color-mix(in srgb, var(--ch2) 22%, transparent) 50%, transparent 100%);
+  background-size: 100% 120px;
+  background-repeat: no-repeat;
+  animation: dv-sweep-run 900ms steps(14) both;
+}
+@keyframes dv-sweep-run {
+  from { background-position: 0 -120px; }
+  to { background-position: 0 110%; }
+}
+
+.dv-threats {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  z-index: 6;
+  pointer-events: none;
+}
+.dv-threat {
+  font-family: var(--kp-display);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  padding: 7px 14px;
+  background: var(--ch);
+  color: var(--px-void);
+  box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.7);
+  white-space: nowrap;
+}
+.dv-threat-max { animation: kp-danger-blink 0.8s steps(2) infinite; }
+
+/* ================= right rail ================= */
+
+.dv-turnpair { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.dv-turncell {
+  font-family: var(--kp-display);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-align: center;
+  padding: 10px 4px;
+  border: 3px solid var(--ch-faint);
+  color: var(--ch-dim);
+  white-space: nowrap;
+  overflow: hidden;
+}
+.dv-turncell.dv-turn-on { border-color: var(--ch); background: var(--ch); color: var(--px-void); }
+.dv-turncell.dv-turn-moving { animation: dv-blink 0.8s steps(2) infinite; }
+
+.dv-oppbox { border: 3px solid var(--ch-dim); padding: 10px 12px 12px; display: flex; flex-direction: column; gap: 8px; }
+.dv-oppbox h3 {
+  font-family: var(--kp-display);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: var(--px-void);
+  background: var(--ch2);
+  display: block;
+  padding: 5px 9px;
+  font-weight: 400;
+  margin: -10px -12px 2px;
+}
+.dv-tell {
+  font-family: var(--kp-term);
+  font-size: 18px;
+  line-height: 1.25;
+  color: var(--ch-dim);
+}
+.dv-intent {
+  font-family: var(--kp-term);
+  font-size: 18px;
+  line-height: 1.25;
+  color: var(--ch2-hot);
+}
+.dv-intent:empty { display: none; }
+
+.dv-par-pop { animation: dv-par-pop 320ms steps(4); }
+@keyframes dv-par-pop { 40% { transform: scale(1.06); } }
+
+.dv-strainbar {
+  position: relative;
+  display: inline-block;
+  width: 74px;
+  height: 12px;
+  border: 2px solid var(--ch-dim);
+  vertical-align: middle;
+  margin-right: 8px;
+}
+.dv-strainbar i {
+  position: absolute;
+  inset: 1px auto 1px 1px;
+  background: repeating-linear-gradient(45deg, var(--ch) 0 3px, transparent 3px 6px);
+}
+.kp-datarow em b { font-weight: 600; }
+
+.dv-device { display: flex; flex-direction: column; gap: 7px; margin-top: auto; min-height: 0; }
+.dv-device .kp-photo-cell-full { width: 100%; }
+/* the macro composes edge to edge: show the full square, never a band crop */
+.dv-device .kp-photo-cell-full img { width: 100%; height: auto; aspect-ratio: 1 / 1; object-fit: cover; }
+@media (max-height: 860px) {
+  /* shorter panels trade to a 4:3 crop biased toward the screen label */
+  .dv-device .kp-photo-cell-full img { aspect-ratio: 4 / 3; object-position: 50% 30%; }
+}
+.dv-device-tag {
+  font-family: var(--kp-display);
+  font-size: 8px;
+  letter-spacing: 0.12em;
+  color: var(--ch-dim);
+}
+
+/* ================= console strip ================= */
+
+.dv-console {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 46px;
+  border-top: 2px solid var(--ch-faint);
+  padding: 6px 16px;
+}
+.dv-console-label {
+  font-family: var(--kp-display);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  color: var(--ch);
+  white-space: nowrap;
+}
+.dv-console-line {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--kp-term);
+  font-size: 21px;
+  color: var(--ch);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dv-console-actions { display: flex; gap: 8px; }
+.dv-cbtn {
+  font-family: var(--kp-display);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  padding: 7px 12px;
+  border: 2px solid var(--ch-dim);
+  background: transparent;
+  color: var(--ch);
+}
+.dv-cbtn:hover { background: var(--ch); color: var(--px-void); border-color: var(--ch); }
+.dv-cbtn-hot { background: var(--ch-hot); border-color: var(--ch-hot); color: var(--px-void); }
+.dv-cbtn-hot:hover { background: var(--ch); border-color: var(--ch); }
+
+/* program info card, above the console near the keys */
+.dv-info {
+  position: absolute;
+  left: 16px;
+  bottom: 56px;
+  z-index: 40;
+  width: 300px;
+  background: rgba(0, 0, 0, 0.94);
+  border: 2px solid var(--ch);
+  padding: 12px 14px;
+  display: none;
+}
+.dv-info.dv-info-on { display: block; }
+.dv-info strong {
+  display: block;
+  font-family: var(--kp-display);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: var(--ch-hot);
+  margin-bottom: 6px;
+}
+.dv-info p { font-family: var(--kp-term); font-size: 19px; line-height: 1.3; color: var(--ch); }
+
+/* ================= result overlay ================= */
+
+.dv-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 60;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.72);
+}
+.dv-overlay-on { display: flex; }
+.dv-result {
+  width: min(460px, 92vw);
+  background: var(--px-void);
+  border: 3px solid var(--ch);
+  filter: drop-shadow(9px 9px 0 rgba(0, 0, 0, 0.8)) drop-shadow(0 0 26px var(--px-glow));
+  padding: 20px 22px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  animation: kp-fw-in 200ms steps(4) both;
+}
+.dv-result h2 {
+  font-family: var(--kp-display);
+  font-size: clamp(26px, 3.4vw, 40px);
+  line-height: 1;
+  letter-spacing: 0.04em;
+  color: var(--ch);
+  text-shadow: 0 0 22px var(--px-glow);
+  font-weight: 400;
+}
+.dv-result-l h2 { color: var(--ch2-hot); text-shadow: 0 0 22px var(--ch2-glow); }
+.dv-result .kp-frame-stripe { --stripe: var(--ch-dim); height: 6px; }
+.dv-result-l .kp-frame-stripe { --stripe: var(--ch2-dimm); }
+.dv-result-reason { font-family: var(--kp-term); font-size: 21px; line-height: 1.3; color: var(--ch); }
+.dv-result-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 4px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .dv-cell-in, .dv-pop, .dv-armlit.dv-flow-out, .dv-armlit.dv-flow-in,
+  .dv-log-lines > span:last-child:not(.dv-log-div)::after,
+  .dv-traced .dv-trace, .dv-own-o .dv-jit,
+  .dv-k-entryO .dv-arms, .dv-k-entryO .dv-portbody, .dv-seg-now,
+  .dv-key-arming, .dv-piece-armed, .dv-turncell, .dv-threat-max,
+  .dv-virus, .dv-sweep, .dv-pulse, .dv-aimed .dv-legalring,
+  .dv-lit-p .dv-coreb, .dv-lit-o .dv-coreb, .dv-par-pop {
+    animation: none;
+  }
+}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<div class="rig">
+  <strong>DEMO RIG</strong>
+  <span>Hue</span>
+  <div class="rig-row" id="huerow"></div>
+  <span>Scenario</span>
+  <div class="rig-row" id="screrow"></div>
+  <div class="rig-row" id="rerow"></div>
+  <span>DIVE.EXE study. The full shipped duel engine (board gen, opponent, traps, par) drawn as a circuit schematic instrument panel. Click junctions to twist, keys 1/2/3 run programs, E ends the turn.</span>
+</div>
+
+<div class="kp-crt" aria-hidden="true"></div>
+
+<script src="dist/dive.js"></script>
+</body>
+</html>

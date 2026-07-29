@@ -4,9 +4,9 @@
   "kind": "teaching-moment",
   "moment": "patch-craft",
   "surface": "upgrade, the first time the pouch holds a legal craftable pair (also usable from the loadout bench, but this is where it is first taught)",
-  "intent": "New coachmark. Fires only once the player actually has a real choice: two owned patch pieces whose shapes combine into a union strictly bigger than either alone. State that crafting fuses two pieces into that union, free of charge, at night or from the loadout bench, and only works when the result is strictly bigger, an equal or smaller pair cannot be joined. Both input pieces are spent either way, win or lose the size check, so make clear the legality gate matters before they commit two pieces to a join that will not improve on what they already had. Reference: narrative-director's MANUAL.TXT PATCH PIECES section already states this rule in reference form ('Craft two pieces at the bench into the union of their arms. Legal only when the result is strictly bigger than both pieces you started with; equal or smaller, the bench will not make the join.'), pipeline/proposals/narrative-director.json. This coachmark says the same rule once, at the moment it first matters, not as a lookup.",
+  "intent": "CANCELLED 2026-07-29 (brief ui-integration-2026-07-29). The patch-craft coachmark this order supplied words for is retired outright, not merely reworded a second time: the shipped SOLDER.BAY bench (components/os/windows/solder.tsx) carries the outgrow rule at tier 0 via its own always-on status line ('PICK A PARTNER. THE WELD MUST OUTGROW BOTH.'), a schematic that blinks the gain, and rack filtering that makes selecting an illegal partner impossible, all stronger and more persistent than a one-shot coachmark. Full reasoning in pipeline/gates/tutorial-review.md and tutorial/ledger.md's waiver log (patchCraft entry). No further words are owed on this moment.",
   "constraints": "2 lines max, 160 chars each, no em or en dashes, terminal voice, ALL CAPS title only.",
-  "status": "done",
+  "status": "cancelled",
   "title": "PATCH CRAFT",
   "lines": [
     "Craft two pieces at night or from the loadout bench: free, and you get the union of both pieces' arms.",

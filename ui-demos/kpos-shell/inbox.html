@@ -1,0 +1,733 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>KP demo: INBOX</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=VT323&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" />
+<link rel="stylesheet" href="kp.css" />
+<link rel="stylesheet" href="system.css" />
+<style>
+/* INBOX terminal study (green CRT mail-terminal reference), standalone.
+ * Collapsed: only the boxed subject lines. Opening a ticket steps the
+ * window wider and shows the FULL CUSTOMER.REC card (card.html design,
+ * intact) with every text field typing in concurrently. card.html itself
+ * is untouched; its styles are duplicated below verbatim. */
+
+body { overflow: auto; display: block; height: auto; min-height: 100%; padding: 40px 16px 60px; }
+
+/* ---------- the terminal window ---------- */
+
+.term {
+  margin: 0 auto;
+  width: 470px;
+  max-width: 96vw;
+  display: flex;
+  flex-direction: column;
+  /* staged open/close: JS drives width and height separately, one axis
+   * at a time, so the frame never tears diagonally */
+  transition: width 180ms steps(4), height 180ms steps(4);
+  border: 3px solid var(--ch);
+  background: var(--px-void);
+  filter:
+    drop-shadow(9px 9px 0 rgba(0, 0, 0, 0.8))
+    drop-shadow(0 0 26px color-mix(in srgb, var(--ch) 25%, transparent));
+}
+.term.open { width: min(1210px, 96vw); }
+
+.term-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--ch);
+  padding: 8px 12px 8px 16px;
+}
+.term-bar h1 {
+  font-family: var(--kp-display);
+  font-size: 14px;
+  letter-spacing: 0.16em;
+  color: var(--px-void);
+  font-weight: 400;
+}
+.term-glyphs { display: flex; gap: 7px; align-items: center; }
+.term-glyphs i { display: block; background: var(--px-void); }
+.term-glyphs i:nth-child(1) { width: 11px; height: 3px; margin-top: 9px; }
+.term-glyphs i:nth-child(2) { width: 11px; height: 11px; background: transparent; border: 3px solid var(--px-void); }
+.term-glyphs i:nth-child(3) { width: 11px; height: 11px; }
+
+.term-body { position: relative; padding: 18px; flex: 1; min-height: 0; }
+.term-body::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: repeating-conic-gradient(color-mix(in srgb, var(--ch) 5%, transparent) 0% 25%, transparent 0% 50%);
+  background-size: 4px 4px;
+}
+.term-body > * { position: relative; }
+
+.term-grid { display: grid; grid-template-columns: 1fr; gap: 18px; align-items: stretch; height: 100%; }
+/* the list column is exactly the compact window's content width (470 -
+ * borders - padding), so items never change size between states */
+.term.open .term-grid { grid-template-columns: min(428px, 100%) minmax(0, 1fr); }
+
+/* ---------- inbox list ---------- */
+
+/* the list rides vertically centered against the open message,
+ * like the reference's folder column */
+.inbox-side { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.inbox-list-zone { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+.inbox-label {
+  font-family: var(--kp-display);
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  color: var(--ch);
+}
+.inbox-list { display: flex; flex-direction: column; gap: 14px; }
+.inbox-item {
+  position: relative;
+  text-align: left;
+  border: 3px solid var(--ch-dim);
+  background: color-mix(in srgb, var(--ch) 4%, var(--px-void));
+  padding: 13px 15px;
+  color: var(--ch);
+  font-family: var(--kp-term);
+  font-size: 20px;
+  line-height: 1.25;
+}
+.inbox-item:hover { border-color: var(--ch-hot); }
+.inbox-item.sel { border-color: var(--ch-hot); background: color-mix(in srgb, var(--ch) 12%, var(--px-void)); }
+.inbox-item.sel::after {
+  content: "";
+  position: absolute;
+  right: -21px;
+  top: 50%;
+  width: 21px;
+  height: 2px;
+  background: var(--ch-hot);
+}
+.inbox-hint {
+  border-top: 2px solid var(--ch-faint);
+  padding-top: 12px;
+  font-family: var(--kp-term);
+  font-size: 17px;
+  color: var(--ch-dim);
+}
+
+/* ---------- detail pane ---------- */
+
+.pane-wrap { min-width: 0; }
+/* genie transitions: the card shrinks into / grows from its list item;
+ * transform-origin is set inline to the item's center */
+.pane-wrap.shrink { animation: pane-shrink 170ms steps(4) both; }
+.pane-wrap.grow { animation: pane-grow 190ms steps(4) both; }
+@keyframes pane-shrink {
+  from { transform: scale(1); opacity: 1; }
+  to { transform: scale(0); opacity: 0; }
+}
+@keyframes pane-grow {
+  from { transform: scale(0); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.pane { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.pane-subject {
+  box-shadow: inset 0 0 0 2px var(--ch-dim);
+  padding: 10px 15px;
+  min-height: 47px;
+}
+.pane-from {
+  display: block;
+  font-family: var(--kp-term);
+  font-size: 17px;
+  line-height: 1.2;
+  color: var(--ch-dim);
+  min-height: 20px;
+}
+.pane-subj {
+  display: block;
+  font-family: var(--kp-term);
+  font-size: 21px;
+  line-height: 1.25;
+  color: var(--ch-hot);
+  min-height: 26px;
+}
+
+/* ---------- CUSTOMER.REC card: styles copied verbatim from card.html,
+   only width/margin adapted to sit inside the pane ---------- */
+
+.card {
+  position: relative;
+  width: 100%;
+  margin: 0;
+  border: 3px solid var(--ch);
+  background: var(--px-void);
+  padding: 0 0 22px;
+}
+.card-inner { padding: 20px 22px 0; display: flex; flex-direction: column; gap: 14px; position: relative; }
+.card-inner::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: repeating-conic-gradient(color-mix(in srgb, var(--ch) 5%, transparent) 0% 25%, transparent 0% 50%);
+  background-size: 4px 4px;
+}
+.card-inner > * { position: relative; }
+
+.card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--ch);
+  padding: 10px 16px;
+}
+.card-head h2 {
+  font-family: var(--kp-display);
+  font-size: 17px;
+  letter-spacing: 0.14em;
+  color: var(--px-void);
+  font-weight: 400;
+}
+.card-batt { display: flex; align-items: center; gap: 3px; }
+.card-batt i { display: block; width: 6px; height: 12px; background: var(--px-void); }
+.card-batt i:last-child { width: 3px; height: 6px; }
+
+.card-photos { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+.cell {
+  position: relative;
+  border: 3px solid var(--ch-dim);
+  background: var(--px-void);
+  padding: 6px;
+}
+.cell img { display: block; width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; image-rendering: pixelated; filter: grayscale(1) contrast(1.1); }
+.cell .tint {
+  position: absolute;
+  inset: 6px;
+  background: var(--ch);
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+.cell-dots { position: absolute; top: 12px; right: 12px; display: flex; gap: 5px; z-index: 2; }
+.cell-dots i { width: 9px; height: 9px; background: var(--px-void); box-shadow: inset 0 0 0 2px var(--ch); }
+
+.card-mid { display: grid; grid-template-columns: 132px 1fr; gap: 14px; align-items: stretch; }
+.card-mid-left { display: flex; flex-direction: column; gap: 14px; }
+
+.cell-open { position: relative; border: none; padding: 10px; flex: 1; display: flex; align-items: center; justify-content: center; }
+.cell-open .kp-tick2 { position: absolute; inset: 0; }
+
+.printmark { display: grid; grid-template-columns: repeat(9, 6px); gap: 2px; }
+.printmark i { width: 6px; height: 6px; background: var(--ch-dim); }
+.printmark i.on { background: var(--ch); }
+
+.eyecrop {
+  width: 100%;
+  height: 100%;
+  min-height: 96px;
+  background-image: url("art/dex-portrait.png");
+  background-size: 300%;
+  background-position: 52% 26%;
+  image-rendering: pixelated;
+  filter: grayscale(1) contrast(1.1);
+  display: block;
+}
+.eyecrop-wrap { position: relative; width: 100%; display: block; }
+.eyecrop-wrap .tint { position: absolute; inset: 0; background: var(--ch); mix-blend-mode: multiply; pointer-events: none; }
+
+.card-rows { display: flex; flex-direction: column; gap: 6px; }
+.card-rows .kp-datarow { padding: 9px 14px; }
+.card-rows .kp-datarow > span { font-size: 11px; }
+.card-rows .kp-datarow > em { font-size: 15px; min-height: 22px; }
+
+.intake {
+  position: relative;
+  padding: 12px 16px;
+  font-family: var(--kp-term);
+  font-size: 21px;
+  line-height: 1.3;
+  color: var(--ch);
+  background: var(--px-void);
+  box-shadow: inset 0 0 0 2px var(--ch-faint);
+}
+.intake-label {
+  font-family: var(--kp-display);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  color: var(--px-void);
+  background: var(--ch);
+  display: inline-block;
+  padding: 3px 8px;
+  margin-bottom: 8px;
+}
+
+.scope {
+  border: 3px solid var(--ch-dim);
+  background: var(--px-void);
+  padding: 10px 12px 6px;
+}
+.scope svg { display: block; width: 100%; }
+.scope line.grid { stroke: var(--ch-faint); stroke-width: 1; }
+.scope polyline { fill: none; stroke: var(--ch); stroke-width: 2; }
+
+.hexrows {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2px 18px;
+  font-family: var(--kp-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: var(--ch-dim);
+  padding-top: 8px;
+  min-height: 58px;
+}
+</style>
+</head>
+<body>
+<div class="term" id="term">
+  <header class="term-bar">
+    <h1>INBOX</h1>
+    <span class="term-glyphs"><i></i><i></i><i></i></span>
+  </header>
+  <div class="term-body">
+    <div class="term-grid" id="grid">
+      <div class="inbox-side">
+        <span class="inbox-label">INBOX</span>
+        <div class="inbox-list-zone">
+          <div class="inbox-list" id="list"></div>
+        </div>
+        <p class="inbox-hint">UP, DOWN: select ticket | CLICK AGAIN: file it away</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="rig">
+  <strong>DEMO RIG</strong>
+  <span>Hue</span>
+  <div class="rig-row" id="huerow"></div>
+  <span>INBOX terminal study. Open a ticket: the window widens and the full CUSTOMER.REC card types in. Subjects are demo copy; card art reuses the Dex Marlowe dithers.</span>
+</div>
+
+<div class="kp-crt" aria-hidden="true"></div>
+
+<script>
+(function () {
+  /* the day's three tickets: shipped customer data (customers.ts);
+   * subject lines are demo-mock copy */
+  var JOBS = [
+    {
+      id: "juno-vex",
+      subject: "there is a second player in my handheld",
+      name: "JUNO VEX",
+      device: "Hexlight arcade handheld",
+      routine: "ARM: SIPHON",
+      tier: 1,
+      rate: "65 cr",
+      drops: "----",
+      quote: "\"There is a second player in there. No cart, no link, and it keeps setting records I cannot touch.\""
+    },
+    {
+      id: "sable-okonkwo",
+      subject: "my drone takes orders from someone else",
+      name: "SABLE OKONKWO",
+      device: "Kestrel courier drone",
+      routine: "REDIRECT",
+      tier: 2,
+      rate: "90 cr",
+      drops: "T2+",
+      quote: "\"I lock the flight plan, it unlocks it. I set a waypoint, it moves it. Get it out of my drone.\""
+    },
+    {
+      id: "aldous-wick",
+      subject: "the terminal bites the hand that files",
+      name: "ALDOUS WICK",
+      device: "Meridian ledger terminal",
+      routine: "ARM: HALT",
+      tier: 4,
+      rate: "140 cr",
+      drops: "T2+",
+      quote: "\"Every entry I touch costs me twice. It leaves little surprises in my books and waits for me to step on them.\""
+    }
+  ];
+
+  var REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var term = document.getElementById("term");
+  var grid = document.getElementById("grid");
+  var list = document.getElementById("list");
+  var open = null;
+  var timers = [];
+  var shortH = null; /* the compact window height, captured before opening */
+
+  function clearTimers() {
+    timers.forEach(function (t) { clearInterval(t); clearTimeout(t); });
+    timers = [];
+  }
+
+  /* async typewriter with blinking caret; instant under reduced motion */
+  function typeIn(elm, text, delay, interval) {
+    if (REDUCED) { elm.textContent = text; return; }
+    var caret = document.createElement("span");
+    caret.className = "kp-boot-cursor";
+    caret.textContent = "_";
+    var i = 0;
+    var start = setTimeout(function () {
+      elm.appendChild(caret);
+      var iv = setInterval(function () {
+        i++;
+        elm.textContent = text.slice(0, i);
+        elm.appendChild(caret);
+        if (i >= text.length) { clearInterval(iv); caret.remove(); }
+      }, interval || 24);
+      timers.push(iv);
+    }, delay || 0);
+    timers.push(start);
+  }
+
+  function seeded(id) {
+    var s = 0;
+    for (var i = 0; i < id.length; i++) s = (s * 31 + id.charCodeAt(i)) >>> 0;
+    return function () { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s; };
+  }
+
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text) n.textContent = text;
+    return n;
+  }
+
+  /* the full CUSTOMER.REC card (card.html anatomy, intact); returns the
+   * root plus the text targets the typewriters fill */
+  function makeCard(job) {
+    var next = seeded(job.id);
+    var card = el("div", "card kp-frame-nodes");
+    var nodes = el("i", "kp-nodes");
+    for (var i = 0; i < 6; i++) nodes.appendChild(el("i"));
+    card.appendChild(nodes);
+
+    var head = el("header", "card-head");
+    head.appendChild(el("h2", "", "CUSTOMER.REC"));
+    var batt = el("span", "card-batt");
+    for (var b = 0; b < 4; b++) batt.appendChild(el("i"));
+    head.appendChild(batt);
+    card.appendChild(head);
+
+    var inner = el("div", "card-inner");
+
+    var photos = el("div", "card-photos");
+    var cellA = el("div", "cell");
+    var dots = el("span", "cell-dots");
+    for (var d = 0; d < 3; d++) dots.appendChild(el("i"));
+    cellA.appendChild(dots);
+    var imgA = new Image(880, 880);
+    imgA.src = "art/dex-portrait.png";
+    imgA.alt = "";
+    cellA.appendChild(imgA);
+    cellA.appendChild(el("i", "tint"));
+    var cellB = el("div", "cell");
+    var imgB = new Image(880, 880);
+    imgB.src = "art/dex-cramdeck.png";
+    imgB.alt = "";
+    cellB.appendChild(imgB);
+    cellB.appendChild(el("i", "tint"));
+    photos.appendChild(cellA);
+    photos.appendChild(cellB);
+    inner.appendChild(photos);
+
+    var mid = el("div", "card-mid");
+    var left = el("div", "card-mid-left");
+    var printCell = el("div", "cell-open kp-frame-ticks");
+    printCell.appendChild(el("i", "kp-tick2"));
+    var pm = el("span", "printmark");
+    for (var p = 0; p < 81; p++) {
+      var dot = el("i");
+      if (next() % 5 < 2) dot.className = "on";
+      pm.appendChild(dot);
+    }
+    printCell.appendChild(pm);
+    left.appendChild(printCell);
+    var eyeCell = el("div", "cell-open kp-frame-ticks");
+    eyeCell.appendChild(el("i", "kp-tick2"));
+    var wrap = el("span", "eyecrop-wrap");
+    wrap.appendChild(el("span", "eyecrop"));
+    wrap.appendChild(el("i", "tint"));
+    eyeCell.appendChild(wrap);
+    left.appendChild(eyeCell);
+    mid.appendChild(left);
+
+    var rows = el("div", "card-rows");
+    var typed = [];
+    function row(label, value, typedRow) {
+      var r = el("div", "kp-datarow");
+      r.appendChild(el("span", "", label));
+      var em = el("em");
+      r.appendChild(em);
+      rows.appendChild(r);
+      if (typedRow) typed.push([em, value]);
+      else em.textContent = value;
+      return em;
+    }
+    row("NAME", job.name, true);
+    row("DEVICE", job.device, true);
+    row("DOMINANT ROUTINE", job.routine, true);
+    var tem = row("THREAT TIERS", "", false);
+    for (var t = 0; t < 5; t++) {
+      var dia = el("i", "kp-pip-diamond" + (t < job.tier ? " kp-pip-on" : ""));
+      tem.appendChild(dia);
+    }
+    tem.style.display = "inline-flex";
+    tem.style.gap = "5px";
+    row("TICKET RATE", job.rate, true);
+    row("LAST CLEAN BOOT", "----", true);
+    row("POUCH DROPS", job.drops, true);
+    mid.appendChild(rows);
+    inner.appendChild(mid);
+
+    var intake = el("div", "intake");
+    intake.appendChild(el("span", "intake-label", "INTAKE"));
+    var quote = el("div");
+    intake.appendChild(quote);
+    inner.appendChild(intake);
+
+    var scope = el("div", "scope");
+    var NS = "http://www.w3.org/2000/svg";
+    var svg = document.createElementNS(NS, "svg");
+    svg.setAttribute("viewBox", "0 0 700 90");
+    svg.setAttribute("preserveAspectRatio", "none");
+    svg.setAttribute("height", "90");
+    for (var x = 0; x <= 700; x += 28) {
+      var lv = document.createElementNS(NS, "line");
+      lv.setAttribute("x1", x); lv.setAttribute("x2", x);
+      lv.setAttribute("y1", 0); lv.setAttribute("y2", 90);
+      lv.setAttribute("class", "grid");
+      svg.appendChild(lv);
+    }
+    for (var y = 0; y <= 90; y += 18) {
+      var lh = document.createElementNS(NS, "line");
+      lh.setAttribute("x1", 0); lh.setAttribute("x2", 700);
+      lh.setAttribute("y1", y); lh.setAttribute("y2", y);
+      lh.setAttribute("class", "grid");
+      svg.appendChild(lh);
+    }
+    var pts = [];
+    for (var px = 0; px <= 700; px += 7) {
+      var base = 45 + Math.sin(px / 34) * 24;
+      var jit = ((next() % 100) / 100 - 0.5) * 10;
+      pts.push(px + "," + Math.round(base + jit));
+    }
+    var line = document.createElementNS(NS, "polyline");
+    line.setAttribute("points", pts.join(" "));
+    line.setAttribute("shape-rendering", "crispEdges");
+    svg.appendChild(line);
+    scope.appendChild(svg);
+    inner.appendChild(scope);
+
+    var hex = el("div", "hexrows");
+    var hexTargets = [];
+    for (var r2 = 0; r2 < 12; r2++) {
+      var cellEl = el("span");
+      var groups = [];
+      for (var g = 0; g < 3; g++) groups.push((next() % 0xffff).toString(16).toUpperCase().padStart(4, "0"));
+      hexTargets.push([cellEl, groups.join(" ")]);
+      hex.appendChild(cellEl);
+    }
+    inner.appendChild(hex);
+
+    card.appendChild(inner);
+    return { root: card, typed: typed, quoteEl: quote, quoteText: job.quote, hexTargets: hexTargets };
+  }
+
+  function renderList() {
+    list.textContent = "";
+    JOBS.forEach(function (job, i) {
+      var item = el("button", "inbox-item" + (open === i ? " sel" : ""), job.subject);
+      item.type = "button";
+      item.addEventListener("click", function () { toggle(i); });
+      list.appendChild(item);
+    });
+  }
+
+  /* transform-origin y: the center of list item `index`, in wrap space */
+  function originFor(wrap, index) {
+    var item = list.children[index];
+    if (!item) return "0px 0px";
+    var ir = item.getBoundingClientRect();
+    var wr = wrap.getBoundingClientRect();
+    return "0px " + Math.round(ir.top + ir.height / 2 - wr.top) + "px";
+  }
+
+  /* the open card shrinks INTO its list item, then the caller continues;
+   * the outer window does not move */
+  function shrinkPane(originIndex, cb) {
+    var wrap = grid.querySelector(".pane-wrap");
+    if (!wrap) { cb(); return; }
+    if (REDUCED) { wrap.remove(); cb(); return; }
+    wrap.style.transformOrigin = originFor(wrap, originIndex);
+    wrap.classList.remove("grow");
+    void wrap.offsetWidth;
+    wrap.classList.add("shrink");
+    var t = setTimeout(function () { wrap.remove(); cb(); }, 185);
+    timers.push(t);
+  }
+
+  function openPane(i) {
+    var job = JOBS[i];
+    var wrap = el("div", "pane-wrap");
+    var pane = el("div", "pane");
+    var subj = el("div", "pane-subject");
+    var fromEl = el("span", "pane-from");
+    var subjEl = el("span", "pane-subj");
+    subj.appendChild(fromEl);
+    subj.appendChild(subjEl);
+    pane.appendChild(subj);
+    var made = makeCard(job);
+    pane.appendChild(made.root);
+    wrap.appendChild(pane);
+    grid.appendChild(wrap);
+
+    /* grow FROM the selected list item */
+    if (!REDUCED) {
+      wrap.style.transformOrigin = originFor(wrap, i);
+      wrap.classList.add("grow");
+      var t = setTimeout(function () { wrap.classList.remove("grow"); }, 210);
+      timers.push(t);
+    }
+
+    /* everything types at once, staggered starts, one shared clock feel */
+    typeIn(fromEl, "From: Rhea", 0);
+    typeIn(subjEl, job.subject, 120);
+    made.typed.forEach(function (pair, n) { typeIn(pair[0], pair[1], 100 + n * 70); });
+    typeIn(made.quoteEl, made.quoteText, 320);
+    made.hexTargets.forEach(function (pair, n) { typeIn(pair[0], pair[1], 600 + n * 40, 7); });
+  }
+
+  /* the open-state height, measured off-screen with the card's FULL text
+   * so the vertical phase knows its destination before anything shows */
+  function measureTall(job) {
+    var openW = Math.min(1210, window.innerWidth * 0.96);
+    var paneW = openW - 6 - 36 - 428 - 18; /* borders, body pad, list col, gap */
+    var meas = el("div");
+    meas.style.cssText = "position:absolute;left:-9999px;top:0;width:" + paneW + "px;visibility:hidden;";
+    var pane = el("div", "pane");
+    var subj = el("div", "pane-subject");
+    var f = el("span", "pane-from"); f.textContent = "From: Rhea";
+    var s = el("span", "pane-subj"); s.textContent = job.subject;
+    subj.appendChild(f); subj.appendChild(s);
+    pane.appendChild(subj);
+    var made = makeCard(job);
+    made.typed.forEach(function (p) { p[0].textContent = p[1]; });
+    made.quoteEl.textContent = made.quoteText;
+    made.hexTargets.forEach(function (p) { p[0].textContent = p[1]; });
+    pane.appendChild(made.root);
+    meas.appendChild(pane);
+    term.querySelector(".term-body").appendChild(meas);
+    var h = pane.offsetHeight;
+    meas.remove();
+    var bar = term.querySelector(".term-bar");
+    var side = grid.querySelector(".inbox-side");
+    return Math.max(h, side.scrollHeight) + bar.offsetHeight + 6 + 36;
+  }
+
+  function stage(fn, delay) {
+    var t = setTimeout(fn, delay);
+    timers.push(t);
+  }
+
+  var busy = false;
+  function toggle(i) {
+    if (busy) return;
+    clearTimers();
+    if (open === i) {
+      /* file it away, in reverse order: the card shrinks into its item,
+       * the window pulls back in (width), then settles down (height),
+       * the list re-centering the whole way */
+      busy = true;
+      shrinkPane(i, function () {
+        open = null;
+        renderList();
+        if (REDUCED || shortH === null) {
+          term.classList.remove("open");
+          term.style.width = "";
+          term.style.height = "";
+          busy = false;
+          return;
+        }
+        /* stay in open-grid mode while the width contracts, so the list
+         * column holds its size; only then drop to single column (equal
+         * width, no snap) and settle the height */
+        term.style.width = "470px";
+        stage(function () {
+          term.classList.remove("open");
+          term.style.height = shortH + "px";
+        }, 200);
+        stage(function () {
+          term.style.height = "";
+          term.style.width = "";
+          busy = false;
+        }, 400);
+      });
+    } else if (open === null) {
+      /* first open, one axis at a time: grow tall (list stays centered),
+       * then wide, then the card grows from its item */
+      open = i;
+      renderList();
+      busy = true;
+      if (REDUCED) {
+        term.classList.add("open");
+        openPane(i);
+        busy = false;
+        return;
+      }
+      shortH = term.offsetHeight;
+      var tall = measureTall(JOBS[i]);
+      term.style.height = shortH + "px";
+      void term.offsetWidth;
+      term.style.height = tall + "px";
+      stage(function () {
+        term.classList.add("open");
+        term.style.width = Math.min(1210, window.innerWidth * 0.96) + "px";
+      }, 200);
+      stage(function () { openPane(i); busy = false; }, 400);
+    } else {
+      /* switch: shrink into the old item, then grow from the new one;
+       * the window itself stays put */
+      var from = open;
+      busy = true;
+      shrinkPane(from, function () {
+        open = i;
+        renderList();
+        openPane(i);
+        busy = false;
+      });
+    }
+  }
+
+  document.addEventListener("keydown", function (e) {
+    if (e.key !== "ArrowUp" && e.key !== "ArrowDown") return;
+    e.preventDefault();
+    var n = JOBS.length;
+    var i = open === null ? (e.key === "ArrowDown" ? 0 : n - 1)
+      : (e.key === "ArrowDown" ? (open + 1) % n : (open - 1 + n) % n);
+    if (i !== open) toggle(i);
+  });
+
+  /* hue switch */
+  var row = document.getElementById("huerow");
+  ["lavender", "magenta", "phosphor"].forEach(function (h, i) {
+    var b = document.createElement("button");
+    b.textContent = h.toUpperCase();
+    if (i === 0) b.className = "rig-on";
+    b.addEventListener("click", function () {
+      row.querySelectorAll("button").forEach(function (x) { x.className = ""; });
+      b.className = "rig-on";
+      document.documentElement.dataset.hue = h;
+    });
+    row.appendChild(b);
+  });
+
+  renderList();
+})();
+</script>
+</body>
+</html>

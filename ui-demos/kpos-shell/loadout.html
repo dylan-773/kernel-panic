@@ -1,0 +1,817 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>KP demo: LOADOUT.CFG</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=VT323&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" />
+<link rel="stylesheet" href="kp.css" />
+<link rel="stylesheet" href="system.css" />
+<style>
+/* LOADOUT.CFG upgrade-dashboard study (the "HUMAN 2050 UPGRADE
+ * DASHBOARD" layout reference in the SUBJECT A-34 dossier skin),
+ * standalone. Left: the operator's rig as 1-bit dithered photo cells,
+ * scan-revealed. Right: the three programs as boxed stat rows with tier
+ * meters and mode chips, then boost bays and the pouch. Bottom: the
+ * NEURAL STRAIN counter strip and a footer line. Kit numbers and copy
+ * are the shipped catalog at the mock day 4 run state.
+ *
+ * 2026-07-29 desk-fit pass: spacing joints tightened (section margins
+ * 16->10..12, column gaps 14->11, prog/bay/strain paddings -2..-3px)
+ * so the window's 1444px height comes down to ~1316px and fits a
+ * 1384px-tall desktop above the 44px taskbar. No element was added,
+ * removed, resized in type, or reflowed. */
+
+body { overflow: auto; display: block; height: auto; min-height: 100%; padding: 40px 16px 60px; }
+
+/* ---------- the window ---------- */
+
+.term {
+  margin: 0 auto;
+  width: min(1040px, 96vw);
+  border: 3px solid var(--ch);
+  background: var(--px-void);
+  filter:
+    drop-shadow(9px 9px 0 rgba(0, 0, 0, 0.8))
+    drop-shadow(0 0 26px color-mix(in srgb, var(--ch) 25%, transparent));
+}
+
+.term-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--ch);
+  padding: 8px 12px 8px 16px;
+}
+.term-bar h1 {
+  font-family: var(--kp-display);
+  font-size: 14px;
+  letter-spacing: 0.16em;
+  color: var(--px-void);
+  font-weight: 400;
+}
+.term-glyphs { display: flex; gap: 7px; align-items: center; }
+.term-glyphs i { display: block; background: var(--px-void); }
+.term-glyphs i:nth-child(1) { width: 11px; height: 3px; margin-top: 9px; }
+.term-glyphs i:nth-child(2) { width: 11px; height: 11px; background: transparent; border: 3px solid var(--px-void); }
+.term-glyphs i:nth-child(3) { width: 11px; height: 11px; }
+
+.term-body { position: relative; padding: 14px 18px; }
+.term-body::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: repeating-conic-gradient(color-mix(in srgb, var(--ch) 5%, transparent) 0% 25%, transparent 0% 50%);
+  background-size: 4px 4px;
+}
+.term-body > * { position: relative; }
+
+/* ---------- head strip ---------- */
+
+.load-head { display: flex; align-items: stretch; gap: 14px; }
+.load-head-main {
+  flex: 1;
+  border: 3px solid var(--ch-dim);
+  background: color-mix(in srgb, var(--ch) 4%, var(--px-void));
+  padding: 11px 16px 9px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.load-head-label {
+  font-family: var(--kp-display);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  color: var(--ch);
+}
+.load-head-label::before { content: "// "; opacity: 0.7; }
+.load-head-label::after { content: " _"; opacity: 0.7; }
+.load-status {
+  font-family: var(--kp-term);
+  font-size: 26px;
+  line-height: 1.1;
+  color: var(--ch-hot);
+  min-height: 30px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.load-chips { display: flex; flex-direction: column; gap: 5px; justify-content: center; }
+.load-chips .kp-chip-pct { justify-content: space-between; min-width: 128px; }
+
+/* ---------- main grid ---------- */
+
+.load-grid { display: grid; grid-template-columns: 322px minmax(0, 1fr); gap: 18px; margin-top: 12px; }
+.load-left, .load-right { display: flex; flex-direction: column; gap: 11px; min-width: 0; }
+
+/* ---------- photo cells: 1-bit dithers, scan-revealed ---------- */
+
+.photo {
+  position: relative;
+  border: 3px solid var(--ch-dim);
+  background: var(--px-void);
+  padding: 6px;
+}
+.photo img {
+  display: block;
+  width: 100%;
+  height: auto;
+  image-rendering: pixelated;
+  clip-path: inset(0 0 100% 0);
+}
+.photo .tint {
+  position: absolute;
+  inset: 6px;
+  background: var(--ch);
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+.photo .sweep {
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  top: 6px;
+  height: 3px;
+  background: var(--ch-hot);
+  box-shadow: 0 0 14px var(--px-glow);
+  opacity: 0;
+  pointer-events: none;
+}
+.photo.on img { animation: ph-reveal 640ms steps(13) forwards; }
+.photo.on .sweep { animation: ph-sweep 640ms steps(13) forwards; }
+@keyframes ph-reveal {
+  from { clip-path: inset(0 0 100% 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+@keyframes ph-sweep {
+  from { top: 6px; opacity: 1; }
+  99% { opacity: 1; }
+  to { top: calc(100% - 9px); opacity: 0; }
+}
+
+.photo-dots { position: absolute; top: 12px; right: 12px; display: flex; gap: 5px; z-index: 2; }
+.photo-dots i { width: 9px; height: 9px; background: var(--px-void); box-shadow: inset 0 0 0 2px var(--ch); }
+
+.photo-tag {
+  position: absolute;
+  left: 6px;
+  bottom: 6px;
+  z-index: 2;
+  background: var(--ch);
+  color: var(--px-void);
+  font-family: var(--kp-display);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  padding: 4px 9px;
+}
+
+/* the feed cell: the shop camera, live */
+.feed-rec {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--ch);
+  color: var(--px-void);
+  font-family: var(--kp-display);
+  font-size: 8px;
+  letter-spacing: 0.14em;
+  padding: 3px 7px;
+}
+.feed-rec i {
+  width: 7px;
+  height: 7px;
+  background: var(--px-void);
+  animation: kp-teach-pulse 1.2s steps(2) infinite;
+}
+.feed-clock {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  z-index: 2;
+  font-family: var(--kp-term);
+  font-size: 15px;
+  color: var(--ch-hot);
+  background: rgba(0, 0, 0, 0.78);
+  padding: 1px 7px;
+}
+.feed-roll {
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  top: 6px;
+  height: 26px;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(0deg, transparent, color-mix(in srgb, var(--ch) 14%, transparent), transparent);
+  animation: feed-roll 6s steps(30) infinite;
+}
+@keyframes feed-roll {
+  from { top: 6px; }
+  to { top: calc(100% - 32px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .feed-roll { animation: none; opacity: 0; }
+  .feed-rec i { animation: none; }
+}
+
+.op-rows .kp-datarow { padding: 8px 13px; }
+.op-rows .kp-datarow > span { font-size: 10px; }
+.op-rows .kp-datarow > em { font-size: 14px; }
+
+/* ---------- program stat rows ---------- */
+
+.prog {
+  border: 3px solid var(--ch-dim);
+  background: color-mix(in srgb, var(--ch) 4%, var(--px-void));
+  padding: 9px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.prog > header { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.prog > header strong {
+  font-family: var(--kp-display);
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  font-weight: 400;
+  color: var(--ch);
+}
+.prog-val { font-family: var(--kp-display); font-size: 10px; letter-spacing: 0.14em; color: var(--ch); white-space: nowrap; }
+.prog-val::before { content: "// "; opacity: 0.7; }
+.prog-val em { font-style: normal; font-family: var(--kp-mono); font-weight: 600; font-size: 14px; color: var(--ch-hot); }
+
+.prog-meter { display: flex; align-items: center; gap: 10px; }
+.prog-meter .tlabel { font-family: var(--kp-display); font-size: 9px; letter-spacing: 0.14em; color: var(--ch-dim); }
+.tseg { display: flex; gap: 3px; flex: 1; }
+.tseg i {
+  height: 14px;
+  flex: 1;
+  background: repeating-linear-gradient(90deg, var(--ch-faint) 0 5px, transparent 5px 8px);
+}
+.tseg i.on { background: repeating-linear-gradient(90deg, var(--ch) 0 5px, transparent 5px 8px); }
+.tval { font-family: var(--kp-mono); font-weight: 600; font-size: 13px; color: var(--ch-hot); min-width: 24px; text-align: right; }
+
+.prog-modes { display: flex; gap: 8px; flex-wrap: wrap; }
+.mode {
+  font-family: var(--kp-display);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  padding: 6px 10px;
+  background: transparent;
+  border: 2px solid var(--ch-dim);
+  color: var(--ch);
+}
+.mode:hover:not(:disabled):not(.mode-on) { border-color: var(--ch-hot); color: var(--ch-hot); }
+.mode:active:not(:disabled) { transform: translate(1px, 1px); }
+.mode-on { background: var(--ch); border-color: var(--ch); color: var(--px-void); }
+.mode:disabled { border-style: dashed; border-color: var(--ch-faint); color: var(--ch-faint); cursor: not-allowed; }
+
+.prog-desc {
+  font-family: var(--kp-term);
+  font-size: 19px;
+  line-height: 1.25;
+  color: var(--ch);
+  min-height: 48px;
+}
+
+/* ---------- bays + pouch ---------- */
+
+.sect-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.sect-head strong {
+  font-family: var(--kp-display);
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  font-weight: 400;
+  color: var(--ch);
+}
+.sect-head .kp-pip-row { margin-left: auto; }
+.sect-head em { font-style: normal; font-family: var(--kp-mono); font-weight: 600; font-size: 13px; color: var(--ch-hot); }
+
+.bays { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.bay {
+  border: 2px solid var(--ch-dim);
+  background: var(--px-void);
+  padding: 7px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 50px;
+}
+.bay strong { font-family: var(--kp-display); font-size: 11px; letter-spacing: 0.1em; font-weight: 400; color: var(--ch-hot); }
+.bay span { font-family: var(--kp-term); font-size: 17px; line-height: 1.25; color: var(--ch); }
+.bay:hover { border-color: var(--ch); }
+.bay-empty { border-style: dashed; justify-content: center; }
+.bay-empty strong { color: var(--ch-dim); }
+.bay-future { border-style: dashed; border-color: var(--ch-faint); opacity: 0.45; }
+
+.pouch-rack { display: flex; gap: 16px; align-items: flex-start; }
+.pouch-rack > span { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.pouch-rack > span > span { font-family: var(--kp-term); font-size: 15px; color: var(--ch-dim); }
+.pouch-foot {
+  font-family: var(--kp-term);
+  font-size: 17px;
+  line-height: 1.3;
+  color: var(--ch-dim);
+  border-top: 2px solid var(--ch-faint);
+  padding-top: 7px;
+}
+
+/* ---------- strain strip ---------- */
+
+.strain {
+  margin-top: 12px;
+  border: 3px solid var(--ch);
+  background: color-mix(in srgb, var(--ch) 5%, var(--px-void));
+  padding: 10px 18px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.strain-label { font-family: var(--kp-display); font-size: 11px; letter-spacing: 0.16em; color: var(--ch); white-space: nowrap; }
+.strain-label::before { content: "// "; opacity: 0.7; }
+.strain-label::after { content: " _"; opacity: 0.7; }
+.strain-num {
+  font-family: var(--kp-display);
+  font-size: 46px;
+  line-height: 1;
+  color: var(--ch-hot);
+  text-shadow: 0 0 22px var(--px-glow);
+  min-width: 76px;
+  text-align: right;
+}
+.strain-bar { flex: 1; display: flex; gap: 3px; height: 20px; }
+.strain-bar i { flex: 1; background: var(--ch-faint); }
+.strain-bar i.on { background: var(--ch); box-shadow: 0 0 7px var(--px-glow); }
+.strain-note { font-family: var(--kp-term); font-size: 18px; color: var(--ch-dim); white-space: nowrap; }
+
+.footline {
+  margin-top: 10px;
+  border: 2px solid var(--ch-dim);
+  padding: 8px 14px;
+  font-family: var(--kp-term);
+  font-size: 21px;
+  color: var(--ch);
+}
+
+.load-ruler { margin-top: 10px; }
+</style>
+</head>
+<body>
+<div class="term" id="term">
+  <header class="term-bar">
+    <h1>LOADOUT.CFG</h1>
+    <span class="term-glyphs"><i></i><i></i><i></i></span>
+  </header>
+  <div class="term-body">
+
+    <div class="load-head">
+      <div class="load-head-main">
+        <span class="load-head-label">DIVE KIT</span>
+        <div class="load-status" id="status"></div>
+      </div>
+      <div class="load-chips">
+        <span class="kp-chip-pct"><span>RUN</span><em>07</em></span>
+        <span class="kp-chip-pct"><span>DAY</span><em>04</em></span>
+        <span class="kp-chip-pct"><span>CREDITS</span><em>210</em></span>
+      </div>
+    </div>
+
+    <div class="load-grid">
+      <div class="load-left">
+        <div class="photo" id="ph-plate">
+          <span class="photo-dots"><i></i><i></i><i></i></span>
+          <img src="art/loadout-plate-heavy.png" alt="" width="304" height="407" />
+          <i class="tint"></i>
+          <i class="sweep"></i>
+          <span class="photo-tag">FIG. 01 // BENCH RIG</span>
+        </div>
+        <div class="photo" id="ph-feed">
+          <img src="art/loadout-feed-heavy.png" alt="" width="304" height="227" />
+          <i class="tint"></i>
+          <i class="sweep"></i>
+          <i class="feed-roll"></i>
+          <span class="feed-rec"><i></i>REC</span>
+          <span class="feed-clock" id="feed-clock">DAY 04 22:41:07</span>
+          <span class="photo-tag">BENCH FEED</span>
+        </div>
+        <div class="kp-datarow-list op-rows">
+          <div class="kp-datarow"><span>DIVES CLEARED</span><em id="op-clear"></em></div>
+          <div class="kp-datarow"><span>DIVES LOST</span><em id="op-lost"></em></div>
+          <div class="kp-datarow"><span>RAM PER TURN</span><em id="op-ram"></em></div>
+        </div>
+      </div>
+
+      <div class="load-right" id="right"></div>
+    </div>
+
+    <div class="kp-ruler load-ruler"><i></i><span>USER 01</span><i></i></div>
+
+    <div class="strain">
+      <span class="strain-label">NEURAL STRAIN</span>
+      <span class="strain-num" id="strain-num">0</span>
+      <span class="strain-bar" id="strain-bar"></span>
+      <span class="strain-note">SEVERS AT ZERO.</span>
+    </div>
+
+    <div class="footline">&gt;&gt; TUNE IT WHENEVER. IT HOLDS UNTIL YOU CHANGE IT.</div>
+
+  </div>
+</div>
+
+<div class="rig">
+  <strong>DEMO RIG</strong>
+  <span>Hue</span>
+  <div class="rig-row" id="huerow"></div>
+  <span>Dither</span>
+  <div class="rig-row" id="ditherrow"></div>
+  <div class="rig-row"><button id="replay">REPLAY LOAD</button></div>
+  <span>LOADOUT.CFG study on the upgrade-dashboard layout reference. Kit numbers, modes, augments, and every description are the shipped catalog at the mock day 4 run. Imagery is diegetic: the shop camera's live BENCH FEED (canon: Rhea watches the feed) and the rig's inverted service-manual plate. Dither row swaps the post-pass (HEAVY screentoned flats, FINE plain FS, BAYER 8x8 ordered).</span>
+</div>
+
+<div class="kp-crt" aria-hidden="true"></div>
+
+<script>
+(function () {
+  /* mock run state, mirroring data.ts run/meta; catalog copy is
+   * kit.ts verbatim at these tiers */
+  var KIT = {
+    scanTier: 2, attackTier: 1, defendTier: 2,
+    attackMode: "redirect", defendMode: "purge",
+    attackModes: ["redirect", "armHalt"],
+    defendModes: ["purge", "ward"],
+    augments: [
+      { name: "HOT BOOT", desc: "Start every dive with +1 RAM on your first turn." },
+      { name: "CLEAN RUN", desc: "Win a dive with zero strain billed and bank one random patch piece. A trap-free win that only misses at the round cap pays 15 credits instead." }
+    ],
+    boostSlots: 3
+  };
+  var STRAIN = 62;
+  var OP = { clear: 23, lost: 6, ram: 6 };
+  var POUCH = [
+    { mask: 0b0101, noun: "Straight" },
+    { mask: 0b0011, noun: "Elbow" },
+    { mask: 0b1111, noun: "Cross" },
+    { mask: 0b0111, noun: "Tee" }
+  ];
+  var POUCH_MAX = 5;
+
+  var ATK_LABEL = { redirect: "REDIRECT", armHalt: "ARM: HALT", armSiphon: "ARM: SIPHON" };
+  var DEF_LABEL = { purge: "PURGE", lock: "LOCK", ward: "WARD" };
+
+  /* kit.ts desc functions evaluated at the mock tiers */
+  var SCAN_DESC = "Expose every armed node within 6 of your territory, permanently. Always 1 RAM.";
+  var ATK_DESC = {
+    redirect: "Twist any enemy or open junction anywhere on the board a quarter turn, no reach limit. Cuts power to everything downstream.",
+    armHalt: "Plant a halt trap on an open junction. When their signal claims it, they lose a full turn."
+  };
+  var DEF_DESC = {
+    purge: "Disarm 2 revealed traps. Scan first; you cannot defuse what you cannot see.",
+    ward: "Ward a junction and everything within 2 of it for 2 rounds: no new traps land there, and REDIRECT cannot touch it."
+  };
+
+  var REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var timers = [];
+  function later(fn, ms) { if (REDUCED) { fn(); return; } var t = setTimeout(fn, ms); timers.push(t); }
+  function clearTimers() { timers.forEach(function (t) { clearInterval(t); clearTimeout(t); }); timers = []; }
+
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text) n.textContent = text;
+    return n;
+  }
+
+  function typeIn(elm, text, delay, interval) {
+    if (REDUCED) { elm.textContent = text; return { stop: function () {} }; }
+    var iv = null;
+    var caret = el("span", "kp-boot-cursor", "_");
+    var to = setTimeout(function () {
+      var i = 0;
+      iv = setInterval(function () {
+        i++;
+        elm.textContent = text.slice(0, i);
+        elm.appendChild(caret);
+        if (i >= text.length) { clearInterval(iv); caret.remove(); }
+      }, interval || 18);
+      timers.push(iv);
+    }, delay || 0);
+    timers.push(to);
+    return { stop: function () { clearTimeout(to); if (iv) clearInterval(iv); caret.remove(); } };
+  }
+
+  /* desc typewriters are scoped per program so a mode switch only
+   * cancels its own line, never the rest of the load sweep */
+  var descRuns = {};
+  function typeDesc(key, text, delay, interval) {
+    if (descRuns[key]) descRuns[key].stop();
+    descEls[key].textContent = "";
+    descRuns[key] = typeIn(descEls[key], text, delay, interval);
+  }
+
+  function countUp(elm, target, delay, interval) {
+    if (REDUCED) { elm.textContent = String(target); return; }
+    later(function () {
+      var v = 0;
+      var step = Math.max(1, Math.round(target / 26));
+      var iv = setInterval(function () {
+        v = Math.min(target, v + step);
+        elm.textContent = String(v);
+        if (v >= target) clearInterval(iv);
+      }, interval || 26);
+      timers.push(iv);
+    }, delay || 0);
+  }
+
+  /* glyph.ts patchGlyph, DOM-for-DOM: hub plus exact arms */
+  var SVGNS = "http://www.w3.org/2000/svg";
+  function patchGlyph(mask, size) {
+    var svg = document.createElementNS(SVGNS, "svg");
+    svg.setAttribute("width", String(size));
+    svg.setAttribute("height", String(size));
+    svg.setAttribute("viewBox", "-12 -12 24 24");
+    svg.setAttribute("class", "kp-patch-glyph kp-glyph-signal");
+    svg.setAttribute("aria-hidden", "true");
+    var ends = [[0, -10], [10, 0], [0, 10], [-10, 0]];
+    for (var d = 0; d < 4; d++) {
+      if ((mask & (1 << d)) === 0) continue;
+      var line = document.createElementNS(SVGNS, "line");
+      line.setAttribute("x1", "0"); line.setAttribute("y1", "0");
+      line.setAttribute("x2", String(ends[d][0])); line.setAttribute("y2", String(ends[d][1]));
+      line.setAttribute("class", "kp-pp-arm");
+      line.setAttribute("stroke-width", "3.5");
+      svg.appendChild(line);
+    }
+    var hub = document.createElementNS(SVGNS, "circle");
+    hub.setAttribute("cx", "0"); hub.setAttribute("cy", "0"); hub.setAttribute("r", "3");
+    hub.setAttribute("class", "kp-pp-node");
+    svg.appendChild(hub);
+    return svg;
+  }
+
+  /* ---------- build the right column ---------- */
+
+  var right = document.getElementById("right");
+  var descEls = {};
+  var segStore = [];
+
+  function progRow(name, tier, valLabel, valTarget, modes, descKey) {
+    var row = el("div", "prog");
+    var head = el("header");
+    head.appendChild(el("strong", "", name));
+    var val = el("span", "prog-val", valLabel + " ");
+    var vem = el("em", "", "0");
+    val.appendChild(vem);
+    head.appendChild(val);
+    row.appendChild(head);
+
+    var meter = el("div", "prog-meter");
+    meter.appendChild(el("span", "tlabel", "TIER"));
+    var segs = el("span", "tseg");
+    var segEls = [];
+    for (var s = 0; s < 3; s++) {
+      var seg = el("i");
+      segs.appendChild(seg);
+      if (s < tier) segEls.push(seg);
+    }
+    meter.appendChild(segs);
+    meter.appendChild(el("span", "tval", "T" + tier));
+    row.appendChild(meter);
+    segStore.push({ segs: segEls, vem: vem, target: valTarget });
+
+    if (modes) {
+      var mrow = el("div", "prog-modes");
+      modes.all.forEach(function (m) {
+        var owned = modes.owned.indexOf(m) >= 0;
+        var b = el("button", "mode" + (modes.active() === m ? " mode-on" : ""), modes.labels[m] + (owned ? "" : " ?"));
+        b.type = "button";
+        b.disabled = !owned;
+        b.addEventListener("click", function () {
+          modes.set(m);
+          mrow.querySelectorAll(".mode").forEach(function (x, n) {
+            x.className = "mode" + (modes.all[n] === m ? " mode-on" : "");
+          });
+          typeDesc(descKey, modes.desc(m), 0, 10);
+        });
+        mrow.appendChild(b);
+      });
+      row.appendChild(mrow);
+    }
+
+    var desc = el("p", "prog-desc");
+    descEls[descKey] = desc;
+    row.appendChild(desc);
+    return row;
+  }
+
+  function build() {
+    right.textContent = "";
+    descEls = {};
+    descRuns = {};
+    segStore = [];
+
+    right.appendChild(progRow("SCAN.EXE", KIT.scanTier, "RANGE", 6, null, "scan"));
+    right.appendChild(progRow("ATTACK.EXE", KIT.attackTier, "WIDTH", 1, {
+      all: ["redirect", "armHalt", "armSiphon"],
+      owned: KIT.attackModes,
+      labels: ATK_LABEL,
+      active: function () { return KIT.attackMode; },
+      set: function (m) { KIT.attackMode = m; },
+      desc: function (m) { return ATK_DESC[m]; }
+    }, "attack"));
+    right.appendChild(progRow("DEFEND.EXE", KIT.defendTier, "WIDTH", 2, {
+      all: ["purge", "lock", "ward"],
+      owned: KIT.defendModes,
+      labels: DEF_LABEL,
+      active: function () { return KIT.defendMode; },
+      set: function (m) { KIT.defendMode = m; },
+      desc: function (m) { return DEF_DESC[m]; }
+    }, "defend"));
+
+    /* boost bays: cells to the cap, dashed future capacity beyond */
+    var bhead = el("div", "sect-head");
+    bhead.appendChild(el("strong", "", "BOOST BAYS"));
+    var pips = el("span", "kp-pip-row");
+    for (var p = 0; p < KIT.boostSlots; p++) {
+      pips.appendChild(el("i", "kp-pip-sq kp-pip-sq-sm" + (p < KIT.augments.length ? " kp-pip-on" : "")));
+    }
+    bhead.appendChild(pips);
+    bhead.appendChild(el("em", "", KIT.augments.length + " / " + KIT.boostSlots));
+    right.appendChild(bhead);
+
+    var bays = el("div", "bays");
+    for (var i = 0; i < 5; i++) {
+      var cell;
+      if (i < KIT.augments.length) {
+        cell = el("div", "bay");
+        cell.appendChild(el("strong", "", KIT.augments[i].name));
+        cell.appendChild(el("span", "", KIT.augments[i].desc));
+      } else if (i < KIT.boostSlots) {
+        cell = el("div", "bay bay-empty");
+        cell.appendChild(el("strong", "", "EMPTY BAY"));
+      } else {
+        cell = el("div", "bay bay-empty bay-future");
+        cell.appendChild(el("strong", "", "EMPTY BAY"));
+      }
+      if (!REDUCED) {
+        cell.classList.add("kp-slot-anim");
+        cell.style.animationDelay = (760 + i * 90) + "ms";
+      }
+      bays.appendChild(cell);
+    }
+    right.appendChild(bays);
+
+    /* patch pouch, read-only rack */
+    var phead = el("div", "sect-head");
+    phead.appendChild(el("strong", "", "PATCH POUCH"));
+    phead.appendChild(el("em", "", POUCH.length + " / " + POUCH_MAX));
+    right.appendChild(phead);
+
+    var rack = el("div", "pouch-rack");
+    POUCH.forEach(function (pc, n) {
+      var s = el("span");
+      s.appendChild(patchGlyph(pc.mask, 34));
+      s.appendChild(el("span", "", pc.noun));
+      if (!REDUCED) {
+        s.classList.add("kp-slot-anim");
+        s.style.animationDelay = (1120 + n * 80) + "ms";
+      }
+      rack.appendChild(s);
+    });
+    for (var h = POUCH.length; h < POUCH_MAX; h++) {
+      var hole = el("span");
+      hole.appendChild(el("span", "kp-piece-hole"));
+      rack.appendChild(hole);
+    }
+    right.appendChild(rack);
+    right.appendChild(el("p", "pouch-foot",
+      "A piece fills one slag block with exactly the arms it shows, welded where it lands. " +
+      "2 RAM, one per turn, single use. Pieces come off the darknet, drop from cleared jobs, " +
+      "or bank on clean wins; the pouch holds " + POUCH_MAX + "."));
+  }
+
+  /* ---------- the load sweep ---------- */
+
+  var statusEl = document.getElementById("status");
+  var strainNum = document.getElementById("strain-num");
+  var strainBar = document.getElementById("strain-bar");
+  var SEGN = 30;
+  for (var sb = 0; sb < SEGN; sb++) strainBar.appendChild(el("i"));
+
+  function sweep() {
+    clearTimers();
+    build();
+
+    statusEl.textContent = "";
+    typeIn(statusEl, "DIVE KIT IS LOADING...", 0, 22);
+
+    /* photos: scan-line reveal, staggered */
+    ["ph-plate", "ph-feed"].forEach(function (id, n) {
+      var ph = document.getElementById(id);
+      ph.classList.remove("on");
+      void ph.offsetWidth;
+      later(function () { ph.classList.add("on"); }, 120 + n * 260);
+    });
+    if (REDUCED) {
+      document.querySelectorAll(".photo img").forEach(function (im) { im.style.clipPath = "none"; });
+    }
+
+    /* tier segments light one at a time; values count after */
+    segStore.forEach(function (st, r) {
+      st.segs.forEach(function (seg, s) {
+        seg.classList.remove("on");
+        later(function () { seg.classList.add("on"); }, 260 + r * 200 + s * 120);
+      });
+      st.vem.textContent = "0";
+      countUp(st.vem, st.target, 320 + r * 200, 60);
+    });
+
+    /* program descs type concurrently */
+    typeDesc("scan", SCAN_DESC, 480, 5);
+    typeDesc("attack", ATK_DESC[KIT.attackMode], 640, 5);
+    typeDesc("defend", DEF_DESC[KIT.defendMode], 800, 5);
+
+    /* operator rows */
+    countUp(document.getElementById("op-clear"), OP.clear, 500);
+    countUp(document.getElementById("op-lost"), OP.lost, 620);
+    countUp(document.getElementById("op-ram"), OP.ram, 740);
+
+    /* strain: the number climbs, the bar fills with it */
+    strainNum.textContent = "0";
+    countUp(strainNum, STRAIN, 900, 30);
+    var segsOn = Math.round(SEGN * STRAIN / 100);
+    for (var i = 0; i < SEGN; i++) {
+      var seg = strainBar.children[i];
+      seg.classList.remove("on");
+      if (i < segsOn) {
+        (function (sg, k) {
+          later(function () { sg.classList.add("on"); }, 900 + k * 34);
+        })(seg, i);
+      }
+    }
+
+    later(function () { statusEl.textContent = "DIVE KIT READY."; }, 1800);
+  }
+
+  /* hue switch + replay rig */
+  var row = document.getElementById("huerow");
+  ["lavender", "magenta", "phosphor"].forEach(function (h, i) {
+    var b = document.createElement("button");
+    b.textContent = h.toUpperCase();
+    if (i === 0) b.className = "rig-on";
+    b.addEventListener("click", function () {
+      row.querySelectorAll("button").forEach(function (x) { x.className = ""; });
+      b.className = "rig-on";
+      document.documentElement.dataset.hue = h;
+    });
+    row.appendChild(b);
+  });
+  /* dither switch: swaps the photo post-pass, replays the scan reveal.
+   * every variant preloads up front so a swap never waits on (or dies
+   * with) the file server */
+  var drow = document.getElementById("ditherrow");
+  ["heavy", "fine", "bayer"].forEach(function (d) {
+    ["loadout-plate", "loadout-feed"].forEach(function (base) {
+      new Image().src = "art/" + base + "-" + d + ".png";
+    });
+  });
+  ["heavy", "fine", "bayer"].forEach(function (d, i) {
+    var b = document.createElement("button");
+    b.textContent = d.toUpperCase();
+    if (i === 0) b.className = "rig-on";
+    b.addEventListener("click", function () {
+      drow.querySelectorAll("button").forEach(function (x) { x.className = ""; });
+      b.className = "rig-on";
+      [["ph-plate", "loadout-plate"], ["ph-feed", "loadout-feed"]].forEach(function (pair, n) {
+        var ph = document.getElementById(pair[0]);
+        ph.querySelector("img").src = "art/" + pair[1] + "-" + d + ".png";
+        ph.classList.remove("on");
+        void ph.offsetWidth;
+        later(function () { ph.classList.add("on"); }, n * 160);
+      });
+    });
+    drow.appendChild(b);
+  });
+
+  document.getElementById("replay").addEventListener("click", sweep);
+
+  /* the feed clock ticks for real; it survives load-sweep resets */
+  var clock = document.getElementById("feed-clock");
+  var tsec = 22 * 3600 + 41 * 60 + 7;
+  setInterval(function () {
+    tsec = (tsec + 1) % 86400;
+    var h = String(Math.floor(tsec / 3600)).padStart(2, "0");
+    var m = String(Math.floor((tsec % 3600) / 60)).padStart(2, "0");
+    var s = String(tsec % 60).padStart(2, "0");
+    clock.textContent = "DAY 04 " + h + ":" + m + ":" + s;
+  }, 1000);
+
+  sweep();
+})();
+</script>
+</body>
+</html>

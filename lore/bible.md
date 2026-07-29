@@ -148,13 +148,19 @@ and journal.ts's bills entry. Shipped copy and the lore files agree.
 
 Every job is an intrusion in a machine somebody loves. Tiers are job
 difficulty 1-5; dominant is the intrusion's guaranteed early mode.
+Appearance is canon only where art has needed it: ruled inline below for
+Juno Vex, Sable Okonkwo, Aldous Wick, Wren Tallis, and Bram Hollander this
+session (ui-integration-2026-07-29 gate, closing the "no appearance canon"
+gap that cycle's art orders exposed); Dex Marlowe's is already established
+by shipped card art. An unlisted customer has no likeness yet; invent
+nothing without a ruling.
 
-- Juno Vex - Hexlight arcade handheld - T1,2 - armSiphon - a ghost second player keeps setting records.
-- Sable Okonkwo - Kestrel courier drone - T1,2 - redirect - something rewrites her routes and looks proud of it.
-- Aldous Wick - Meridian ledger terminal - T1,2,3 - armHalt - forty years of books that bite the hand that files.
-- Wren Tallis - studio master ledger - T1,2 - ward - something hides her tracks and plays hide and seek.
-- Bram Hollander - Copperline register hub - T2,3 - lock - his own register walls the till off from him.
-- Dex Marlowe - Nocta cram deck - T2,3 - redirect - his homework reroutes itself toward the arcade.
+- Juno Vex - Hexlight arcade handheld - T1,2 - armSiphon - a ghost second player keeps setting records. Appearance: wiry teenage arcade regular, hood down, lanyard access card, half-smirk.
+- Sable Okonkwo - Kestrel courier drone - T1,2 - redirect - something rewrites her routes and looks proud of it. Appearance: practical short hair, collared courier jacket, tired and sharp.
+- Aldous Wick - Meridian ledger terminal - T1,2,3 - armHalt - forty years of books that bite the hand that files. Appearance: older shopkeeper, reading glasses pushed up, cardigan; calls the player "son," an old man's address, not a name.
+- Wren Tallis - studio master ledger - T1,2 - ward - something hides her tracks and plays hide and seek. Appearance: music producer, headphones loose at the neck, studio-casual, sleepless and relieved.
+- Bram Hollander - Copperline register hub - T2,3 - lock - his own register walls the till off from him. Appearance: proud, weathered shopkeeper, apron at his own counter, eleven years in that till.
+- Dex Marlowe - Nocta cram deck - T2,3 - redirect - his homework reroutes itself toward the arcade. Appearance (established, shipped card art, ui-demos/kpos-shell/art/dex-portrait.png): lean, tousled dark hair, dark jacket, chain necklace, direct stare.
 - June Aksoy - Halcyon clinic gateway - T3,4 - ward - it walls off a hospital ward at a time, at shift change.
 - Ines Calloway - Ferrox lifter exosuit - T3,4 - armHalt - it cuts servos at the worst second, like a test.
 - Emeric Snow - Ivora chess cabinet - T4,5 - purge - it stopped playing chess and started playing him.

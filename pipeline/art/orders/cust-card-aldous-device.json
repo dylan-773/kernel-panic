@@ -1,0 +1,12 @@
+{
+  "id": "cust-card-aldous-device",
+  "from": "ux-agent",
+  "kind": "window-image",
+  "treatment": "dither-fine",
+  "target": "/assets/px/portraits/card/aldous-wick-device.png",
+  "size": [304, 304],
+  "invert": false,
+  "brief": "CUSTOMER.REC card device macro for Aldous Wick's Meridian ledger terminal (customers.ts), matching the existing Dex Marlowe card's cram-deck macro construction (ui-demos/kpos-shell/art/dex-cramdeck.png / card.html): an extreme close-up macro of the terminal's keypad and a sliver of its small ledger screen, 1990s anime OVA ink style, flat cel shading, no text or speech bubbles or panel borders or lettering anywhere (the screen shows only abstract rows of glow, never legible characters). A boxy beige-toned business terminal rendered in monochrome ink, worn key caps from forty years of entries, the screen's glow slightly flickering. Background a plain soft dark gradient only.",
+  "status": "open",
+  "result": null
+}

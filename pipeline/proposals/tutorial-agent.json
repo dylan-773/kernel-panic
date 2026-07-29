@@ -1,196 +1,59 @@
 {
   "agent": "tutorial-agent",
-  "brief": "deep-balance-2026-07-28",
-  "notes": "Gates and specs teaching for the two player-facing systems in this cycle's scope (shaped patch pieces, boost bays) plus the gridlock strain chip. This replaces the prior cycle's tutorial-agent.json (brief teaching-2026-07-26); that content has already shipped per the repo's git history. Everything below is PLANNED, not TAUGHT: none of these surfaces exist in shipped code yet, so tutorial/ledger.md records the plan with status PLANNED and a real audit is owed once the Orchestrator integrates and teach-sim can actually check it. Full reasoning and tier-by-tier verdicts live in pipeline/gates/tutorial-review.md.\n\nEngine changes needed before these items are literal in code (no design decision, stating directly): (1) content/teaching.ts:37-42's TeachWhen union needs two new members, 'craftReady' (fires true when the pouch holds at least two owned patch pieces whose shapes have a legal union, i.e. the geometric union of their arms is strictly bigger than either input alone; this mirrors the same legality check the craft action itself must enforce) and 'swapOffered' (fires true when the current augment draft includes a BOOST-kind card while the player's owned boost count already equals their current bay cap, so accepting it requires benching one already installed; never true for a CONFIG card, which sits outside the cap). (2) content/teaching.ts:128's patchCellBuy entry and content/teaching.ts:188-193's augmentPoolDry entry both come OUT of MECHANIC_INVENTORY entirely, not converted to a waiver; see tutorial/ledger.md's waiver log for why each is genuinely retired rather than re-explained. (3) The patch-craft moment's anchor ('craft') has no CSS position rule yet (styles.css:2080-2086 defines screen/par/readout/rows/draft/grid/patch only); position is the ux-agent's call per standing practice, referenced via this item's uiSpec (patch-craft-flow, expected from ux-agent this cycle, not yet filed as of this proposal).\n\nSurface budget check (teach-sim's caps): upgrade carries 3 moments after this pass (day-upgrade, night-shop, patch-craft), 2 of them firstSight (day-upgrade, night-shop), at the cap of 2 but not over it; patch-craft is intentionally NOT firstSight so it does not add a third. result carries 3 moments (strain-chip, augment-draft, boost-swap), 1 firstSight. duel is unchanged at 3 moments (par-budget, cascade-bank, patch-cell-use), 0 firstSight, since patchShapes folds into the existing patch-cell-use moment rather than adding a new one. All within the 4-moment / 2-firstSight caps.\n\nDid not file a copy order for the ram tip's CARRY CACHE clause removal, even though the brief's phrasing listed one: tips are self-written by this seat per standing practice (pipeline/gates/tutorial-review.md from teaching-2026-07-26, 'Tips are not routed through copy orders'), and a five-word deletion is exactly the case that practice exists for. Filed five copy orders instead of the brief's five: dropped copy-ram-tip, added copy-boost-swap for the new boost-swap coachmark, which is not in the brief's explicit list but earns one under the standing rule that every new coachmark gets a copy order.\n\nDependency note: this proposal's patchDrop and gridlockChip waivers, and the patch-cell-use/night-shop/patch-craft moments' uiSpec references, depend on ux-agent items (patch-ghost-preview, patch-craft-flow, darknet-window, pick-to-swap-flow, result-drop-reveal) that the brief assigns to ux-agent but that had not been filed as of this proposal (pipeline/proposals/ux-agent.json on disk is still the prior cycle's file). Narrative-director has already run for this cycle and filed supporting copy this proposal cites directly (pipeline/proposals/narrative-director.json): result-screen-rows (drop naming, gridlockChipLabel), gridlock-endreason, manual-sections (PATCH PIECES, BOOST BAYS), duel-toast-patch-piece.",
+  "brief": "ui-integration-2026-07-29",
+  "notes": "Teaching gate for the kpos-shell v2 integration. Grounded directly against the shipped app, not the ux-agent proposal's own description of it: components/os/windows/inbox.tsx, report.tsx, solder.tsx, night.tsx, loadout.tsx, and darknet.tsx are ALL already real, wired, native components today, well ahead of what pipeline/proposals/ux-agent.json's notes assume is still pending. Only duel.tsx (the DIVE.EXE reskin) is unintegrated. Full reasoning for every item below lives in pipeline/gates/tutorial-review.md, this cycle's rewrite; tutorial/ledger.md carries the durable Coverage table, waiver log, and loop history.\n\nEngine changes needed before the patchCraft items below are literal in code (stating plainly, not inventing silently): content/teaching.ts's TeachSurface union (currently tutorial | duel | day | analyze | loadout | result | upgrade | finalePre | runEnd | desktop) gains one member, 'solder'; dev/teach-sim.ts:54's WINDOW_SURFACES constant gains 'solder' alongside the existing loadout/desktop/tutorial, so the reachability walk exempts it the same way. Neither needs a new TeachWhen, a new anchor CSS rule, or a new copy order: this waiver mounts no <Teach> anywhere, it exists purely so patchCraft's firstContact can name its real surface honestly.\n\nBiggest finding this cycle, full account in the gate and ledger: the jobBoard waiver's entire backing sentence ('Three tickets. Strain is shared across all of them. Pick your order.') is confirmed ABSENT from the shipped InboxContent, and the threatTier tip lost its list-view home (the per-ticket badge every JobBoard row used to carry) in the same collapse. teach-sim cannot see either regression, since it only checks that a waiver string exists in code and is long enough, never that the sentence it quotes still renders anywhere. One ui-spec below asks for both back.\n\nRetired, not relocated: the patch-craft coachmark. The brief asked this gate to rule on where patch-craft's anchor should move now that crafting lives in SOLDER.BAY rather than the night screen; having read the actual shipped SolderContent (which did not exist in code when patch-craft was originally speced as PLANNED last cycle), the answer is that no anchor is needed at all. The bench's own status line states the outgrow rule verbatim on every single pickup, permanently, its Schematic panel visually blinks the gain, and its rack makes selecting an illegal partner structurally impossible, all of which is stronger, tier-0, always-on coverage that a one-shot coachmark cannot match. This also exposed a live bug the relocation framing would have quietly worked around: the coachmark currently mounts on NIGHT.SYS keyed to a craftReady signal, but the crafting UI it describes lives entirely on a different window that mounts no <Teach> at all, so a player who crafts mid-day could complete a run without ever seeing it fire.\n\nAlso resolved, overturning rather than deferring: the ux-2026-07-28-kpos-redesign gate's two-cycle-old recommendation to add a pieceDragCarry mechanic and a solder-bay-intro coachmark for SOLDER.BAY's drag gesture. Read the shipped pointer-event code directly: dragging only arms for mouse/pen (dist > 6 past pointerdown), touch always falls through to the identical tap-to-select-then-CRAFT flow every other interaction in this game already uses, and both paths resolve to the same fuseAt/rejectCancel outcomes. Nothing is reachable by drag that tap cannot also reach, so the 'new input modality nothing rewards' framing that justified the original recommendation does not hold once the fallback path is actually checked. No MECHANIC_INVENTORY entry filed. Applied the identical scrutiny to boost-swap as a control case and did NOT retire it: REPAIR.LOG's swap UI never states that CONFIGS sit outside the bay cap, a fact only the coachmark's second line carries.\n\nSeven mechanics this cycle's audit confirmed had already silently graduated from last cycle's PLANNED status to their true TAUGHT/WAIVED state in shipped code (patchShapes, darkWebBuy, slotBuy, boostSlots, boostSwap, patchDrop, gridlockChip) and five firing-correctness asterisks confirmed clean (cascade, ram, strainChip, credits, runReset); none of these needed a proposal item, only a ledger correction, since no code or copy changes, only the record catching up to what already shipped.\n\nCopy: no new coachmark this cycle, so no new copy order. pipeline/copy/orders/copy-patch-craft.json set to status cancelled (edited directly), superseded by the patchCraft retirement; no further words owed.",
   "items": [
     {
-      "type": "mechanic",
-      "id": "patchShapes",
-      "label": "Patch pieces roll a fixed shape and orientation; they never rotate in hand",
-      "firstContact": "duel",
-      "rationale": "Folded into the existing patch-cell-use coachmark rather than a new moment: same trigger (holdingCells), same surface, same audience. Closed by the patch-cell-use rewrite below."
+      "type": "ui-spec",
+      "id": "inbox-collapsed-row-parity",
+      "area": "screens",
+      "spec": "InboxContent's collapsed list (components/os/windows/inbox.tsx), ported from inbox.html's bare-subject-line anatomy, is confirmed to drop two pieces of tier-0 coverage the old JobBoard row and header carried on every visit, permanently: (1) the header paragraph backing the jobBoard waiver ('Three tickets. Strain is shared across all of them. Pick your order.', formerly screens.tsx:211): InboxContent's kp-screen-head (lines 373-379) renders only the DAY N OF 10 hero, no subtitle. (2) a per-ticket threat-tier indicator, formerly wrapped in the threatTier TapTip on every JobBoard row (kp-job-tier, screens.tsx:234-239): the collapsed kp-inbox-item button (lines 388-399) renders only the subject string plus a CLEARED tag when done. The footer (STRAIN/RAM TapTips, credits, pouch, kit summary, lines 404-421) is confirmed intact and needs no change; do not touch it. Fix: add a paragraph stating the shared-strain fact back to InboxContent's header (verbatim or equivalent to the quoted sentence), and add a compact threat-tier indicator to each kp-inbox-item row (a right-aligned diamond-pip cluster matching the expanded CustomerCard's own THREAT TIERS row, kp-pip-row, would be visually consistent with the rest of this window), keeping it wrapped in the existing threatTier TapTip so a player can compare all three tickets' difficulty before opening any one, which the current subject-only row cannot do. Exact placement and visual form are the ux-agent's call. Worth folding into the same pass, not required for this gate: the collapsed row also dropped the per-ticket payout figure (jobPay(job.tier)), present on every JobBoard row before; nothing in the mechanic inventory gates this specifically, but it is the same class of pre-commitment comparison data as tier, and was almost certainly dropped for the same reason (porting the demo's bare anatomy, which never modeled live run data at all, rather than a deliberate cut).",
+      "acceptance": [
+        "InboxContent's header shows a paragraph stating tickets are shared-strain and the pick order is the player's choice, verbatim or equivalent to today's retired JobBoard sentence, visible every time the collapsed list is shown",
+        "every collapsed kp-inbox-item row shows a threat-tier indicator, wrapped in the existing threatTier TapTip, readable without opening the ticket",
+        "the existing footer (STRAIN/RAM TapTips, CR, POUCH, KIT) is unchanged",
+        "the expanded CUSTOMER.REC card's own THREAT TIERS row and READOUT tell line are unchanged"
+      ]
+    },
+    {
+      "type": "ui-spec",
+      "id": "dive-overlay-continue-label-accuracy",
+      "area": "duel",
+      "spec": "narrative-director's ui-copy-dive-result-overlay proposes newDiveButton ('NEW DIVE') replacing the small in-dive overlay's current single CONTINUE button (duel.tsx:918) unconditionally. duel.tsx's overlay uses that one button for all four dive outcomes today (win/core, win/gridlock, loss/severed, loss/core) via the identical finish() dispatch; relabeling all four NEW DIVE would misstate two of them: a loss (there is no new dive, the run just ended, the next screen is the run-end scene) and a win that closes the day's last ticket (the next screen is NIGHT.SYS, not a dive). Gate the label on the actual outcome: show NEW DIVE only when the result is a win AND at least one more ticket remains unclaimed that day; every other case (any loss, or a win closing the day's last ticket) keeps CONTINUE, which is accurate for all four cases today and remains the safe default. Only the label is conditional; the button's dispatch is unchanged in every case.",
+      "acceptance": [
+        "on any loss (severed or core), the overlay button reads CONTINUE, never NEW DIVE",
+        "on a win that closes the day's last ticket, the overlay button reads CONTINUE, never NEW DIVE",
+        "on a win with at least one ticket still open that day, the overlay button reads NEW DIVE",
+        "the button's dispatch (finish()/onFinish) is byte-identical in every case; only the label is conditional"
+      ]
     },
     {
       "type": "mechanic",
       "id": "patchCraft",
-      "label": "Combine two patch pieces into the union of their arms, at night or from the loadout bench",
-      "firstContact": "upgrade",
-      "rationale": "New mechanic, new coachmark. Closed by the patch-craft moment below, gated on the new craftReady trigger so it only fires once the player actually has a legal pair, not on first sight of an empty bench."
-    },
-    {
-      "type": "mechanic",
-      "id": "darkWebBuy",
-      "label": "Buying a random patch piece from the darknet, price rising by day",
-      "firstContact": "upgrade",
-      "rationale": "REPLACES patchCellBuy (see the mechanic-waiver-adjacent retirement note in tutorial/ledger.md; patchCellBuy is removed from MECHANIC_INVENTORY outright, not waived). Closed by the night-shop rewrite below."
-    },
-    {
-      "type": "mechanic",
-      "id": "slotBuy",
-      "label": "Buying an extra boost bay at night, raising the boost cap",
-      "firstContact": "upgrade",
-      "rationale": "Folded into the night-shop rewrite rather than a third coachmark on the upgrade surface, which is already at the 2-firstSight cap (day-upgrade, night-shop). A one-clause pointer here is enough; the deeper consequence of the cap (a full bay forces a swap) is boostSwap's job, taught separately at the moment it actually happens."
-    },
-    {
-      "type": "mechanic",
-      "id": "boostSlots",
-      "label": "Boost bays cap ownership at 3, buyable up to 5; configs sit outside the cap",
-      "firstContact": "result",
-      "rationale": "Tier 1, a tip, not a coachmark: the cap and buyable ceiling are numbers the player will want to recheck every time they draft a boost or weigh buying a bay, the textbook 'will they want this again' case. Closed by the boostSlots tip below."
-    },
-    {
-      "type": "mechanic",
-      "id": "boostSwap",
-      "label": "A full boost bay swaps a new BOOST in for one already installed instead of refusing it",
-      "firstContact": "result",
-      "rationale": "Tier 2, a new coachmark: this is a rule that changes what the player does at a specific moment (pick which to bench), not a recurring number, and it only matters the first time it actually happens, which is exactly what the new swapOffered trigger targets. Closed by the boost-swap moment below."
-    },
-    {
-      "type": "mechanic",
-      "id": "patchDrop",
-      "label": "Post-dive piece rewards, a general drop and the reworked CLEAN RUN bonus",
-      "firstContact": "result"
+      "label": "Combine two patch pieces into the union of their arms, at the SOLDER.BAY bench",
+      "firstContact": "solder",
+      "rationale": "Revises the existing MECHANIC_INVENTORY entry in place (id unchanged, label and firstContact updated). firstContact moves from upgrade to solder. Label drops 'at night or from the loadout bench': both are now wrong. LOADOUT.CFG's pouch panel is confirmed read-only, a button that redirects to SOLDER.BAY on click (components/os/windows/loadout.tsx:404-427, title='Open SOLDER.BAY'); NIGHT.SYS never had its own craft UI, only the coachmark that retires alongside this change (see the paired mechanic-waiver item). Paired with a mechanic-waiver item of the same id supplying the new waiver text; together they describe one revised MechanicEntry object."
     },
     {
       "type": "mechanic-waiver",
-      "id": "patchDrop",
-      "waiver": "The result screen's drop row names the recovered piece by shape and shows its glyph inline, the only screen this can occur on, the same precedent as the turnCap waiver. Covers both a general post-dive drop and the reworked CLEAN RUN bonus, since both land through the same row: narrative-director's result-screen-rows copy (already filed, pipeline/proposals/narrative-director.json) supplies dropRevealLabel 'PATCH PIECE RECOVERED', the four dropRevealVariants naming straight, elbow, tee, and cross by name, dropRevealCappedVariant for a full pouch, and the rewritten cleanRunBanked/cleanRunCapped strings.",
-      "expiresIf": "the drop row stops naming the shape in visible text, drops the glyph, or a piece ever first appears to the player on a screen other than the result screen without equivalent naming",
-      "rationale": "PROVISIONAL. The naming half is real and already written (narrative-director's copy, cited above); the glyph half is not yet, it depends on ux-agent's forthcoming result-drop-reveal ui-spec (brief-assigned, not yet filed as of this proposal). Filed ui-spec patch-drop-row-naming this cycle to lock the specific acceptance criteria (name plus glyph, both paths) this waiver needs to actually hold. Do not mark this waiver earned in the ledger until both land; tutorial/ledger.md flags it PLANNED for exactly this reason."
-    },
-    {
-      "type": "mechanic",
-      "id": "gridlockChip",
-      "label": "Gridlock wins now chip a flat 6 strain despite paying full rate",
-      "firstContact": "duel",
-      "rationale": "firstContact is duel, not result, on the runReset precedent: the fact is first stated on the duel screen's own end overlay the instant the dive ends, before the player ever reaches the result screen."
+      "id": "patchCraft",
+      "waiver": "SOLDER.BAY's own status line (components/os/windows/solder.tsx) states the outgrow rule every time a piece is picked up, before any partner is chosen: 'PICK A PARTNER. THE WELD MUST OUTGROW BOTH.' (LINE_HELD), re-stated on every single pickup for the life of the save, not once ever like a coachmark. The Schematic panel blinks exactly which arms a candidate partner would add (the arm-gain styling). The rack marks any non-outgrowing partner dead and disabled (legalPartners filtering, kp-slot-dead), so a player cannot select, drag onto, or drop a piece on an illegal partner through the shipped interface at all: the 'equal or smaller spends both pieces for nothing' risk the retiring coachmark warned about cannot actually be triggered. CRAFT carries no price anywhere in the row, matching this game's own convention that every paid action states its cost inline (NIGHT PATCH, BUY BLIND, INSTALL BOOST BAY all do), so the absence itself signals free.",
+      "expiresIf": "the status line stops stating the outgrow rule on pickup, the dead-slot styling ever lets a non-outgrowing partner through to a live weld, or a cost is ever attached to crafting without being shown inline on the same row",
+      "rationale": "RETIRES the patch-craft TeachingMoment (content/teaching.ts's TEACHING array) outright; the Orchestrator should delete that object, not merely edit it. Originally speced as a coachmark (deep-balance-2026-07-28, status PLANNED) against a SOLDER.BAY that did not exist in shipped code yet. The SOLDER.BAY that actually got built carries the rule at tier 0, more persistently than the moment could. This also resolves this cycle's own anchor question directly: the coachmark currently mounts on NIGHT.SYS (night.tsx:199-208) keyed to a live craftReady signal, but the entire crafting interface lives in SOLDER.BAY (solder.tsx), which mounts no <Teach> at all; a player who crafts mid-day in SOLDER.BAY, consuming the legal pair before night, could complete a run without NIGHT.SYS ever showing this coachmark. Retiring it removes a moment that was both misplaced and made redundant by superior always-on coverage, rather than relocating it to a new surface for no real gain. Engine ask this depends on: TeachSurface gains 'solder', WINDOW_SURFACES (dev/teach-sim.ts:54) gains 'solder', stated in this proposal's top-level notes. copy-patch-craft.json (pipeline/copy/orders/) set to status cancelled directly by this proposal; no further words owed on this moment."
     },
     {
       "type": "mechanic-waiver",
-      "id": "gridlockChip",
-      "waiver": "Two texts carry this, the same shape as the runReset waiver. The duel's own end overlay states the cost the instant it happens (narrative-director's gridlock-endreason copy, already filed: 'Total gridlock. Neither signal can reach the core. The link collapses in your favor, and the dead link bites on the way out.'). The result screen's strain breakdown then itemizes the exact number as its own row, the same way the turn cap already gets its own '-10, hit the turn cap' row.",
-      "expiresIf": "either text stops stating the cost, or the itemized breakdown row (ui-spec gridlock-chip-breakdown) does not land",
-      "rationale": "PROVISIONAL. The end-overlay half is real and already written (narrative-director's copy, cited above); the itemized-row half does not exist in code yet. Filed ui-spec gridlock-chip-breakdown this cycle, which also specs the gridlockWin plumbing needed to render narrative-director's already-filed gridlockChipLabel copy ('link collapsed in gridlock', pipeline/proposals/narrative-director.json, result-screen-rows). Do not mark this waiver earned until that row ships; tutorial/ledger.md flags it PLANNED for exactly this reason. Considered and rejected: a coachmark. The turn cap sets direct precedent for a chip cause living entirely in the itemized row with no coachmark of its own, and gridlock is rare enough (7 of 3800 dives measured last cycle for the sibling turn-cap case) that a one-time rule beats a callout most players will never trigger."
+      "id": "programTiers",
+      "waiver": "LOADOUT.CFG's own program rows (components/os/windows/loadout.tsx, ProgRow) show a program's current numeric RANGE or WIDTH directly beside its TIER segment meter, for all three programs, on every visit: the widening effect this mechanic is about is the two numbers sitting next to each other, not a sentence describing it.",
+      "expiresIf": "a program row ever shows a TIER meter without its RANGE/WIDTH value in the same row, or the shown number stops changing when a tier upgrades",
+      "rationale": "Re-citation, not a new waiver, and the mechanic stays WAIVED throughout. The prior citation (the old KitScreen header at screens.tsx:359-364, 'tiers come from closed days...') no longer exists anywhere in the shipped surface: LOADOUT.CFG's redesign (components/os/windows/loadout.tsx, integrated ahead of this cycle's own gate) replaced that header with a DIVE KIT status readout that does not restate it in prose, confirmed by direct read this cycle. The replacement citation is stronger, not merely adequate: LOADOUT.CFG's ProgRow already shows the concrete number (RANGE for SCAN, WIDTH for ATTACK/DEFEND) directly beside the TIER meter, demonstrating the exact fact this mechanic cares about (a tier number correlates with a bigger output number) more concretely than the retired prose sentence ever stated it. dayUpgrade (a separate, independently-taught mechanic, coachmark day-upgrade) already covers where a tier increase comes from procedurally; this waiver is narrowly about the widening effect itself, which is now shown, not told. kitConfig, the sibling mechanic the old header also backed, is unaffected: it was never a pure-waiver claim (see tutorial/ledger.md, 'kitConfig: NOT a waiver'), and its own basis, the modeLocked tip, is confirmed still live on every locked mode button in ProgRow's tipFor."
     },
     {
-      "type": "teach-tip",
-      "id": "boostSlots",
-      "teaches": ["boostSlots"],
-      "control": "the boost bay counter on a BOOST draft card, and the boost list in LOADOUT.CFG",
-      "text": "Boost bays hold 3 at once. Buy more at night, up to 5. Configs never count against this cap.",
-      "tier": "1. The cap and the buyable ceiling are numbers the player will want to recheck every time they draft or consider buying a bay, reference rather than a one-time rule. The consequence of a full bay, a forced swap, gets its own coachmark (boost-swap) instead of living here."
-    },
-    {
-      "type": "teach-tip",
-      "id": "ram",
-      "teaches": ["ram", "ramCarry"],
-      "control": "the RAM readout in the dive dock, and the day board's per turn summary",
-      "text": "Refills every turn. A rotation or a cast costs 1. Up to 2 unspent carries over. The rest is lost.",
-      "tier": "1, unchanged tier, text-only edit. CARRY CACHE is cut this cycle (ability-agent's four-augment surgery per the brief), so the clause naming its 4-carry exception is no longer true and is removed. The base 2-carry rule is unaffected by the cut and needs no other change. Written directly rather than routed through a copy order; see the top-level notes."
-    },
-    {
-      "type": "teaching-moment",
-      "id": "patch-cell-use",
-      "teaches": ["patchCellUse", "patchShapes"],
-      "surface": "duel",
-      "when": "holdingCells",
-      "anchor": "screen",
-      "order": 80,
-      "notBeforeDay": 1,
-      "title": "PATCH PIECE",
-      "intent": "Player is holding a shaped patch piece for the first time this run. State the action (click a slag block in reach, 1 RAM, one use) and the new rule that changes how they should use it: the piece's arms land exactly as held, it never rotates once placed, so the right move is picking a slag block the shape actually fits, not saving it and hoping to turn it later.",
-      "lines": null,
-      "copyOrder": "copy-patch-cell-use",
-      "tier": "2, a coachmark, unchanged tier from the shipped moment. Both facts are rules that change what the player does the moment they first hold a piece (which slag to burn it on), not numbers to re-check later, so a tip is the wrong tier for either half.",
-      "uiSpec": "patch-ghost-preview"
-    },
-    {
-      "type": "teaching-moment",
-      "id": "night-shop",
-      "teaches": ["nightPatch", "darkWebBuy", "slotBuy"],
-      "surface": "upgrade",
-      "when": "firstSight",
-      "anchor": "patch",
-      "order": 71,
-      "notBeforeDay": 1,
-      "title": "NIGHT SHOP",
-      "intent": "First sight of the closed-day screen. Night patch still buys strain back, unchanged. New: the deterministic 35cr piece buy is gone, replaced by a random draw off the darknet whose price climbs by day, so the player can no longer shop for an exact shape. Also new: an extra boost bay can be bought here at night, raising the boost cap; keep this to one short clause since its own consequence (a full bay swaps) is taught separately the moment it first happens.",
-      "lines": null,
-      "copyOrder": "copy-night-shop",
-      "tier": "2, a coachmark, unchanged tier from the shipped moment. Each purchase button already prints its own live price (tier 0 covers the recurring numbers); what tier 0 cannot say is that the piece buy lost its determinism, a rule that changes how the player plans a purchase, needed once, right when they first see this screen.",
-      "uiSpec": "darknet-window"
-    },
-    {
-      "type": "teaching-moment",
-      "id": "patch-craft",
-      "teaches": ["patchCraft"],
-      "surface": "upgrade",
-      "when": "craftReady",
-      "anchor": "craft",
-      "order": 75,
-      "notBeforeDay": 1,
-      "title": "PATCH CRAFT",
-      "intent": "Fires the first time the pouch actually holds a legal craftable pair (a union of two owned pieces' arms strictly bigger than either alone). State that crafting fuses two pieces into that union, free, at night or from the loadout bench, and only works when the result is strictly bigger; both pieces are spent either way.",
-      "lines": null,
-      "copyOrder": "copy-patch-craft",
-      "tier": "2, a coachmark. This is a rule, not a number, and it only matters once the player has a real choice in front of them, which is exactly what the craftReady trigger targets instead of firing on first sight of an empty bench with nothing craftable yet.",
-      "uiSpec": "patch-craft-flow"
-    },
-    {
-      "type": "teaching-moment",
-      "id": "augment-draft",
-      "teaches": ["augmentDraft", "augmentCadence"],
-      "surface": "result",
-      "when": "draftOffered",
-      "anchor": "draft",
-      "order": 61,
-      "notBeforeDay": 1,
-      "title": "AUGMENT DRAFT",
-      "intent": "Line 1 unchanged: clearing a ticket offers three augments, one holds for the run. Line 2 rewrite only: keep the real cadence (three tickets a day, a clean day banks three) but drop the implication that the pool can run dry. With boost bays capped at 3 to 5 and only 4 config augments total, the player can never own more than bays-plus-4 at once, and a full bay swaps instead of blocking, so the well cannot empty the way the old copy's premise implied.",
-      "lines": null,
-      "copyOrder": "copy-augment-draft-line2",
-      "tier": "2, unchanged. This coachmark already earned its slot; only its second line's premise needs correcting so it does not go on teaching a fact that stopped being true this cycle."
-    },
-    {
-      "type": "teaching-moment",
-      "id": "boost-swap",
-      "teaches": ["boostSwap"],
-      "surface": "result",
-      "when": "swapOffered",
-      "anchor": "draft",
-      "order": 62,
-      "notBeforeDay": 1,
-      "title": "BAY FULL",
-      "intent": "Fires the first time a drafted BOOST would exceed the player's current bay cap. State that taking it means benching one already installed, they choose which, and that configs are never affected since they sit outside the bay cap.",
-      "lines": null,
-      "copyOrder": "copy-boost-swap",
-      "tier": "2, a coachmark. This is the first moment the pouch behaves differently than every earlier draft the player has seen (a free add becomes a forced choice), a once-needed rule, not a recurring number; the cap number itself is the boostSlots tip's job, not this moment's.",
-      "uiSpec": "pick-to-swap-flow"
-    },
-    {
-      "type": "ui-spec",
-      "id": "gridlock-chip-breakdown",
-      "area": "screens",
-      "spec": "Extends the strain breakdown list the prior cycle's strain-chip-breakdown ui-spec already put on ResultScreen (screens.tsx, the kp-chip-breakdown block itemizing rotations over par, traps sprung, and the turn cap). Gridlock wins now chip a flat 6 strain at full pay (BRIEF deep-balance-2026-07-28). Add a fourth conditional line, keyed off a new gridlockWin boolean threaded the same way capWin already is: duel.tsx's DuelFinish interface gains gridlockWin: boolean (true when state.winKind === 'gridlock'); finish() populates it; shop-os.tsx's onFinish passes it through to the duelFinished dispatch; run-reducer.ts's duelFinished RunAction variant and its lastResult object carry it; save.ts's RunState.lastResult shape gains the field. The rendered row uses narrative-director's already-filed gridlockChipLabel copy ('link collapsed in gridlock', pipeline/proposals/narrative-director.json, result-screen-rows item), paired with a -6 value, shown only when r.gridlockWin is true, folded into the same running total that decides whether the 40-cap 'strain billed, capped' line appears.",
-      "acceptance": [
-        "a gridlock win's payout row still reads full rate, never the halved turn-cap rate",
-        "a gridlock win's strain breakdown shows its own 'link collapsed in gridlock' line at -6, distinct from over-par, trap, and turn-cap lines",
-        "a non-gridlock win never renders the gridlock line",
-        "the 40-strain cap's running total includes the gridlock 6 when deciding whether the capped line appears",
-        "gridlockWin threads unchanged in value from duel.tsx's finish() through duelFinished into RunState.lastResult, the same path overRotations and trapsFired already take"
-      ]
-    },
-    {
-      "type": "ui-spec",
-      "id": "patch-drop-row-naming",
-      "area": "screens",
-      "spec": "Narrows the acceptance for ux-agent's forthcoming result-drop-reveal ui-spec (brief-assigned, deep-balance-2026-07-28) so the patchDrop mechanic can stay a waiver rather than needing a coachmark, on the turnCap precedent: the payout row already names its own cause inline, the only screen it can occur on. The result screen's drop row must print the piece's shape NAME, not only a glyph or icon, using narrative-director's already-filed copy (pipeline/proposals/narrative-director.json, result-screen-rows: dropRevealLabel 'PATCH PIECE RECOVERED' plus the four dropRevealVariants naming straight, elbow, tee, and cross by name) and render the piece's shape glyph next to it. The same requirement applies to the reworked CLEAN RUN reward path (cleanRunBanked/cleanRunCapped, same copy item), since both are the same underlying patchDrop mechanic under one waiver.",
-      "acceptance": [
-        "any post-dive piece reward names the shape (straight, elbow, tee, or cross) in visible text, not only an icon",
-        "the same row also renders the piece's shape glyph",
-        "a capped pouch still names the shape that was left on the bench, using the dropRevealCappedVariant / cleanRunCapped copy",
-        "no screen other than the result screen is the first place a player learns their pouch grew or a piece was left on the bench"
-      ]
+      "type": "mechanic-waiver",
+      "id": "jobBoard",
+      "waiver": "Holds only while INBOX's collapsed ticket list carries a permanent paragraph stating tickets are shared-strain and the order is the player's choice, somewhere on the window (exact position unspecified). Audit 2026-07-29 found this paragraph confirmed ABSENT from the shipped InboxContent (components/os/windows/inbox.tsx): the collapsed view's kp-screen-head shows only the DAY N OF 10 hero, no subtitle anywhere. ui-spec inbox-collapsed-row-parity (this proposal) asks for it back; re-widen this waiver to the unconditional form once that lands and is confirmed directly against the live component, not assumed from the proposal.",
+      "expiresIf": "restated for emphasis: the backing sentence is confirmed absent from INBOX today. This waiver does not currently hold. Re-check is owed the moment inbox-collapsed-row-parity is reported integrated, by reading the component, the same way this finding was made.",
+      "rationale": "Narrows the existing waiver, on the exact precedent the credits waiver already set in 2026-07-26 ('narrowed... the full-sweep audit found the crack the original entry predicted'). The underlying claim broke when JobBoard was absorbed into INBOX without the sentence explicitly carrying forward; teach-sim cannot catch this class of break, since it only checks that the waiver string exists in code and is long enough, never that the English sentence it quotes still renders anywhere on the actual screen. This is the most severe finding of this cycle's audit for exactly that reason: the harness stayed green the entire time this was broken."
     }
   ]
 }

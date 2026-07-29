@@ -1,0 +1,13 @@
+{
+  "id": "cust-card-juno-device",
+  "from": "ux-agent",
+  "kind": "window-image",
+  "treatment": "dither-fine",
+  "target": "/assets/px/portraits/card/juno-vex-device.png",
+  "size": [304, 304],
+  "invert": false,
+  "brief": "CUSTOMER.REC card device macro for Juno Vex's Hexlight arcade handheld (customers.ts), matching the existing Dex Marlowe card's cram-deck macro construction (ui-demos/kpos-shell/art/dex-cramdeck.png / card.html): an extreme close-up macro of the handheld's screen and top edge, 1990s anime OVA ink style, flat cel shading, no text or speech bubbles or panel borders or lettering anywhere (the screen shows only abstract glow, never legible in-fiction text). Chunky arcade-handheld body, a worn D-pad and two face buttons visible at the frame edge, the screen's glow slightly too bright and slightly too steady, like something is running that should not be. Background a plain soft dark gradient only.",
+  "status": "done",
+  "result": "pipeline/art/done/cust-card-juno-device.png",
+  "generation": "Higgsfield nano_banana_pro, 2 attempts: first had legible text labels, retry with strict no-text constraint succeeded. ~4 credits total. Generated at 1024x1024, post-processed with dither.py --variant fine to 304x304."
+}

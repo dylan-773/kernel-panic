@@ -1,0 +1,513 @@
+/* SOLDER.BAY demo styles. Reused game classes (kp-fw, kp-dicon, kp-slot-in,
+ * kp-dweld, kp-piece-*) are copied verbatim from wm.css / styles.css with
+ * source lines noted; kp-solder-* classes are NEW, specced by ui-spec
+ * solder-bay-window and destined for styles.css if this variation wins. */
+
+/* ---------- floating window (wm.css ~9-103) ---------- */
+
+.kp-fw {
+  position: absolute;
+  z-index: 30;
+  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+  background: var(--kp-panel);
+  border: 2px solid var(--kp-line);
+  box-shadow:
+    0 0 0 2px #05060a,
+    8px 8px 0 rgba(0, 0, 0, 0.45);
+  animation: kp-fw-in 140ms steps(3) both;
+  outline: none;
+}
+
+.kp-fw-focused { border-color: var(--kp-signal); }
+.kp-fw-dragging { user-select: none; }
+
+@keyframes kp-fw-in {
+  from { transform: translateY(6px); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+
+.kp-fw-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 6px 8px 6px 10px;
+  background: linear-gradient(180deg, var(--kp-panel2), var(--kp-panel));
+  border-bottom: 2px solid var(--kp-line);
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+}
+
+.kp-fw-dragging .kp-fw-bar { cursor: grabbing; }
+
+.kp-fw-title {
+  font-family: var(--kp-display);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--kp-dim);
+  white-space: nowrap;
+}
+
+.kp-fw-focused .kp-fw-title {
+  color: var(--kp-signal);
+  text-shadow: 0 0 8px var(--kp-signal-glow);
+}
+
+.kp-fw-close {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--kp-display);
+  font-size: 10px;
+  line-height: 1;
+  color: var(--kp-text);
+  background: var(--kp-panel2);
+  border: 2px solid var(--kp-line);
+  padding: 0;
+  cursor: pointer;
+}
+
+.kp-fw-close:hover {
+  border-color: var(--kp-rose);
+  color: var(--kp-rose-hot);
+  background: var(--kp-rose-soft);
+}
+
+.kp-fw-body {
+  flex: 1;
+  min-height: 0;
+  color: var(--kp-text);
+  font-family: var(--kp-mono);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ---------- desktop icons (wm.css ~116-170) ---------- */
+
+.kp-dicon-grid {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.kp-dicon {
+  width: 76px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 4px;
+  background: transparent;
+  border: 2px solid transparent;
+  color: var(--kp-text);
+  cursor: pointer;
+}
+
+.kp-dicon:hover { outline: 2px solid var(--kp-signal); outline-offset: -2px; }
+.kp-dicon:active { transform: translate(1px, 1px); }
+
+.kp-dicon-glyph {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.5));
+}
+
+.kp-dicon-glyph svg { shape-rendering: crispEdges; }
+
+.kp-dicon-label {
+  font-family: var(--kp-display);
+  font-size: 10px;
+  line-height: 1.35;
+  letter-spacing: 0.04em;
+  text-align: center;
+  color: var(--kp-text);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.9);
+}
+
+/* ---------- reused game bits (styles.css) ---------- */
+
+/* kp-slot-in ~2882 */
+@keyframes kp-slot-in {
+  from { opacity: 0; transform: translateY(16px) scale(0.94); }
+  to { opacity: 1; transform: none; }
+}
+
+.kp-slot-anim { animation: kp-slot-in 300ms steps(5) both; }
+
+/* kp-dweld ~3487 (SVG fill in game; the bench weld mark is an SVG circle too) */
+.kp-dweld { fill: var(--kp-gold); opacity: 0.85; }
+
+/* kp-piece-empty hole ~3450 */
+.kp-piece-hole {
+  width: 34px;
+  height: 34px;
+  border: 2px dashed var(--kp-line);
+  display: block;
+  opacity: 0.5;
+}
+
+.kp-piece-dim { opacity: 0.35; }
+
+/* ---------- SOLDER.BAY bench (new, per ui-spec solder-bay-window) ---------- */
+
+.kp-solder-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.kp-solder-head strong {
+  font-family: var(--kp-display);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--kp-text);
+}
+
+.kp-solder-head em {
+  font-style: normal;
+  font-family: var(--kp-display);
+  font-size: 10px;
+  color: var(--kp-dim);
+}
+
+.kp-solder-deck {
+  border: 1px solid var(--kp-line);
+  background: var(--kp-bg1);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.kp-solder-rack {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.kp-solder-slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  border: 2px solid transparent;
+  padding: 4px;
+  cursor: pointer;
+  color: var(--kp-text);
+  font-family: var(--kp-mono);
+  touch-action: none;
+}
+
+.kp-solder-slot:is(button):hover { border-color: var(--kp-signal); }
+
+/* tier 0 from tutorial gate: the drag verb must be visible before it is used */
+.kp-solder-slot:is(button) { cursor: grab; }
+.kp-dragging-piece, .kp-dragging-piece * { cursor: grabbing !important; }
+
+.kp-solder-slot span {
+  font-family: var(--kp-display);
+  font-size: 8px;
+  letter-spacing: 0.06em;
+  color: var(--kp-dim);
+}
+
+.kp-solder-empty { cursor: default; }
+
+/* held: shared by live drag and tap-select */
+.kp-solder-carry {
+  transform: translateY(-4px) scale(1.08);
+  z-index: 30;
+  filter: drop-shadow(4px 4px 0 rgba(0, 0, 0, 0.45));
+  border-color: var(--kp-gold);
+}
+
+/* the fixed-position chip that follows the pointer during a live drag */
+.kp-solder-ghostchip {
+  position: fixed;
+  z-index: 300;
+  pointer-events: none;
+  margin: 0;
+}
+
+.kp-solder-legal {
+  border: 2px dashed var(--kp-gold);
+  animation: kp-solder-legal-pulse 1s steps(2) infinite;
+}
+
+@keyframes kp-solder-legal-pulse {
+  0%, 100% { border-color: rgba(217, 165, 63, 0.5); }
+  50% { border-color: rgba(217, 165, 63, 0.15); }
+}
+
+.kp-solder-illegal { border: 2px solid rgba(207, 75, 69, 0.55); }
+
+.kp-solder-deny { animation: kp-solder-deny-flash 140ms steps(2) both; }
+
+@keyframes kp-solder-deny-flash {
+  from { border-color: rgba(207, 75, 69, 0.6); }
+  to { border-color: transparent; }
+}
+
+.kp-solder-spark {
+  position: fixed;
+  z-index: 310;
+  pointer-events: none;
+  animation: kp-solder-spark-burst 140ms steps(3) both;
+}
+
+@keyframes kp-solder-spark-burst {
+  from { transform: scale(0.4); opacity: 1; }
+  to { transform: scale(1.3); opacity: 0; }
+}
+
+.kp-solder-weldwrap {
+  position: fixed;
+  z-index: 305;
+  pointer-events: none;
+}
+
+.kp-solder-weld-fade { animation: kp-solder-weld-in 180ms steps(4) both; }
+
+@keyframes kp-solder-weld-in {
+  from { opacity: 0; }
+  to { opacity: 0.85; }
+}
+
+.kp-solder-join {
+  min-height: 26px;
+  font-size: 13px;
+  color: var(--kp-dim);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.kp-solder-join svg { flex: none; }
+
+.kp-piece-actions { display: flex; gap: 6px; }
+
+.kp-piece-actions button {
+  font-family: var(--kp-display);
+  font-size: 8px;
+  letter-spacing: 0.08em;
+  padding: 5px 10px;
+  background: transparent;
+  border: 1px solid var(--kp-line);
+  color: var(--kp-text);
+  cursor: pointer;
+}
+
+.kp-piece-actions button:hover { border-color: var(--kp-signal); }
+
+.kp-solder-foot {
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--kp-dim);
+  max-width: 46ch;
+}
+
+/* glyph tones */
+.kp-glyph-gold .kp-pp-arm { stroke: var(--kp-gold); }
+.kp-glyph-gold .kp-pp-node { fill: var(--kp-gold); }
+.kp-glyph-dim { opacity: 0.35; }
+.kp-glyph-crimson .kp-pp-arm { stroke: var(--kp-crimson); }
+.kp-glyph-crimson .kp-pp-node { fill: var(--kp-crimson); }
+
+/* heavy-variant flash overlay */
+.kp-solder-flash {
+  position: fixed;
+  inset: 0;
+  z-index: 320;
+  pointer-events: none;
+  background: rgba(217, 165, 63, 0.14);
+  animation: kp-solder-flash-out 120ms steps(3) both;
+}
+
+@keyframes kp-solder-flash-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/* ---------- layout variants ---------- */
+
+/* SPEC+ keeps the gate-cleared card layout, scaled up */
+.kp-body-spec .kp-solder-rack { gap: 14px; }
+
+/* BENCH: a wide work surface, pieces as large pads on a dotted grid */
+.kp-bench-surface {
+  position: relative;
+  min-height: 300px;
+  border: 1px solid var(--kp-line);
+  background-color: var(--kp-bg1);
+  background-image: radial-gradient(rgba(159, 178, 204, 0.14) 1px, transparent 1px);
+  background-size: 26px 26px;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+  gap: 18px;
+  padding: 28px;
+}
+
+.kp-bench-pad {
+  border: 2px solid var(--kp-line);
+  background: var(--kp-panel);
+  padding: 12px 14px;
+  gap: 8px;
+}
+
+.kp-bench-pad span:last-child { font-size: 9px; }
+
+.kp-bench-pad .kp-piece-hole { width: 56px; height: 56px; }
+
+.kp-pad-loose { background: var(--kp-panel); }
+
+.kp-bench-console {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-top: 1px solid var(--kp-line);
+  padding-top: 10px;
+}
+
+.kp-bench-readout {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 30px;
+}
+
+.kp-body-bench .kp-solder-foot, .kp-body-schematic .kp-solder-foot { max-width: none; }
+
+/* SCHEMATIC: near-fullscreen blueprint, pieces as nodes, live traces */
+.kp-schem-board {
+  position: relative;
+  flex: 1;
+  min-height: 52vh;
+  border: 1px solid var(--kp-line);
+  background-color: #10141c;
+  background-image:
+    linear-gradient(rgba(159, 178, 204, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(159, 178, 204, 0.07) 1px, transparent 1px),
+    linear-gradient(rgba(159, 178, 204, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(159, 178, 204, 0.04) 1px, transparent 1px);
+  background-size: 96px 96px, 96px 96px, 24px 24px, 24px 24px;
+  overflow: hidden;
+}
+
+.kp-schem-traces {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.kp-schem-trace {
+  stroke: var(--kp-gold);
+  stroke-width: 2;
+  stroke-dasharray: 6 5;
+  opacity: 0.6;
+  shape-rendering: crispEdges;
+  animation: kp-schem-trace-pulse 1s steps(2) infinite;
+}
+
+@keyframes kp-schem-trace-pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 0.25; }
+}
+
+.kp-schem-anchor { position: absolute; width: 0; height: 0; }
+
+.kp-schem-node {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: translate(-50%, -50%);
+  border: 2px solid var(--kp-line);
+  background: rgba(26, 30, 39, 0.85);
+  padding: 12px 14px;
+  gap: 8px;
+}
+
+.kp-schem-node span:last-child { font-size: 9px; }
+
+.kp-schem-node .kp-piece-hole { width: 64px; height: 64px; }
+
+.kp-schem-node.kp-solder-carry { transform: translate(-50%, -50%) translateY(-4px) scale(1.08); }
+
+.kp-node-loose { transform: none; background: rgba(26, 30, 39, 0.95); }
+
+.kp-node-loose.kp-solder-carry { transform: translateY(-4px) scale(1.08); }
+
+.kp-body-schematic { max-height: none; }
+
+/* the fullscreen-ish schematic window needs a taller body cap */
+.lay-schematic .kp-fw-body { max-height: calc(100vh - 140px); }
+.lay-bench .kp-fw-body { max-height: calc(100vh - 120px); }
+
+/* ---------- demo rig chrome (NOT game UI) ---------- */
+
+.rig {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 500;
+  background: var(--kp-panel);
+  border: 1px solid var(--kp-line);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--kp-dim);
+  max-width: 210px;
+}
+
+.rig strong {
+  font-family: var(--kp-display);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--kp-steel);
+}
+
+.rig-row { display: flex; gap: 4px; flex-wrap: wrap; }
+
+.rig button {
+  font-family: var(--kp-display);
+  font-size: 8px;
+  padding: 4px 7px;
+  background: transparent;
+  border: 1px solid var(--kp-line);
+  color: var(--kp-dim);
+  cursor: pointer;
+}
+
+.rig button:hover { border-color: var(--kp-steel); color: var(--kp-text); }
+.rig button.rig-on { border-color: var(--kp-gold); color: var(--kp-gold); }
+
+@media (prefers-reduced-motion: reduce) {
+  .kp-solder-deck.kp-shake-1, .kp-solder-deck.kp-shake-2,
+  .kp-solder-slot.kp-shake-1,
+  .kp-solder-spark, .kp-slot-anim, .kp-solder-legal, .kp-solder-flash {
+    animation: none;
+  }
+}

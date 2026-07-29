@@ -7,6 +7,7 @@
   "size": [304, 304],
   "invert": false,
   "brief": "CUSTOMER.REC card device macro for Aldous Wick's Meridian ledger terminal (customers.ts), matching the existing Dex Marlowe card's cram-deck macro construction (ui-demos/kpos-shell/art/dex-cramdeck.png / card.html): an extreme close-up macro of the terminal's keypad and a sliver of its small ledger screen, 1990s anime OVA ink style, flat cel shading, no text or speech bubbles or panel borders or lettering anywhere (the screen shows only abstract rows of glow, never legible characters). A boxy beige-toned business terminal rendered in monochrome ink, worn key caps from forty years of entries, the screen's glow slightly flickering. Background a plain soft dark gradient only.",
-  "status": "open",
-  "result": null
+  "status": "done",
+  "result": "pipeline/art/done/cust-card-aldous-device.png",
+  "generation": "Higgsfield nano_banana_pro, 1 attempt, ~2 credits. Generated at 1024x1024, post-processed with dither.py --variant fine to 304x304."
 }

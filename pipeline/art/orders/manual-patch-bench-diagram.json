@@ -7,6 +7,7 @@
   "size": [304, 304],
   "invert": false,
   "brief": "REUSE ORDER, not a new generation: MANUAL.TXT's PATCHES tab (see this cycle's kpos-utility-window-deltas ui-spec item) needs one diagram cell illustrating the solder bench above its existing two paragraphs. The raw art already exists and was already dithered at this exact 304px cell recipe last cycle: ui-demos/kpos-shell/art/raw-solder-bench.png (source) and ui-demos/kpos-shell/art/solder-bench-fine.png (already-finished FINE dither, the variant that read best on this busy mid-tone scene per the SOLDER.BAY study's own notes - HEAVY compressed to checker mush on this scene, so FINE is the one to use, not a fresh choice). Fulfillment is most likely a direct copy of solder-bench-fine.png to the target path once the exact pixel dimensions are confirmed to match this cell (304x304); only re-run pipeline/tools/dither.py against the raw if the confirmed cell size differs from the banked 304px recipe. Zero Higgsfield credits expected.",
-  "status": "open",
-  "result": null
+  "status": "done",
+  "result": "pipeline/art/done/manual-patch-bench-diagram.png",
+  "generation": "Reuse: direct copy of ui-demos/kpos-shell/art/solder-bench-fine.png. Existing artwork already at target size 304x304 with fine dither variant. 0 credits."
 }

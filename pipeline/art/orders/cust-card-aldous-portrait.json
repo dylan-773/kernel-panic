@@ -7,6 +7,7 @@
   "size": [304, 304],
   "invert": false,
   "brief": "CUSTOMER.REC card portrait for Aldous Wick (customers.ts: Meridian ledger terminal, dominant armHalt, tiers 1-3), matching the existing Dex Marlowe card portrait's exact construction (ui-demos/kpos-shell/art/dex-portrait.png / card.html): a three-quarter headshot, direct gaze, 1990s anime OVA ink style, flat cel shading, no text or speech bubbles or panel borders or lettering anywhere in the frame. He reads as an older shopkeeper type, the 'son' Aldous's own winLine implies he calls the player: reading glasses pushed up on his forehead, a cardigan over a collared shirt, decades of bookkeeping in the set of his mouth, wary rather than warm until the job is done. Background a plain soft dark gradient only, no scene detail competing with the face. NOTE: no appearance canon exists yet for this customer; this order waits on the loremaster's ruling on customer figure likenesses before art-lead spends any credits on it.",
-  "status": "open",
-  "result": null
+  "status": "done",
+  "result": "pipeline/art/done/cust-card-aldous-portrait.png",
+  "generation": "Higgsfield nano_banana_pro, 1 attempt, ~2 credits. Generated at 1024x1024, post-processed with dither.py --variant fine to 304x304."
 }

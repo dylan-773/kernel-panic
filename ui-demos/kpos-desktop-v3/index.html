@@ -1,0 +1,483 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>KP demo: KP/OS DESKTOP (INSTRUMENT PANEL)</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=VT323&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" />
+<link rel="stylesheet" href="../_shared/kp.css" />
+<link rel="stylesheet" href="../_shared/system.css" />
+<style>
+/* KP/OS desktop shell, v3 instrument-panel study (ux-2026-07-31-desktop-dive).
+ * Spec: pipeline/proposals/ux-agent.json item kpos-desktop-v3.
+ *
+ * STRATEGY: system.css already carries the entire v2 shell (boot, login,
+ * wallpaper furniture, icons, ticker, taskbar, windows). The v3 layer is:
+ *   1. the role-token block (verbatim from loadout-eva; RULINGS law 1);
+ *   2. role RE-POINTING of shell chrome. Where an element's v2 tone equals
+ *      its role's :root default, the assignment is unconditional. Where it
+ *      does not (v2 painted it with the raw accent), the assignment is
+ *      GATED on html[data-scheme], so SCHEME=DEFAULT (attribute unset)
+ *      renders the shipped v2 desktop exactly - the reversibility law;
+ *   3. the six-layer CRT glass over the whole stage (law 6), replacing the
+ *      old .kp-crt fixed overlay, which this page never mounts;
+ *   4. the cuts: the wallscope roll and the KP mark slip go STILL (law 7,
+ *      recorded in NOTES.md); the ticker and the bench clock keep their
+ *      canon carve-outs;
+ *   5. the idle-desk hero (spec: THE IDLE DESK GETS A REAL FOCAL ELEMENT)
+ *      and the taskbar STRAIN alarm (colour + inverse + composited
+ *      difference-blend pulse, the surface's one --r-warn owner);
+ *   6. cqi ramps on the stage container (law 3; the desk IS the container);
+ *   7. review round 3: the Windows aesthetic is out. The left icon column
+ *      and the bottom taskbar are replaced by a centered bottom DOCK
+ *      (launcher + running-window indicator) and a slim top status strip
+ *      (mark, chips, ticker, ABANDON, SND). Plain window opens land
+ *      CENTERED on the desk; clicking a running app's dock icon surfaces
+ *      its window.
+ */
+
+/* ---------- 1. colour is ROLES (copied from loadout-eva, never retyped) ---------- */
+
+:root {
+  --r-struct: var(--ch-dim);
+  --r-line: var(--ch);
+  --r-data: var(--ch-hot);
+  --r-ok: var(--ch);
+  --r-warn: var(--ch);
+  --r-aux: var(--ch);
+  --r-hazard: var(--ch);
+  --r-note: var(--ch-dim);
+  --r-ok-glow: var(--px-glow);
+  --r-warn-glow: var(--px-glow);
+}
+
+:root[data-scheme="nerv"] {
+  --px-void: #0a0603;
+  --ch: #ff9a1f;
+  --ch2: #c2431a;
+  --ch-hot: #ffe9c4;
+  --r-struct: #a86a22;
+  --r-line: #ff9a1f;
+  --r-data: #ffe9c4;
+  --r-ok: #8dff3a;
+  --r-warn: #ff2a17;
+  --r-aux: #23d3ff;
+  --r-hazard: #d1381a;
+  --r-note: #6ea8ff;
+  --r-ok-glow: color-mix(in srgb, #8dff3a 45%, transparent);
+  --r-warn-glow: color-mix(in srgb, #ff2a17 60%, transparent);
+}
+
+:root[data-scheme="tokyo"] {
+  --px-void: #16161e;
+  --ch: #7aa2f7;
+  --ch2: #414868;
+  --ch-hot: #c0caf5;
+  --r-struct: #414868;
+  --r-line: #7aa2f7;
+  --r-data: #c0caf5;
+  --r-ok: #9ece6a;
+  --r-warn: #f7768e;
+  --r-aux: #7dcfff;
+  --r-hazard: #ff9e64;
+  --r-note: #bb9af7;
+  --r-ok-glow: color-mix(in srgb, #9ece6a 45%, transparent);
+  --r-warn-glow: color-mix(in srgb, #f7768e 55%, transparent);
+}
+
+/* ---------- the viewport rig: a real-resolution stage, scaled to fit ---------- */
+
+body {
+  overflow: auto;
+  display: block;
+  height: auto;
+  min-height: 100%;
+  /* the right pad keeps the centered stage clear of the fixed demo rig,
+   * so the strip's right-edge controls stay visible in review */
+  padding: 26px 316px 40px 16px;
+}
+
+.ds-fit { transform-origin: top left; }
+.ds-fitwrap { margin: 0 auto; }
+
+.ds-stage {
+  position: relative;
+  overflow: hidden;
+  background: var(--px-void);
+  border: 1px solid var(--ch-faint);
+  /* size containment (the stage always has explicit dimensions), so the
+   * icon grid can budget itself against the desk's HEIGHT via cqb -
+   * review round 2: icons must resize to always fit their desk */
+  container-type: size;
+  container-name: desk;
+  /* review round 3: the Windows-style furniture (left icon column, bottom
+   * taskbar) is gone. System status rides a slim TOP strip; the app
+   * launcher is a centered bottom DOCK. Both chrome bands are tokens so
+   * the CRT bezel can buy them more room: under the tube the stage edges
+   * sit in the vignette falloff (the round-2 taskbar complaint), so both
+   * grow and their content stays clear of the glass. */
+  --ds-top-h: 40px;
+  --ds-edge-b: 6px;
+  --ds-dock-glyph: clamp(36px, 6cqb, 60px);
+  --ds-dock-h: calc(var(--ds-dock-glyph) + 46px);
+  --ds-dock-zone: calc(var(--ds-dock-h) + var(--ds-edge-b) + 10px);
+}
+.ds-stage.crt-on { --ds-top-h: 52px; --ds-edge-b: 18px; }
+/* the top status strip reuses the taskbar chrome kit (mark, chips,
+ * buttons), re-anchored to the top edge; the ticker rides its middle */
+.ds-stage .ds-topbar {
+  top: 0;
+  bottom: auto;
+  height: var(--ds-top-h);
+  border-top: none;
+  border-bottom: 3px solid var(--ch);
+}
+.ds-stage .ds-topbar .kp-ticker {
+  position: static;
+  flex: 1 1 0;
+  min-width: 0;
+  align-self: stretch;
+  height: auto;
+  border-top: none;
+  background: transparent;
+  container-type: inline-size;
+  container-name: tick;
+}
+.ds-stage .kp-wallpaper { inset: var(--ds-top-h) 0 0 0; }
+.ds-stage .kp-startmenu { top: calc(var(--ds-top-h) + 8px); bottom: auto; }
+
+/* the shell fills the stage, not the browser: every v2 `fixed` surface
+ * becomes stage-absolute so the rig can scale the whole desk as one object */
+.ds-stage .kp-os,
+.ds-stage .kp-boot,
+.ds-stage .kp-login,
+.ds-stage .kp-modal { position: absolute; }
+.ds-stage .kp-build-stamp { position: absolute; }
+
+/* cqi ramps (law 3): the desk is the container; never vw. The one binary
+ * breakpoint exists below for law compliance; no supported viewport reaches
+ * it (narrowest desk is 1280px). */
+.ds-stage {
+  --ds-fs-hero: clamp(72px, 5cqi, 132px);
+  --ds-fs-boot: clamp(34px, 3cqi, 64px);
+  --ds-fs-body: clamp(19px, 0.6cqi + 17px, 21px);
+  --ds-fs-label: clamp(9px, 0.3cqi + 8.5px, 11px);
+  --ds-fs-val: clamp(11px, 0.4cqi + 10px, 13px);
+  --kp-fs-hero: clamp(40px, 6cqi, 88px);
+}
+@container desk (max-width: 699.98px) {
+  /* tiling fallback tier: unreachable on every supported viewport */
+  .kp-wallscope { display: none; }
+}
+
+.ds-stage .kp-boot-mark { font-size: var(--ds-fs-boot); }
+.ds-stage .kp-boot-inner { font-size: var(--ds-fs-body); }
+.ds-stage .kp-wallposter-tag,
+.ds-stage .kp-wallposter-row span,
+.ds-stage .kp-wallscope-tag,
+.ds-stage .kp-wallclock span,
+.ds-stage .ds-dock-label { font-size: var(--ds-fs-label); }
+.ds-stage .kp-chip-pct em { font-size: var(--ds-fs-val); }
+/* the ticker's start offset was 100vw; the crawl box is now its own
+ * inline-size container (tick), so 100cqi is one full crawl width of
+ * lead-in wherever the ticker lives. Container units fix the unit. */
+.ds-stage .kp-ticker span { padding-left: 100cqi; }
+
+/* ---------- 2. role re-pointing ---------- */
+
+/* unconditional where the v2 tone equals the role default */
+.ds-stage .kp-wallposter-tag { background: var(--r-note); }
+/* the wallpaper furniture steps clear of the dock zone (review round 3:
+ * the dock is centered, so both bottom clusters must ride above it) */
+.ds-stage .kp-wallposter { bottom: calc(var(--ds-dock-zone) + 12px); }
+.ds-stage .kp-wallscope { bottom: calc(var(--ds-dock-zone) + 12px); }
+.ds-stage .kp-wallposter-row span,
+.ds-stage .kp-wallclock span,
+.ds-stage .kp-wallscope-tag { color: var(--r-note); }
+
+/* ---------- the dock (review round 3) ----------
+ * The Windows-style left icon column is gone. The eight app icons live in
+ * a centered bottom dock: the launcher AND the running-window indicator.
+ * KP/OS idiom throughout: hairline r-struct chrome on solid void, solid
+ * ink Silkscreen tag labels, no rounding, no translucency. Glyphs budget
+ * against the desk height (cqb, round 2's dynamic sizing carried over) so
+ * the dock fits every supported viewport. A running app's icon carries an
+ * r-line underline plate; clicking it surfaces the open window. */
+.ds-dock {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: var(--ds-edge-b);
+  margin-inline: auto;
+  width: max-content;
+  max-width: calc(100% - 24px);
+  height: var(--ds-dock-h);
+  display: flex;
+  align-items: center;
+  gap: clamp(2px, 0.4cqi, 12px);
+  padding: 0 10px;
+  background: var(--px-void);
+  border: 1px solid var(--r-struct);
+  z-index: 125;
+}
+.ds-dock-icon {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px 9px;
+  background: transparent;
+  border: none;
+  color: var(--r-line);
+}
+.ds-dock-glyph {
+  position: relative;
+  width: var(--ds-dock-glyph);
+  height: var(--ds-dock-glyph);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ds-dock-glyph svg { shape-rendering: crispEdges; max-width: 100%; max-height: 100%; }
+.ds-dock-icon:hover .ds-dock-glyph svg { filter: drop-shadow(0 0 10px var(--px-glow)); }
+/* dock tags are CONTROL chrome, not annotation: r-struct, per the spec's
+ * icon zone ruling (round 2; r-note read as WallPoster furniture) */
+.ds-dock-label {
+  font-family: var(--kp-display);
+  line-height: 1;
+  letter-spacing: 0.1em;
+  background: var(--r-struct);
+  color: var(--px-void);
+  padding: 3px 6px;
+  white-space: nowrap;
+}
+.ds-dock-icon:hover .ds-dock-label { background: var(--ch); }
+.ds-dock-icon:active { transform: translate(1px, 1px); }
+.ds-dock .kp-dicon-badge { min-width: 16px; height: 16px; font-size: 9px; top: -6px; right: -10px; }
+/* the running marker: an r-line underline plate under the app's tag */
+.ds-dock-run {
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 3px;
+  height: 3px;
+  background: var(--r-line);
+  box-shadow: 0 0 8px var(--px-glow);
+  display: none;
+}
+.ds-dock-icon.ds-running .ds-dock-run { display: block; }
+.ds-stage .kp-fw { border-color: var(--r-struct); max-height: none; }
+/* v2's ceiling was min(100vh - 120px, 760px): a BROWSER unit. Inside the
+ * true-resolution stage the desk is the authority, and v3 windows carry
+ * their own measured heights, so the vh clamp is removed rather than
+ * re-derived. */
+.ds-stage .kp-fw-focused { border-color: var(--ch); }
+.ds-stage .kp-wallscope-box polyline { stroke: color-mix(in srgb, var(--r-line) 52%, var(--px-void)); }
+.ds-stage .kp-wallclock em { color: color-mix(in srgb, var(--r-line) 52%, var(--px-void)); }
+
+/* gated on a named scheme: v2 painted these with the raw accent, so the
+ * DEFAULT collapse must leave them exactly as system.css does */
+html[data-scheme] .kp-chip-pct span { color: var(--r-note); }
+html[data-scheme] .kp-chip-pct em { color: var(--r-data); }
+html[data-scheme] .kp-datarow > em { color: var(--r-data); }
+html[data-scheme] .ds-ok,
+html[data-scheme] .kp-wallscope-tag .ds-ok { color: var(--r-ok); }
+html[data-scheme] .kp-wallscope-pip { background: var(--r-ok); }
+html[data-scheme] .kp-login-granted { color: var(--r-ok); text-shadow: 0 0 12px var(--r-ok-glow); }
+html[data-scheme] .ds-hazard { color: var(--r-hazard); }
+html[data-scheme] .kp-task-danger { border-color: color-mix(in srgb, var(--r-hazard) 55%, var(--px-void)); color: var(--r-hazard); }
+html[data-scheme] .kp-task-danger:hover { background: var(--r-hazard); border-color: var(--r-hazard); color: var(--px-void); }
+html[data-scheme] .kp-modal-box h3 { background: var(--r-hazard); color: var(--px-void); }
+html[data-scheme] .kp-modal-box { border-color: var(--r-hazard); }
+html[data-scheme] .kp-btn2-danger { background: var(--r-hazard); color: var(--px-void); }
+html[data-scheme] .kp-ticker .ds-tickval { color: color-mix(in srgb, var(--r-line) 60%, var(--px-void)); }
+
+/* ---------- 4. the cuts (law 7): decorative motion goes STILL ---------- */
+
+.ds-stage .kp-wallscope-roll { animation: none; }
+.ds-stage .kp-mark-slice { animation: none; }
+/* kept: the ticker (RULINGS carve-out), the bench clock seconds, the
+ * wallscope OK pip (a real alive signal), event choreography */
+
+/* ---------- 5a. the idle-desk hero ---------- */
+
+.ds-idle-hero .kp-wallposter-word {
+  font-size: 22px;
+  letter-spacing: 0.34em;
+}
+.ds-idle-hero .ds-heropair {
+  display: flex;
+  gap: 34px;
+  align-items: baseline;
+}
+.ds-heropair { display: none; }
+.ds-idle-hero .ds-heropair { display: flex; }
+.ds-heropair b {
+  font-family: var(--kp-display);
+  font-weight: 400;
+  font-size: var(--ds-fs-hero);
+  line-height: 0.9;
+  color: var(--r-data);
+  text-shadow: 0 0 30px var(--px-glow);
+}
+.ds-heropair span {
+  display: block;
+  font-family: var(--kp-display);
+  font-size: var(--ds-fs-label);
+  letter-spacing: 0.2em;
+  color: var(--r-note);
+  margin-bottom: 8px;
+}
+.ds-heropair span::before { content: "// "; opacity: 0.7; }
+
+/* ---------- 5b. the STRAIN alarm: the shell's one --r-warn owner ---------- */
+
+.ds-strain { position: relative; }
+.ds-strain-alarm { background: var(--r-warn); border-color: var(--r-warn); }
+.ds-strain-alarm span, .ds-strain-alarm em { color: var(--px-void) !important; }
+.ds-riskflash {
+  position: absolute;
+  inset: -2px;
+  background: var(--r-warn);
+  mix-blend-mode: difference;
+  opacity: 0;
+  pointer-events: none;
+  will-change: opacity;
+}
+.ds-strain-alarm .ds-riskflash { animation: ds-risk-blink 1.2s steps(2) infinite; }
+@keyframes ds-risk-blink { 0%, 100% { opacity: 0; } 50% { opacity: 1; } }
+
+/* ---------- ghost windows: chrome only, bodies out of scope ---------- */
+
+.ds-ghost {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start;
+  justify-content: flex-end;
+  border: 2px dashed var(--ch-faint);
+  padding: 14px 16px;
+  min-height: 120px;
+  flex: 1;
+}
+.ds-ghost strong {
+  font-family: var(--kp-display);
+  font-size: var(--ds-fs-label);
+  letter-spacing: 0.16em;
+  color: var(--ch-dim);
+}
+.ds-ghost strong::before { content: "// "; opacity: 0.7; }
+.ds-ghost strong::after { content: " _"; opacity: 0.7; }
+.ds-ghost p {
+  font-family: var(--kp-term);
+  font-size: var(--ds-fs-body);
+  line-height: 1.3;
+  color: var(--ch-dim);
+}
+
+/* ---------- 3. CRT: six glass layers over the whole stage ---------- */
+
+.ds-stage.crt-on { border-radius: 18px; }
+.ds-stage.crt-on .ds-glass {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 640;
+  border-radius: 16px / 20px;
+  overflow: hidden;
+}
+.ds-glass > i { position: absolute; inset: 0; display: block; }
+.ds-glass .g-scan {
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.55) 0 1px,
+    rgba(0, 0, 0, 0.12) 1px 2px,
+    rgba(255, 255, 255, 0.03) 2px 3px);
+  mix-blend-mode: multiply;
+  opacity: 0.85;
+}
+.ds-glass .g-mask {
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(255, 0, 0, 0.05) 0 1px,
+    rgba(0, 255, 0, 0.05) 1px 2px,
+    rgba(0, 0, 255, 0.05) 2px 3px);
+  mix-blend-mode: screen;
+  opacity: 0.7;
+}
+.ds-glass .g-bloom {
+  background: radial-gradient(130% 95% at 50% 42%, var(--px-glow) 0%, transparent 62%);
+  opacity: 0.14;
+  mix-blend-mode: screen;
+}
+.ds-glass .g-spec {
+  background:
+    radial-gradient(58% 42% at 26% 14%, rgba(255, 255, 255, 0.11) 0%, transparent 70%),
+    linear-gradient(163deg, rgba(255, 255, 255, 0.055) 0%, transparent 34%);
+  mix-blend-mode: screen;
+}
+.ds-glass .g-vig {
+  background:
+    radial-gradient(102% 86% at 50% 48%, transparent 52%, rgba(0, 0, 0, 0.55) 82%, rgba(0, 0, 0, 0.92) 100%);
+  box-shadow:
+    inset 0 0 46px 12px rgba(0, 0, 0, 0.75),
+    inset 0 0 130px 40px rgba(0, 0, 0, 0.45);
+}
+.ds-glass .g-bezel {
+  border-radius: 16px / 20px;
+  box-shadow:
+    inset 0 0 0 3px rgba(0, 0, 0, 0.9),
+    inset 0 2px 2px 3px rgba(255, 255, 255, 0.07),
+    inset 0 -3px 3px 3px rgba(0, 0, 0, 0.6);
+}
+
+/* ---------- rig extras ---------- */
+
+.rig-meas { color: #777; line-height: 1.5; }
+.rig-meas .rig-over { color: #ff6b6b; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ds-strain-alarm .ds-riskflash { animation: none; opacity: 0; }
+  .kp-boot-line { animation-delay: 0s !important; }
+  .kp-slot-anim, .kp-slotwrap { animation: none; }
+}
+</style>
+</head>
+<body>
+<div class="ds-fitwrap" id="fitwrap">
+  <div class="ds-fit" id="fit">
+    <div class="ds-stage" id="stage">
+      <div id="root"></div>
+      <div class="ds-glass" id="glass" aria-hidden="true">
+        <i class="g-scan"></i>
+        <i class="g-mask"></i>
+        <i class="g-bloom"></i>
+        <i class="g-spec"></i>
+        <i class="g-vig"></i>
+        <i class="g-bezel"></i>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="rig">
+  <strong>DEMO RIG</strong>
+  <span>Scheme</span>
+  <div class="rig-row" id="schemerow"></div>
+  <span>CRT</span>
+  <div class="rig-row" id="crtrow"></div>
+  <span>Viewport</span>
+  <div class="rig-row" id="vprow"></div>
+  <span>Screen</span>
+  <div class="rig-row" id="screenrow"></div>
+  <span>Strain</span>
+  <div class="rig-row" id="strainrow"></div>
+  <div class="rig-row"><button id="replayboot">REPLAY BOOT</button></div>
+  <span class="rig-meas" id="meas"></span>
+  <span>The whole KP/OS shell on the v3 role system. DEFAULT collapses every role onto the single v2 accent; NERV and TOKYO NIGHT pull them apart. System status rides the slim top strip; the strain chip is the desktop's one alarm, wired to the LOW band (strain depletes to zero; the shipped &gt;70 check is inverted and flagged for a source fix). The centered bottom dock launches apps and marks running windows: clicking a running app's icon surfaces its window, and a plain open lands centered on the desk. DESK TILED proves two windows still tile on a 1366x768 desk. Window bodies are ghosts: each panel's own study restyles its content.</span>
+</div>
+
+<script src="dist/main.js"></script>
+</body>
+</html>

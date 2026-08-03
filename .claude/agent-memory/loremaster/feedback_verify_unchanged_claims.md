@@ -32,3 +32,15 @@ ships in `kernel-panic-site/`, spot-check its literal strings (a few
 greps) rather than relying on a proposal's "verified byte-identical"
 framing. Cheap, and the only way a stale violation gets caught before
 another integration cycle ships it forward again.
+
+Confirmed durable a third time on `ux-2026-07-29-v2-sound` (the
+Orchestrator's reconstructed integration record, re-gated after an initial
+BLOCKED pass): read `audio.ts` plus every named call site (`duel.tsx`,
+`darknet.tsx`, `teach.tsx`, `night.tsx`, `ledger.tsx`, `wm.tsx`) directly
+rather than trusting the record's own "as shipped" claim. Everything
+checked out this time (params byte-for-byte, specific numbers like the
+160/340/520ms boot stagger and the 64 dotmatrix cells at 4.5ms all matched
+exactly), which is itself worth recording: this practice does not only
+exist to catch violations, reading the source is also what lets a full
+APPROVE be stated with actual confidence instead of on faith. Do not skip
+the check just because a prior pass on the same file came back clean.

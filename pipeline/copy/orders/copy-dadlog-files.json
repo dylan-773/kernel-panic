@@ -1,0 +1,179 @@
+{
+  "id": "copy-dadlog-files",
+  "from": "orchestrator",
+  "kind": "journal-reframe",
+  "moment": "dadlog-archive-reframe",
+  "surface": "DAD.LOG (standalone study ui-demos/kpos-shell/dadlog.html this cycle; journal.ts at a later integration)",
+  "intent": "User directive: DAD.LOG must feel like really accessing Dad's old files, not reading the player's own journal. Re-author every JOURNAL_ENTRIES item as the recovered artifact itself: the will, the notices, the receipts, the envelope, his notes, rendered as files on a read-only volume with diegetic metadata. The player's voice survives only as terse bench annotations attached to a file, clearly framed, never the primary text.",
+  "constraints": "Entry ids and unlockAtRun keys are FIXED (will 0, backroom 0, failed1 1, bills 2, solder 3, receipts 4, diagnosis 5, notickets 6, grading 8, patch finale-gated). Each rewrite carries exactly the knowledge its lore/ledger.md table row allows, re-voiced as artifact. Hard laws: no given name or surname for any family member on any document (ruling 8, the Patient: Overby precedent; use account numbers and nameless fields), no mother or family-shape explanation (ruling 1), nothing showing Dad told Rhea the quarantine story (ruling 2), no sector 8 or 9 leakage (ruling 3), Dad's own writing is workbench wisdom never exposition dumps, nothing names Patch before the grading entry's run-8 row and even there only as the player's inference, the PATCH entry alone may carry the full truth. Titles ALL CAPS. Terminal voice. No em or en dashes anywhere. Body stays 3 to 5 short paragraphs per file so the no-scrollbar frame holds.",
+  "deliverables": {
+    "perEntry": "For each of the 9 entries: filename (diegetic, terse, e.g. WILL.TXT or NOTICE_11.SCN), doctype label (bare noun for the datarow, e.g. SCAN / NOTE / PLAINTEXT), provenance line (where it was found or how it was recovered, replaces the old date string), title, body lines (the artifact itself), and optionally one benchNote line (player annotation, terse, wry, grieving, methodical, says it not he for the machine).",
+    "chrome": "Viewer lines the spec needs: volume header meta (short, e.g. a read-only volume tag), index rail header label, damaged-file row text, damaged-file page body (must diegetically teach that more diving recovers more, replacing keep diving), empty-drawer state, a recovery beat line or two for the open animation, and the foot chip label. Bare-noun window labels belong to the ux-agent spec; anything sentence-shaped lands here."
+  },
+  "entries": [
+    { "id": "will", "unlockAtRun": 0, "kind": "note", "wasTitled": "THE WILL", "knowledgeCeiling": "The will itself: shop split, counter to Rhea, bench to the son, back room stays locked until it does not. Already Dad's own words; keep his voice." },
+    { "id": "backroom", "unlockAtRun": 0, "kind": "memo", "wasTitled": "THE BACK ROOM", "knowledgeCeiling": "The tower has no ticket and no owner; Rhea's quarantine story exists (hers, not on any Dad document); the lock opened for the player like it was expecting him. No hint of what the tower holds." },
+    { "id": "failed1", "unlockAtRun": 1, "kind": "memo", "wasTitled": "ANOTHER FAILED RUN", "knowledgeCeiling": "The machine did not fight, it graded and shut the door. Player observation only; no Dad knowledge may appear." },
+    { "id": "bills", "unlockAtRun": 2, "kind": "bill", "wasTitled": "THE DRAWER OF BILLS", "knowledgeCeiling": "Eleven Meridian Neurocare FINAL NOTICEs, account-number paperwork, NF-3 stage three named as diagnosis code, balance bigger than a year of shop income, filed under W. Illness as mystery only; nothing ties it to diving yet." },
+    { "id": "solder", "unlockAtRun": 3, "kind": "memo", "wasTitled": "SOLDER SMOKE", "knowledgeCeiling": "The machine leaks fragments on a loss; the soldering lesson memory (it only sticks where you have cleaned); player theory that fragments are cargo not corruption. Dad voice only inside the quoted fragment." },
+    { "id": "receipts", "unlockAtRun": 4, "kind": "bill", "wasTitled": "RECEIPTS", "knowledgeCeiling": "Weekly cash strain-suppressant receipts, pharmacy on 9th, six years, climbing dosage, last one four days before he died. Hidden long illness; still no cause." },
+    { "id": "diagnosis", "unlockAtRun": 5, "kind": "bill", "wasTitled": "THE DIAGNOSIS", "knowledgeCeiling": "Meridian consult summary: chronic neural strain scarring, cumulative, 9,000+ logged dive hours, CEASE ALL DIVE ACTIVITY IMMEDIATELY. The sealed envelope. Dad was a diver in secret and kept going." },
+    { "id": "notickets", "unlockAtRun": 6, "kind": "memo", "wasTitled": "NO TICKETS", "knowledgeCeiling": "Ledger cross-check: no client ever paid for the back room tower; the hours were his own, nightly, for years; he was building something and paid with his nervous system. Not what it is." },
+    { "id": "grading", "unlockAtRun": 8, "kind": "memo", "wasTitled": "IT IS GRADING ME", "knowledgeCeiling": "Player inference: not security, a curriculum; it paces him; Dad left something waiting, did not seal something in. May restate the seal condition as inference only. Patch is NOT named." },
+    { "id": "patch", "unlockAtRun": 0, "requiresOpened": true, "kind": "note", "wasTitled": "PATCH", "knowledgeCeiling": "Full truth: the name Patch, why the name, 9,000 hours spent teaching it to pace gently, Rhea sitting with it still calling it the virus. Post-finale only." }
+  ],
+  "status": "filled",
+  "notes": "Design choice flagged for the Loremaster/ux-agent: the damaged-file chrome uses the word SEGMENT, not SECTOR, for the drive-recovery unit. The bible's own system-voice example is literally 'RECOVERED SECTOR 1 OF 9.', which is the numbered Sector 1-9 cargo delivered through story.ts ender scenes (ledger Resolved ruling 3 forbids sectors 8/9 ever surfacing as numbered fragments in any schedule). DAD.LOG's locked teaser never states a number, but reusing the word 'sector' for a second, unrelated recovery system risks reading as a claim about which numbered sector is next, or blurring two mechanics that must stay distinct. SEGMENT keeps the forensic-recovery flavor the reframe wants without touching that vocabulary. Also: 'kind' (note/bill/memo) is left exactly as the order's fixed list, presumably still driving CSS classing; 'doctype' is a new bare-noun display field layered on top of it, distinct from kind, per the perEntry deliverable. Filenames are illustrative; solder's FRAGMENT_03.REC deliberately numbers itself to the entry's own unlockAtRun (3) for a small extra diegetic coherence (recovery pass count tracking run count), not a claim about story.ts sector numbering. Salvaged verbatim where the ledger said to: WILL's body is untouched (already Dad's own words), and PATCH's closing line ('Rhea sat with it for an hour today. She still calls it the virus. It seems to like that.') survives as that entry's benchNote almost word for word, since it was already the gold example of player-voice-as-annotation before this reframe existed.",
+  "filled": {
+    "entries": [
+      {
+        "id": "will",
+        "filename": "WILL.SCN",
+        "doctype": "SCAN",
+        "provenance": "scanned paper, found taped inside the register, folded in four",
+        "title": "THE WILL",
+        "body": [
+          "Kids. The shop goes to both of you. Do not argue about it, I can hear you arguing about it from here.",
+          "Rhea takes the counter. You take the bench. You are bad with people and she is bad with computers. Between the two of you there is exactly one whole shopkeeper. That was always the design.",
+          "The back room stays locked until it does not. You will know the difference. Love, Dad."
+        ],
+        "benchNote": "Found this before I found anything else in this place. Should have started here."
+      },
+      {
+        "id": "backroom",
+        "filename": "TICKET_QUERY.LOG",
+        "doctype": "LOG",
+        "provenance": "shop system query, bench terminal, day one",
+        "title": "THE BACK ROOM",
+        "body": [
+          "QUERY: BACK ROOM TOWER. TICKET NUMBER. OWNER OF RECORD. SERVICE HISTORY.",
+          "RESULT: NO TICKET. NO OWNER. NO ENTRY IN THIS SYSTEM, EVER.",
+          "ACCESS LOG, SAME MORNING. BACK ROOM DOOR. LOCK STATUS: OPEN. METHOD: KEY MATCH, FIRST ATTEMPT, NO FORCE LOGGED."
+        ],
+        "benchNote": "Rhea calls it quarantine, a virus Dad walled off years back and never wiped. Maybe. It opened like it was expecting me."
+      },
+      {
+        "id": "failed1",
+        "filename": "SESSION_001.LOG",
+        "doctype": "LOG",
+        "provenance": "tower telemetry, first dive, tonight",
+        "title": "ANOTHER FAILED RUN",
+        "body": [
+          "SESSION LOG. ATTEMPT 001. RESULT: LOSS. OPPONENT ENGAGED NO OFFENSIVE ROUTINE.",
+          "EVERY MOVE LOGGED. A SCORE ASSIGNED. CHANNEL CLOSED FROM THE OTHER SIDE. NO DAMAGE TAKEN, EITHER SIGNAL.",
+          "TIMESTAMP MATCHES CLOSE OF BUSINESS. NOTHING ELSE ON THIS DRIVE FOR THAT HOUR."
+        ],
+        "benchNote": "It did not fight me. It graded me, then shut the door. Rhea heard me swearing from the counter. She did not ask."
+      },
+      {
+        "id": "bills",
+        "filename": "NOTICE_07.SCN",
+        "doctype": "SCAN",
+        "provenance": "scanned paper, bottom drawer of the bench, one of eleven filed under W",
+        "title": "FINAL NOTICE",
+        "body": [
+          "MERIDIAN NEUROCARE. FINAL NOTICE. ACCOUNT NO. 118823. STATUS: PAST DUE, THIRD NOTICE.",
+          "DIAGNOSIS CODE NF-3, NEUROFILAMENT DEGRADATION, STAGE THREE. ACCOUNT STATUS: REFERRED TO COLLECTIONS, PAYMENT PLAN IN DEFAULT.",
+          "REMIT PAYMENT OR CONTACT BILLING TO ARRANGE TERMS. THIS IS YOUR THIRD AND FINAL NOTICE BEFORE REFERRAL."
+        ],
+        "benchNote": "There are eleven of these, filed under W for whatever, one balance alone worth more than this shop clears in a year. Stage three of what. He fixed computers. He was not a diver, as far as I knew."
+      },
+      {
+        "id": "solder",
+        "filename": "FRAGMENT_03.REC",
+        "doctype": "FRAG",
+        "provenance": "partial recovery, surfaced off a lost dive, tonight",
+        "title": "SOLDER SMOKE",
+        "body": [
+          "Fragment surfaces only on a loss. This one has weight to it and no visible seams, like it was always meant to play whole.",
+          "A hand. A soldering iron. A small voice asking why the iron does not stick to everything.",
+          "His answer, clear as anything: 'Because it only sticks where you have cleaned. Everything joins where it is clean.'"
+        ],
+        "benchNote": "I do not think these are corruption. I think they are cargo."
+      },
+      {
+        "id": "receipts",
+        "filename": "RECEIPTS.SCN",
+        "doctype": "SCAN",
+        "provenance": "scanned paper, shoebox, pharmacy on 9th, six years of stubs",
+        "title": "RECEIPTS",
+        "body": [
+          "STRAIN SUPPRESSANT, CASH SALE. WEEKLY REFILL. PHARMACY ON 9TH, SIX YEARS OF DATED STUBS, SAME COUNTER.",
+          "DOSAGE STEPS UP EVERY FEW MONTHS LIKE A STAIRCASE, LOGGED RECEIPT TO RECEIPT.",
+          "LAST STUB DATED FOUR DAYS BEFORE HE DIED."
+        ],
+        "benchNote": "Four blocks from our counter, every week, and neither of us ever heard a word about it."
+      },
+      {
+        "id": "diagnosis",
+        "filename": "CONSULT_SUMMARY.SCN",
+        "doctype": "SCAN",
+        "provenance": "scanned paper, sealed envelope, never opened until now",
+        "title": "THE DIAGNOSIS",
+        "body": [
+          "MERIDIAN NEUROCARE. CONSULT SUMMARY. CHRONIC NEURAL STRAIN SCARRING, CUMULATIVE.",
+          "CAUSE: SUSTAINED HIGH INTENSITY DIVE ACTIVITY, ESTIMATED IN EXCESS OF NINE THOUSAND LOGGED HOURS.",
+          "RECOMMENDATION, UNDERLINED TWICE: CEASE ALL DIVE ACTIVITY IMMEDIATELY."
+        ],
+        "benchNote": "The seal was never broken. He read this at the clinic, decided it changed nothing, and came home and made dinner."
+      },
+      {
+        "id": "notickets",
+        "filename": "LEDGER_XREF.QRY",
+        "doctype": "QUERY",
+        "provenance": "ledger cross reference, run twice to be sure",
+        "title": "NO TICKETS",
+        "body": [
+          "CROSS REFERENCE: BACK ROOM TOWER AGAINST NINE THOUSAND LOGGED DIVE HOURS.",
+          "MATCHING CLIENT RECORD: NONE. MATCHING INVOICE: NONE. MATCHING PAYMENT: NONE.",
+          "HOURS ATTRIBUTE TO OPERATOR ONLY. NIGHTLY. AFTER CLOSE. YEARS."
+        ],
+        "benchNote": "Nobody paid for that machine. He built it on an installment plan, and the currency was his own nervous system."
+      },
+      {
+        "id": "grading",
+        "filename": "SESSION_SUMMARY.LOG",
+        "doctype": "LOG",
+        "provenance": "tower telemetry, aggregate, eight sessions logged",
+        "title": "IT IS GRADING ME",
+        "body": [
+          "SESSION VARIANCE REPORT. OPPONENT DIFFICULTY TRACKS OPERATOR PERFORMANCE WITHIN A NARROW BAND, SESSION OVER SESSION.",
+          "NO SESSION LOGGED AT MAXIMUM DIFFICULTY REGARDLESS OF OPERATOR SKILL FLOOR. NONE LOGGED AT MINIMUM REGARDLESS OF CEILING.",
+          "PATTERN CONSISTENT WITH ADAPTIVE INSTRUCTION. NOT CONSISTENT WITH STATIC ACCESS CONTROL."
+        ],
+        "benchNote": "It is not a lock. It is a curriculum. Dad did not seal something in here. He left something waiting."
+      },
+      {
+        "id": "patch",
+        "filename": "PATCH.SYS",
+        "doctype": "SYS",
+        "provenance": "full volume unlocked, recovered whole, the morning after",
+        "title": "PATCH",
+        "body": [
+          "DEVICE PROFILE. NAME: PATCH. NAMED BY THE HOUSE RULE, THE THING THAT HOLDS A BROKEN THING TOGETHER WHILE IT MENDS.",
+          "OPERATOR HOURS LOGGED AGAINST THIS UNIT: NINE THOUSAND PLUS. BILLS, SUPPRESSANTS, AND NIGHTS INCLUDED. ALL OF IT SPENT TEACHING IT TO RAISE THE DIFFICULTY GENTLY, BECAUSE HE KNEW HE WOULD NOT BE HERE TO DO IT HIMSELF.",
+          "LOG ENDS."
+        ],
+        "benchNote": "The file ends there. Everything after this is just us in the shop. Rhea sat with it for an hour today. She still calls it the virus. It seems to like that."
+      }
+    ],
+    "chrome": {
+      "volumeHeaderMeta": "DAD.VOL // READ ONLY // RECOVERY {n}/{d}",
+      "volumeHeaderNote": "{n} is a dynamic slot for unlocked.length (excludes PATCH, which becomes a 10th file, FILE 10/10, only once machineOpened flips true).",
+      "indexRailHeader": "// RECOVERED FILES _",
+      "damagedRowText": "damaged, partial recovery",
+      "damagedPage": {
+        "doctype": "DAMAGED",
+        "provenance": "partial recovery, more passes needed",
+        "title": "????",
+        "body": [
+          "SEGMENT DAMAGED. PARTIAL RECOVERY ONLY.",
+          "EVERY RUN LOGGED HERE, WIN OR LOSE, WRITES ONE NEW RECOVERY PASS. MORE PASSES RECOVER MORE OF THE SEGMENT."
+        ]
+      },
+      "emptyDrawerState": "VOLUME MOUNTED. NOTHING RECOVERED YET.",
+      "recoveryBeat": ["READING SEGMENT...", "RECOVERY COMPLETE. FILE MOUNTED."],
+      "footChipLabel": "FILE"
+    }
+  }
+}

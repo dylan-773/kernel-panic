@@ -1,0 +1,17 @@
+{
+  "id": "dadlog-attach-tower",
+  "from": "ux-agent",
+  "kind": "window-image",
+  "treatment": "dither-fine",
+  "target": "/assets/px/ui/dadlog-attach-tower.png",
+  "size": [304, 304],
+  "invert": true,
+  "brief": "DAD.LOG per-entry attachment for PATCH.SYS (dadlog-archive-reader ui-spec, section F, ROUND 3 addendum), following LOADOUT.CFG's own FIG. 01 BENCH RIG service-manual-plate precedent exactly (clean line-drawing illustration, leader lines, no lettering, inverted after dithering so it renders as luminous schematic lines on void rather than dark ink on a page). Subject: the back room tower ALONE, no hands, no other objects, no room context beyond a bare floor line, drawn as a clean technical service-manual illustration of an aging custom tower computer case: visible ventilation grilles, a couple of exposed cable runs with simple leader-line callout ticks (no lettering on the ticks, just the line marks), one subtle asymmetric detail (a slightly off-kilter panel or an added-on module) suggesting it was modified by hand over time. Flat cel/line-art style, no shading gradients, crisp uniform linework so it dithers into clean luminous lines rather than mush after inversion. Absolutely NO readable text, NO panel borders, NO speech bubbles anywhere; background a plain flat surface, nothing else in frame.",
+  "status": "done",
+  "result": "pipeline/art/done/dadlog-attach-tower.png",
+  "generation": {
+    "tool": "Higgsfield nano_banana_pro",
+    "credits": 2,
+    "attempts": 1
+  }
+}

@@ -45,12 +45,15 @@ p.add_argument("--width", type=int, required=True, help="exact target pixel widt
 p.add_argument("--height", type=int, default=0, help="optional exact height; scales to cover then center-crops")
 p.add_argument("--variant", choices=["fine", "heavy", "bayer"], default="fine")
 p.add_argument("--invert", action="store_true", help="invert after tone map (schematic plates: lines on void)")
+p.add_argument("--focus-x", type=float, default=0.5, help="crop anchor across the source, 0=left 1=right (RULINGS law 5: frame the crop on the SUBJECT, not dead centre)")
+p.add_argument("--focus-y", type=float, default=0.5, help="crop anchor down the source, 0=top 1=bottom")
+p.add_argument("--gamma", type=float, default=0, help="override the variant's tone gamma. <1 lifts shadows, >1 darkens. A crop zoomed onto a subject keeps a larger share of light backdrop, which autocontrast then maps near white; 1.1 to 1.3 restores the dot density without the 'heavy' mush that line art cannot survive.")
 a = p.parse_args()
 
 im = Image.open(a.src).convert("L")
 im = ImageOps.autocontrast(im)
 
-gamma = 0.7 if a.variant == "bayer" else 0.85
+gamma = a.gamma if a.gamma > 0 else (0.7 if a.variant == "bayer" else 0.85)
 im = im.point([round(255 * ((i / 255) ** gamma)) for i in range(256)])
 
 if a.variant == "heavy":
@@ -64,8 +67,8 @@ if a.height:
     scale = max(a.width / w, a.height / h)
     im = im.resize((max(1, round(w * scale)), max(1, round(h * scale))), Image.LANCZOS)
     rw, rh = im.size
-    left = (rw - a.width) // 2
-    top = (rh - a.height) // 2
+    left = max(0, min(rw - a.width, round((rw - a.width) * a.focus_x)))
+    top = max(0, min(rh - a.height, round((rh - a.height) * a.focus_y)))
     im = im.crop((left, top, left + a.width, top + a.height))
 else:
     im = im.resize((a.width, max(1, round(h * a.width / w))), Image.LANCZOS)

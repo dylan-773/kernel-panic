@@ -1,0 +1,3059 @@
+{
+  "version": 1,
+  "shared": {
+    "variations": {
+      "hue": {
+        "id": "hue",
+        "label": "HUE",
+        "default": "lavender",
+        "options": [
+          {
+            "id": "lavender",
+            "label": "LAVENDER",
+            "apply": {
+              "attr": {
+                "sel": "html",
+                "name": "data-hue",
+                "value": "lavender"
+              }
+            }
+          },
+          {
+            "id": "magenta",
+            "label": "MAGENTA",
+            "apply": {
+              "attr": {
+                "sel": "html",
+                "name": "data-hue",
+                "value": "magenta"
+              }
+            }
+          },
+          {
+            "id": "phosphor",
+            "label": "PHOSPHOR",
+            "apply": {
+              "attr": {
+                "sel": "html",
+                "name": "data-hue",
+                "value": "phosphor"
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "demos": [
+    {
+      "id": "kpos-desktop",
+      "title": "KP/OS DESKTOP",
+      "dir": "kpos-desktop",
+      "entry": "index.html",
+      "cycle": "ux-2026-07-29-integration",
+      "summary": "The whole desktop environment: boot, login, taskbar, icon grid, and the review host that mounts any submission as a window.",
+      "notes": "NOTES.md",
+      "spec": null,
+      "status": "complete",
+      "note": null,
+      "history": [
+        {
+          "status": "complete",
+          "date": "2026-07-29",
+          "note": "integrated as components/os/shop-os.tsx plus the windows/ set"
+        }
+      ],
+      "variations": [
+        {
+          "id": "hue",
+          "label": "HUE",
+          "default": "lavender",
+          "options": [
+            {
+              "id": "lavender",
+              "label": "LAVENDER",
+              "apply": {
+                "call": "kpDesktop.setHue",
+                "args": [
+                  "lavender"
+                ]
+              }
+            },
+            {
+              "id": "magenta",
+              "label": "MAGENTA",
+              "apply": {
+                "call": "kpDesktop.setHue",
+                "args": [
+                  "magenta"
+                ]
+              }
+            },
+            {
+              "id": "phosphor",
+              "label": "PHOSPHOR",
+              "apply": {
+                "call": "kpDesktop.setHue",
+                "args": [
+                  "phosphor"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "flow",
+          "label": "LEGACY FLOW",
+          "options": [
+            {
+              "id": "diag",
+              "label": "DIAG",
+              "apply": {
+                "call": "kpDesktop.flow",
+                "args": [
+                  "diag"
+                ]
+              }
+            },
+            {
+              "id": "night",
+              "label": "NIGHT",
+              "apply": {
+                "call": "kpDesktop.flow",
+                "args": [
+                  "night"
+                ]
+              }
+            },
+            {
+              "id": "story",
+              "label": "STORY",
+              "apply": {
+                "call": "kpDesktop.flow",
+                "args": [
+                  "story"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "desktop": null
+    },
+    {
+      "id": "inbox",
+      "title": "INBOX",
+      "dir": "inbox",
+      "entry": "index.html",
+      "cycle": "ux-2026-07-28-kpos-redesign",
+      "summary": "The day loop as a mail terminal: boxed subject lines that step the window wider into the full CUSTOMER.REC card.",
+      "notes": "NOTES.md",
+      "spec": null,
+      "status": "complete",
+      "note": null,
+      "history": [
+        {
+          "status": "complete",
+          "date": "2026-07-29",
+          "note": "integrated as windows/inbox.tsx; fronts the day loop and auto-opens at login"
+        }
+      ],
+      "variations": [
+        "hue"
+      ],
+      "desktop": {
+        "mountable": true,
+        "default": true,
+        "icon": "inbox",
+        "frameW": 1210,
+        "x": 140,
+        "y": 30
+      }
+    },
+    {
+      "id": "loadout",
+      "title": "LOADOUT.CFG",
+      "dir": "loadout",
+      "entry": "index.html",
+      "cycle": "ux-2026-07-28-kpos-redesign",
+      "summary": "The upgrade dashboard: the operator's rig as 1-bit photo cells beside program stat rows with tick-textured tier meters and mode chips.",
+      "notes": "NOTES.md",
+      "spec": null,
+      "status": "complete",
+      "note": null,
+      "history": [
+        {
+          "status": "complete",
+          "date": "2026-07-29",
+          "note": "integrated as windows/loadout.tsx; user ruling: FINE is the integration default for this window's art"
+        }
+      ],
+      "variations": [
+        "hue",
+        {
+          "id": "dither",
+          "label": "DITHER",
+          "default": "heavy",
+          "options": [
+            {
+              "id": "heavy",
+              "label": "HEAVY",
+              "apply": {
+                "click": [
+                  "#ditherrow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "fine",
+              "label": "FINE",
+              "apply": {
+                "click": [
+                  "#ditherrow button:nth-of-type(2)"
+                ]
+              }
+            },
+            {
+              "id": "bayer",
+              "label": "BAYER",
+              "apply": {
+                "click": [
+                  "#ditherrow button:nth-of-type(3)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "replay",
+          "label": "ANIMATION",
+          "options": [
+            {
+              "id": "replay",
+              "label": "REPLAY LOAD",
+              "apply": {
+                "click": [
+                  "#replay"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "desktop": {
+        "mountable": true,
+        "default": true,
+        "icon": "loadout",
+        "frameW": 1040,
+        "x": 100,
+        "y": -30,
+        "onReady": [
+          {
+            "click": [
+              "#ditherrow button:nth-of-type(2)"
+            ]
+          }
+        ],
+        "onOpen": [
+          {
+            "click": [
+              "#replay"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "loadout-eva",
+      "title": "LOADOUT.CFG (INSTRUMENT PANEL)",
+      "dir": "loadout-eva",
+      "entry": "index.html",
+      "cycle": "ux-2026-07-31-loadout-eva",
+      "summary": "LOADOUT.CFG as a maximalist instrument panel: NERV and TOKYO NIGHT palettes where hue carries state, flat CRT glass, a readable bench feed switchable between ink-tinted, true 1-bit and full colour, and one arrangement across every viewport under 730px tall.",
+      "notes": "NOTES.md",
+      "spec": {
+        "file": "pipeline/proposals/ux-agent.json",
+        "item": "loadout-eva-instrument-panel"
+      },
+      "status": "complete",
+      "note": "Beautiful.",
+      "history": [
+        {
+          "status": "awaiting",
+          "date": "2026-07-31",
+          "note": "I'm wanting to see if we can break away from the single color design. I even said use Evangelion colors. Also, the deck feed is underlapping with scan.exe, and attack.exe is not vertically in line with the other elements. I'm reviewing on 16:9. The layout on 16:9, 21:9, and 1280x800 should be the same. I see no reason to need to support 4:3 right now. I know I've nitpicked it a lot, but, this is heading in a much better and more legible direction."
+        },
+        {
+          "status": "awaiting",
+          "date": "2026-07-31",
+          "note": "revision round 2: Evangelion multi-hue scheme with colour as state (ledger ruling 14), gutter/SCAN.EXE collision fixed, ATTACK.EXE stagger removed, 4:3 dropped, all three viewports render the same wide arrangement, DAY 8 STRAINED state added to show the risk band"
+        },
+        {
+          "status": "awaiting",
+          "date": "2026-07-31",
+          "note": "Hmm... the lack of red feels off in terms of an Evangelion color scheme. Image for the operator rig live feed is also too small to be able to tell what's going on, I believe it's also cropped poorly. Could you take another pass at the Evangelion color scheme, and throw a future more retro-futuristic ones in there? I also want some edits to the CRT effect, more than just an animated scan line (which is laggy) and some blur/dimming. Try to get that bulbous round glass effect of an old monitor or TV, with the distinct CRT lines throughout."
+        },
+        {
+          "status": "awaiting",
+          "date": "2026-07-31",
+          "note": "revision round 3: red made structural via a new hazard role plus three more retro-futurist schemes (OXIDE/ATOMIC/VECTOR); CRT rebuilt as a real barrel-warped tube (SVG feDisplacementMap, bezel, specular, distinct phosphor lines) with the laggy roll band removed and curved-mode frame cost measured back to parity with CRT off; BENCH FEED enlarged to a 200x150 1:1 crop reframed on the bench"
+        },
+        {
+          "status": "awaiting",
+          "date": "2026-07-31",
+          "note": "I'm really liking the curved look, and the iteration on the color scheme. Leave flat and off as options just in case. There is only one thing I'm not enjoying as much, which is that curved mode causes the UI to be cut off. The worst offender is 21:9, where the whole curved effect just looks wrong. In terms of the Evangelion inspired color scheme, I'd love to see some more blue highlights without disrupting the clear visual hierarchy if possible. As for the other color schemes, can you replace them with some that feel more distinctly retro? Maybe an old Macintosh inspired theme, for example. Emphasis on inspired, don't copy verbatim. I'd also love to see a Dracula color scheme and a Tokyo nights color scheme.; tutorial gate round 3 returned 4 COVERED and 1 tier-0 fix (ambient red habituates the eye, so the RISK alarm takes a motion channel the static chrome never gets), built as a composited difference-blend blink to keep the curved tube at frame parity"
+        },
+        {
+          "status": "awaiting",
+          "date": "2026-07-31",
+          "note": "revision round 4: per-aspect barrel maps with tapered edges so CURVED no longer crops the title bar or taskbar (21:9 was the worst case) and the warp magnitude dialled back to what was approved; blue annotation channel added to NERV via a new --r-note role that touches only tertiary labels; OXIDE/ATOMIC/VECTOR replaced with CLASSIC (1-bit desktop era, light void), DRACULA and TOKYO NIGHT"
+        },
+        {
+          "status": "awaiting",
+          "date": "2026-07-31",
+          "note": "revision round 5: CURVED dropped (wonky bottom bar, and it read the same as flat), which hands back the feed roll, REC blink, cursor and clock seconds that curved mode had to suppress; schemes cut to NERV and TOKYO NIGHT and the now-dead HUE row removed; new FEED row offering the camera as ink-tinted 1-bit, untinted 1-bit, or a colourised 16-colour re-dither"
+        },
+        {
+          "status": "awaiting",
+          "date": "2026-07-31",
+          "note": " [reverted: approval was a misclick, still pending]"
+        },
+        {
+          "status": "approved",
+          "date": "2026-08-01",
+          "note": "Beautiful."
+        },
+        {
+          "status": "complete",
+          "date": "2026-08-01",
+          "note": "windows/loadout.tsx rebuilt to the reference: masthead slab, ambient operator-rig gutter with the full-colour 200x150 bench feed cropped 1:1, the trinity at clamp(64px, 42cqi, 116px), bays/pouch/strain support band, strain alarm at <= 35."
+        }
+      ],
+      "variations": [
+        {
+          "id": "scheme",
+          "label": "SCHEME",
+          "default": "nerv",
+          "options": [
+            {
+              "id": "nerv",
+              "label": "NERV",
+              "apply": {
+                "click": [
+                  "#schemerow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "tokyo",
+              "label": "TOKYO NIGHT",
+              "apply": {
+                "click": [
+                  "#schemerow button:nth-of-type(2)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "feed",
+          "label": "FEED",
+          "default": "ink",
+          "options": [
+            {
+              "id": "ink",
+              "label": "INK TINT",
+              "apply": {
+                "click": [
+                  "#feedrow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "true",
+              "label": "TRUE 1-BIT",
+              "apply": {
+                "click": [
+                  "#feedrow button:nth-of-type(2)"
+                ]
+              }
+            },
+            {
+              "id": "color",
+              "label": "FULL COLOUR",
+              "apply": {
+                "click": [
+                  "#feedrow button:nth-of-type(3)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "crt",
+          "label": "CRT",
+          "default": "flat",
+          "options": [
+            {
+              "id": "flat",
+              "label": "FLAT",
+              "apply": {
+                "click": [
+                  "#crtrow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "off",
+              "label": "OFF",
+              "apply": {
+                "click": [
+                  "#crtrow button:nth-of-type(2)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "viewport",
+          "label": "VIEWPORT",
+          "default": "169",
+          "options": [
+            {
+              "id": "169",
+              "label": "16:9 1366x768",
+              "apply": {
+                "click": [
+                  "#vprow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "219",
+              "label": "21:9 2560x1080",
+              "apply": {
+                "click": [
+                  "#vprow button:nth-of-type(2)"
+                ]
+              }
+            },
+            {
+              "id": "laptop",
+              "label": "LAPTOP 1280x800",
+              "apply": {
+                "click": [
+                  "#vprow button:nth-of-type(3)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "runstate",
+          "label": "RUN STATE",
+          "default": "day4",
+          "options": [
+            {
+              "id": "day4",
+              "label": "DAY 4",
+              "apply": {
+                "click": [
+                  "#staterow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "day1",
+              "label": "DAY 1 EARLY",
+              "apply": {
+                "click": [
+                  "#staterow button:nth-of-type(2)"
+                ]
+              }
+            },
+            {
+              "id": "day8",
+              "label": "DAY 8 STRAINED",
+              "apply": {
+                "click": [
+                  "#staterow button:nth-of-type(3)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "replay",
+          "label": "ANIMATION",
+          "options": [
+            {
+              "id": "replay",
+              "label": "REPLAY LOAD",
+              "apply": {
+                "click": [
+                  "#replay"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "desktop": {
+        "mountable": false,
+        "default": false,
+        "frameW": 0,
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "inbox-v3",
+      "title": "INBOX + CUSTOMER.REC (INSTRUMENT PANEL)",
+      "dir": "inbox-v3",
+      "entry": "index.html",
+      "cycle": "ux-2026-07-31-inbox-v3",
+      "summary": "INBOX and the CUSTOMER.REC card rebuilt to the v3 instrument-panel system: the focal slot hands off from the DAY numeral to DOMINANT ROUTINE the moment a ticket opens, the head-start WARNING is the surface's one alarm, and every state fits a 1366x768 desk at 698px.",
+      "notes": "NOTES.md",
+      "spec": {
+        "file": "pipeline/proposals/ux-agent-inbox-v3.json",
+        "item": "inbox-v3-customer-rec"
+      },
+      "status": "complete",
+      "note": "Perfect.",
+      "history": [
+        {
+          "status": "awaiting",
+          "date": "2026-07-31",
+          "note": "first build. Glance order resolved by STATE (DAY numeral heroes the LIST, DOMINANT ROUTINE plus THREAT TIER hero the CARD); four decorative blocks cut (printmark, eye crop, oscilloscope, hex table) which paid for the intake quote staying visible; --r-warn on the head-start WARNING alone, blinking a 3 cycle burst on reveal rather than continuously; 698px worst case across 18 viewport x run state x window state combinations, down from the shipped window's 1210px frame"
+        },
+        {
+          "status": "awaiting",
+          "date": "2026-08-01",
+          "note": "The animation on initial open, and switching between items, seems to play twice very awkwardly. Also, I'm not a fan of the image layout, the device image gets very cut off. Maybe they are placed side by side at the bottom of the entry? Just make sure there's enough vertical room for the images to not get cropped."
+        },
+        {
+          "status": "awaiting",
+          "date": "2026-08-01",
+          "note": "revision round 2: the doubled animation had two causes, both fixed (the record was built twice per open, restarting both typewriters mid-flight; and every open rebuilt the ticket list, replaying all three rows' slot-in behind the genie), plus switching tickets now shrinks the old record away and grows the new one out of the clicked row instead of swapping instantly. Both prints are now full 160x160 squares side by side on the pane's bottom row, the cropped 160x64 device band is gone, the 4px every print was losing to border-box is gone, and the laptop tier no longer narrows them; the action stack moved beside the prints to pay for the height, so the window came out 10px SHORTER at 688px. DAY 4 opens on Dex Marlowe, whose cram deck is the clearest device print in the roster"
+        },
+        {
+          "status": "awaiting",
+          "date": "2026-08-01",
+          "note": "Inbox items need to dynamically scale so that stuff doesn't overflow. Also, let's not make the images the only thing that can be bright blue. Try outlining them in bright blue or something."
+        },
+        {
+          "status": "awaiting",
+          "date": "2026-08-01",
+          "note": "Ghosting on the edges when window scales. Vertical scale on inbox buttons breaks after a few clicks. They need to dynamically resize. Also, WHY IS THE TOP BUTTON MORE NARROW THAN THE OTHERS???"
+        },
+        {
+          "status": "awaiting",
+          "date": "2026-08-01",
+          "note": "revision round 3: all three complaints lived in the open/close choreography's mid-flight frames. data-state flipped instantly while the frame width transitioned 200ms behind it, so container queries laid rows out in a tier belonging to neither state (the vertical scale break after a few clicks); the content now takes its final width the moment state flips and the stepped frame just clips over settled content, with a 10-click open/switch/close cycle asserting row geometry identical to first render. The edge ghosting was .term's filter: drop-shadow re-rasterizing the window subtree on every width step, converted to box-shadow with the fit scale snapped to whole device pixels. The narrow top button was the selected row's corner reticles painting 4px outside its border so every other row read narrower; reticles are flush now. The earlier blue-outline ask had never actually landed and is landed in this round (print cells framed --r-aux); worst case 698px across all 18 combos."
+        },
+        {
+          "status": "approved",
+          "date": "2026-08-01",
+          "note": "Perfect."
+        },
+        {
+          "status": "complete",
+          "date": "2026-08-01",
+          "note": "windows/inbox.tsx rebuilt: DAY -> DOMINANT ROUTINE focal handoff by state, 560/940 frame step with the content at its final width, head-start WARNING as the one alarm (3-cycle burst), 160x160 full-colour prints with the equal-footprint NO PRINT plate."
+        }
+      ],
+      "variations": [
+        {
+          "id": "scheme",
+          "label": "SCHEME",
+          "default": "nerv",
+          "options": [
+            {
+              "id": "nerv",
+              "label": "NERV",
+              "apply": {
+                "click": [
+                  "#schemerow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "tokyo",
+              "label": "TOKYO NIGHT",
+              "apply": {
+                "click": [
+                  "#schemerow button:nth-of-type(2)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "crt",
+          "label": "CRT",
+          "default": "flat",
+          "options": [
+            {
+              "id": "flat",
+              "label": "FLAT",
+              "apply": {
+                "click": [
+                  "#crtrow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "off",
+              "label": "OFF",
+              "apply": {
+                "click": [
+                  "#crtrow button:nth-of-type(2)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "treat",
+          "label": "IMAGE",
+          "default": "ink",
+          "options": [
+            {
+              "id": "ink",
+              "label": "INK TINT",
+              "apply": {
+                "click": [
+                  "#treatrow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "true",
+              "label": "TRUE 1-BIT",
+              "apply": {
+                "click": [
+                  "#treatrow button:nth-of-type(2)"
+                ]
+              }
+            },
+            {
+              "id": "color",
+              "label": "FULL COLOUR",
+              "apply": {
+                "click": [
+                  "#treatrow button:nth-of-type(3)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "viewport",
+          "label": "VIEWPORT",
+          "default": "169",
+          "options": [
+            {
+              "id": "169",
+              "label": "16:9 1366x768",
+              "apply": {
+                "click": [
+                  "#vprow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "219",
+              "label": "21:9 2560x1080",
+              "apply": {
+                "click": [
+                  "#vprow button:nth-of-type(2)"
+                ]
+              }
+            },
+            {
+              "id": "laptop",
+              "label": "LAPTOP 1280x800",
+              "apply": {
+                "click": [
+                  "#vprow button:nth-of-type(3)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "runstate",
+          "label": "RUN STATE",
+          "default": "day4",
+          "options": [
+            {
+              "id": "day4",
+              "label": "DAY 4 FULL SLATE",
+              "apply": {
+                "click": [
+                  "#staterow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "day1",
+              "label": "DAY 1 OPENER",
+              "apply": {
+                "click": [
+                  "#staterow button:nth-of-type(2)"
+                ]
+              }
+            },
+            {
+              "id": "day7",
+              "label": "DAY 7 LATE",
+              "apply": {
+                "click": [
+                  "#staterow button:nth-of-type(3)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "winstate",
+          "label": "WINDOW STATE",
+          "default": "card",
+          "options": [
+            {
+              "id": "card",
+              "label": "CARD",
+              "apply": {
+                "click": [
+                  "#winrow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "list",
+              "label": "LIST",
+              "apply": {
+                "click": [
+                  "#winrow button:nth-of-type(2)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "replay",
+          "label": "ANIMATION",
+          "options": [
+            {
+              "id": "replay",
+              "label": "REPLAY LOAD",
+              "apply": {
+                "click": [
+                  "#replay"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "desktop": {
+        "mountable": false,
+        "default": false,
+        "frameW": 0,
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "dadlog-v3",
+      "title": "DAD.LOG (INSTRUMENT PANEL)",
+      "dir": "dadlog-v3",
+      "entry": "index.html",
+      "cycle": "ux-2026-07-31-dadlog-v3",
+      "summary": "DAD.LOG rebuilt on the v3 role-token system: red reserved for the damaged segment alone, a fixed-height main row where long documents PAGE instead of scrolling, unrecovered segments held as equal-footprint slots, and the scans re-cut 1:1 with ink/true/colour treatments.",
+      "notes": "NOTES.md",
+      "spec": null,
+      "status": "complete",
+      "note": "Very nice. Use full color images.",
+      "history": [
+        {
+          "status": "awaiting",
+          "date": "2026-07-31",
+          "note": "first pass against ui-demos/RULINGS.md; supersedes the integrated dadlog study as a candidate"
+        },
+        {
+          "status": "awaiting",
+          "date": "2026-08-01",
+          "note": "Very nice and almost perfect, with a few qualms. There is not enough vertical room on the recovered files entries, so \"Scan\" and \"Log,\" etc. overlap with the title text. The Damaged entry is cool, but the blinked karet is just overlapping on top of the end of \"Damaged.\" Fix these issues and we'll be golden. I think to give the recovered files entries more vertical space, you can make that part of the window scrollable."
+        },
+        {
+          "status": "awaiting",
+          "date": "2026-08-01",
+          "note": "review round 2: rail rows given real vertical room (every line-height was inheriting a default, so 53px of content sat in a 44px row and the doctype tag climbed onto the filename); the blinking box at the end of DAMAGED was the alarm plate matching the chip rules, taking a grid area, and being bounded by that cell instead of covering the row; the flip was also only reaching 50% opacity, so it is now a true square wave. Solved without a scrollbar: all ten segments fit at 48px rows, window 691 to 731px."
+        },
+        {
+          "status": "approved",
+          "date": "2026-08-01",
+          "note": "Very nice. Use full color images."
+        },
+        {
+          "status": "complete",
+          "date": "2026-08-01",
+          "note": "windows/dadlog.tsx rebuilt: fixed-height main row with real pagination (measure then pack, never a scrollbar), damaged segment as the one alarm on a steps(1,end) square wave, equal-footprint ghost rows, 240x320 full-colour scans at 1:1."
+        }
+      ],
+      "variations": [
+        {
+          "id": "scheme",
+          "label": "SCHEME",
+          "default": "nerv",
+          "options": [
+            {
+              "id": "nerv",
+              "label": "NERV",
+              "apply": {
+                "click": [
+                  "#schemerow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "tokyo",
+              "label": "TOKYO NIGHT",
+              "apply": {
+                "click": [
+                  "#schemerow button:nth-of-type(2)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "scan",
+          "label": "SCAN",
+          "default": "ink",
+          "options": [
+            {
+              "id": "ink",
+              "label": "INK TINT",
+              "apply": {
+                "click": [
+                  "#scanrow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "true",
+              "label": "TRUE 1-BIT",
+              "apply": {
+                "click": [
+                  "#scanrow button:nth-of-type(2)"
+                ]
+              }
+            },
+            {
+              "id": "color",
+              "label": "FULL COLOUR",
+              "apply": {
+                "click": [
+                  "#scanrow button:nth-of-type(3)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "crt",
+          "label": "CRT",
+          "default": "flat",
+          "options": [
+            {
+              "id": "flat",
+              "label": "FLAT",
+              "apply": {
+                "click": [
+                  "#crtrow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "off",
+              "label": "OFF",
+              "apply": {
+                "click": [
+                  "#crtrow button:nth-of-type(2)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "viewport",
+          "label": "VIEWPORT",
+          "default": "169",
+          "options": [
+            {
+              "id": "169",
+              "label": "16:9 1366x768",
+              "apply": {
+                "click": [
+                  "#vprow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "219",
+              "label": "21:9 2560x1080",
+              "apply": {
+                "click": [
+                  "#vprow button:nth-of-type(2)"
+                ]
+              }
+            },
+            {
+              "id": "laptop",
+              "label": "LAPTOP 1280x800",
+              "apply": {
+                "click": [
+                  "#vprow button:nth-of-type(3)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "runstate",
+          "label": "RUN STATE",
+          "default": "mid",
+          "options": [
+            {
+              "id": "mid",
+              "label": "MID RUN",
+              "apply": {
+                "click": [
+                  "#staterow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "first",
+              "label": "FIRST OPEN",
+              "apply": {
+                "click": [
+                  "#staterow button:nth-of-type(2)"
+                ]
+              }
+            },
+            {
+              "id": "opened",
+              "label": "OPENED",
+              "apply": {
+                "click": [
+                  "#staterow button:nth-of-type(3)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "replay",
+          "label": "ANIMATION",
+          "options": [
+            {
+              "id": "replay",
+              "label": "REPLAY RECOVERY",
+              "apply": {
+                "click": [
+                  "#replay"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "desktop": {
+        "mountable": false,
+        "default": false,
+        "frameW": 0,
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "solder",
+      "title": "SOLDER.BAY",
+      "dir": "solder",
+      "entry": "index.html",
+      "cycle": "ux-2026-07-28-kpos-redesign",
+      "summary": "The patch bench as a poster: drag-to-craft on the shipped legality rules, JOIN hero while holding, boxed pouch counter.",
+      "notes": "NOTES.md",
+      "spec": null,
+      "status": "complete",
+      "note": null,
+      "history": [
+        {
+          "status": "complete",
+          "date": "2026-07-29",
+          "note": "integrated as windows/solder.tsx"
+        }
+      ],
+      "variations": [
+        "hue",
+        {
+          "id": "pouch",
+          "label": "POUCH",
+          "default": "day4",
+          "options": [
+            {
+              "id": "day4",
+              "label": "DAY 4",
+              "apply": {
+                "click": [
+                  "#pouchrow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "scrap",
+              "label": "SCRAP HAUL",
+              "apply": {
+                "click": [
+                  "#pouchrow button:nth-of-type(2)"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "desktop": {
+        "mountable": true,
+        "default": true,
+        "icon": "solder",
+        "frameW": 1060,
+        "x": 180,
+        "y": 24,
+        "onOpen": [
+          {
+            "click": [
+              "#pouchrow button:nth-of-type(1)"
+            ],
+            "once": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "solder-v3",
+      "title": "SOLDER.BAY (INSTRUMENT PANEL)",
+      "dir": "solder-v3",
+      "entry": "index.html",
+      "cycle": "ux-2026-07-31-solder-v3",
+      "summary": "SOLDER.BAY rebuilt to the v3 instrument-panel system: the workpiece reading promoted to a single 100px focal glyph that answers the same question in all four interaction states, the schematic demoted to an r-aux satellite plate, RISK reserved for active rejection only, and the whole drag path moved onto compositor properties for 23x less main-thread work than the window it replaces.",
+      "notes": "NOTES.md",
+      "spec": {
+        "file": "pipeline/proposals/ux-agent.json",
+        "item": "solder-v3-instrument-panel"
+      },
+      "status": "complete",
+      "note": "APPROVED",
+      "history": [
+        {
+          "status": "awaiting",
+          "date": "2026-07-31",
+          "note": "first build to RULINGS v3: 611px worst-case height (from ~1060px wide shipped), all three viewports one arrangement, equal-footprint rack across all four pouch states, NERV + TOKYO NIGHT, flat tube, live bench on the shipped craft rules"
+        },
+        {
+          "status": "awaiting",
+          "date": "2026-08-01",
+          "note": "Nearly perfect, but, the \"schematic\" text when having a vertical straight piece selected overlaps with the top of the piece, can you give it just a touch more vertical room?"
+        },
+        {
+          "status": "approved",
+          "date": "2026-08-01",
+          "note": "APPROVED"
+        },
+        {
+          "status": "complete",
+          "date": "2026-08-01",
+          "note": "windows/solder.tsx rebuilt: full-width THE READ with one hero glyph across all four interaction states, schematic demoted to an r-aux satellite plate, RISK reserved for active rejection, every flash moved to opacity on a promoted .sv-fx plate, drag ghost on a transform."
+        }
+      ],
+      "variations": [
+        {
+          "id": "scheme",
+          "label": "SCHEME",
+          "default": "nerv",
+          "options": [
+            {
+              "id": "nerv",
+              "label": "NERV",
+              "apply": {
+                "click": [
+                  "#schemerow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "tokyo",
+              "label": "TOKYO NIGHT",
+              "apply": {
+                "click": [
+                  "#schemerow button:nth-of-type(2)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "crt",
+          "label": "CRT",
+          "default": "flat",
+          "options": [
+            {
+              "id": "flat",
+              "label": "FLAT",
+              "apply": {
+                "click": [
+                  "#crtrow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "off",
+              "label": "OFF",
+              "apply": {
+                "click": [
+                  "#crtrow button:nth-of-type(2)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "viewport",
+          "label": "VIEWPORT",
+          "default": "169",
+          "options": [
+            {
+              "id": "169",
+              "label": "16:9 1366x768",
+              "apply": {
+                "click": [
+                  "#vprow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "219",
+              "label": "21:9 2560x1080",
+              "apply": {
+                "click": [
+                  "#vprow button:nth-of-type(2)"
+                ]
+              }
+            },
+            {
+              "id": "laptop",
+              "label": "LAPTOP 1280x800",
+              "apply": {
+                "click": [
+                  "#vprow button:nth-of-type(3)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "pouch",
+          "label": "POUCH STATE",
+          "default": "day4",
+          "options": [
+            {
+              "id": "scrap",
+              "label": "SCRAP HAUL",
+              "apply": {
+                "click": [
+                  "#pouchrow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "day4",
+              "label": "DAY 4",
+              "apply": {
+                "click": [
+                  "#pouchrow button:nth-of-type(2)"
+                ]
+              }
+            },
+            {
+              "id": "sparse",
+              "label": "SPARSE",
+              "apply": {
+                "click": [
+                  "#pouchrow button:nth-of-type(3)"
+                ]
+              }
+            },
+            {
+              "id": "empty",
+              "label": "EMPTY",
+              "apply": {
+                "click": [
+                  "#pouchrow button:nth-of-type(4)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "interaction",
+          "label": "INTERACTION STATE",
+          "default": "idle",
+          "options": [
+            {
+              "id": "idle",
+              "label": "IDLE",
+              "apply": {
+                "click": [
+                  "#interrow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "holding",
+              "label": "HOLDING",
+              "apply": {
+                "click": [
+                  "#interrow button:nth-of-type(2)"
+                ]
+              }
+            },
+            {
+              "id": "cand",
+              "label": "CANDIDATE",
+              "apply": {
+                "click": [
+                  "#interrow button:nth-of-type(3)"
+                ]
+              }
+            },
+            {
+              "id": "weld",
+              "label": "POST-WELD",
+              "apply": {
+                "click": [
+                  "#interrow button:nth-of-type(4)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "replay",
+          "label": "ANIMATION",
+          "options": [
+            {
+              "id": "replay",
+              "label": "REPLAY LOAD",
+              "apply": {
+                "click": [
+                  "#replay"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "desktop": {
+        "mountable": false,
+        "default": false,
+        "frameW": 0,
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "repair-log",
+      "title": "REPAIR.LOG",
+      "dir": "repair-log",
+      "entry": "index.html",
+      "cycle": "ux-2026-07-28-kpos-redesign",
+      "summary": "The dive result as a dense status dossier: hero verdict typing in, ECG strain trace, itemized payout, augment cache draft.",
+      "notes": "NOTES.md",
+      "spec": null,
+      "status": "complete",
+      "note": null,
+      "history": [
+        {
+          "status": "complete",
+          "date": "2026-07-29",
+          "note": "integrated as windows/report.tsx; new on the desktop"
+        }
+      ],
+      "variations": [
+        "hue",
+        {
+          "id": "scenario",
+          "label": "SCENARIO",
+          "default": "rough",
+          "options": [
+            {
+              "id": "rough",
+              "label": "ROUGH WIN",
+              "apply": {
+                "click": [
+                  "#scenrow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "clean",
+              "label": "CLEAN SWEEP",
+              "apply": {
+                "click": [
+                  "#scenrow button:nth-of-type(2)"
+                ]
+              }
+            },
+            {
+              "id": "cap",
+              "label": "CAP AND DRY",
+              "apply": {
+                "click": [
+                  "#scenrow button:nth-of-type(3)"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "desktop": {
+        "mountable": true,
+        "default": true,
+        "icon": "report",
+        "frameW": 1150,
+        "x": 100,
+        "y": 10,
+        "onOpen": [
+          {
+            "click": [
+              "#scenrow .rig-on",
+              "#scenrow button"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "dadlog",
+      "title": "DAD.LOG",
+      "dir": "dadlog",
+      "entry": "index.html",
+      "cycle": "ux-2026-07-29-dadlog",
+      "summary": "Dad's volume as a forensic archive reader: per-entry recovery, damaged segments, scanned attachments where the artifact earns one.",
+      "notes": "NOTES.md",
+      "spec": {
+        "file": "pipeline/proposals/ux-agent.json",
+        "item": "dadlog-archive-reader"
+      },
+      "status": "complete",
+      "note": null,
+      "history": [
+        {
+          "status": "complete",
+          "date": "2026-07-29",
+          "note": "integrated as windows/dadlog.tsx; journal.ts gained the artifact fields and DADLOG_CHROME, audio.ts gained segmentMount/segmentDamaged"
+        }
+      ],
+      "variations": [
+        "hue",
+        {
+          "id": "dither",
+          "label": "DITHER",
+          "default": "fine",
+          "options": [
+            {
+              "id": "heavy",
+              "label": "HEAVY",
+              "apply": {
+                "click": [
+                  "#ditherrow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "fine",
+              "label": "FINE",
+              "apply": {
+                "click": [
+                  "#ditherrow button:nth-of-type(2)"
+                ]
+              }
+            },
+            {
+              "id": "bayer",
+              "label": "BAYER",
+              "apply": {
+                "click": [
+                  "#ditherrow button:nth-of-type(3)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "scenario",
+          "label": "SCENARIO",
+          "default": "mid",
+          "options": [
+            {
+              "id": "first",
+              "label": "FIRST OPEN",
+              "apply": {
+                "click": [
+                  "#scenrow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "mid",
+              "label": "MID RUN",
+              "apply": {
+                "click": [
+                  "#scenrow button:nth-of-type(2)"
+                ]
+              }
+            },
+            {
+              "id": "opened",
+              "label": "OPENED",
+              "apply": {
+                "click": [
+                  "#scenrow button:nth-of-type(3)"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "desktop": {
+        "mountable": true,
+        "default": false,
+        "icon": "journal",
+        "frameW": 1150,
+        "x": 120,
+        "y": 20,
+        "replaces": "journal"
+      }
+    },
+    {
+      "id": "darknet",
+      "title": "DARKNET.LNK",
+      "dir": "darknet",
+      "entry": "index.html",
+      "cycle": "ux-2026-07-29-darknet-cli",
+      "summary": "The gray market as a real dark-web CLI: dial-in ritual, three relay hops, anonymous vendor, blind patch pulls at the shipped day price.",
+      "notes": "NOTES.md",
+      "spec": null,
+      "status": "complete",
+      "note": null,
+      "history": [
+        {
+          "status": "complete",
+          "date": "2026-07-29",
+          "note": "integrated as a full rewrite of windows/darknet.tsx plus the .kp-dnet block in styles.css"
+        }
+      ],
+      "variations": [
+        "hue",
+        {
+          "id": "scenario",
+          "label": "SCENARIO",
+          "default": "night45",
+          "options": [
+            {
+              "id": "night45",
+              "label": "NIGHT 4/5",
+              "apply": {
+                "click": [
+                  "#scenrow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "fresh",
+              "label": "FRESH NIGHT",
+              "apply": {
+                "click": [
+                  "#scenrow button:nth-of-type(2)"
+                ]
+              }
+            },
+            {
+              "id": "broke",
+              "label": "BROKE",
+              "apply": {
+                "click": [
+                  "#scenrow button:nth-of-type(3)"
+                ]
+              }
+            },
+            {
+              "id": "shop",
+              "label": "SHOP HOURS",
+              "apply": {
+                "click": [
+                  "#scenrow button:nth-of-type(4)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "dial",
+          "label": "CONNECTION",
+          "options": [
+            {
+              "id": "reconnect",
+              "label": "RECONNECT",
+              "apply": {
+                "click": [
+                  "#scenrow button:nth-of-type(5)"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "desktop": {
+        "mountable": true,
+        "default": false,
+        "icon": "darknet",
+        "frameW": 720,
+        "x": 300,
+        "y": 90,
+        "replaces": "darknet"
+      }
+    },
+    {
+      "id": "darknet-v3",
+      "title": "DARKNET.LNK (INSTRUMENT PANEL)",
+      "dir": "darknet-v3",
+      "entry": "index.html",
+      "cycle": "ux-2026-07-31-darknet-v3",
+      "summary": "The gray market rebuilt to the v3 instrument panel: one focal cell whose content moves (tonight's price, the piece that landed, or the dead-channel alarm), the reveal lifted out of the log, and the stepped-notch identity kept intact.",
+      "notes": "NOTES.md",
+      "spec": {
+        "file": "pipeline/proposals/ux-agent.json",
+        "item": "darknet-v3-instrument-panel"
+      },
+      "status": "complete",
+      "note": "Perfect.",
+      "history": [
+        {
+          "status": "awaiting",
+          "date": "2026-08-01",
+          "note": "round 1: focal cell with four states on one 196px footprint, SIGNAL DROP relocated out of the log, RATE folded into the focal eyebrow, r-aux assigned to the far end of the wire, alarm scoped to the dead channel with SHORT held on ambient hazard red; 696 to 703px across all 4 scenarios x 3 viewports"
+        },
+        {
+          "status": "approved",
+          "date": "2026-08-01",
+          "note": "Perfect."
+        },
+        {
+          "status": "complete",
+          "date": "2026-08-01",
+          "note": "windows/darknet.tsx gains the focal cell (PENDING / OFFER / REVEAL / DEAD on one footprint), the price lifted out of a 13px chip to hero scale, the reveal lifted out of the log, RATE chip dropped, log vocabulary remapped to t-*/o-*/banner-*. Stepped-notch identity kept."
+        }
+      ],
+      "variations": [
+        {
+          "id": "scheme",
+          "label": "SCHEME",
+          "default": "nerv",
+          "options": [
+            {
+              "id": "nerv",
+              "label": "NERV",
+              "apply": {
+                "click": [
+                  "#schemerow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "tokyo",
+              "label": "TOKYO NIGHT",
+              "apply": {
+                "click": [
+                  "#schemerow button:nth-of-type(2)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "crt",
+          "label": "CRT",
+          "default": "flat",
+          "options": [
+            {
+              "id": "flat",
+              "label": "FLAT",
+              "apply": {
+                "click": [
+                  "#crtrow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "off",
+              "label": "OFF",
+              "apply": {
+                "click": [
+                  "#crtrow button:nth-of-type(2)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "viewport",
+          "label": "VIEWPORT",
+          "default": "169",
+          "options": [
+            {
+              "id": "169",
+              "label": "16:9 1366x768",
+              "apply": {
+                "click": [
+                  "#vprow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "219",
+              "label": "21:9 2560x1080",
+              "apply": {
+                "click": [
+                  "#vprow button:nth-of-type(2)"
+                ]
+              }
+            },
+            {
+              "id": "laptop",
+              "label": "LAPTOP 1280x800",
+              "apply": {
+                "click": [
+                  "#vprow button:nth-of-type(3)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "scenario",
+          "label": "SCENARIO",
+          "default": "night45",
+          "options": [
+            {
+              "id": "night45",
+              "label": "NIGHT 4/5",
+              "apply": {
+                "click": [
+                  "#scenrow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "fresh",
+              "label": "FRESH NIGHT",
+              "apply": {
+                "click": [
+                  "#scenrow button:nth-of-type(2)"
+                ]
+              }
+            },
+            {
+              "id": "broke",
+              "label": "BROKE",
+              "apply": {
+                "click": [
+                  "#scenrow button:nth-of-type(3)"
+                ]
+              }
+            },
+            {
+              "id": "offline",
+              "label": "MARKET OFFLINE",
+              "apply": {
+                "click": [
+                  "#scenrow button:nth-of-type(4)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "dial",
+          "label": "CONNECTION",
+          "options": [
+            {
+              "id": "replay",
+              "label": "REPLAY DIAL-IN",
+              "apply": {
+                "click": [
+                  "#replay"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "desktop": {
+        "mountable": false,
+        "default": false,
+        "frameW": 0,
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "customer-rec",
+      "title": "CUSTOMER.REC",
+      "dir": "customer-rec",
+      "entry": "index.html",
+      "cycle": "ux-2026-07-28-kpos-redesign",
+      "summary": "The customer dossier card, cell for cell on the SUBJECT A-34 reference, for canon customer Dex Marlowe.",
+      "notes": "NOTES.md",
+      "spec": null,
+      "status": "complete",
+      "note": null,
+      "history": [
+        {
+          "status": "complete",
+          "date": "2026-07-29",
+          "note": "integrated inside windows/inbox.tsx as the CUSTOMER.REC card with the DIVE button"
+        }
+      ],
+      "variations": [
+        "hue"
+      ],
+      "desktop": {
+        "mountable": false,
+        "default": false,
+        "frameW": 0,
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "dive",
+      "title": "DIVE.EXE",
+      "dir": "dive",
+      "entry": "index.html",
+      "cycle": "ux-2026-07-28-kpos-redesign",
+      "summary": "The flood-claim duel as a full-screen circuit-schematic instrument panel, playable end to end on the shipped engine.",
+      "notes": "NOTES.md",
+      "spec": null,
+      "status": "complete",
+      "note": null,
+      "history": [
+        {
+          "status": "complete",
+          "date": "2026-07-29",
+          "note": "integrated as the full-screen duel surface"
+        }
+      ],
+      "variations": [
+        "hue",
+        {
+          "id": "scenario",
+          "label": "SCENARIO",
+          "default": "d2-juno",
+          "options": [
+            {
+              "id": "d2-juno",
+              "label": "DAY 2 JUNO",
+              "apply": {
+                "click": [
+                  "#screrow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "d4-sable",
+              "label": "DAY 4 SABLE",
+              "apply": {
+                "click": [
+                  "#screrow button:nth-of-type(2)"
+                ]
+              }
+            },
+            {
+              "id": "d7-ines",
+              "label": "DAY 7 INES",
+              "apply": {
+                "click": [
+                  "#screrow button:nth-of-type(3)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "board",
+          "label": "BOARD",
+          "options": [
+            {
+              "id": "reseed",
+              "label": "RESEED",
+              "apply": {
+                "click": [
+                  "#rerow button:nth-of-type(1)"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "desktop": {
+        "mountable": false,
+        "default": false,
+        "frameW": 0,
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "night-v3",
+      "title": "NIGHT.SYS (INSTRUMENT PANEL)",
+      "dir": "night-v3",
+      "entry": "index.html",
+      "cycle": "ux-2026-07-31-night-v3",
+      "summary": "The day-close window as the system's low-density proof: seven stacked blocks become four shared rows, the upgrade PICK is focal at 2.27x over everything else, the DAY numeral is deliberately demoted, and strain owns the only alarm.",
+      "notes": "NOTES.md",
+      "spec": {
+        "file": "pipeline/proposals/ux-agent-night-v3.json",
+        "item": "night-v3-instrument-panel"
+      },
+      "status": "complete",
+      "note": "APPROVED.",
+      "history": [
+        {
+          "status": "awaiting",
+          "date": "2026-07-31",
+          "note": "first pass to the v3 instrument-panel system; 674px worst case against a 700px target, identical footprint across all four run states"
+        },
+        {
+          "status": "awaiting",
+          "date": "2026-08-01",
+          "note": "I like this quite a bit. However, I would prefer if your CR balance was made very apparent toward the area where you can spend it. Also, I'm not sure that the buttons to select a tier upgrade are easily discerned as buttons."
+        },
+        {
+          "status": "awaiting",
+          "date": "2026-08-01",
+          "note": "revision round 2: the CREDITS balance now rides the right end of the // NIGHT SHOP divider as a boxed --r-data readout, so the balance and the three costs it gates share one glance, re-rendering and pulsing as purchases drain it. Every live control (tier strip, shop buttons, armed CLOSE) carries a 1px --r-ok outline with inverse hover and press states while disabled bays keep dashed --r-struct chrome, per the cross-panel clickable-affordance ruling. Worst case 688px; the PICK hero holds 2.27x over the next-largest text in all twelve viewport x run state combos including DAY 9 CAPPED."
+        },
+        {
+          "status": "approved",
+          "date": "2026-08-01",
+          "note": "APPROVED."
+        },
+        {
+          "status": "complete",
+          "date": "2026-08-01",
+          "note": "windows/night.tsx rebuilt: seven stacked blocks to four shared rows, the PICK held in a focal hero card with the strip derived as everything not in it, the DAY marker deliberately demoted, CREDITS balance on the shop divider, strain alarm on the low band."
+        }
+      ],
+      "variations": [
+        {
+          "id": "scheme",
+          "label": "SCHEME",
+          "default": "nerv",
+          "options": [
+            {
+              "id": "nerv",
+              "label": "NERV",
+              "apply": {
+                "click": [
+                  "#schemerow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "tokyo",
+              "label": "TOKYO NIGHT",
+              "apply": {
+                "click": [
+                  "#schemerow button:nth-of-type(2)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "crt",
+          "label": "CRT",
+          "default": "flat",
+          "options": [
+            {
+              "id": "flat",
+              "label": "FLAT",
+              "apply": {
+                "click": [
+                  "#crtrow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "off",
+              "label": "OFF",
+              "apply": {
+                "click": [
+                  "#crtrow button:nth-of-type(2)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "viewport",
+          "label": "VIEWPORT",
+          "default": "169",
+          "options": [
+            {
+              "id": "169",
+              "label": "16:9 1366x768",
+              "apply": {
+                "click": [
+                  "#vprow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "219",
+              "label": "21:9 2560x1080",
+              "apply": {
+                "click": [
+                  "#vprow button:nth-of-type(2)"
+                ]
+              }
+            },
+            {
+              "id": "laptop",
+              "label": "LAPTOP 1280x800",
+              "apply": {
+                "click": [
+                  "#vprow button:nth-of-type(3)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "runstate",
+          "label": "RUN STATE",
+          "default": "day5",
+          "options": [
+            {
+              "id": "day2",
+              "label": "DAY 2 EARLY",
+              "apply": {
+                "click": [
+                  "#staterow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "day5",
+              "label": "DAY 5 MID",
+              "apply": {
+                "click": [
+                  "#staterow button:nth-of-type(2)"
+                ]
+              }
+            },
+            {
+              "id": "day8",
+              "label": "DAY 8 STRAINED",
+              "apply": {
+                "click": [
+                  "#staterow button:nth-of-type(3)"
+                ]
+              }
+            },
+            {
+              "id": "day9",
+              "label": "DAY 9 CAPPED",
+              "apply": {
+                "click": [
+                  "#staterow button:nth-of-type(4)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "replay",
+          "label": "ANIMATION",
+          "options": [
+            {
+              "id": "replay",
+              "label": "REPLAY LOAD",
+              "apply": {
+                "click": [
+                  "#replay"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "desktop": {
+        "mountable": false,
+        "default": false,
+        "frameW": 0,
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "craft-station",
+      "title": "CRAFT.STATION",
+      "dir": "craft-station",
+      "entry": "index.html",
+      "cycle": "ux-2026-07-28-craft-station",
+      "summary": "Round 1 crafting bench on the pre-v2 navy and grey palette. Superseded by SOLDER.BAY; the look was rejected.",
+      "notes": null,
+      "spec": null,
+      "status": "archived",
+      "note": "Superseded by the v2 single-phosphor system. Kept as a record of the rejected round 1 look; it still links its own pre-v2 kp.css.",
+      "history": [
+        {
+          "status": "archived",
+          "date": "2026-07-30",
+          "note": "superseded by solder"
+        }
+      ],
+      "variations": [],
+      "desktop": null
+    },
+    {
+      "id": "morning-log",
+      "title": "MORNING.LOG",
+      "dir": "morning-log",
+      "entry": "index.html",
+      "cycle": "ux-2026-07-31-morning-log",
+      "summary": "Rhea's day-start scene rebuilt as an instrument panel: the DAY numeral as the one focal element on a surface made of prose, and the shop's own two cameras in a fixed cell so the window stops reflowing on every click.",
+      "notes": "NOTES.md",
+      "spec": {
+        "file": "pipeline/proposals/ux-agent.json",
+        "item": "morning-log-day-start-panel"
+      },
+      "status": "complete",
+      "note": "Love. Go with full color images for this one.",
+      "history": [
+        {
+          "status": "awaiting",
+          "date": "2026-07-31",
+          "note": "first pass: replaces StoryScene, the last surface in the game with no v2 or v3 pass"
+        },
+        {
+          "status": "approved",
+          "date": "2026-08-01",
+          "note": "Love. Go with full color images for this one."
+        },
+        {
+          "status": "approved",
+          "date": "2026-08-01",
+          "note": "FULL COLOUR is now the default treatment per the review ruling; --r-aux moved from the ink tint onto the camera frame and CAM tag so the role still paints in the default state"
+        },
+        {
+          "status": "complete",
+          "date": "2026-08-01",
+          "note": "game/screens.tsx StoryScene rebuilt: the DAY numeral as the one focal element, a flat fixed-height body row so beats never reflow the window, the shop's two cameras as a fixture in full colour, and the beats kept on screen as a log."
+        }
+      ],
+      "variations": [
+        {
+          "id": "scheme",
+          "label": "SCHEME",
+          "default": "nerv",
+          "options": [
+            {
+              "id": "nerv",
+              "label": "NERV",
+              "apply": {
+                "click": [
+                  "#schemerow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "tokyo",
+              "label": "TOKYO NIGHT",
+              "apply": {
+                "click": [
+                  "#schemerow button:nth-of-type(2)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "scenario",
+          "label": "SCENARIO",
+          "default": "day1",
+          "options": [
+            {
+              "id": "day1",
+              "label": "DAY 1",
+              "apply": {
+                "click": [
+                  "#scenrow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "day5",
+              "label": "DAY 5",
+              "apply": {
+                "click": [
+                  "#scenrow button:nth-of-type(2)"
+                ]
+              }
+            },
+            {
+              "id": "day10",
+              "label": "DAY 10 (ALARM)",
+              "apply": {
+                "click": [
+                  "#scenrow button:nth-of-type(3)"
+                ]
+              }
+            },
+            {
+              "id": "run2",
+              "label": "RUN 2 OPENER",
+              "apply": {
+                "click": [
+                  "#scenrow button:nth-of-type(4)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "feed",
+          "label": "FEED",
+          "default": "color",
+          "options": [
+            {
+              "id": "color",
+              "label": "FULL COLOUR",
+              "apply": {
+                "click": [
+                  "#feedrow button:nth-of-type(3)"
+                ]
+              }
+            },
+            {
+              "id": "ink",
+              "label": "INK TINT",
+              "apply": {
+                "click": [
+                  "#feedrow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "true",
+              "label": "TRUE 1-BIT",
+              "apply": {
+                "click": [
+                  "#feedrow button:nth-of-type(2)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "crt",
+          "label": "CRT",
+          "default": "flat",
+          "options": [
+            {
+              "id": "flat",
+              "label": "FLAT",
+              "apply": {
+                "click": [
+                  "#crtrow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "off",
+              "label": "OFF",
+              "apply": {
+                "click": [
+                  "#crtrow button:nth-of-type(2)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "viewport",
+          "label": "VIEWPORT",
+          "default": "169",
+          "options": [
+            {
+              "id": "169",
+              "label": "16:9 1366x768",
+              "apply": {
+                "click": [
+                  "#vprow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "219",
+              "label": "21:9 2560x1080",
+              "apply": {
+                "click": [
+                  "#vprow button:nth-of-type(2)"
+                ]
+              }
+            },
+            {
+              "id": "laptop",
+              "label": "LAPTOP 1280x800",
+              "apply": {
+                "click": [
+                  "#vprow button:nth-of-type(3)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "replay",
+          "label": "ANIMATION",
+          "options": [
+            {
+              "id": "replay",
+              "label": "REPLAY FROM BEAT 1",
+              "apply": {
+                "click": [
+                  "#replay"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "desktop": {
+        "mountable": false,
+        "default": false,
+        "frameW": 0,
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "kpos-desktop-v3",
+      "title": "KP/OS DESKTOP (INSTRUMENT PANEL)",
+      "dir": "kpos-desktop-v3",
+      "entry": "index.html",
+      "cycle": "ux-2026-07-31-desktop-dive",
+      "summary": "The whole desktop shell on the v3 role system: boot, login, wallpaper furniture, icons, ticker, taskbar and window chrome under one data-scheme, six-layer CRT glass over the stage, the strain chip as the desktop's one alarm (wired to the correct low band), and a live two-window tiling proof on the 1366x768 desk.",
+      "notes": "NOTES.md",
+      "spec": {
+        "file": "pipeline/proposals/ux-agent.json",
+        "item": "kpos-desktop-v3"
+      },
+      "status": "complete",
+      "note": "Approved. When integrating, be sure to implement ghosting fix from the new inbox panel.",
+      "history": [
+        {
+          "status": "awaiting",
+          "date": "2026-07-31",
+          "note": "first review round: ruling 14 extended desktop-wide (DEFAULT/NERV/TOKYO on the start menu's SCHEME switch), wallscope roll and mark slip cut per law 7, idle-desk hero promotion, ghost window bodies pending each panel's own study"
+        },
+        {
+          "status": "awaiting",
+          "date": "2026-08-01",
+          "note": "The blue highlight over the icon text overlaps with other blue elements, such as the highlight on the KPOS//REPAIR BENCH text. Also, on the smaller resolutions, even on 2560x1080, the icons do not have enough vertical space. Can you make the icons dynamically resize or rearrange based on resolution to ensure they always appear correctly? Same with the windows themselves."
+        },
+        {
+          "status": "awaiting",
+          "date": "2026-08-01",
+          "note": "The blue highlight over the icon text overlaps with other blue elements, such as the highlight on the KPOS//REPAIR BENCH text. Also, on the smaller resolutions, even on 2560x1080, the icons do not have enough vertical space. Can you make the icons dynamically resize or rearrange based on resolution to ensure they always appear correctly? Same with the windows themselves. Another note, I love the CRT effect, but, the bottom bar becomes kind of cut off and darkened with it on. Can it have a bit more vertical size to mitigate this?"
+        },
+        {
+          "status": "awaiting",
+          "date": "2026-08-01",
+          "note": "revision round 2: icon tags back to r-struct and the WallPoster stepped right of the icon column (the blue clash was the poster's tag sliding under the icons); icon glyphs budget themselves against the desk height so all eight fit one column on every viewport (44/74/48px); windows clamp to their desk and the tiled pair is computed live, so the proof holds on 1280x800; the taskbar grows 44 to 58px under the CRT glass so the bezel falloff stops eating it"
+        },
+        {
+          "status": "awaiting",
+          "date": "2026-08-01",
+          "note": "Let's get rid of the windows aesthetic, and put the icons centered at the bottom. Clicking one that is already open should surface the window to the top. Windows should open in the center of the screen."
+        },
+        {
+          "status": "awaiting",
+          "date": "2026-08-01",
+          "note": "revision round 3: the Windows aesthetic is retired. The left icon column and bottom taskbar are replaced by a centered bottom dock in the KP/OS idiom that is both launcher and running-window indicator (r-line underline plate); clicking a running app's dock icon surfaces its window, and plain opens land centered on the desk, with only the tiling proof pinning coordinates. System status rehomed to a slim top strip (mark, start menu, USER/DAY/STRAIN/CR chips, the ticker, ABANDON, SND) with the strain chip's low-band alarm always visible, and both chrome bands grow under the glass so the bezel falloff eats neither. Usable desk height on 16:9 is 596px under FLAT, so LOADOUT's 654px footprint clamps to ~598 there; recorded in NOTES as a height-budget cost for integration to weigh."
+        },
+        {
+          "status": "approved",
+          "date": "2026-08-01",
+          "note": "Approved. When integrating, be sure to implement ghosting fix from the new inbox panel."
+        },
+        {
+          "status": "complete",
+          "date": "2026-08-01",
+          "note": "shell ported to components/os/: role tokens + two schemes in styles.css, .kp-os as the desk container, top status strip (taskbar rehomed, ticker inline), centered bottom Dock with running plates and surface-on-click, centered window spawns (wm.tsx), six-layer glass replacing .kp-crt, strain alarm rewired to strain <= 35, decorative motion cut. Ghosting fix landed: .kp-fw drop-shadow -> box-shadow."
+        }
+      ],
+      "variations": [
+        {
+          "id": "scheme",
+          "label": "SCHEME",
+          "default": "nerv",
+          "options": [
+            {
+              "id": "default",
+              "label": "DEFAULT",
+              "apply": {
+                "click": [
+                  "#schemerow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "nerv",
+              "label": "NERV",
+              "apply": {
+                "click": [
+                  "#schemerow button:nth-of-type(2)"
+                ]
+              }
+            },
+            {
+              "id": "tokyo",
+              "label": "TOKYO NIGHT",
+              "apply": {
+                "click": [
+                  "#schemerow button:nth-of-type(3)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "crt",
+          "label": "CRT",
+          "default": "flat",
+          "options": [
+            {
+              "id": "flat",
+              "label": "FLAT",
+              "apply": {
+                "click": [
+                  "#crtrow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "off",
+              "label": "OFF",
+              "apply": {
+                "click": [
+                  "#crtrow button:nth-of-type(2)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "viewport",
+          "label": "VIEWPORT",
+          "default": "169",
+          "options": [
+            {
+              "id": "169",
+              "label": "16:9 1366x768",
+              "apply": {
+                "click": [
+                  "#vprow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "219",
+              "label": "21:9 2560x1080",
+              "apply": {
+                "click": [
+                  "#vprow button:nth-of-type(2)"
+                ]
+              }
+            },
+            {
+              "id": "laptop",
+              "label": "LAPTOP 1280x800",
+              "apply": {
+                "click": [
+                  "#vprow button:nth-of-type(3)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "screen",
+          "label": "SCREEN",
+          "default": "midrun",
+          "options": [
+            {
+              "id": "boot",
+              "label": "BOOT",
+              "apply": {
+                "click": [
+                  "#screenrow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "login",
+              "label": "LOGIN",
+              "apply": {
+                "click": [
+                  "#screenrow button:nth-of-type(2)"
+                ]
+              }
+            },
+            {
+              "id": "idle",
+              "label": "DESK IDLE",
+              "apply": {
+                "click": [
+                  "#screenrow button:nth-of-type(3)"
+                ]
+              }
+            },
+            {
+              "id": "midrun",
+              "label": "DESK MID-RUN",
+              "apply": {
+                "click": [
+                  "#screenrow button:nth-of-type(4)"
+                ]
+              }
+            },
+            {
+              "id": "tiled",
+              "label": "DESK TILED",
+              "apply": {
+                "click": [
+                  "#screenrow button:nth-of-type(5)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "strain",
+          "label": "STRAIN",
+          "default": "nominal",
+          "options": [
+            {
+              "id": "nominal",
+              "label": "NOMINAL",
+              "apply": {
+                "click": [
+                  "#strainrow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "strained",
+              "label": "STRAINED",
+              "apply": {
+                "click": [
+                  "#strainrow button:nth-of-type(2)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "replay",
+          "label": "BOOT SEQUENCE",
+          "options": [
+            {
+              "id": "replay",
+              "label": "REPLAY BOOT",
+              "apply": {
+                "click": [
+                  "#replayboot"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "desktop": {
+        "mountable": false,
+        "default": false,
+        "frameW": 0,
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "dive-v3",
+      "title": "DIVE.EXE (INSTRUMENT PANEL)",
+      "dir": "dive-v3",
+      "entry": "index.html",
+      "cycle": "ux-2026-07-31-desktop-dive",
+      "summary": "The duel on the v3 role system, playable end to end on the shipped engine: the intrusion as structural hazard red, route-threat as the one alarm, fluid cqi rails, the device macro as a 1:1 crop with three FEED treatments, and BEAT states that force the telegraph or an end overlay for review.",
+      "notes": "NOTES.md",
+      "spec": {
+        "file": "pipeline/proposals/ux-agent.json",
+        "item": "dive-v3"
+      },
+      "status": "complete",
+      "note": "Approved.",
+      "history": [
+        {
+          "status": "awaiting",
+          "date": "2026-07-31",
+          "note": "first review round: route-threat chosen as the r-warn owner over strain, intrusion identity moved to r-hazard, rails fluid on cqi, device macro un-downscaled into a 200x150 1:1 bezel"
+        },
+        {
+          "status": "awaiting",
+          "date": "2026-08-01",
+          "note": "I'd prefer if the center area was like a blue schematic in the NERV color scheme, with DIVE.EXE keeping its orange color. Not to say that the middle needs to be only blue, you know, mix up the colors there where it makes sense. Rather than trying to keep everything the same size across all the resolutions, which is causing stuff to get cropped, can you scale things per resolution instead? Also, the end screen shouldn't say \"New Dive,\" it should just say continue or something."
+        },
+        {
+          "status": "awaiting",
+          "date": "2026-08-01",
+          "note": "revision round 2: the board's unclaimed fabric became a blueprint (r-note blue under NERV) via a schematic channel while DIVE.EXE's watermark, frame, core, claims and intrusion keep their colours; a short-stage tier stops the right rail's device block cropping at 768/800-high desks (smaller 1:1 crop plus tighter air, no data cut); END overlay button now reads CONTINUE"
+        },
+        {
+          "status": "awaiting",
+          "date": "2026-08-01",
+          "note": "Device image is getting cropped. in the bottom right. Get rid of the you and intrusion at the top, it looks like false buttons."
+        },
+        {
+          "status": "awaiting",
+          "date": "2026-08-01",
+          "note": "revision round 3: the device macro clipped because round 2's per-resolution tier was dead CSS (the @container blocks sat above the base rules they override and lost the cascade at equal specificity, so short desks never received the smaller crop); the tier is re-seated, the short tier crops a 150x100 window on the same 1:1 cramdeck art, and the right rail is made beat-invariant (intent slot reserved at 2lh, banked RAM moved onto the INTRUSION header as an inverse stamp) so nothing can grow into the cell. 36/36 viewport x beat x feed combos verified clip-free over CDP plus a forced worst case. The YOU / INTRUSION turn chips are deleted outright; the status row carries an unboxed // TURN annotation beside ROUND (r-ok YOU on your move, intrusion-tone INTRUSION blinking while the machine moves) and side identity stays on the board's port tags and the INTRUSION box header in both schemes and DEFAULT."
+        },
+        {
+          "status": "approved",
+          "date": "2026-08-01",
+          "note": "Approved."
+        },
+        {
+          "status": "complete",
+          "date": "2026-08-01",
+          "note": "game/duel.tsx + the whole .dv-* sheet on the v3 role system: TURN readout replacing the YOU/INTRUSION chips, route-threat as the only alarm (dv-warnrow) with every other ex-warn row demoted to dv-hazrow, banked RAM as a header stamp, and the device macro as a 1:1 crop in a fixed bezel instead of a rail-width downscale."
+        }
+      ],
+      "variations": [
+        {
+          "id": "scheme",
+          "label": "SCHEME",
+          "default": "nerv",
+          "options": [
+            {
+              "id": "default",
+              "label": "DEFAULT",
+              "apply": {
+                "click": [
+                  "#schemerow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "nerv",
+              "label": "NERV",
+              "apply": {
+                "click": [
+                  "#schemerow button:nth-of-type(2)"
+                ]
+              }
+            },
+            {
+              "id": "tokyo",
+              "label": "TOKYO NIGHT",
+              "apply": {
+                "click": [
+                  "#schemerow button:nth-of-type(3)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "crt",
+          "label": "CRT",
+          "default": "flat",
+          "options": [
+            {
+              "id": "flat",
+              "label": "FLAT",
+              "apply": {
+                "click": [
+                  "#crtrow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "off",
+              "label": "OFF",
+              "apply": {
+                "click": [
+                  "#crtrow button:nth-of-type(2)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "viewport",
+          "label": "VIEWPORT",
+          "default": "169",
+          "options": [
+            {
+              "id": "169",
+              "label": "16:9 1366x768",
+              "apply": {
+                "click": [
+                  "#vprow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "219",
+              "label": "21:9 2560x1080",
+              "apply": {
+                "click": [
+                  "#vprow button:nth-of-type(2)"
+                ]
+              }
+            },
+            {
+              "id": "laptop",
+              "label": "LAPTOP 1280x800",
+              "apply": {
+                "click": [
+                  "#vprow button:nth-of-type(3)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "scenario",
+          "label": "SCENARIO",
+          "default": "d4-sable",
+          "options": [
+            {
+              "id": "d2-juno",
+              "label": "DAY 2 JUNO",
+              "apply": {
+                "click": [
+                  "#screrow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "d4-sable",
+              "label": "DAY 4 SABLE",
+              "apply": {
+                "click": [
+                  "#screrow button:nth-of-type(2)"
+                ]
+              }
+            },
+            {
+              "id": "d7-ines",
+              "label": "DAY 7 INES",
+              "apply": {
+                "click": [
+                  "#screrow button:nth-of-type(3)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "board",
+          "label": "BOARD",
+          "options": [
+            {
+              "id": "reseed",
+              "label": "RESEED",
+              "apply": {
+                "click": [
+                  "#rerow button"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "beat",
+          "label": "BEAT",
+          "default": "live",
+          "options": [
+            {
+              "id": "live",
+              "label": "LIVE",
+              "apply": {
+                "click": [
+                  "#beatrow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "telegraph",
+              "label": "TELEGRAPH ARMED",
+              "apply": {
+                "click": [
+                  "#beatrow button:nth-of-type(2)"
+                ]
+              }
+            },
+            {
+              "id": "win",
+              "label": "END (WIN)",
+              "apply": {
+                "click": [
+                  "#beatrow button:nth-of-type(3)"
+                ]
+              }
+            },
+            {
+              "id": "loss",
+              "label": "END (LOSS)",
+              "apply": {
+                "click": [
+                  "#beatrow button:nth-of-type(4)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "feed",
+          "label": "FEED",
+          "default": "ink",
+          "options": [
+            {
+              "id": "ink",
+              "label": "INK TINT",
+              "apply": {
+                "click": [
+                  "#feedrow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "true",
+              "label": "TRUE 1-BIT",
+              "apply": {
+                "click": [
+                  "#feedrow button:nth-of-type(2)"
+                ]
+              }
+            },
+            {
+              "id": "color",
+              "label": "FULL COLOUR",
+              "apply": {
+                "click": [
+                  "#feedrow button:nth-of-type(3)"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "desktop": {
+        "mountable": false,
+        "default": false,
+        "frameW": 0,
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "repair-log-v3",
+      "title": "REPAIR.LOG (INSTRUMENT PANEL)",
+      "dir": "repair-log-v3",
+      "entry": "index.html",
+      "cycle": "ux-2026-07-31-repair-log-v3",
+      "summary": "REPAIR.LOG as an instrument panel: the dive result read as a transaction, with CREDITED, BILLED and RECOVERED as one focal row, the strain the run has left as the surface's only alarm, and every result branch landing on the same footprint under 700px.",
+      "notes": "NOTES.md",
+      "spec": {
+        "file": "pipeline/proposals/ux-agent.json",
+        "item": "repair-log-v3-instrument-panel"
+      },
+      "status": "complete",
+      "note": "Fixed. Approved.",
+      "history": [
+        {
+          "status": "awaiting",
+          "date": "2026-08-01",
+          "note": "v3 rebuild. Overrules the panel queue's note that the verdict is focal: a loss never reaches this screen, so REPAIR LOGGED is invariant and the transaction is what varies. RISK owns only the strain left, armed at or below 35, on four channels. Sparklines, brand plate and footer row cut; window 687 to 697px, fitting every desk. Job tiers corrected against DAY_CONFIGS and each client's own tiers, which the round 1 study had wrong on two tickets."
+        },
+        {
+          "status": "awaiting",
+          "date": "2026-08-01",
+          "note": "Outline the buttons in green or blue so we know they are clickable. I'd prefer if the client cam was just an image instead of a live feed, and if it were the same size as the //credited //billed //recovered boxes, scaling the stats under the image to match too."
+        },
+        {
+          "status": "awaiting",
+          "date": "2026-08-01",
+          "note": "Outline the buttons in green or blue so we know they are clickable. I'd prefer if the client cam was just an image instead of a live feed, and if it were the same size as the //credited //billed //recovered boxes, scaling the stats under the image to match too. Button placement of \"Skip the draft\" is confusing. Echo tap is not vertically aligned with other items."
+        },
+        {
+          "status": "awaiting",
+          "date": "2026-08-01",
+          "note": "revision round 2: every interactive control carries a 1px --r-ok outline (static plates never do) with hover, press floods and the active reticle unchanged, per the cross-panel clickable-affordance ruling. The client cam is a static captured still stripped of REC light, scan roll and boot wipe, sized to exactly a transaction cell's footprint on a shared rail track with the stats below on the same track, and all four client prints re-cut at 201x204 in all three FEED treatments. SKIP THE DRAFT left the masthead and became the dashed decline slot inside the augment-cache group (CANCEL THE SWAP takes the same slot in the eject flow). The ECHO TAP misalignment traced to the card row sitting off the window's column system, fixed by putting the cache on the same two tracks, which also surfaced a kp-slot-in fill-mode bug that silently cancelled card dimming, now fixed. Worst case 697px; 230/230 CDP checks pass."
+        },
+        {
+          "status": "awaiting",
+          "date": "2026-08-01",
+          "note": "Echo tap is still not vertically aligned. Remove the next ticket button. There should be no buttons in the top right."
+        },
+        {
+          "status": "awaiting",
+          "date": "2026-08-01",
+          "note": "revision round 3: the masthead button is gone, so the top right carries no buttons; the advance action rides the right end of the // AUGMENT CACHE divider at chip scale, still flipping to CLOSE THE DAY on the last ticket, at no height cost. The ECHO TAP misalignment was the draft row using equal thirds while the cells above sit at 1.3/1.3/1: the cards now ride the bill's own tracks and gap, so ECHO TAP's edges land exactly on BILLED's column lines, verified equal to the pixel at all three viewports. Worst case 697px."
+        },
+        {
+          "status": "awaiting",
+          "date": "2026-08-01",
+          "note": "Does echo tap look vertically aligned to you? Also, I said DELETE next ticket, NOT move it. (chat feedback with a screenshot of the cache row mid load choreography)"
+        },
+        {
+          "status": "awaiting",
+          "date": "2026-08-01",
+          "note": "revision round 4: NEXT TICKET is deleted outright, not relocated; the window carries no window-level buttons at all, and how the day advances is the OS shell's decision, owed at integration. The misalignment the reviewer kept seeing was the cache row's slot-in stagger: kp-slot-in held each card at a different translateY for over a second of stepped frames on every rebuild, so the row rendered transiently unaligned even though the settled DOM measured clean. The stagger is removed and the draft row renders settled in one frame, with card boxes measuring identical y at every sampled instant including mid-choreography; the bill-track column alignment from round 3 stands. Worst case 697px; no JS errors."
+        },
+        {
+          "status": "awaiting",
+          "date": "2026-08-01",
+          "note": "You know what, put next ticket button back so close the day has somewhere to go (chat feedback)"
+        },
+        {
+          "status": "awaiting",
+          "date": "2026-08-01",
+          "note": "revision round 5: the advance button is restored by review ruling so CLOSE THE DAY has somewhere to go, at the round 3 spot: the right end of the // AUGMENT CACHE divider at chip scale, with the affordance ring, and the masthead stays button-free per the standing top-right ruling. The label flip and the ticket walk are verified over CDP, the draft row still renders settled in one frame with no stagger, worst case 697px, no JS errors."
+        },
+        {
+          "status": "approved",
+          "date": "2026-08-01",
+          "note": "Fixed. Approved."
+        },
+        {
+          "status": "complete",
+          "date": "2026-08-01",
+          "note": "windows/report.tsx rebuilt as a transaction: CREDITED / BILLED / RECOVERED as one focal row at equal footprint (measured 196px each), strain-left as the only alarm with four channels, the four sparklines cut to gutter ticks, the footer row and brand plate cut, the advance button moved to the cache divider. Client cam in full colour."
+        }
+      ],
+      "variations": [
+        {
+          "id": "scheme",
+          "label": "SCHEME",
+          "default": "nerv",
+          "options": [
+            {
+              "id": "nerv",
+              "label": "NERV",
+              "apply": {
+                "click": [
+                  "#schemerow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "tokyo",
+              "label": "TOKYO NIGHT",
+              "apply": {
+                "click": [
+                  "#schemerow button:nth-of-type(2)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "feed",
+          "label": "FEED",
+          "default": "ink",
+          "options": [
+            {
+              "id": "ink",
+              "label": "INK TINT",
+              "apply": {
+                "click": [
+                  "#feedrow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "true",
+              "label": "TRUE 1-BIT",
+              "apply": {
+                "click": [
+                  "#feedrow button:nth-of-type(2)"
+                ]
+              }
+            },
+            {
+              "id": "color",
+              "label": "FULL COLOUR",
+              "apply": {
+                "click": [
+                  "#feedrow button:nth-of-type(3)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "crt",
+          "label": "CRT",
+          "default": "flat",
+          "options": [
+            {
+              "id": "flat",
+              "label": "FLAT",
+              "apply": {
+                "click": [
+                  "#crtrow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "off",
+              "label": "OFF",
+              "apply": {
+                "click": [
+                  "#crtrow button:nth-of-type(2)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "viewport",
+          "label": "VIEWPORT",
+          "default": "169",
+          "options": [
+            {
+              "id": "169",
+              "label": "16:9 1366x768",
+              "apply": {
+                "click": [
+                  "#vprow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "219",
+              "label": "21:9 2560x1080",
+              "apply": {
+                "click": [
+                  "#vprow button:nth-of-type(2)"
+                ]
+              }
+            },
+            {
+              "id": "laptop",
+              "label": "LAPTOP 1280x800",
+              "apply": {
+                "click": [
+                  "#vprow button:nth-of-type(3)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "scenario",
+          "label": "SCENARIO",
+          "default": "rough",
+          "options": [
+            {
+              "id": "rough",
+              "label": "ROUGH WIN",
+              "apply": {
+                "click": [
+                  "#scenrow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "clean",
+              "label": "CLEAN SWEEP",
+              "apply": {
+                "click": [
+                  "#scenrow button:nth-of-type(2)"
+                ]
+              }
+            },
+            {
+              "id": "cap",
+              "label": "CAP AND DRY",
+              "apply": {
+                "click": [
+                  "#scenrow button:nth-of-type(3)"
+                ]
+              }
+            },
+            {
+              "id": "strained",
+              "label": "DAY 6 STRAINED",
+              "apply": {
+                "click": [
+                  "#scenrow button:nth-of-type(4)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "replay",
+          "label": "ANIMATION",
+          "options": [
+            {
+              "id": "replay",
+              "label": "REPLAY LOAD",
+              "apply": {
+                "click": [
+                  "#replay"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "desktop": {
+        "mountable": false,
+        "default": false,
+        "frameW": 0,
+        "x": 0,
+        "y": 0
+      }
+    }
+  ]
+}

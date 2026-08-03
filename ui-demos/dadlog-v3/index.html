@@ -1,0 +1,1722 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>KP demo: DAD.LOG (instrument panel)</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=VT323&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" />
+<link rel="stylesheet" href="../_shared/kp.css" />
+<link rel="stylesheet" href="../_shared/system.css" />
+<style>
+/* DAD.LOG rebuilt to the KP/OS v3 instrument-panel spec
+ * (cycle ux-2026-07-31-dadlog-v3; laws in ../RULINGS.md, worked example
+ * ../loadout-eva/).
+ *
+ * The window still mounts DAD'S OWN VOLUME read-only through a forensic
+ * recovery tool: that fiction, and every player-facing string, is
+ * carried over verbatim from the integrated window. This is a PURE UI
+ * pass (RULINGS.md "Process"), so nothing here changes what the player
+ * must understand.
+ *
+ * The three v3 problems for THIS panel:
+ *  1. COLOUR IS ROLES. The alarm on an archive reader is the DAMAGED
+ *     segment, so --r-warn is scoped to exactly that and nothing else.
+ *     --r-hazard carries the ambient red (window edge, doc brackets,
+ *     stripe divider, READ ONLY). --r-aux is the scan, a different
+ *     signal class from bench data.
+ *  2. HEIGHT. The integrated window runs past 900px; the ceiling is
+ *     ~700. The main grid is a FIXED height and the document paginates
+ *     into it, which is the no-scrollbar law made structural rather
+ *     than hoped for.
+ *  3. SCALING. Every size is a clamp() on cqi against the window's own
+ *     inline size, one breakpoint at 700px, and all three supported
+ *     viewports render the same arrangement.
+ */
+
+/* ---------- ROLE TOKENS ----------
+ * Copied from loadout-eva/index.html verbatim per RULINGS.md law 1: do
+ * not retype the hexes, and do not hand-pick a colour per surface. The
+ * :root defaults collapse every role back onto the single v2 accent, so
+ * a page with no data-scheme renders exactly as v2 did. */
+:root {
+  --r-struct: var(--ch-dim);
+  --r-line: var(--ch);
+  --r-data: var(--ch-hot);
+  --r-ok: var(--ch);
+  --r-warn: var(--ch);
+  --r-aux: var(--ch);
+  --r-hazard: var(--ch);
+  --r-note: var(--ch-dim);
+  --r-ok-glow: var(--px-glow);
+  --r-warn-glow: var(--px-glow);
+}
+:root[data-scheme="nerv"] {
+  --px-void: #0a0603;
+  --ch: #ff9a1f;
+  --ch2: #c2431a;
+  --ch-hot: #ffe9c4;
+  --r-struct: #a86a22;
+  --r-line: #ff9a1f;
+  --r-data: #ffe9c4;
+  --r-ok: #8dff3a;
+  --r-warn: #ff2a17;
+  --r-aux: #23d3ff;
+  --r-hazard: #d1381a;
+  --r-note: #6ea8ff;
+  --r-ok-glow: color-mix(in srgb, #8dff3a 45%, transparent);
+  --r-warn-glow: color-mix(in srgb, #ff2a17 60%, transparent);
+}
+:root[data-scheme="tokyo"] {
+  --px-void: #16161e;
+  --ch: #7aa2f7;
+  --ch2: #414868;
+  --ch-hot: #c0caf5;
+  --r-struct: #414868;
+  --r-line: #7aa2f7;
+  --r-data: #c0caf5;
+  --r-ok: #9ece6a;
+  --r-warn: #f7768e;
+  --r-aux: #7dcfff;
+  --r-hazard: #ff9e64;
+  --r-note: #bb9af7;
+  --r-ok-glow: color-mix(in srgb, #9ece6a 45%, transparent);
+  --r-warn-glow: color-mix(in srgb, #f7768e 55%, transparent);
+}
+
+body { overflow: auto; display: block; height: auto; min-height: 100%; padding: 26px 16px 40px; }
+
+/* ---------- the viewport rig: a real-resolution stage, scaled to fit ---------- */
+
+.dl-fit { transform-origin: top left; }
+.dl-fitwrap { margin: 0 auto; }
+
+.dl-stage {
+  position: relative;
+  overflow: hidden;
+  background: var(--px-void);
+  border: 1px solid var(--ch-faint);
+}
+.dl-warp { position: absolute; inset: 0; display: flex; flex-direction: column; }
+
+.dl-desk {
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-conic-gradient(color-mix(in srgb, var(--ch) 4%, transparent) 0% 25%, transparent 0% 50%),
+    radial-gradient(120% 90% at 50% 0%, color-mix(in srgb, var(--ch) 5%, transparent), transparent 70%);
+  background-size: 8px 8px, auto;
+}
+.dl-deskwrap {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 22px 0 0;
+  min-height: 0;
+}
+.dl-free {
+  position: absolute;
+  top: 30px;
+  bottom: 14px;
+  border: 2px dashed var(--ch-faint);
+  opacity: 0.5;
+  display: flex;
+  align-items: flex-end;
+  padding: 6px 8px;
+  pointer-events: none;
+}
+.dl-free span { font-family: var(--kp-display); font-size: 9px; letter-spacing: 0.12em; color: var(--ch-faint); }
+.dl-free span::before { content: "// "; }
+
+.dl-stage-bar {
+  height: 44px;
+  flex: none;
+  position: relative;
+  background: var(--ch);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+}
+.dl-stage-bar span { font-family: var(--kp-display); font-size: 10px; letter-spacing: 0.14em; color: var(--px-void); }
+.dl-stage-bar i { display: block; width: 10px; height: 10px; background: var(--px-void); opacity: 0.55; }
+.dl-stage-bar .dl-bar-sp { flex: 1; background: none; opacity: 1; }
+
+/* ---------- the tube (RULINGS law 6, layers copied verbatim) ---------- */
+
+.dl-stage.crt-on { border-radius: 18px; }
+.dl-stage.crt-on .dl-glass {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 40;
+  border-radius: 16px / 20px;
+  overflow: hidden;
+}
+.dl-glass > i { position: absolute; inset: 0; display: block; }
+.dl-glass .g-scan {
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.55) 0 1px,
+    rgba(0, 0, 0, 0.12) 1px 2px,
+    rgba(255, 255, 255, 0.03) 2px 3px);
+  mix-blend-mode: multiply;
+  opacity: 0.85;
+}
+.dl-glass .g-mask {
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(255, 0, 0, 0.05) 0 1px,
+    rgba(0, 255, 0, 0.05) 1px 2px,
+    rgba(0, 0, 255, 0.05) 2px 3px);
+  mix-blend-mode: screen;
+  opacity: 0.7;
+}
+.dl-glass .g-bloom {
+  background: radial-gradient(130% 95% at 50% 42%, var(--px-glow) 0%, transparent 62%);
+  opacity: 0.14;
+  mix-blend-mode: screen;
+}
+.dl-glass .g-spec {
+  background:
+    radial-gradient(58% 42% at 26% 14%, rgba(255, 255, 255, 0.11) 0%, transparent 70%),
+    linear-gradient(163deg, rgba(255, 255, 255, 0.055) 0%, transparent 34%);
+  mix-blend-mode: screen;
+}
+.dl-glass .g-vig {
+  background:
+    radial-gradient(102% 86% at 50% 48%, transparent 52%, rgba(0, 0, 0, 0.55) 82%, rgba(0, 0, 0, 0.92) 100%);
+  box-shadow:
+    inset 0 0 46px 12px rgba(0, 0, 0, 0.75),
+    inset 0 0 130px 40px rgba(0, 0, 0, 0.45);
+}
+.dl-glass .g-bezel {
+  border-radius: 16px / 20px;
+  box-shadow:
+    inset 0 0 0 3px rgba(0, 0, 0, 0.9),
+    inset 0 2px 2px 3px rgba(255, 255, 255, 0.07),
+    inset 0 -3px 3px 3px rgba(0, 0, 0, 0.6);
+}
+
+/* ---------- the window frame ---------- */
+
+.term {
+  width: var(--dl-win, 1040px);
+  flex: none;
+  border: 3px solid var(--r-hazard);
+  background: var(--px-void);
+  position: relative;
+  z-index: 5;
+  filter:
+    drop-shadow(9px 9px 0 rgba(0, 0, 0, 0.8))
+    drop-shadow(0 0 26px color-mix(in srgb, var(--ch) 25%, transparent));
+}
+.term-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--ch);
+  padding: 7px 12px 7px 14px;
+}
+.term-bar h1 { font-family: var(--kp-display); font-size: 13px; letter-spacing: 0.16em; color: var(--px-void); font-weight: 400; }
+.term-glyphs { display: flex; gap: 7px; align-items: center; }
+.term-glyphs i { display: block; background: var(--px-void); }
+.term-glyphs i:nth-child(1) { width: 11px; height: 3px; margin-top: 9px; }
+.term-glyphs i:nth-child(2) { width: 11px; height: 11px; background: transparent; border: 3px solid var(--px-void); }
+.term-glyphs i:nth-child(3) { width: 11px; height: 11px; }
+
+.term-body { position: relative; padding: 12px 14px; }
+.term-body::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: repeating-conic-gradient(color-mix(in srgb, var(--ch) 5%, transparent) 0% 25%, transparent 0% 50%);
+  background-size: 4px 4px;
+}
+.term-body > * { position: relative; }
+
+/* ---------- the container that drives every size ---------- */
+
+.dl { container-type: inline-size; container-name: dl; }
+
+.dl-grid {
+  display: grid;
+  gap: 9px;
+  grid-template-columns: 1fr;
+  grid-template-areas: "mast" "main" "foot";
+  /* cqi, never vw. There is exactly ONE container on this page, so every
+   * token below resolves against the window's own inline size no matter
+   * which column it is used in. */
+  --dl-fs-body: clamp(19px, calc(0.9cqi + 17px), 21px);
+  --dl-fs-label: clamp(9px, calc(0.5cqi + 8.4px), 11px);
+  --dl-fs-micro: clamp(8px, calc(0.35cqi + 7.6px), 9px);
+  --dl-fs-mono: clamp(12px, calc(0.5cqi + 11px), 14px);
+  /* the rail's own step, one below the chip mono: a filename is the
+   * IDENTITY of a file, so the budget is set by the longest shipped one
+   * (CONSULT_SUMMARY.SCN, 19 chars) rather than letting it ellipsis */
+  --dl-fs-file: clamp(11px, calc(0.4cqi + 10.5px), 13px);
+  --dl-fs-hero: clamp(30px, 5.4cqi, 56px);
+  --dl-fs-rec: clamp(20px, 2.6cqi, 28px);
+  --dl-rail: 226px;
+  --dl-media: 256px;
+  /* 560, up from 520 (review note 1: "not enough vertical room on the
+   * recovered files entries"). Ten 48px rows plus their gaps need 516px
+   * of rail, which 520 could not give even with the line-heights fixed.
+   * It costs 40px of window, landing at 731px: over the ~700 target,
+   * inside the 820 ceiling, and level with the approved reference
+   * build's own 727px worst case. The document body gets the 40px too,
+   * so fewer artifacts page. */
+  --dl-mainh: 560px;
+}
+
+/* ---------- Z4 (ambient) masthead: the volume, the recovery, the filter ---------- */
+
+/* nowrap is load bearing: at 1006px and 926px of content this row used
+ * to wrap its tab strip onto a second line while 1086px did not, which
+ * is three viewports rendering two different arrangements. Everything in
+ * here is budgeted to fit the NARROWEST supported window. */
+.dl-mast {
+  grid-area: mast;
+  border: 1px solid var(--r-struct);
+  background: color-mix(in srgb, var(--ch) 4%, var(--px-void));
+  padding: 6px 10px 7px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: nowrap;
+}
+/* the gated volume string, verbatim, but DEMOTED: the instrument beside
+ * it is the readable form of the same fact, so this is the copy record
+ * rather than a thing the eye stops on. Its left rule is the masthead's
+ * ambient hazard channel, and it is static forever. */
+.dl-volline {
+  font-family: var(--kp-mono);
+  font-size: clamp(11px, calc(0.35cqi + 10px), 13px);
+  color: var(--ch-dim);
+  border-left: 4px solid var(--r-hazard);
+  padding-left: 8px;
+  flex: none;
+}
+
+.dl-recwrap { display: flex; align-items: center; gap: 7px; flex: none; }
+.dl-recnum {
+  font-family: var(--kp-display);
+  font-size: var(--dl-fs-rec);
+  line-height: 0.9;
+  color: var(--r-data);
+  text-shadow: 0 0 16px var(--px-glow);
+  font-variant-numeric: tabular-nums;
+}
+.dl-recnum em { font-style: normal; }
+.dl-recnum b { font-weight: 400; color: var(--r-note); font-size: 0.55em; }
+.dl-recbar { display: flex; gap: 2px; }
+.dl-recbar i { display: block; width: 7px; height: 15px; background: transparent; border: 2px solid var(--ch-faint); }
+.dl-recbar i.on { background: var(--r-line); border-color: var(--r-line); box-shadow: 0 0 6px var(--px-glow); }
+.dl-reclabel { font-family: var(--kp-display); font-size: var(--dl-fs-micro); letter-spacing: 0.16em; color: var(--r-note); }
+
+.dl-tabs { display: flex; gap: 4px; margin-left: auto; flex: none; }
+.dl-tabs button {
+  font-family: var(--kp-display);
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  padding: 6px 7px;
+  background: transparent;
+  border: 2px solid var(--ch-dim);
+  color: var(--ch);
+}
+.dl-tabs button:hover { border-color: var(--ch-hot); }
+/* the live filter is NOMINAL, and carries a reticle so the signal is
+ * never colour alone */
+.dl-tabs button.on { background: var(--r-ok); border-color: var(--r-ok); color: var(--px-void); position: relative; }
+.dl-tabs button.on::before, .dl-tabs button.on::after { content: ""; position: absolute; width: 7px; height: 7px; }
+.dl-tabs button.on::before { top: -4px; left: -4px; border-top: 2px solid var(--r-ok); border-left: 2px solid var(--r-ok); }
+.dl-tabs button.on::after { bottom: -4px; right: -4px; border-bottom: 2px solid var(--r-ok); border-right: 2px solid var(--r-ok); }
+
+/* ---------- the fixed-height main row ---------- */
+
+.dl-main {
+  grid-area: main;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  height: var(--dl-mainh);
+  min-height: 0;
+}
+
+/* ---------- Z3 rail: the index ---------- */
+
+.dl-rail {
+  border: 1px solid var(--r-struct);
+  background: color-mix(in srgb, var(--ch) 3%, var(--px-void));
+  padding: 8px 8px 9px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+.dl-railhead {
+  font-family: var(--kp-display);
+  font-size: var(--dl-fs-micro);
+  letter-spacing: 0.16em;
+  color: var(--r-note);
+  flex: none;
+}
+.dl-list { display: flex; flex-direction: column; gap: 4px; min-height: 0; }
+
+/* The filename owns the whole top line; the doctype tag and the state
+ * caption share the line below it. An earlier pass put all three on one
+ * line and every long filename ellipsised, which on an index of ten
+ * files makes half of them unidentifiable.
+ *
+ * EVERY line-height in here is explicit, and that is the fix for the
+ * review's first note. With the inherited default the two lines needed
+ * 53px inside a 44px row, so the doctype tag climbed on top of the
+ * filename. Type at a fixed row height has to be measured, not assumed:
+ * the natural height is asserted against the row height in the harness
+ * now, so it cannot drift back. */
+.dl-row {
+  --dl-rowpx: 8px;
+  --dl-rowpt: 6px;
+  --dl-rowpb: 7px;
+  position: relative;
+  text-align: left;
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr);
+  column-gap: 7px;
+  row-gap: 3px;
+  align-items: center;
+  padding: var(--dl-rowpt) var(--dl-rowpx) var(--dl-rowpb);
+  border: 2px solid var(--r-struct);
+  background: color-mix(in srgb, var(--ch) 4%, var(--px-void));
+  color: var(--ch);
+  height: 48px;
+  flex: none;
+}
+.dl-row:hover:not(.ghost) { border-color: var(--ch-hot); }
+.dl-row > b {
+  grid-area: 1 / 1 / 3 / 2;
+  align-self: center;
+  font-family: var(--kp-display);
+  font-size: var(--dl-fs-micro);
+  line-height: 1;
+  font-weight: 400;
+  color: var(--r-note);
+}
+.dl-row > span {
+  grid-area: 1 / 2 / 2 / 4;
+  font-family: var(--kp-mono);
+  font-size: var(--dl-fs-file);
+  line-height: 1.1;
+  font-weight: 600;
+  color: var(--r-data);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* :not(.dl-flash) throughout, because the alarm plate is also an <i>.
+ * The review's second note was this exact bug: the plate matched the
+ * chip rules, took a GRID AREA, and an absolutely positioned grid item
+ * is bounded by its area, so the whole-row inverse flip rendered as a
+ * 9x21px blinking box at the end of the DAMAGED tag. */
+.dl-row > i:not(.dl-flash) {
+  grid-area: 2 / 2 / 3 / 3;
+  font-style: normal;
+  font-family: var(--kp-display);
+  font-size: 8px;
+  line-height: 1;
+  letter-spacing: 0.1em;
+  background: var(--r-struct);
+  color: var(--px-void);
+  padding: 3px 5px;
+}
+.dl-row > em {
+  grid-area: 2 / 3 / 3 / 4;
+  font-style: normal;
+  font-family: var(--kp-display);
+  font-size: 8px;
+  line-height: 1;
+  letter-spacing: 0.12em;
+  color: var(--r-note);
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* the open file: NOMINAL, inverse-filled, plus corner ticks */
+.dl-row.on { background: var(--r-ok); border-color: var(--r-ok); }
+.dl-row.on > b, .dl-row.on > span, .dl-row.on > em { color: var(--px-void); }
+.dl-row.on > i:not(.dl-flash) { background: var(--px-void); color: var(--r-ok); }
+.dl-row.on::before, .dl-row.on::after { content: ""; position: absolute; width: 8px; height: 8px; }
+.dl-row.on::before { top: -5px; left: -5px; border-top: 2px solid var(--r-ok); border-left: 2px solid var(--r-ok); }
+.dl-row.on::after { bottom: -5px; right: -5px; border-bottom: 2px solid var(--r-ok); border-right: 2px solid var(--r-ok); }
+
+/* THE ALARM. --r-warn appears on exactly one thing on this surface: the
+ * damaged segment. It is never colour alone: the row also floods inverse
+ * video (the shipped danger idiom) and it MOVES, which is the one
+ * channel the ambient hazard chrome structurally never gets. */
+.dl-row.dmg { border-color: var(--r-warn); background: color-mix(in srgb, var(--r-warn) 12%, var(--px-void)); }
+/* the damaged row's filename is four characters, so its DAMAGED tag
+ * moves up beside it and the caption gets the whole second line. It was
+ * ellipsising "damaged, partial recovery" otherwise, and that sentence
+ * is the shipped copy telling the player the file is not lost. */
+.dl-row.dmg > span { grid-area: 1 / 2 / 2 / 3; }
+.dl-row.dmg > i:not(.dl-flash) { grid-area: 1 / 3 / 2 / 4; justify-self: end; }
+.dl-row.dmg > em { grid-area: 2 / 2 / 3 / 4; }
+.dl-row.dmg > span, .dl-row.dmg > b { color: var(--r-warn); }
+.dl-row.dmg > i:not(.dl-flash) { background: var(--r-warn); color: var(--px-void); }
+.dl-row.dmg > em { color: var(--r-warn); text-transform: none; letter-spacing: 0.06em; }
+.dl-row.dmg.on { background: var(--r-warn); border-color: var(--r-warn); }
+.dl-row.dmg.on > b, .dl-row.dmg.on > span, .dl-row.dmg.on > em { color: var(--px-void); }
+.dl-row.dmg.on > i:not(.dl-flash) { background: var(--px-void); color: var(--r-warn); }
+.dl-row.dmg.on::before { border-top-color: var(--r-warn); border-left-color: var(--r-warn); }
+.dl-row.dmg.on::after { border-bottom-color: var(--r-warn); border-right-color: var(--r-warn); }
+/* composited, not painted: an opacity cross-fade on a promoted layer,
+ * which is the cheap way to reach the inverse flip (RULINGS law 7) */
+/* An absolutely positioned child of a GRID container with no placement
+ * is bounded by the grid's PADDING box, so the insets are derived from
+ * the row's own padding tokens plus its 2px border. Hard-coding -2px
+ * left the flip inset by the padding on every side. */
+.dl-flash {
+  position: absolute;
+  inset:
+    calc(-1 * var(--dl-rowpt) - 2px)
+    calc(-1 * var(--dl-rowpx) - 2px)
+    calc(-1 * var(--dl-rowpb) - 2px);
+  background: var(--r-warn);
+  mix-blend-mode: difference;
+  opacity: 0;
+  pointer-events: none;
+  will-change: opacity;
+}
+/* steps() applies PER KEYFRAME INTERVAL, so `steps(2)` over 0 / 50 / 100
+ * produces 0, 0.5, 1, 0.5: half the cycle sits at a 50% difference blend,
+ * which on a full-row plate is an unreadable muddy block rather than an
+ * inverse flip. `steps(1, end)` holds each interval flat and jumps at its
+ * end, which is the square wave the idiom actually wants. */
+.dl-row.dmg .dl-flash { animation: dl-alarm 1.2s steps(1, end) infinite; }
+@keyframes dl-alarm { 0% { opacity: 0; } 50% { opacity: 1; } 100% { opacity: 0; } }
+
+/* equal-footprint empty state: an unrecovered segment holds exactly the
+ * room a recovered one does, so a day-1 volume and a finished volume are
+ * the same shape and the recovery meter has something to mean */
+.dl-row.ghost {
+  background: transparent;
+  border: 2px dashed var(--ch-faint);
+  cursor: not-allowed;
+}
+.dl-row.ghost > b, .dl-row.ghost > em { color: var(--ch-faint); }
+.dl-row.ghost > span { color: var(--ch-faint); letter-spacing: 0.08em; }
+.dl-row.ghost > i:not(.dl-flash) { background: transparent; border: 1px solid var(--ch-faint); color: var(--ch-faint); padding: 2px 4px; }
+
+.dl-railempty { font-family: var(--kp-term); font-size: var(--dl-fs-body); line-height: 1.1; color: var(--ch-dim); padding: 4px 2px; }
+
+/* ---------- Z1/Z2 document: the focal panel ---------- */
+
+.dl-doc {
+  position: relative;
+  border: 1px solid var(--r-struct);
+  background: color-mix(in srgb, var(--ch) 3%, var(--px-void));
+  padding: 11px 13px 10px;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow: hidden;
+}
+/* hairline + heavy corner brackets, scoped to the FOCAL panel only */
+.dl-bracket, .dl-bracket > i { position: absolute; pointer-events: none; }
+.dl-bracket { inset: -1px; }
+.dl-bracket > i { inset: 0; }
+.dl-bracket::before, .dl-bracket::after,
+.dl-bracket > i::before, .dl-bracket > i::after { content: ""; position: absolute; width: 24px; height: 24px; }
+.dl-bracket::before { top: 0; left: 0; border-top: 4px solid var(--r-hazard); border-left: 4px solid var(--r-hazard); }
+.dl-bracket::after { top: 0; right: 0; border-top: 4px solid var(--r-hazard); border-right: 4px solid var(--r-hazard); }
+.dl-bracket > i::before { bottom: 0; left: 0; border-bottom: 4px solid var(--r-hazard); border-left: 4px solid var(--r-hazard); }
+.dl-bracket > i::after { bottom: 0; right: 0; border-bottom: 4px solid var(--r-hazard); border-right: 4px solid var(--r-hazard); }
+
+/* the recovery beat */
+.dl-beat {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: var(--px-void);
+  font-family: var(--kp-display);
+  font-size: var(--dl-fs-label);
+  letter-spacing: 0.16em;
+  color: var(--ch);
+}
+.dl-beat.mounted { color: var(--r-ok); }
+.dl-beat.fold { animation: dl-fold 90ms steps(3) forwards; }
+@keyframes dl-fold { to { transform: scaleY(0); opacity: 0; } }
+
+.dl-metarow { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; flex: none; }
+.dl-chip {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  border: 2px solid var(--ch-faint);
+  padding: 2px 6px 3px;
+}
+.dl-chip span { font-family: var(--kp-display); font-size: var(--dl-fs-micro); letter-spacing: 0.14em; color: var(--r-note); }
+.dl-chip span::before { content: "// "; opacity: 0.7; }
+.dl-chip em { font-style: normal; font-family: var(--kp-mono); font-size: var(--dl-fs-mono); font-weight: 600; color: var(--ch-hot); }
+
+/* THE FOCAL ELEMENT. Everything else on this surface is annotation
+ * around a recovered document title. */
+.dl-hero {
+  font-family: var(--kp-display);
+  font-size: var(--dl-fs-hero);
+  line-height: 0.94;
+  letter-spacing: 0.02em;
+  color: var(--r-data);
+  text-shadow: 0 0 22px var(--px-glow);
+  flex: none;
+  min-height: 0.94em;
+}
+.dl-doc.dmg .dl-hero { color: var(--r-warn); text-shadow: 0 0 20px var(--r-warn-glow); }
+
+.dl-prov {
+  font-family: var(--kp-term);
+  font-size: var(--dl-fs-body);
+  line-height: 1.05;
+  color: var(--r-note);
+  flex: none;
+}
+.dl-prov::before { content: "// "; }
+
+/* hazard-stripe divider: labels the zone boundary between the metadata
+ * block and the artifact itself. Ambient chrome, and static forever. */
+.dl-stripe { height: 7px; flex: none; background: repeating-linear-gradient(45deg, var(--r-hazard) 0 3px, transparent 3px 7px); }
+
+/* the paged body region. Fixed height, overflow hidden: a document that
+ * does not fit does not scroll, it turns a page (RULINGS law 8). */
+.dl-page { flex: 1; min-height: 0; overflow: hidden; position: relative; }
+.dl-pagein { display: flex; flex-direction: column; gap: 8px; }
+.dl-block { font-family: var(--kp-term); font-size: var(--dl-fs-body); line-height: 1.1; color: var(--ch); }
+.dl-block.hide { display: none; }
+
+/* the player's voice stays quarantined in its own dashed box: the
+ * artifact is Dad's, the annotation is not */
+.dl-bench { border: 2px dashed var(--ch-dim); padding: 6px 9px 7px; display: flex; flex-direction: column; gap: 2px; }
+.dl-bench b { font-family: var(--kp-display); font-size: var(--dl-fs-micro); letter-spacing: 0.18em; color: var(--r-note); font-weight: 400; }
+.dl-bench p { font-family: var(--kp-term); font-size: var(--dl-fs-body); line-height: 1.1; color: var(--ch-hot); }
+
+/* min-height pins this row so hiding the page buttons cannot change the
+ * page box, which would repaginate, which could change whether the
+ * buttons are hidden. A feedback loop is a real risk once layout feeds
+ * the paginator that feeds layout. */
+.dl-docfoot { display: flex; align-items: center; gap: 10px; flex: none; min-height: 26px; }
+.dl-wave { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.dl-wave svg { display: block; }
+.dl-wave polyline { fill: none; stroke: var(--r-line); stroke-width: 1; }
+.dl-wave span { font-family: var(--kp-mono); font-size: 10px; color: var(--ch-faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.dl-pager { display: flex; align-items: center; gap: 6px; margin-left: auto; flex: none; }
+.dl-pager em { font-style: normal; font-family: var(--kp-display); font-size: var(--dl-fs-micro); letter-spacing: 0.14em; color: var(--r-note); }
+.dl-pager button {
+  font-family: var(--kp-display);
+  font-size: var(--dl-fs-micro);
+  letter-spacing: 0.1em;
+  padding: 4px 8px;
+  background: transparent;
+  border: 2px solid var(--ch-dim);
+  color: var(--ch);
+}
+.dl-pager button:hover:not(:disabled) { border-color: var(--ch-hot); }
+.dl-pager button:disabled { border-style: dashed; color: var(--ch-faint); border-color: var(--ch-faint); cursor: not-allowed; }
+/* At the reviewed height every shipped artifact lands on one page, so
+ * the two step buttons would be permanently dead chrome. The PAGE
+ * readout stays, because it is a true statement about the document;
+ * visibility rather than display keeps the row from moving. */
+.dl-pager[data-single="1"] button { visibility: hidden; }
+
+/* ---------- Z2 media: the attachment ---------- */
+
+.dl-media { display: flex; flex-direction: column; gap: 7px; min-width: 0; min-height: 0; }
+
+/* 1:1, never downscaled. The source is 240x320 exactly, generated at the
+ * cell size by pipeline/tools/dither.py, so one dither dot is one CSS
+ * pixel. To show less, crop; never resample. */
+/* 244x324 outer, because box-sizing is border-box repo wide: the 2px
+ * bezel each side has to be PAID FOR, or the print gets silently cropped
+ * by 4px, which is exactly the accidental resample law 5 forbids. */
+.dl-scan {
+  position: relative;
+  width: 244px;
+  height: 324px;
+  flex: none;
+  overflow: hidden;
+  border: 2px solid var(--r-struct);
+  background: var(--px-void);
+}
+.dl-scan img { position: absolute; top: 0; left: 0; display: block; image-rendering: pixelated; }
+/* INK TINT is the house rule: the 1-bit print multiplied to --r-aux so
+ * the scan recolours with the scheme. TRUE 1-BIT drops the tint, which
+ * is the print's actual colour, since the source art is monochrome ink.
+ * FULL COLOUR is a COLOURISATION of that same frame, gradient-mapped and
+ * re-dithered to 16 colours, not a reveal of colour that was there. */
+.dl-scan .tint {
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-conic-gradient(rgba(0, 0, 0, 0.28) 0% 25%, transparent 0% 50%),
+    var(--r-aux);
+  background-size: 2px 2px, auto;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+.dl-media[data-scan="true"] .tint, .dl-media[data-scan="color"] .tint { display: none; }
+.dl-scan .shade { position: absolute; inset: 0; background: var(--px-void); transform-origin: top; transform: scaleY(1); }
+.dl-scan.on .shade { animation: dl-wipe 620ms steps(13) forwards; }
+@keyframes dl-wipe { to { transform: scaleY(0); } }
+.dl-scantag {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  font-family: var(--kp-display);
+  font-size: 8px;
+  letter-spacing: 0.12em;
+  background: var(--r-aux);
+  color: var(--px-void);
+  padding: 3px 5px;
+}
+.dl-scancap { font-family: var(--kp-display); font-size: var(--dl-fs-micro); letter-spacing: 0.14em; color: var(--r-note); flex: none; }
+
+/* the no-payload cell holds exactly the room a scan does */
+.dl-nopay {
+  width: 244px;
+  height: 324px;
+  flex: none;
+  border: 2px dashed var(--ch-dim);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  background: repeating-conic-gradient(color-mix(in srgb, var(--ch) 5%, transparent) 0% 25%, transparent 0% 50%) 0 0 / 8px 8px;
+}
+.dl-nopay b { font-family: var(--kp-display); font-size: var(--dl-fs-label); letter-spacing: 0.16em; color: var(--ch-dim); font-weight: 400; }
+.dl-nopay i { font-style: normal; font-family: var(--kp-display); font-size: var(--dl-fs-micro); letter-spacing: 0.14em; color: var(--r-note); }
+
+/* the source-media plate: ambient furniture that fills the media column
+ * to the doc column's height, so nothing pays for a row of its own */
+.dl-plate {
+  flex: 1;
+  min-height: 0;
+  border: 1px solid var(--ch-faint);
+  padding: 5px 8px 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+}
+.dl-plate > div { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.dl-plate span { font-family: var(--kp-display); font-size: var(--dl-fs-micro); letter-spacing: 0.12em; color: var(--r-note); }
+.dl-plate em { font-style: normal; font-family: var(--kp-mono); font-size: 11px; color: var(--ch); }
+
+/* ---------- Z4 footline ---------- */
+
+.dl-foot {
+  grid-area: foot;
+  border: 1px solid var(--ch-faint);
+  padding: 4px 9px 5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.dl-foot button {
+  font-family: var(--kp-display);
+  font-size: var(--dl-fs-micro);
+  letter-spacing: 0.12em;
+  padding: 5px 10px;
+  background: transparent;
+  border: 2px solid var(--ch-dim);
+  color: var(--ch);
+}
+.dl-foot button:hover:not(:disabled) { background: var(--ch); color: var(--px-void); }
+.dl-foot button:disabled { border-style: dashed; color: var(--ch-faint); border-color: var(--ch-faint); cursor: not-allowed; }
+.dl-banks { margin-left: auto; display: flex; gap: 12px; min-width: 0; overflow: hidden; }
+.dl-banks div { display: flex; gap: 7px; align-items: baseline; }
+.dl-banks b { font-family: var(--kp-display); font-size: 8px; letter-spacing: 0.14em; color: var(--r-note); font-weight: 400; }
+.dl-banks span { font-family: var(--kp-mono); font-size: 10px; color: var(--ch-faint); white-space: nowrap; }
+
+/* ================= WIDE TIER =================
+ * One binary breakpoint at 700px of content inline size, so 16:9, 21:9
+ * and the 1280x800 laptop all render the SAME arrangement. */
+
+@container dl (min-width: 700px) {
+  .dl-main { grid-template-columns: var(--dl-rail) minmax(0, 1fr) var(--dl-media); }
+}
+
+/* the tight end of WIDE (the 926px laptop content box): the rail gives
+ * back 20px and the media column keeps its 240px cell untouched, because
+ * cropping a 1:1 print smaller is the one thing law 5 forbids */
+@container dl (min-width: 700px) and (max-width: 960px) {
+  .dl-grid { --dl-rail: 208px; }
+  .dl-doc { padding: 10px 11px 9px; }
+}
+
+/* ================= NARROW TIER: a tiling fallback, not a viewport ==== */
+
+@container dl (max-width: 699.98px) {
+  .dl-main { grid-template-rows: auto minmax(0, 1fr); height: auto; }
+  .dl-media { display: none; }
+  .dl-list { flex-direction: row; overflow: hidden; }
+  .dl-row { width: 190px; }
+  .dl-doc { min-height: 420px; }
+}
+
+/* ---------- the demo rig ---------- */
+
+.rig { top: auto; right: auto; bottom: 12px; left: 12px; }
+.rig em { font-style: normal; color: #ffd75e; }
+.rig .rig-meas { font-family: var(--kp-mono); font-size: 10px; color: #999; }
+.rig .rig-over { color: #ff6b6b; }
+
+@media (prefers-reduced-motion: reduce) {
+  .dl-scan.on .shade, .dl-beat.fold { animation: none; }
+  .dl-scan .shade { transform: scaleY(0); }
+  /* the alarm falls back to the static inverse flood, which is still
+   * inverse video and still colourblind safe */
+  .dl-row.dmg .dl-flash { animation: none; opacity: 0; }
+}
+</style>
+</head>
+<body>
+
+<div class="dl-fitwrap" id="fitwrap">
+  <div class="dl-fit" id="fit">
+    <div class="dl-stage crt-on" id="stage">
+      <div class="dl-warp">
+        <div class="dl-desk" aria-hidden="true"></div>
+        <div class="dl-deskwrap">
+          <div class="dl-free" id="free" aria-hidden="true"><span id="freelabel">FREE DESK</span></div>
+
+          <div class="term" id="term">
+            <header class="term-bar">
+              <h1>DAD.LOG</h1>
+              <span class="term-glyphs"><i></i><i></i><i></i></span>
+            </header>
+            <div class="term-body">
+              <div class="dl">
+                <div class="dl-grid" id="grid">
+
+                  <!-- Z4 MASTHEAD -->
+                  <div class="dl-mast">
+                    <span class="dl-volline" id="volline">DAD.VOL // READ ONLY // RECOVERY 0/9</span>
+                    <div class="dl-recwrap">
+                      <span class="dl-reclabel">RECOVERY</span>
+                      <span class="dl-recnum"><em id="recn">0</em><b>/</b><em id="recd">9</em></span>
+                      <span class="dl-recbar" id="recbar"></span>
+                    </div>
+                    <div class="dl-tabs" id="tabs"></div>
+                  </div>
+
+                  <!-- FIXED-HEIGHT MAIN ROW -->
+                  <div class="dl-main">
+                    <!-- Z3 RAIL -->
+                    <aside class="dl-rail">
+                      <span class="dl-railhead">// RECOVERED FILES _</span>
+                      <div class="dl-list" id="list"></div>
+                    </aside>
+
+                    <!-- Z1/Z2 DOCUMENT: the focal panel -->
+                    <section class="dl-doc" id="doc">
+                      <div class="dl-beat" id="beat"><span id="beattext">READING SEGMENT...</span><span class="kp-boot-cursor">_</span></div>
+                      <div class="dl-metarow" id="metarow"></div>
+                      <h2 class="dl-hero" id="hero"></h2>
+                      <p class="dl-prov" id="prov"></p>
+                      <i class="dl-stripe" aria-hidden="true"></i>
+                      <div class="dl-page" id="pagebox"><div class="dl-pagein" id="pagein"></div></div>
+                      <div class="dl-docfoot">
+                        <span class="dl-wave" id="wave"></span>
+                        <span class="dl-pager" id="pager">
+                          <em id="pagelabel">PAGE 1/1</em>
+                          <button type="button" id="pprev">PREV PAGE</button>
+                          <button type="button" id="pnext">NEXT PAGE</button>
+                        </span>
+                      </div>
+                      <i class="dl-bracket" aria-hidden="true"><i></i></i>
+                    </section>
+
+                    <!-- Z2 MEDIA -->
+                    <aside class="dl-media" id="media" data-scan="ink">
+                      <div id="scancell"></div>
+                      <span class="dl-scancap" id="scancap"></span>
+                      <div class="dl-plate" id="plate"></div>
+                    </aside>
+                  </div>
+
+                  <!-- Z4 FOOTLINE -->
+                  <div class="dl-foot">
+                    <button type="button" id="fprev">PREV</button>
+                    <button type="button" id="fnext">NEXT</button>
+                    <span class="kp-chip-pct"><span>FILE</span><em id="filechip">0/0</em></span>
+                    <div class="dl-banks" id="banks" aria-hidden="true"></div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dl-stage-bar">
+          <span>KP/OS</span>
+          <i></i>
+          <span>DAD.LOG</span>
+          <span class="dl-bar-sp"></span>
+          <span id="barclock">02:14</span>
+        </div>
+      </div>
+
+      <div class="dl-glass" id="glass" aria-hidden="true">
+        <i class="g-scan"></i>
+        <i class="g-mask"></i>
+        <i class="g-bloom"></i>
+        <i class="g-spec"></i>
+        <i class="g-vig"></i>
+        <i class="g-bezel"></i>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="rig">
+  <strong>DEMO RIG</strong>
+  <span>Scheme</span>
+  <div class="rig-row" id="schemerow"></div>
+  <span>Scan</span>
+  <div class="rig-row" id="scanrow"></div>
+  <span>CRT</span>
+  <div class="rig-row" id="crtrow"></div>
+  <span>Viewport</span>
+  <div class="rig-row" id="vprow"></div>
+  <span>Run state</span>
+  <div class="rig-row" id="staterow"></div>
+  <div class="rig-row"><button id="replay">REPLAY RECOVERY</button></div>
+  <span class="rig-meas" id="meas"></span>
+  <span>DAD.LOG on the v3 instrument-panel system. Colour is roles: ivory data, blue annotation, GREEN nominal (the open file, the live filter), RED the alarm and ONLY the alarm (the damaged segment, which also floods inverse video and blinks, while the ambient hazard red never moves), cyan the scan. The main row is a FIXED height and long documents PAGE rather than scroll. Unrecovered segments hold the same room a recovered one does, so FIRST OPEN and OPENED are the same shape.</span>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ================= shipped content, transcribed =================
+   * kernel-panic-site/app/src/game/content/journal.ts, verbatim: the
+   * entries, DADLOG_CHROME and visibleJournal. Copy is NOT authored
+   * here; this is a pure UI pass. */
+
+  var JOURNAL_ENTRIES = [
+    {
+      id: "will", unlockAtRun: 0, kind: "note",
+      filename: "WILL.SCN", doctype: "SCAN",
+      provenance: "scanned paper, found taped inside the register, folded in four",
+      title: "THE WILL",
+      body: [
+        "Kids. The shop goes to both of you. Do not argue about it, I can hear you arguing about it from here.",
+        "Rhea takes the counter. You take the bench. You are bad with people and she is bad with computers. Between the two of you there is exactly one whole shopkeeper. That was always the design.",
+        "The back room stays locked until it does not. You will know the difference. Love, Dad."
+      ],
+      benchNote: "Found this before I found anything else in this place. Should have started here."
+    },
+    {
+      id: "backroom", unlockAtRun: 0, kind: "memo",
+      filename: "TICKET_QUERY.LOG", doctype: "LOG",
+      provenance: "shop system query, bench terminal, day one",
+      title: "THE BACK ROOM",
+      body: [
+        "QUERY: BACK ROOM TOWER. TICKET NUMBER. OWNER OF RECORD. SERVICE HISTORY.",
+        "RESULT: NO TICKET. NO OWNER. NO ENTRY IN THIS SYSTEM, EVER.",
+        "ACCESS LOG, SAME MORNING. BACK ROOM DOOR. LOCK STATUS: OPEN. METHOD: KEY MATCH, FIRST ATTEMPT, NO FORCE LOGGED."
+      ],
+      benchNote: "Rhea calls it quarantine, a virus Dad walled off years back and never wiped. Maybe. It opened like it was expecting me."
+    },
+    {
+      id: "failed1", unlockAtRun: 1, kind: "memo",
+      filename: "SESSION_001.LOG", doctype: "LOG",
+      provenance: "tower telemetry, first dive, tonight",
+      title: "ANOTHER FAILED RUN",
+      body: [
+        "SESSION LOG. ATTEMPT 001. RESULT: LOSS. OPPONENT ENGAGED NO OFFENSIVE ROUTINE.",
+        "EVERY MOVE LOGGED. A SCORE ASSIGNED. CHANNEL CLOSED FROM THE OTHER SIDE. NO DAMAGE TAKEN, EITHER SIGNAL.",
+        "TIMESTAMP MATCHES CLOSE OF BUSINESS. NOTHING ELSE ON THIS DRIVE FOR THAT HOUR."
+      ],
+      benchNote: "It did not fight me. It graded me, then shut the door. Rhea heard me swearing from the counter. She did not ask."
+    },
+    {
+      id: "bills", unlockAtRun: 2, kind: "bill",
+      filename: "NOTICE_07.SCN", doctype: "SCAN",
+      provenance: "scanned paper, bottom drawer of the bench, one of eleven filed under W",
+      title: "FINAL NOTICE",
+      body: [
+        "MERIDIAN NEUROCARE. FINAL NOTICE. ACCOUNT NO. 118823. STATUS: PAST DUE, THIRD NOTICE.",
+        "DIAGNOSIS CODE NF-3, NEUROFILAMENT DEGRADATION, STAGE THREE. ACCOUNT STATUS: REFERRED TO COLLECTIONS, PAYMENT PLAN IN DEFAULT.",
+        "REMIT PAYMENT OR CONTACT BILLING TO ARRANGE TERMS. THIS IS YOUR THIRD AND FINAL NOTICE BEFORE REFERRAL."
+      ],
+      benchNote: "There are eleven of these, filed under W for whatever, one balance alone worth more than this shop clears in a year. Stage three of what. He fixed computers. He was not a diver, as far as I knew."
+    },
+    {
+      id: "solder", unlockAtRun: 3, kind: "memo",
+      filename: "FRAGMENT_03.REC", doctype: "FRAG",
+      provenance: "partial recovery, surfaced off a lost dive, tonight",
+      title: "SOLDER SMOKE",
+      body: [
+        "Fragment surfaces only on a loss. This one has weight to it and no visible seams, like it was always meant to play whole.",
+        "A hand. A soldering iron. A small voice asking why the iron does not stick to everything.",
+        "His answer, clear as anything: 'Because it only sticks where you have cleaned. Everything joins where it is clean.'"
+      ],
+      benchNote: "I do not think these are corruption. I think they are cargo."
+    },
+    {
+      id: "receipts", unlockAtRun: 4, kind: "bill",
+      filename: "RECEIPTS.SCN", doctype: "SCAN",
+      provenance: "scanned paper, shoebox, pharmacy on 9th, six years of stubs",
+      title: "RECEIPTS",
+      body: [
+        "STRAIN SUPPRESSANT, CASH SALE. WEEKLY REFILL. PHARMACY ON 9TH, SIX YEARS OF DATED STUBS, SAME COUNTER.",
+        "DOSAGE STEPS UP EVERY FEW MONTHS LIKE A STAIRCASE, LOGGED RECEIPT TO RECEIPT.",
+        "LAST STUB DATED FOUR DAYS BEFORE HE DIED."
+      ],
+      benchNote: "Four blocks from our counter, every week, and neither of us ever heard a word about it."
+    },
+    {
+      id: "diagnosis", unlockAtRun: 5, kind: "bill",
+      filename: "CONSULT_SUMMARY.SCN", doctype: "SCAN",
+      provenance: "scanned paper, sealed envelope, never opened until now",
+      title: "THE DIAGNOSIS",
+      body: [
+        "MERIDIAN NEUROCARE. CONSULT SUMMARY. CHRONIC NEURAL STRAIN SCARRING, CUMULATIVE.",
+        "CAUSE: SUSTAINED HIGH INTENSITY DIVE ACTIVITY, ESTIMATED IN EXCESS OF NINE THOUSAND LOGGED HOURS.",
+        "RECOMMENDATION, UNDERLINED TWICE: CEASE ALL DIVE ACTIVITY IMMEDIATELY."
+      ],
+      benchNote: "The seal was never broken. He read this at the clinic, decided it changed nothing, and came home and made dinner."
+    },
+    {
+      id: "notickets", unlockAtRun: 6, kind: "memo",
+      filename: "LEDGER_XREF.QRY", doctype: "QUERY",
+      provenance: "ledger cross reference, run twice to be sure",
+      title: "NO TICKETS",
+      body: [
+        "CROSS REFERENCE: BACK ROOM TOWER AGAINST NINE THOUSAND LOGGED DIVE HOURS.",
+        "MATCHING CLIENT RECORD: NONE. MATCHING INVOICE: NONE. MATCHING PAYMENT: NONE.",
+        "HOURS ATTRIBUTE TO OPERATOR ONLY. NIGHTLY. AFTER CLOSE. YEARS."
+      ],
+      benchNote: "Nobody paid for that machine. He built it on an installment plan, and the currency was his own nervous system."
+    },
+    {
+      id: "grading", unlockAtRun: 8, kind: "memo",
+      filename: "SESSION_SUMMARY.LOG", doctype: "LOG",
+      provenance: "tower telemetry, aggregate, eight sessions logged",
+      title: "IT IS GRADING ME",
+      body: [
+        "SESSION VARIANCE REPORT. OPPONENT DIFFICULTY TRACKS OPERATOR PERFORMANCE WITHIN A NARROW BAND, SESSION OVER SESSION.",
+        "NO SESSION LOGGED AT MAXIMUM DIFFICULTY REGARDLESS OF OPERATOR SKILL FLOOR. NONE LOGGED AT MINIMUM REGARDLESS OF CEILING.",
+        "PATTERN CONSISTENT WITH ADAPTIVE INSTRUCTION. NOT CONSISTENT WITH STATIC ACCESS CONTROL."
+      ],
+      benchNote: "It is not a lock. It is a curriculum. Dad did not seal something in here. He left something waiting."
+    },
+    {
+      id: "patch", unlockAtRun: 0, requiresOpened: true, kind: "note",
+      filename: "PATCH.SYS", doctype: "SYS",
+      provenance: "full volume unlocked, recovered whole, the morning after",
+      title: "PATCH",
+      body: [
+        "DEVICE PROFILE. NAME: PATCH. NAMED BY THE HOUSE RULE, THE THING THAT HOLDS A BROKEN THING TOGETHER WHILE IT MENDS.",
+        "OPERATOR HOURS LOGGED AGAINST THIS UNIT: NINE THOUSAND PLUS. BILLS, SUPPRESSANTS, AND NIGHTS INCLUDED. ALL OF IT SPENT TEACHING IT TO RAISE THE DIFFICULTY GENTLY, BECAUSE HE KNEW HE WOULD NOT BE HERE TO DO IT HIMSELF.",
+        "LOG ENDS."
+      ],
+      benchNote: "The file ends there. Everything after this is just us in the shop. Rhea sat with it for an hour today. She still calls it the virus. It seems to like that."
+    }
+  ];
+
+  var CHROME = {
+    volumeHeaderMeta: "DAD.VOL // READ ONLY // RECOVERY {n}/{d}",
+    indexRailHeader: "// RECOVERED FILES _",
+    damagedRowText: "damaged, partial recovery",
+    damagedPage: {
+      doctype: "DAMAGED",
+      provenance: "partial recovery, more passes needed",
+      title: "????",
+      body: [
+        "SEGMENT DAMAGED. PARTIAL RECOVERY ONLY.",
+        "EVERY RUN LOGGED HERE, WIN OR LOSE, WRITES ONE NEW RECOVERY PASS. MORE PASSES RECOVER MORE OF THE SEGMENT."
+      ]
+    },
+    emptyDrawerState: "VOLUME MOUNTED. NOTHING RECOVERED YET.",
+    recoveryBeat: ["READING SEGMENT...", "RECOVERY COMPLETE. FILE MOUNTED."],
+    footChipLabel: "FILE"
+  };
+
+  function visibleJournal(meta) {
+    var unlocked = JOURNAL_ENTRIES.filter(function (e) {
+      return meta.runCount >= e.unlockAtRun && (!e.requiresOpened || meta.machineOpened);
+    });
+    var nextLocked = null;
+    for (var i = 0; i < JOURNAL_ENTRIES.length; i++) {
+      var e = JOURNAL_ENTRIES[i];
+      if (unlocked.indexOf(e) < 0 && !e.requiresOpened) { nextLocked = e; break; }
+    }
+    return { unlocked: unlocked, nextLocked: nextLocked };
+  }
+
+  /* the attachment mapping, verbatim from windows/dadlog.tsx (ATTACH),
+   * re-cut at 240x320 for the v3 cell */
+  var ATTACH = {
+    will: { src: "art/scan-will", tag: "FIG. 01 // SCAN", cap: "FOLDED FOUR, TAPE MARKS" },
+    bills: { src: "art/scan-notice", tag: "FIG. 01 // SCAN", cap: "CLINIC LETTERHEAD" },
+    receipts: { src: "art/scan-receipts", tag: "FIG. 01 // SCAN", cap: "STUB STRIP, SHOEBOX" },
+    diagnosis: { src: "art/scan-consult", tag: "FIG. 01 // SCAN", cap: "SEALED ENVELOPE" },
+    solder: { src: "art/scan-solder", tag: "FIG. 01 // FRAGMENT", cap: "RECOVERED STILL" },
+    patch: { src: "art/scan-tower", tag: "FIG. 01 // DEVICE PLATE", cap: "BACK ROOM TOWER" }
+  };
+
+  var TABS = ["ALL", "NOTE", "BILL", "MEMO", "LOCKED"];
+
+  var STATES = {
+    first: { label: "FIRST OPEN", meta: { runCount: 0, machineOpened: false }, clock: 2 * 3600 + 14 * 60 + 8 },
+    mid: { label: "MID RUN", meta: { runCount: 5, machineOpened: false }, clock: 23 * 3600 + 6 * 60 + 41 },
+    opened: { label: "OPENED", meta: { runCount: 8, machineOpened: true }, clock: 6 * 3600 + 2 * 60 + 19 }
+  };
+
+  /* ================= helpers ================= */
+
+  var REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var timers = [];
+  function later(fn, ms) {
+    if (REDUCED) { fn(); return; }
+    timers.push(setTimeout(fn, ms));
+  }
+  function clearTimers() {
+    timers.forEach(function (t) { clearTimeout(t); clearInterval(t); });
+    timers = [];
+  }
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+  function $(id) { return document.getElementById(id); }
+  function pad2(n) { return String(n).padStart(2, "0"); }
+
+  /* deterministic hash, dadlog.tsx seeded(), DOM for DOM */
+  function seeded(id) {
+    var h = 2166136261;
+    for (var i = 0; i < id.length; i++) {
+      h ^= id.charCodeAt(i);
+      h = Math.imul(h, 16777619);
+    }
+    var s = h >>> 0;
+    return function () {
+      s = (Math.imul(s, 1664525) + 1013904223) >>> 0;
+      return s;
+    };
+  }
+  function hexGroups(next, n) {
+    var out = [];
+    for (var g = 0; g < n; g++) out.push((next() % 0xffff).toString(16).toUpperCase().padStart(4, "0"));
+    return out.join(" ");
+  }
+
+  /* typewriters, scoped by a run token so paging or a rail click never
+   * cancels a sibling mid-flight */
+  var runTokens = {};
+  function typeIn(node, text, delay, key, interval, done) {
+    var token = (runTokens[key] = (runTokens[key] || 0) + 1);
+    if (REDUCED) { node.textContent = text; if (done) done(); return; }
+    node.textContent = "";
+    later(function () {
+      if (runTokens[key] !== token) return;
+      var i = 0;
+      var iv = setInterval(function () {
+        if (runTokens[key] !== token) { clearInterval(iv); return; }
+        i += 1;
+        node.textContent = text.slice(0, i);
+        if (i >= text.length) { clearInterval(iv); if (done) done(); }
+      }, interval || 14);
+      timers.push(iv);
+    }, delay);
+  }
+
+  /* ================= sound ================= */
+
+  var AC = null;
+  var interacted = false;
+  document.addEventListener("pointerdown", function () { interacted = true; }, true);
+  document.addEventListener("keydown", function () { interacted = true; }, true);
+
+  function blip(o) {
+    if (!interacted) return;
+    try {
+      if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)();
+      if (AC.state === "suspended") AC.resume();
+      var t = AC.currentTime;
+      var src;
+      if (o.type === "noise") {
+        var len = Math.ceil(AC.sampleRate * o.dur);
+        var buf = AC.createBuffer(1, len, AC.sampleRate);
+        var d = buf.getChannelData(0);
+        for (var i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+        src = AC.createBufferSource();
+        src.buffer = buf;
+      } else {
+        src = AC.createOscillator();
+        src.type = o.type;
+        src.frequency.setValueAtTime(o.freq, t);
+        if (o.freq2) src.frequency.setValueAtTime(o.freq2, t + o.jumpAt);
+      }
+      var node = src;
+      if (o.lpf) { var lf = AC.createBiquadFilter(); lf.type = "lowpass"; lf.frequency.value = o.lpf; node.connect(lf); node = lf; }
+      if (o.hpf) { var hf = AC.createBiquadFilter(); hf.type = "highpass"; hf.frequency.value = o.hpf; node.connect(hf); node = hf; }
+      var g = AC.createGain();
+      g.gain.setValueAtTime(o.vol, t);
+      g.gain.exponentialRampToValueAtTime(0.001, t + o.dur);
+      node.connect(g);
+      g.connect(AC.destination);
+      src.start(t);
+      src.stop(t + o.dur + 0.02);
+    } catch (e) { /* sound is never load bearing */ }
+  }
+
+  var SFX = {
+    tick: function () { blip({ type: "square", freq: 660, dur: 0.05, vol: 0.16, lpf: 3200 }); },
+    pageFlip: function () { blip({ type: "noise", dur: 0.09, vol: 0.2, hpf: 1400 }); },
+    segmentMount: function () { blip({ type: "square", freq: 340, freq2: 510, jumpAt: 0.06, dur: 0.2, vol: 0.15, lpf: 2200 }); },
+    segmentDamaged: function () { blip({ type: "noise", dur: 0.22, vol: 0.16, lpf: 900 }); }
+  };
+
+  /* ================= state ================= */
+
+  var stateId = "mid";
+  var S = STATES[stateId];
+  var tab = "ALL";
+  var openKey = null;
+  var rowsAll = [];
+  var rows = [];
+  var pages = [];
+  var pageN = 0;
+  var scanMode = "ink";
+
+  var DMG_KEY = "@dmg";
+  function keyOf(r) { return r.entry ? r.entry.id : (r.ghost ? "@g" + r.slot : DMG_KEY); }
+
+  function buildRows() {
+    var v = visibleJournal(S.meta);
+    var d = S.meta.machineOpened ? 10 : 9;
+    var out = v.unlocked.map(function (e, i) { return { entry: e, badge: i + 1 }; });
+    if (v.nextLocked) out.push({ entry: null, badge: out.length + 1 });
+    /* equal-footprint empty states: the volume always shows all d
+     * segments, so a sparse early volume is the same shape as a finished
+     * one and the RECOVERY meter has a denominator you can see. No new
+     * information: the header already states the denominator. */
+    var slot = out.length;
+    while (out.length < d) { out.push({ entry: null, ghost: true, badge: out.length + 1, slot: slot++ }); }
+    rowsAll = out;
+    return { recovered: v.unlocked.length, d: d };
+  }
+
+  function filterRows() {
+    rows = rowsAll.filter(function (r) {
+      if (tab === "ALL") return true;
+      if (tab === "LOCKED") return !r.entry;
+      return !!r.entry && r.entry.kind === tab.toLowerCase();
+    });
+  }
+
+  /* ================= masthead ================= */
+
+  function renderMast(rec, d) {
+    $("volline").textContent = CHROME.volumeHeaderMeta.replace("{n}", String(rec)).replace("{d}", String(d));
+    $("recn").textContent = pad2(rec);
+    $("recd").textContent = pad2(d);
+    var bar = $("recbar");
+    bar.textContent = "";
+    for (var i = 0; i < d; i++) {
+      var seg = el("i", i < rec ? "on" : "");
+      bar.appendChild(seg);
+    }
+  }
+
+  function renderTabs() {
+    var t = $("tabs");
+    t.textContent = "";
+    TABS.forEach(function (name) {
+      var b = el("button", name === tab ? "on" : "", name);
+      b.type = "button";
+      b.addEventListener("click", function () {
+        if (tab === name) return;
+        SFX.tick();
+        tab = name;
+        renderTabs();
+        filterRows();
+        renderRail();
+        /* the open document is tracked by IDENTITY, not list position,
+         * so a filter change never desyncs the viewer from the rail */
+        renderFoot();
+      });
+      t.appendChild(b);
+    });
+  }
+
+  /* ================= rail ================= */
+
+  function renderRail() {
+    var list = $("list");
+    list.textContent = "";
+    if (rows.length === 0) {
+      list.appendChild(el("p", "dl-railempty",
+        tab === "ALL" ? CHROME.emptyDrawerState : "NONE OF THIS KIND RECOVERED YET"));
+      return;
+    }
+    rows.forEach(function (r, i) {
+      var cls = ["dl-row"];
+      if (r.ghost) cls.push("ghost");
+      else if (!r.entry) cls.push("dmg");
+      if (keyOf(r) === openKey) cls.push("on");
+      var b = el("button", cls.join(" "));
+      b.type = "button";
+      b.appendChild(el("b", null, pad2(r.badge)));
+      b.appendChild(el("span", null, r.ghost ? "__________" : r.entry ? r.entry.filename : "????"));
+      b.appendChild(el("i", null, r.ghost ? "LOCKED" : r.entry ? r.entry.doctype : CHROME.damagedPage.doctype));
+      b.appendChild(el("em", null, r.ghost ? "NOT YET RECOVERED" : r.entry ? "RECOVERED" : CHROME.damagedRowText));
+      if (!r.entry && !r.ghost) {
+        var fl = el("i", "dl-flash");
+        fl.setAttribute("aria-hidden", "true");
+        b.appendChild(fl);
+      }
+      if (r.ghost) b.disabled = true;
+      else b.addEventListener("click", function () { openAt(i); });
+      list.appendChild(b);
+    });
+  }
+
+  function renderFoot() {
+    var sel = rows.findIndex(function (r) { return keyOf(r) === openKey; });
+    $("filechip").textContent = (sel >= 0 ? sel + 1 : 0) + "/" + rows.length;
+    $("fprev").disabled = sel <= 0;
+    $("fnext").disabled = sel < 0 || sel >= rows.length - 1;
+  }
+
+  function openAt(i) {
+    if (i < 0 || i >= rows.length) return;
+    var r = rows[i];
+    if (r.ghost) return;
+    if (keyOf(r) === openKey) return;
+    SFX[r.entry ? "pageFlip" : "segmentDamaged"]();
+    openKey = keyOf(r);
+    renderRail();
+    renderFoot();
+    openDoc();
+  }
+
+  /* ================= media column ================= */
+
+  function scanSrc(base) { return base + (scanMode === "color" ? "-color.png" : "-fine.png"); }
+
+  function renderMedia(row) {
+    var cell = $("scancell");
+    cell.textContent = "";
+    var cap = $("scancap");
+    var a = row && row.entry ? ATTACH[row.entry.id] : null;
+    if (a) {
+      var box = el("div", "dl-scan");
+      var img = document.createElement("img");
+      img.src = scanSrc(a.src);
+      img.width = 240;
+      img.height = 320;
+      img.alt = "";
+      box.appendChild(img);
+      box.appendChild(el("i", "tint"));
+      box.appendChild(el("span", "dl-scantag", a.tag));
+      box.appendChild(el("i", "shade"));
+      cell.appendChild(box);
+      cap.textContent = a.cap;
+      if (REDUCED) box.classList.add("on");
+      else later(function () { box.classList.add("on"); }, row.entry ? 470 : 310);
+    } else {
+      var np = el("div", "dl-nopay");
+      np.appendChild(el("b", null, "NO VISUAL PAYLOAD"));
+      /* the damaged page may not claim TEXT ARTIFACT: the next locked
+       * entry can turn out to be a scan */
+      np.appendChild(el("i", null, row && row.entry ? "TEXT ARTIFACT" : "RECOVERY INCOMPLETE"));
+      cell.appendChild(np);
+      cap.textContent = " ";
+    }
+
+    var plate = $("plate");
+    plate.textContent = "";
+    var next = seeded(row && row.entry ? row.entry.id : "dadvol");
+    var lines = [
+      ["MEDIA", "DAD.VOL"],
+      ["MOUNT", "READ ONLY"],
+      ["SEGMENT", hexGroups(next, 1)],
+      ["CHECKSUM", hexGroups(next, 2)],
+      ["PASSES", pad2(S.meta.runCount)]
+    ];
+    lines.forEach(function (l) {
+      var d = el("div");
+      d.appendChild(el("span", null, l[0]));
+      d.appendChild(el("em", null, l[1]));
+      plate.appendChild(d);
+    });
+  }
+
+  /* ================= the document ================= */
+
+  function waveFor(id) {
+    var wrap = $("wave");
+    wrap.textContent = "";
+    var next = seeded(id);
+    var pts = [];
+    for (var x = 0; x <= 168; x += 6) {
+      var y = 10 + ((next() % 100) / 100) * 14 - 7;
+      pts.push(x + "," + Math.round(y));
+    }
+    var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("width", "168");
+    svg.setAttribute("height", "20");
+    svg.setAttribute("viewBox", "0 0 168 20");
+    var pl = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
+    pl.setAttribute("points", pts.join(" "));
+    pl.setAttribute("shape-rendering", "crispEdges");
+    svg.appendChild(pl);
+    wrap.appendChild(svg);
+    wrap.appendChild(el("span", null, hexGroups(next, 3).replace(/ /g, " - ")));
+  }
+
+  /* PAGINATION (RULINGS law 8: no internal scrollbars, ever).
+   * Blocks are laid out at full text, measured, then packed greedily
+   * into the fixed page box. Measuring the FULL text first is what makes
+   * the typewriter safe: assignment can never shift while typing. */
+  function paginate() {
+    var box = $("pagebox");
+    var inner = $("pagein");
+    var avail = box.clientHeight;
+    var blocks = Array.prototype.slice.call(inner.children);
+    blocks.forEach(function (b) { b.classList.remove("hide"); });
+    var gap = 8;
+    pages = [];
+    var cur = [];
+    var used = 0;
+    blocks.forEach(function (b) {
+      var h = b.offsetHeight;
+      var add = cur.length ? h + gap : h;
+      if (cur.length && used + add > avail) {
+        pages.push(cur);
+        cur = [b];
+        used = h;
+      } else {
+        cur.push(b);
+        used += add;
+      }
+    });
+    if (cur.length) pages.push(cur);
+    if (!pages.length) pages = [[]];
+  }
+
+  function showPage(n) {
+    pageN = Math.max(0, Math.min(pages.length - 1, n));
+    var inner = $("pagein");
+    Array.prototype.slice.call(inner.children).forEach(function (b) { b.classList.add("hide"); });
+    pages[pageN].forEach(function (b) { b.classList.remove("hide"); });
+    $("pagelabel").textContent = "PAGE " + (pageN + 1) + "/" + pages.length;
+    $("pprev").disabled = pageN <= 0;
+    $("pnext").disabled = pageN >= pages.length - 1;
+    $("pager").dataset.single = pages.length <= 1 ? "1" : "0";
+  }
+
+  function openDoc() {
+    clearTimers();
+    var row = rowsAll.find(function (r) { return keyOf(r) === openKey; }) || null;
+    var doc = $("doc");
+    var dmg = !!row && !row.entry;
+
+    doc.classList.toggle("dmg", dmg);
+    renderMedia(row);
+
+    if (!row) {
+      $("metarow").textContent = "";
+      $("hero").textContent = "";
+      $("prov").textContent = CHROME.emptyDrawerState;
+      $("pagein").textContent = "";
+      $("wave").textContent = "";
+      $("beat").style.display = "none";
+      paginate();
+      showPage(0);
+      return;
+    }
+
+    var meta = row.entry
+      ? { filename: row.entry.filename, doctype: row.entry.doctype, provenance: row.entry.provenance }
+      : { filename: "????", doctype: CHROME.damagedPage.doctype, provenance: CHROME.damagedPage.provenance };
+    var title = row.entry ? row.entry.title : CHROME.damagedPage.title;
+    var body = row.entry ? row.entry.body : CHROME.damagedPage.body;
+
+    /* metadata chips */
+    var mr = $("metarow");
+    mr.textContent = "";
+    var fields = [["FILENAME", meta.filename], ["DOCTYPE", meta.doctype]];
+    var vals = [];
+    fields.forEach(function (f) {
+      var c = el("span", "dl-chip");
+      c.appendChild(el("span", null, f[0]));
+      var em = el("em");
+      c.appendChild(em);
+      mr.appendChild(c);
+      vals.push({ node: em, text: f[1] });
+    });
+
+    /* the artifact, then the annotation, as separate blocks so the
+     * paginator can break between them */
+    var inner = $("pagein");
+    inner.textContent = "";
+    body.forEach(function (line) { inner.appendChild(el("p", "dl-block", line)); });
+    if (row.entry && row.entry.benchNote) {
+      var bn = el("div", "dl-bench");
+      bn.appendChild(el("b", null, "BENCH NOTE"));
+      bn.appendChild(el("p", null, ">> " + row.entry.benchNote));
+      bn.classList.add("dl-block");
+      inner.appendChild(bn);
+    }
+
+    $("hero").textContent = title;
+    $("prov").textContent = meta.provenance;
+    vals.forEach(function (v) { v.node.textContent = v.text; });
+
+    waveFor(row.entry ? row.entry.id : "damaged");
+
+    /* measure at full text, THEN start the beat and the typewriters */
+    paginate();
+    showPage(0);
+
+    var beat = $("beat");
+    if (REDUCED) {
+      beat.style.display = "none";
+      return;
+    }
+    beat.style.display = "flex";
+    beat.className = "dl-beat";
+    beat.style.transform = "";
+    beat.style.opacity = "";
+    $("beattext").textContent = CHROME.recoveryBeat[0];
+
+    if (dmg) {
+      later(function () { beat.className = "dl-beat fold"; }, 220);
+      later(function () { beat.style.display = "none"; }, 320);
+      /* the damaged page arrives as one block, no typing: there is
+       * nothing here that was recovered cleanly enough to type out */
+      return;
+    }
+
+    later(function () {
+      beat.className = "dl-beat mounted";
+      $("beattext").textContent = CHROME.recoveryBeat[1];
+      SFX.segmentMount();
+    }, 220);
+    later(function () { beat.className = "dl-beat mounted fold"; }, 380);
+    later(function () { beat.style.display = "none"; }, 480);
+
+    typeIn($("hero"), title, 470, "hero", 22);
+    vals.forEach(function (v, i) { typeIn(v.node, v.text, 500 + i * 60, "meta" + i, 12); });
+    typeIn($("prov"), meta.provenance, 560, "prov", 8);
+    pages[0].forEach(function (b, i) {
+      if (b.classList.contains("dl-bench")) return;
+      var text = b.textContent;
+      typeIn(b, text, 600 + i * 90, "body" + i, 10);
+    });
+  }
+
+  $("pprev").addEventListener("click", function () { SFX.pageFlip(); showPage(pageN - 1); });
+  $("pnext").addEventListener("click", function () { SFX.pageFlip(); showPage(pageN + 1); });
+  $("fprev").addEventListener("click", function () {
+    var sel = rows.findIndex(function (r) { return keyOf(r) === openKey; });
+    openAt(sel - 1);
+  });
+  $("fnext").addEventListener("click", function () {
+    var sel = rows.findIndex(function (r) { return keyOf(r) === openKey; });
+    openAt(sel + 1);
+  });
+
+  /* ================= banks: ambient hex furniture ================= */
+
+  (function banks() {
+    var next = seeded("dadvol");
+    var wrap = $("banks");
+    ["BANK 1", "BANK 2"].forEach(function (label) {
+      var d = el("div");
+      d.appendChild(el("b", null, label));
+      d.appendChild(el("span", null, hexGroups(next, 3)));
+      wrap.appendChild(d);
+    });
+  })();
+
+  /* ================= the load ================= */
+
+  function load() {
+    clearTimers();
+    var r = buildRows();
+    filterRows();
+    renderMast(r.recovered, r.d);
+    /* open the most recently recovered file, matching the shipped
+     * window's default */
+    var last = null;
+    for (var i = rowsAll.length - 1; i >= 0; i--) { if (rowsAll[i].entry) { last = rowsAll[i]; break; } }
+    openKey = last ? keyOf(last) : (rowsAll.length ? keyOf(rowsAll[0]) : null);
+    renderTabs();
+    renderRail();
+    renderFoot();
+    openDoc();
+    measure();
+    later(measure, 1400);
+  }
+
+  /* ================= the demo rig ================= */
+
+  function radioRow(rowId, opts, initial, onPick) {
+    var row = $(rowId);
+    row.textContent = "";
+    opts.forEach(function (o) {
+      var b = el("button", o.id === initial ? "rig-on" : "", o.label);
+      b.addEventListener("click", function () {
+        row.querySelectorAll("button").forEach(function (x) { x.className = ""; });
+        b.className = "rig-on";
+        onPick(o);
+      });
+      row.appendChild(b);
+    });
+  }
+
+  var glassLayers = Array.prototype.slice.call($("glass").children);
+  function setCrt(mode) {
+    $("stage").classList.toggle("crt-on", mode !== "off");
+    var glass = $("glass");
+    glass.textContent = "";
+    if (mode !== "off") glassLayers.forEach(function (l) { glass.appendChild(l); });
+  }
+
+  Object.keys(ATTACH).forEach(function (k) {
+    new Image().src = ATTACH[k].src + "-fine.png";
+    new Image().src = ATTACH[k].src + "-color.png";
+  });
+  function setScan(id) {
+    scanMode = id;
+    $("media").dataset.scan = id;
+    var row = rowsAll.find(function (r) { return keyOf(r) === openKey; }) || null;
+    renderMedia(row);
+  }
+
+  radioRow("schemerow", [
+    { id: "nerv", label: "NERV" },
+    { id: "tokyo", label: "TOKYO NIGHT" }
+  ], "nerv", function (o) { document.documentElement.dataset.scheme = o.id; });
+
+  radioRow("scanrow", [
+    { id: "ink", label: "INK TINT" },
+    { id: "true", label: "TRUE 1-BIT" },
+    { id: "color", label: "FULL COLOUR" }
+  ], "ink", function (o) { setScan(o.id); });
+
+  radioRow("crtrow", [
+    { id: "flat", label: "FLAT" },
+    { id: "off", label: "OFF" }
+  ], "flat", function (o) { setCrt(o.id); });
+
+  var VIEWPORTS = [
+    { id: "169", label: "16:9", w: 1366, h: 768, win: 1040 },
+    { id: "219", label: "21:9", w: 2560, h: 1080, win: 1120 },
+    { id: "laptop", label: "LAPTOP 1280x800", w: 1280, h: 800, win: 960 }
+  ];
+  var VP = VIEWPORTS[0];
+
+  function applyViewport(v) {
+    VP = v;
+    $("stage").style.width = v.w + "px";
+    $("stage").style.height = v.h + "px";
+    $("term").style.setProperty("--dl-win", v.win + "px");
+    fit();
+    /* the column width changed, so the document repaginates */
+    paginate();
+    showPage(Math.min(pageN, 99));
+    measure();
+  }
+
+  function fit() {
+    var availW = Math.max(320, window.innerWidth - 300);
+    var availH = Math.max(320, window.innerHeight - 90);
+    var k = Math.min(1, availW / VP.w, availH / VP.h);
+    $("fit").style.transform = "scale(" + k + ")";
+    $("fitwrap").style.width = Math.round(VP.w * k) + "px";
+    $("fitwrap").style.height = Math.round(VP.h * k) + "px";
+    return k;
+  }
+
+  function measure() {
+    var k = fit() || 1;
+    var h = Math.round($("term").getBoundingClientRect().height / k);
+    var free = $("free");
+    var slack = VP.w - VP.win;
+    if (slack > 220) {
+      free.style.display = "flex";
+      free.style.right = "0px";
+      free.style.width = Math.round(slack / 2 - 24) + "px";
+      $("freelabel").textContent = "FREE DESK " + Math.round(slack / 2 - 24) + "PX";
+    } else {
+      free.style.display = "none";
+    }
+    var tier = VP.win - 34 >= 700 ? "WIDE" : "NARROW";
+    var m = $("meas");
+    m.innerHTML = "";
+    m.appendChild(document.createTextNode("WINDOW " + VP.win + "px / " + tier + " tier"));
+    m.appendChild(document.createElement("br"));
+    m.appendChild(el("span", h > 820 ? "rig-over" : "", "HEIGHT " + h + "px / ceiling 820px"));
+  }
+
+  radioRow("vprow", VIEWPORTS, "169", function (o) { applyViewport(o); });
+  radioRow("staterow", [
+    { id: "mid", label: "MID RUN" },
+    { id: "first", label: "FIRST OPEN" },
+    { id: "opened", label: "OPENED" }
+  ], "mid", function (o) {
+    stateId = o.id;
+    S = STATES[stateId];
+    clockSec = S.clock;
+    tab = "ALL";
+    load();
+  });
+
+  $("replay").addEventListener("click", openDoc);
+
+  var clockSec = STATES.mid.clock;
+  setInterval(function () {
+    clockSec = (clockSec + 1) % 86400;
+    var h = pad2(Math.floor(clockSec / 3600));
+    var m = pad2(Math.floor((clockSec % 3600) / 60));
+    var bar = h + ":" + m;
+    if ($("barclock").textContent !== bar) $("barclock").textContent = bar;
+  }, 1000);
+
+  window.addEventListener("resize", function () { fit(); measure(); });
+
+  /* ================= go ================= */
+
+  document.documentElement.dataset.scheme = "nerv";
+  setCrt("flat");
+  applyViewport(VP);
+  load();
+})();
+</script>
+</body>
+</html>

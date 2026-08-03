@@ -1,0 +1,1880 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>KP demo: LOADOUT.CFG (instrument panel)</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=VT323&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" />
+<link rel="stylesheet" href="../_shared/kp.css" />
+<link rel="stylesheet" href="../_shared/system.css" />
+<style>
+/* LOADOUT.CFG rebuilt as a maximalist instrument panel
+ * (cycle ux-2026-07-31-loadout-eva, spec item
+ * loadout-eva-instrument-panel).
+ *
+ * Three problems this page is answering, in the user's words: the UI feels
+ * cluttered, window size makes window management rough, and it does not
+ * scale to other aspect ratios or resolutions.
+ *
+ * The answers, in order:
+ *  1. CLUTTER -> extreme scale contrast. Eleven co-equal blocks become four
+ *     zones with a stated glance order: the trinity's three hero numerals
+ *     first, the masthead verdict + DIVE second, the support band third,
+ *     the operator gutter last and deliberately ambient.
+ *  2. FOOTPRINT -> the schematic plate is cut outright, the pouch's four
+ *     line paragraph is cut to one chip plus its pointer sentence, and the
+ *     bay descriptions move to on-demand popups. The window is built to a
+ *     820px height ceiling; the rig reports the live measurement.
+ *  3. SCALING -> every size is a clamp() on CONTAINER query units (cqi),
+ *     never vw, and the wide/narrow tier is a @container breakpoint on the
+ *     window's own inline-size. A tiled window scales to ITS tile, not to
+ *     the browser. Below 800px the layout does not shrink, it changes: the
+ *     trinity becomes a compact list and the gutter/support band page
+ *     behind a tab, with the masthead persistent above both.
+ *
+ * v2 law intact throughout: one ink accent per data-hue (amber added as a
+ * fourth), inverse video for danger/selection only, solid-ink title bar,
+ * boxed // LABEL _ rows, VT323 body / Silkscreen labels, 2/4/8px dithers,
+ * steps() timing, no border-radius, reduced-motion instant path.
+ *
+ * Gate fixes built in (pipeline/gates/tutorial-review.md, both tier 0):
+ *  - filled boost-bay pills carry a persistent dotted underline marking
+ *    "this holds more", closing the ledger's open touch-tip affordance ask.
+ *  - program descriptions never truncate at a fixed character count; the
+ *    budget is 150 chars clamped to a sentence boundary, above the longest
+ *    shipped description (~122), so armHalt/armSiphon can never ship with
+ *    their effect clause hidden.
+ * Loremaster advisory taken (loremaster-review.md section 1): the band
+ * divider reads // BENCH SUPPORT, not // SUPPORT SYSTEMS.
+ */
+
+:root[data-hue="amber"] {
+  --px-void: #100a04;
+  --ch: #ffab3d;
+  --ch2: #c2431a;
+  --ch-hot: #fff2d9;
+}
+
+/* ---------- ROLE TOKENS: colour as state, not as decoration ----------
+ * USER RULING 2026-07-31: "I'm wanting to see if we can break away from the
+ * single color design. I even said use Evangelion colors." This overrides
+ * the KP/OS v2 law (RULINGS.md: one ink accent, danger is inverse video,
+ * never a second hue) for this surface. Recorded in lore/ledger.md.
+ *
+ * The override is implemented as ROLES, so the law is not simply discarded:
+ * by default every role collapses back onto the single accent and the page
+ * is bit-identical to the v2 scheme. data-scheme="eva" is the only thing
+ * that pulls them apart, and each hue means one thing:
+ *
+ *   struct  chrome, borders, annotation      amber, the neutral readout
+ *   line    live data, meters, filled bays   amber
+ *   data    hero numerals, hot values        ivory
+ *   ok      NOMINAL: ready, active mode      green
+ *   warn    RISK: strain in the low band     red (plus inverse video, so
+ *                                            the signal is never colour
+ *                                            alone)
+ *   aux     the camera feed only             cyan, a different signal class
+ */
+:root {
+  --r-struct: var(--ch-dim);
+  --r-line: var(--ch);
+  --r-data: var(--ch-hot);
+  --r-ok: var(--ch);
+  --r-warn: var(--ch);
+  --r-aux: var(--ch);
+  --r-hazard: var(--ch);
+  --r-note: var(--ch-dim);
+  --r-ok-glow: var(--px-glow);
+  --r-warn-glow: var(--px-glow);
+}
+
+/* `--r-note` is the ANNOTATION channel, added so NERV could carry blue
+ * without disturbing the glance order (user review round 4: "some more blue
+ * highlights without disrupting the clear visual hierarchy"). It is scoped
+ * strictly to tertiary labels that name things and never state them: the
+ * `// LABEL` chip prefixes, TIER, the RANGE/WIDTH unit captions, the
+ * operator tick labels, the pouch shape nouns, the gutter spine, and the
+ * masthead eyebrow. Nothing that carries a value, a state, or a verdict
+ * takes this role, so the hierarchy is untouched and the page just gains a
+ * cool second temperature under the amber. */
+
+/* NERV. Round 2 kept red in reserve for the risk band alone, so at a healthy
+ * run the page had almost no red in it and stopped reading as Evangelion at
+ * all (user review round 3). Red is now STRUCTURAL: hazard stripes, the
+ * trinity brackets, the window edge, the record light. Risk keeps a hotter,
+ * purer red AND the inverse-video flood, so the alarm still outranks the
+ * furniture instead of drowning in it. */
+:root[data-scheme="nerv"] {
+  --px-void: #0a0603;
+  --ch: #ff9a1f;
+  --ch2: #c2431a;
+  --ch-hot: #ffe9c4;
+  --r-struct: #a86a22;
+  --r-line: #ff9a1f;
+  --r-data: #ffe9c4;
+  --r-ok: #8dff3a;
+  --r-warn: #ff2a17;
+  --r-aux: #23d3ff;
+  --r-hazard: #d1381a;
+  --r-note: #6ea8ff;
+  --r-ok-glow: color-mix(in srgb, #8dff3a 45%, transparent);
+  --r-warn-glow: color-mix(in srgb, #ff2a17 60%, transparent);
+}
+
+/* TOKYO NIGHT. Cooler and dimmer than Dracula, blue-forward, with orange
+ * doing the hazard work so the reds stay reserved for the alarm. */
+:root[data-scheme="tokyo"] {
+  --px-void: #16161e;
+  --ch: #7aa2f7;
+  --ch2: #414868;
+  --ch-hot: #c0caf5;
+  --r-struct: #414868;
+  --r-line: #7aa2f7;
+  --r-data: #c0caf5;
+  --r-ok: #9ece6a;
+  --r-warn: #f7768e;
+  --r-aux: #7dcfff;
+  --r-hazard: #ff9e64;
+  --r-note: #bb9af7;
+  --r-ok-glow: color-mix(in srgb, #9ece6a 45%, transparent);
+  --r-warn-glow: color-mix(in srgb, #f7768e 55%, transparent);
+}
+
+body {
+  overflow: auto;
+  display: block;
+  height: auto;
+  min-height: 100%;
+  padding: 26px 16px 40px;
+}
+
+/* ---------- the viewport rig: a real-resolution stage, scaled to fit ----------
+ * The stage is laid out at its TRUE pixel size and then transform-scaled to
+ * fit the reviewer's browser. Transforms do not change layout size, so every
+ * container query inside still resolves against the real window width: what
+ * you see at 47% is exactly what a 2560x1080 desk would render. */
+
+.lo-fit { transform-origin: top left; }
+.lo-fitwrap { margin: 0 auto; }
+
+.lo-stage {
+  position: relative;
+  overflow: hidden;
+  background: var(--px-void);
+  border: 1px solid var(--ch-faint);
+}
+.lo-warp { position: absolute; inset: 0; display: flex; flex-direction: column; }
+/* NO overscan. The first pass scaled the picture up so the warp had material
+ * to pull from at the edges, which cost 8.5% of the stage and cropped the
+ * title bar and taskbar outright at 21:9. The displacement map now tapers to
+ * zero at the frame instead, so the warp never samples outside the picture
+ * and nothing has to be sacrificed to feed it. */
+.lo-overscan { position: absolute; inset: 0; display: flex; flex-direction: column; }
+
+/* the desk under the window: the shipped wallpaper vocabulary, quiet */
+.lo-desk {
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-conic-gradient(color-mix(in srgb, var(--ch) 4%, transparent) 0% 25%, transparent 0% 50%),
+    radial-gradient(120% 90% at 50% 0%, color-mix(in srgb, var(--ch) 5%, transparent), transparent 70%);
+  background-size: 8px 8px, auto;
+}
+
+.lo-deskwrap {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 22px 0 0;
+  min-height: 0;
+}
+
+/* the leftover desk, drawn: the footprint fix made literal. A window that
+ * leaves room to tile is the whole point of the 820px ceiling. */
+.lo-free {
+  position: absolute;
+  top: 30px;
+  bottom: 14px;
+  border: 2px dashed var(--ch-faint);
+  opacity: 0.5;
+  display: flex;
+  align-items: flex-end;
+  padding: 6px 8px;
+  pointer-events: none;
+}
+.lo-free span {
+  font-family: var(--kp-display);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: var(--ch-faint);
+}
+.lo-free span::before { content: "// "; }
+
+.lo-stage-bar {
+  height: 44px;
+  flex: none;
+  position: relative;
+  background: var(--ch);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+}
+.lo-stage-bar span {
+  font-family: var(--kp-display);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: var(--px-void);
+}
+.lo-stage-bar i {
+  display: block;
+  width: 10px;
+  height: 10px;
+  background: var(--px-void);
+  opacity: 0.55;
+}
+.lo-stage-bar .lo-bar-sp { flex: 1; background: none; opacity: 1; }
+
+/* ---------- CRT: a tube, not a scanline overlay ----------
+ * Round 2 was scanlines plus dimming plus a drifting band; the band was the
+ * laggy part (a full-stage screen-blend layer animating forever) and the
+ * whole thing still read as a flat screen with lines on it. Round 3 builds
+ * the actual object: glass that bulges, a bezel around it, phosphor lines
+ * throughout, and light behaving like light on curved glass.
+ *
+ * CURVED mode runs the picture through a REAL barrel distortion, an SVG
+ * feDisplacementMap driven by art/crt-barrel.png (a generated map where R
+ * and G encode per-pixel x/y offset). It is a static filter, no animation,
+ * so it costs one composite rather than a permanent repaint.
+ *
+ * FLAT mode keeps every glass layer and skips only the displacement, for
+ * anyone who wants the texture without the warp. */
+
+/* CURVED is gone (user review round 5: it made the bottom bar wonky and
+ * "the panel looks the same as flat"). Its cost was never only the filter:
+ * curved mode also had to switch off the feed roll, the REC blink and the
+ * terminal cursor, and drop the clock to minute resolution, because every
+ * repaint inside a displaced subtree re-ran the barrel filter over the whole
+ * stage. Dropping it hands all of that back unconditionally. The generated
+ * per-aspect barrel maps and the feDisplacementMap wiring are in git if the
+ * curve is ever wanted again; see this file's round 3 and 4 history. */
+
+/* the bezel: dark plastic around the glass, and the glass corners rounded.
+ * border-radius is banned on UI chrome by the system, and stays banned; a
+ * picture tube is physical hardware, not a control. */
+.lo-stage.crt-on { border-radius: 18px; }
+.lo-stage.crt-on .lo-glass {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 40;
+  border-radius: 16px / 20px;
+  overflow: hidden;
+}
+.lo-glass > i { position: absolute; inset: 0; display: block; }
+
+/* 1. phosphor lines, throughout and DISTINCT: a bright line and a dark gap
+ *    rather than a faint tint, which is what makes them read as a tube */
+.lo-glass .g-scan {
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.55) 0 1px,
+    rgba(0, 0, 0, 0.12) 1px 2px,
+    rgba(255, 255, 255, 0.03) 2px 3px);
+  mix-blend-mode: multiply;
+  opacity: 0.85;
+}
+/* 2. aperture grille, vertical triads */
+.lo-glass .g-mask {
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(255, 0, 0, 0.05) 0 1px,
+    rgba(0, 255, 0, 0.05) 1px 2px,
+    rgba(0, 0, 255, 0.05) 2px 3px);
+  mix-blend-mode: screen;
+  opacity: 0.7;
+}
+/* 3. bloom off the phosphor, tinted to the live ink */
+.lo-glass .g-bloom {
+  background: radial-gradient(130% 95% at 50% 42%, var(--px-glow) 0%, transparent 62%);
+  opacity: 0.14;
+  mix-blend-mode: screen;
+}
+/* 4. specular: the room reflected in curved glass, brightest top-left,
+ *    with a second tight highlight where the bulge is steepest */
+.lo-glass .g-spec {
+  background:
+    radial-gradient(58% 42% at 26% 14%, rgba(255, 255, 255, 0.11) 0%, transparent 70%),
+    linear-gradient(163deg, rgba(255, 255, 255, 0.055) 0%, transparent 34%);
+  mix-blend-mode: screen;
+}
+/* 5. the tube falloff: corners sit furthest from the gun and read darkest.
+ *    Heavier than a poster vignette, and elliptical so it tracks the bulge. */
+.lo-glass .g-vig {
+  background:
+    radial-gradient(102% 86% at 50% 48%, transparent 52%, rgba(0, 0, 0, 0.55) 82%, rgba(0, 0, 0, 0.92) 100%);
+  box-shadow:
+    inset 0 0 46px 12px rgba(0, 0, 0, 0.75),
+    inset 0 0 130px 40px rgba(0, 0, 0, 0.45);
+}
+/* 6. the bezel lip: a hard edge of moulded plastic catching light */
+.lo-glass .g-bezel {
+  border-radius: 16px / 20px;
+  box-shadow:
+    inset 0 0 0 3px rgba(0, 0, 0, 0.9),
+    inset 0 2px 2px 3px rgba(255, 255, 255, 0.07),
+    inset 0 -3px 3px 3px rgba(0, 0, 0, 0.6);
+}
+
+/* ---------- the window frame ---------- */
+
+.term {
+  width: var(--lo-win, 860px);
+  flex: none;
+  border: 3px solid var(--r-hazard);
+  background: var(--px-void);
+  position: relative;
+  z-index: 5;
+  filter:
+    drop-shadow(9px 9px 0 rgba(0, 0, 0, 0.8))
+    drop-shadow(0 0 26px color-mix(in srgb, var(--ch) 25%, transparent));
+}
+
+.term-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--ch);
+  padding: 7px 12px 7px 14px;
+}
+.term-bar h1 {
+  font-family: var(--kp-display);
+  font-size: 13px;
+  letter-spacing: 0.16em;
+  color: var(--px-void);
+  font-weight: 400;
+}
+.term-glyphs { display: flex; gap: 7px; align-items: center; }
+.term-glyphs i { display: block; background: var(--px-void); }
+.term-glyphs i:nth-child(1) { width: 11px; height: 3px; margin-top: 9px; }
+.term-glyphs i:nth-child(2) { width: 11px; height: 11px; background: transparent; border: 3px solid var(--px-void); }
+.term-glyphs i:nth-child(3) { width: 11px; height: 11px; }
+
+.term-body { position: relative; padding: 12px 14px; }
+.term-body::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: repeating-conic-gradient(color-mix(in srgb, var(--ch) 5%, transparent) 0% 25%, transparent 0% 50%);
+  background-size: 4px 4px;
+}
+.term-body > * { position: relative; }
+
+/* ---------- the container that drives everything ---------- */
+
+.lo-eva { container-type: inline-size; container-name: lo; }
+
+.lo-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 1fr;
+  grid-template-areas: "mast" "tabs" "trinity" "gutter" "support" "foot";
+  /* the fluid ramp. cqi, never vw: a tiled window scales to its own tile. */
+  /* NOTE: cqi in a custom property resolves at the USE SITE, so a
+   * description inside a .lo-panel (its own container) lands at 19px while
+   * the masthead line and pouch pointer land at 21px. Both sit inside the
+   * system's stated VT323 floor, and the narrower column getting the
+   * smaller step is the behaviour you want, so this is kept, not fought. */
+  --lo-fs-body: clamp(19px, calc(1cqi + 17px), 21px);
+  --lo-fs-label: clamp(9px, calc(0.6cqi + 8px), 11px);
+  --lo-fs-pill: clamp(9px, calc(0.5cqi + 8.5px), 10.5px);
+  --lo-fs-slab: clamp(22px, 3.6cqi, 34px);
+  --lo-fs-strain: clamp(26px, 4.5cqi, 38px);
+  --lo-fs-tickl: clamp(8px, calc(0.4cqi + 7.5px), 9px);
+  --lo-fs-tickv: clamp(12px, calc(0.8cqi + 10px), 14px);
+}
+
+/* ---------- Z1 masthead: persistent, above the tab strip ---------- */
+
+.lo-mast {
+  grid-area: mast;
+  border: 3px solid var(--ch-dim);
+  background: color-mix(in srgb, var(--ch) 4%, var(--px-void));
+  padding: 7px 11px 8px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 8px 14px;
+}
+.lo-mast-l { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.lo-eyebrow {
+  font-family: var(--kp-display);
+  font-size: var(--lo-fs-label);
+  letter-spacing: 0.18em;
+  color: var(--r-note);
+}
+.lo-slabwrap { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.lo-slab {
+  font-family: var(--kp-display);
+  font-size: var(--lo-fs-slab);
+  line-height: 1;
+  letter-spacing: 0.04em;
+  color: var(--ch-hot);
+  padding: 4px 9px 6px;
+  text-shadow: 0 0 18px var(--px-glow);
+}
+/* NOMINAL: the kit is ready to dive */
+.lo-slab.is-ready { color: var(--r-ok); text-shadow: 0 0 20px var(--r-ok-glow); --tick: var(--r-ok); }
+.lo-slab.lo-lock { animation: lo-slab-lock 200ms steps(4); }
+@keyframes lo-slab-lock {
+  0%, 100% { background: transparent; color: var(--r-ok); }
+  50% { background: var(--r-ok); color: var(--px-void); }
+}
+.lo-line {
+  font-family: var(--kp-term);
+  font-size: var(--lo-fs-body);
+  line-height: 1.2;
+  color: var(--ch);
+}
+.lo-mast-r { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+/* ---------- the narrow-tier tab strip ---------- */
+
+.lo-tabs { grid-area: tabs; display: flex; gap: 4px; }
+.lo-tab {
+  flex: 1;
+  font-family: var(--kp-display);
+  font-size: var(--lo-fs-pill);
+  letter-spacing: 0.14em;
+  padding: 9px 6px;
+  background: transparent;
+  color: var(--ch);
+  border: 2px solid var(--ch-dim);
+}
+.lo-tab[aria-selected="true"] { background: var(--ch); color: var(--px-void); border-color: var(--ch); }
+
+/* ---------- Z2 gutter: lowest glance priority, deliberately ambient ---------- */
+
+.lo-gutter { grid-area: gutter; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+
+.lo-spine {
+  font-family: var(--kp-display);
+  font-size: var(--lo-fs-tickl);
+  letter-spacing: 0.3em;
+  color: var(--r-note);
+}
+
+/* the LIVE MONITOR bezel: the feed CROPPED, never scaled. The dither is a
+ * 1:1 dot grid; resampling it to a smaller box mushes it to grey noise
+ * (loadout/NOTES.md's hard-won bound), so the image sits at its native
+ * 304x227 inside a 112x84 window. */
+/* 200x150, up from 112x84. The old cell was both too small to read and
+ * framed on dead centre, which on this shot is the middle of the clutter
+ * (user review round 3). The window now sits over the bench itself: the
+ * desk, the monitor, and the operator's shoulder. Still a CROP at 1:1, not
+ * a downscale, because resampling the dither mushes the dots to grey. */
+.lo-mon {
+  position: relative;
+  width: 200px;
+  height: 150px;
+  flex: none;
+  overflow: hidden;
+  border: 2px solid var(--r-struct);
+  background: var(--px-void);
+}
+/* FEED TREATMENT. INK is the house rule, the 1-bit dither multiplied to the
+ * --r-aux token so the camera recolours with the scheme. TRUE drops the tint
+ * and shows the dither as it actually is, which is black and white, because
+ * the source art is monochrome ink illustration. COLOR swaps in a colourised
+ * dither: the same frame gradient-mapped through a lit-interior palette and
+ * Floyd-Steinberg dithered to 16 colours. That is a COLOURISATION, not a
+ * reveal, since there was never any colour in the source to uncover. */
+.lo-mon[data-feed="true"] .tint,
+.lo-mon[data-feed="color"] .tint { display: none; }
+.lo-mon[data-feed="color"] img { filter: none; }
+
+.lo-mon img {
+  position: absolute;
+  top: -58px;
+  left: -100px;
+  display: block;
+  image-rendering: pixelated;
+  filter: grayscale(1) contrast(1.15) brightness(1.05);
+}
+/* the feed tints to --r-aux: a camera is a different signal class from
+ * bench data, and under the eva scheme that difference becomes visible */
+.lo-mon .tint {
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-conic-gradient(rgba(0, 0, 0, 0.28) 0% 25%, transparent 0% 50%),
+    var(--r-aux);
+  background-size: 2px 2px, auto;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+.lo-mon .shade {
+  position: absolute;
+  inset: 0;
+  background: var(--px-void);
+  transform-origin: bottom;
+  transform: scaleY(1);
+}
+.lo-mon.on .shade { animation: lo-wipe 640ms steps(13) forwards; }
+@keyframes lo-wipe { to { transform: scaleY(0); } }
+.lo-mon .roll {
+  position: absolute;
+  inset: -40% 0 auto 0;
+  height: 34%;
+  background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--ch) 22%, transparent), transparent);
+  animation: lo-feedroll 5.5s steps(30) infinite;
+  pointer-events: none;
+}
+@keyframes lo-feedroll { to { transform: translateY(420%); } }
+/* a record light is red on every camera ever built */
+.lo-rec {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--r-hazard);
+  color: var(--ch-hot);
+  font-family: var(--kp-display);
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  padding: 3px 5px;
+}
+.lo-rec i { width: 5px; height: 5px; background: var(--ch-hot); animation: kp-cursor-blink 1.1s steps(2) infinite; }
+.lo-clock {
+  position: absolute;
+  bottom: 3px;
+  left: 4px;
+  font-family: var(--kp-mono);
+  font-size: 10px;
+  color: var(--ch-hot);
+  text-shadow: 0 0 6px var(--px-void), 0 0 3px var(--px-void);
+}
+
+.lo-ticks { display: flex; flex-direction: column; gap: 3px; }
+.lo-tick { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.lo-tick span {
+  font-family: var(--kp-display);
+  font-size: var(--lo-fs-tickl);
+  letter-spacing: 0.12em;
+  color: var(--r-note);
+}
+.lo-tick em {
+  font-style: normal;
+  font-family: var(--kp-mono);
+  font-size: var(--lo-fs-tickv);
+  font-weight: 600;
+  color: var(--ch);
+}
+
+/* ---------- Z3 trinity: the page's focal zone ---------- */
+
+.lo-trinity { grid-area: trinity; display: grid; gap: 10px; grid-template-columns: 1fr; min-width: 0; }
+
+.lo-panel {
+  container-type: inline-size;
+  position: relative;
+  border: 1px solid var(--ch-faint);
+  background: color-mix(in srgb, var(--ch) 3%, var(--px-void));
+  padding: 12px 12px 11px;
+  min-width: 0;
+  display: grid;
+  gap: 6px 10px;
+  grid-template-columns: auto 1fr;
+  grid-template-areas:
+    "hero name"
+    "hero meter"
+    "modes modes"
+    "desc desc";
+  align-items: center;
+}
+
+/* the heavy corner brackets carry the framing weight the hairline gives up.
+ * Scoped to the trinity ONLY, so the flourish never destabilises the rest
+ * of the shared system vocabulary. */
+.lo-bracket, .lo-bracket > i { position: absolute; pointer-events: none; }
+.lo-bracket { inset: -1px; }
+.lo-bracket > i { inset: 0; }
+.lo-bracket::before, .lo-bracket::after,
+.lo-bracket > i::before, .lo-bracket > i::after {
+  content: "";
+  position: absolute;
+  width: 24px;
+  height: 24px;
+}
+.lo-bracket::before { top: 0; left: 0; border-top: 4px solid var(--r-hazard); border-left: 4px solid var(--r-hazard); }
+.lo-bracket::after { top: 0; right: 0; border-top: 4px solid var(--r-hazard); border-right: 4px solid var(--r-hazard); }
+.lo-bracket > i::before { bottom: 0; left: 0; border-bottom: 4px solid var(--r-hazard); border-left: 4px solid var(--r-hazard); }
+.lo-bracket > i::after { bottom: 0; right: 0; border-bottom: 4px solid var(--r-hazard); border-right: 4px solid var(--r-hazard); }
+
+.lo-pname {
+  grid-area: name;
+  font-family: var(--kp-display);
+  font-size: var(--lo-fs-label);
+  letter-spacing: 0.16em;
+  color: var(--ch);
+  align-self: end;
+}
+.lo-heroline { grid-area: hero; display: flex; align-items: baseline; gap: 7px; min-width: 0; }
+.lo-num {
+  font-family: var(--kp-display);
+  font-size: clamp(32px, 9cqi, 48px);
+  line-height: 0.82;
+  color: var(--r-data);
+  text-shadow: 0 0 22px var(--px-glow);
+  font-variant-numeric: tabular-nums;
+}
+.lo-unit {
+  font-family: var(--kp-display);
+  font-size: var(--lo-fs-label);
+  letter-spacing: 0.16em;
+  color: var(--r-note);
+  writing-mode: horizontal-tb;
+}
+.lo-meter { grid-area: meter; display: flex; align-items: center; gap: 7px; align-self: start; }
+.lo-tlabel { font-family: var(--kp-display); font-size: var(--lo-fs-tickl); letter-spacing: 0.14em; color: var(--r-note); }
+.lo-tseg { display: inline-flex; gap: 3px; }
+.lo-tseg i {
+  display: block;
+  width: 16px;
+  height: 9px;
+  background: transparent;
+  border: 2px solid var(--ch-faint);
+}
+.lo-tseg i.on {
+  background: var(--r-line);
+  border-color: var(--r-line);
+  box-shadow: 0 0 7px var(--px-glow);
+}
+.lo-tval { font-family: var(--kp-mono); font-size: var(--lo-fs-tickv); font-weight: 600; color: var(--ch); }
+
+.lo-modes { grid-area: modes; display: flex; flex-wrap: wrap; gap: 5px; }
+.lo-mode {
+  position: relative;
+  font-family: var(--kp-display);
+  font-size: var(--lo-fs-pill);
+  letter-spacing: 0.1em;
+  padding: 6px 8px;
+  background: transparent;
+  color: var(--ch);
+  border: 2px solid var(--ch-dim);
+}
+.lo-mode:hover:not(:disabled) { border-color: var(--ch); }
+.lo-mode:disabled { border-style: dashed; color: var(--ch-faint); border-color: var(--ch-faint); cursor: not-allowed; }
+/* NOMINAL: this configuration is the one that is live */
+.lo-mode.mode-on { background: var(--r-ok); color: var(--px-void); border-color: var(--r-ok); }
+/* the reticle: a second, colour-independent channel saying WHICH is live */
+.lo-mode.mode-on::before, .lo-mode.mode-on::after {
+  content: "";
+  position: absolute;
+  width: 8px;
+  height: 8px;
+}
+.lo-mode.mode-on::before { top: -4px; left: -4px; border-top: 2px solid var(--r-ok); border-left: 2px solid var(--r-ok); }
+.lo-mode.mode-on::after { bottom: -4px; right: -4px; border-bottom: 2px solid var(--r-ok); border-right: 2px solid var(--r-ok); }
+
+.lo-desc {
+  grid-area: desc;
+  font-family: var(--kp-term);
+  font-size: var(--lo-fs-body);
+  line-height: 1.04;
+  color: var(--ch);
+  min-height: 1.04em;
+}
+.lo-more {
+  font-family: var(--kp-display);
+  font-size: var(--lo-fs-tickl);
+  letter-spacing: 0.12em;
+  background: transparent;
+  border: 2px solid var(--ch-dim);
+  color: var(--ch);
+  padding: 3px 6px;
+  margin-left: 6px;
+}
+
+/* ---------- Z4 support band ---------- */
+
+.lo-support { grid-area: support; display: flex; flex-direction: column; gap: 9px; min-width: 0; }
+
+.lo-div { display: flex; align-items: center; gap: 9px; }
+.lo-div i { flex: 1; height: 8px; background: repeating-linear-gradient(45deg, var(--r-hazard) 0 3px, transparent 3px 7px); }
+.lo-div span {
+  font-family: var(--kp-display);
+  font-size: var(--lo-fs-label);
+  letter-spacing: 0.2em;
+  color: var(--ch-dim);
+  flex: none;
+}
+
+.lo-supgrid { display: grid; gap: 9px; grid-template-columns: 1fr; }
+.lo-sub {
+  border: 2px solid var(--ch-dim);
+  background: color-mix(in srgb, var(--ch) 3%, var(--px-void));
+  padding: 6px 9px 7px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.lo-subhead { display: flex; align-items: center; gap: 8px; }
+.lo-subhead strong {
+  font-family: var(--kp-display);
+  font-size: var(--lo-fs-label);
+  letter-spacing: 0.16em;
+  color: var(--ch);
+  font-weight: 400;
+}
+.lo-subhead em {
+  font-style: normal;
+  margin-left: auto;
+  font-family: var(--kp-mono);
+  font-size: var(--lo-fs-tickv);
+  font-weight: 600;
+  color: var(--ch-hot);
+}
+
+/* boost bays: equal-footprint pills so a sparse run takes the same room */
+.lo-baywrap { display: flex; flex-wrap: wrap; gap: 5px; position: relative; }
+.lo-bay {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 5px 7px;
+  font-family: var(--kp-display);
+  font-size: var(--lo-fs-pill);
+  letter-spacing: 0.08em;
+  background: var(--ch);
+  color: var(--px-void);
+  border: 2px solid var(--ch);
+}
+/* tier 0 (tutorial gate item 2): a filled bay says, permanently, that it
+ * holds more than its name. Empty and future bays hold nothing, so they
+ * carry no marker. */
+.lo-bay.lo-has span { border-bottom: 2px dotted var(--px-void); padding-bottom: 1px; }
+.lo-bay-empty { background: transparent; color: var(--ch-dim); border: 2px dashed var(--ch-dim); }
+.lo-bay-future { color: var(--ch-faint); border-color: var(--ch-faint); }
+.lo-bay-pop {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(100% + 6px);
+  z-index: 30;
+  background: var(--px-void);
+  border: 2px solid var(--ch);
+  padding: 7px 9px;
+  font-family: var(--kp-term);
+  font-size: var(--lo-fs-body);
+  line-height: 1.15;
+  color: var(--ch-hot);
+  text-align: left;
+}
+
+/* pouch: the four line paragraph is gone, the pointer sentence is not */
+.lo-pouchbtn {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  text-align: left;
+  width: 100%;
+}
+.lo-rack { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.lo-rack > span { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.lo-rack > span > span {
+  font-family: var(--kp-display);
+  font-size: var(--lo-fs-tickl);
+  letter-spacing: 0.06em;
+  color: var(--r-note);
+}
+.lo-hole { width: 30px; height: 30px; border: 2px dashed var(--ch-faint); display: block; }
+.lo-pouchfoot { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
+.lo-pointer { font-family: var(--kp-term); font-size: var(--lo-fs-body); line-height: 1.1; color: var(--ch); }
+
+/* strain: loud, but subordinate to the trinity by design.
+ * The one readout whose COLOUR carries state: nominal above 70, watch
+ * between, risk at or below 35. Colour is never the only channel; in the
+ * risk band the number also floods inverse video, which is the shipped
+ * danger idiom and survives both a colourblind reader and the CRT layer. */
+.lo-strainrow { display: flex; align-items: center; gap: 10px; }
+.lo-strainnum {
+  position: relative;
+  font-family: var(--kp-display);
+  font-size: var(--lo-fs-strain);
+  line-height: 0.9;
+  padding: 2px 5px;
+  color: var(--r-data);
+  text-shadow: 0 0 16px var(--px-glow);
+  font-variant-numeric: tabular-nums;
+}
+.lo-strainbar { position: relative; display: flex; gap: 2px; flex: 1; height: 16px; min-width: 0; }
+.lo-strainbar i { flex: 1; background: var(--ch-faint); }
+.lo-strainbar i.on { background: var(--r-line); box-shadow: 0 0 6px var(--px-glow); }
+
+.lo-strain-ok .lo-strainnum { color: var(--r-ok); text-shadow: 0 0 16px var(--r-ok-glow); }
+.lo-strain-ok .lo-strainbar i.on { background: var(--r-ok); box-shadow: 0 0 6px var(--r-ok-glow); }
+
+/* TIER 0, tutorial gate round 3 question 1. Round 3 put hazard red on four
+ * permanent things (window border, trinity brackets, REC light, divider),
+ * and the gate's finding is that static distinction cannot beat
+ * habituation: a page with five red-family shapes on every healthy visit
+ * trains the eye to stop sampling hue and fill for the one time it matters.
+ * What the ambient chrome structurally does not have is MOTION, so the
+ * alarm takes it and the chrome never does. This is the shipped
+ * kp-danger-blink idiom (styles.css:846-851, "danger: inverse-blink, not a
+ * hue"), rebuilt on the --r-warn role so it still collapses to the single
+ * accent under SINGLE INK. */
+.lo-strain-low .lo-strainnum {
+  background: var(--r-warn);
+  color: var(--px-void);
+  text-shadow: none;
+}
+.lo-strain-low .lo-strainbar i.on { background: var(--r-warn); box-shadow: 0 0 6px var(--r-warn-glow); }
+.lo-strain-low .lo-strainnote { color: var(--r-warn); }
+
+/* The alarm's motion channel, and why it is built this way.
+ * Animating background/box-shadow works, and costs 50ms p95 under CURVED:
+ * every paint inside the glass re-runs the barrel filter over the whole
+ * stage, which is the lag this cycle already got called out for once. An
+ * opacity animation on a promoted layer is handled by the compositor
+ * instead, and measures 9.3ms p95 against a 9.0ms do-nothing baseline.
+ * So the inverse flip is composited rather than painted: a difference-blend
+ * plate over the readout, fading in and out on the shipped 1.2s steps(2)
+ * cadence. At full opacity it inverts what is underneath, which is the same
+ * "danger: inverse-blink, not a hue" idiom, reached a cheaper way. */
+.kp-chip-pct span { color: var(--r-note); }
+
+.lo-riskflash {
+  position: absolute;
+  inset: -2px;
+  background: var(--r-warn);
+  mix-blend-mode: difference;
+  opacity: 0;
+  pointer-events: none;
+  will-change: opacity;
+}
+.lo-strain-low .lo-riskflash { animation: lo-risk-blink 1.2s steps(2) infinite; }
+@keyframes lo-risk-blink { 0%, 100% { opacity: 0; } 50% { opacity: 1; } }
+.lo-strainnote {
+  font-family: var(--kp-display);
+  font-size: var(--lo-fs-tickl);
+  letter-spacing: 0.16em;
+  color: var(--ch-dim);
+}
+
+/* ---------- Z5 footline ---------- */
+
+.lo-foot {
+  grid-area: foot;
+  border: 2px solid var(--ch-faint);
+  padding: 3px 9px 4px;
+  font-family: var(--kp-term);
+  font-size: var(--lo-fs-body);
+  line-height: 1.1;
+  color: var(--ch-dim);
+}
+
+/* ================= WIDE TIER: the monumental arrangement =================
+ * One binary breakpoint on the window's own inline-size. 700px, so that
+ * EVERY supported viewport renders the same arrangement (user review
+ * 2026-07-31: "the layout on 16:9, 21:9, and 1280x800 should be the same").
+ * The 760px laptop window gives a 726px content box and lands wide with it.
+ * The narrow tier below survives only as a tiling fallback, not as a
+ * viewport anyone reviews. */
+
+@container lo (min-width: 700px) {
+  .lo-grid {
+    /* The gutter used to be a left column BESIDE the trinity. Enlarging the
+     * feed to something you can actually read (round 3) made that column
+     * expensive: it took 232px off the trinity, the descriptions wrapped
+     * two lines deeper, and the laptop blew its desk by 54px. So the
+     * trinity now takes the FULL width and the operator rig drops to the
+     * bottom band beside the support panels, where a 200px cell is cheap.
+     * Everything gets bigger and the window gets shorter. */
+    grid-template-columns: 232px 1fr;
+    grid-template-areas:
+      "mast    mast"
+      "gutter  trinity"
+      "support support"
+      "foot    foot";
+    gap: 9px 12px;
+  }
+
+  .lo-tabs { display: none; }
+
+  /* the gutter sits BESIDE the trinity on purpose: it is shorter than the
+   * instrument bays, so its height is free. Moving it to its own row was
+   * tried and cost 112px, because a row you do not share is a row you pay
+   * for in full. */
+  .lo-gutter { padding-top: 2px; }
+  .lo-gutter-top { display: flex; gap: 8px; align-items: flex-start; min-width: 0; }
+  .lo-spine {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    height: 150px;
+    letter-spacing: 0.34em;
+    align-self: flex-start;
+  }
+
+  /* the three bays sit on one baseline. An earlier round offset ATTACK.EXE
+   * by 10px as an asymmetry device; it read as a misalignment bug, not as
+   * intent, so it is gone (user review, 2026-07-31). */
+  .lo-trinity { grid-template-columns: repeat(3, 1fr); gap: 9px; }
+
+  .lo-panel {
+    display: block;
+    padding: 11px 11px 10px;
+  }
+  .lo-pname { display: block; margin-bottom: 2px; }
+  .lo-heroline { align-items: flex-end; margin: 0 0 3px; }
+  .lo-num { font-size: clamp(64px, 42cqi, 116px); line-height: 0.76; }
+  .lo-unit { padding-bottom: 5px; }
+  .lo-meter { margin-bottom: 5px; }
+  .lo-modes { margin-bottom: 5px; gap: 4px; }
+  .lo-mode { padding: 5px 7px; }
+  .lo-desc { min-height: 3.1em; }
+
+  /* two-up bays: five stacked pills cost 70px of desk for no extra
+   * information, and the desk is the scarce resource this cycle */
+  .lo-supgrid { grid-template-columns: 1.2fr 1.3fr 1fr; }
+  .lo-baywrap { display: grid; grid-template-columns: 1fr 1fr; align-content: start; }
+  .lo-bay { flex: none; justify-content: flex-start; text-align: left; }
+}
+
+/* The tight end of the WIDE tier (the 760px laptop window). Same
+ * arrangement, but the gutter stops paying 28px for a rotated spine beside
+ * the bezel and stacks it above instead, handing that width to the trinity
+ * so the descriptions wrap one line shorter and the window clears the desk. */
+
+/* The tight end of WIDE (the 760px laptop window). Same arrangement, but a
+ * 232px gutter beside a 3-column trinity is more than 726px of content can
+ * carry: the descriptions wrapped two lines deeper and the window went 54px
+ * over its desk. So the feed steps down to a 150x113 window on the SAME
+ * region of the SAME image, still a 1:1 crop and still 1.9x the round-2
+ * cell, and the spine stacks above it instead of beside it. */
+@container lo (min-width: 700px) and (max-width: 800px) {
+  .lo-grid { grid-template-columns: 172px 1fr; }
+  .lo-gutter-top { display: block; }
+  .lo-spine {
+    writing-mode: horizontal-tb;
+    transform: none;
+    height: auto;
+    letter-spacing: 0.2em;
+    display: block;
+    margin-bottom: 5px;
+  }
+  .lo-mon { width: 150px; height: 113px; }
+  .lo-mon img { top: -77px; left: -125px; }
+  .lo-clock { font-size: 9px; }
+  .lo-sub { padding: 5px 8px 6px; }
+  .lo-panel { padding: 9px 9px 8px; }
+}
+
+/* ================= NARROW TIER: a different layout, not a smaller one ==== */
+
+@container lo (max-width: 699.98px) {
+  .lo-grid[data-tab="programs"] .lo-gutter,
+  .lo-grid[data-tab="programs"] .lo-support { display: none; }
+  .lo-grid[data-tab="rig"] .lo-trinity { display: none; }
+
+  .lo-gutter { flex-direction: row; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
+  .lo-gutter-top { display: contents; }
+  .lo-ticks { flex: 1; min-width: 150px; }
+  .lo-spine { align-self: center; }
+}
+
+/* ---------- the demo rig's own readouts ---------- */
+
+/* the review deck lives top-right; the rig moves out from under it so the
+ * live height readout stays visible while reviewing */
+.rig { top: auto; right: auto; bottom: 12px; left: 12px; }
+.rig em { font-style: normal; color: #ffd75e; }
+.rig .rig-meas { font-family: var(--kp-mono); font-size: 10px; color: #999; }
+.rig .rig-over { color: #ff6b6b; }
+
+@media (prefers-reduced-motion: reduce) {
+  .lo-mon.on .shade, .lo-mon .roll, .lo-slab.lo-lock { animation: none; }
+  .lo-mon .shade { transform: scaleY(0); }
+  /* the risk alarm falls back to the static full flood it had before, which
+   * is still inverse video and still colourblind-safe, mirroring how
+   * kp-danger-blink suppresses itself (styles.css:1323-1330) */
+  .lo-strain-low .lo-riskflash { animation: none; opacity: 0; }
+}
+</style>
+</head>
+<body>
+
+<div class="lo-fitwrap" id="fitwrap">
+  <div class="lo-fit" id="fit">
+    <div class="lo-stage crt-on" id="stage">
+     <div class="lo-warp" id="warp">
+      <div class="lo-overscan">
+      <div class="lo-desk" aria-hidden="true"></div>
+      <div class="lo-deskwrap">
+        <div class="lo-free" id="free" aria-hidden="true"><span id="freelabel">FREE DESK</span></div>
+
+        <div class="term" id="term">
+          <header class="term-bar">
+            <h1>LOADOUT.CFG</h1>
+            <span class="term-glyphs"><i></i><i></i><i></i></span>
+          </header>
+          <div class="term-body">
+            <div class="lo-eva">
+              <div class="lo-grid" id="grid" data-tab="programs">
+
+                <!-- Z1 MASTHEAD: persistent above the narrow tab strip -->
+                <div class="lo-mast">
+                  <div class="lo-mast-l">
+                    <span class="lo-eyebrow">LOADOUT.CFG // DIVE KIT</span>
+                    <div class="lo-slabwrap">
+                      <span class="lo-slab kp-frame-ticks" id="slab"><i class="kp-tick2"></i>LOADING</span>
+                      <span class="lo-line" id="status"></span>
+                    </div>
+                  </div>
+                  <div class="lo-mast-r">
+                    <span class="kp-chip-pct"><span>RUN</span><em id="c-run">07</em></span>
+                    <span class="kp-chip-pct"><span>DAY</span><em id="c-day">04</em></span>
+                    <span class="kp-chip-pct"><span>CREDITS</span><em id="c-cred">210</em></span>
+                    <button type="button" class="kp-btn2 kp-btn2-signal" id="dive">DIVE</button>
+                  </div>
+                </div>
+
+                <!-- the narrow-tier tab strip -->
+                <div class="lo-tabs" id="tabs" role="tablist">
+                  <button type="button" class="lo-tab" id="tab-programs" role="tab" aria-selected="true">PROGRAMS</button>
+                  <button type="button" class="lo-tab" id="tab-rig" role="tab" aria-selected="false">RIG &amp; STATUS</button>
+                </div>
+
+                <!-- Z2 GUTTER -->
+                <aside class="lo-gutter">
+                  <div class="lo-gutter-top">
+                    <span class="lo-spine">OPERATOR RIG</span>
+                    <div class="lo-mon" id="mon">
+                      <img src="art/loadout-feed-fine.png" alt="" width="304" height="227" id="feedimg" />
+                      <i class="tint"></i>
+                      <i class="roll"></i>
+                      <span class="lo-rec"><i></i>REC</span>
+                      <span class="lo-clock" id="clock">DAY 04 22:41:07</span>
+                      <i class="shade"></i>
+                    </div>
+                  </div>
+                  <div class="lo-ticks">
+                    <div class="lo-tick"><span>DIVES CLEARED</span><em id="op-clear">0</em></div>
+                    <div class="lo-tick"><span>DIVES LOST</span><em id="op-lost">0</em></div>
+                    <div class="lo-tick"><span>RAM PER TURN</span><em id="op-ram">0</em></div>
+                  </div>
+                </aside>
+
+                <!-- Z3 TRINITY -->
+                <div class="lo-trinity" id="trinity"></div>
+
+                <!-- Z4 SUPPORT BAND -->
+                <section class="lo-support">
+                  <div class="lo-div"><i></i><span>// BENCH SUPPORT</span><i></i></div>
+                  <div class="lo-supgrid">
+                    <div class="lo-sub">
+                      <div class="lo-subhead">
+                        <strong>BOOST BAYS</strong>
+                        <span class="kp-pip-row" id="baypips"></span>
+                        <em id="baycount">0 / 3</em>
+                      </div>
+                      <div class="lo-baywrap" id="bays"></div>
+                    </div>
+                    <div class="lo-sub">
+                      <div class="lo-subhead"><strong>PATCH POUCH</strong><em id="pouchcount">0 / 5</em></div>
+                      <button type="button" class="lo-pouchbtn" id="pouchbtn" title="Open SOLDER.BAY">
+                        <div class="lo-rack" id="rack"></div>
+                        <div class="lo-pouchfoot">
+                          <span class="kp-chip-pct"><span>PLACE COST</span><em>2 RAM</em></span>
+                          <span class="lo-pointer">CRAFT AT THE BENCH: SOLDER.BAY.</span>
+                        </div>
+                      </button>
+                    </div>
+                    <div class="lo-sub" id="strainsub">
+                      <div class="lo-subhead"><strong>NEURAL STRAIN</strong></div>
+                      <div class="lo-strainrow">
+                        <span class="lo-strainnum" id="strainnum"><b id="strainval">0</b><i class="lo-riskflash" aria-hidden="true"></i></span>
+                        <span class="lo-strainbar" id="strainbar"></span>
+                      </div>
+                      <span class="lo-strainnote">SEVERS AT ZERO.</span>
+                    </div>
+                  </div>
+                </section>
+
+                <!-- Z5 FOOTLINE -->
+                <div class="lo-foot">&gt;&gt; TUNE IT WHENEVER. IT HOLDS UNTIL YOU CHANGE IT.</div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="lo-stage-bar">
+        <span>KP/OS</span>
+        <i></i>
+        <span>LOADOUT.CFG</span>
+        <span class="lo-bar-sp"></span>
+        <span id="barclock">22:41</span>
+      </div>
+      </div>
+     </div>
+
+      <div class="lo-glass" id="glass" aria-hidden="true">
+        <i class="g-scan"></i>
+        <i class="g-mask"></i>
+        <i class="g-bloom"></i>
+        <i class="g-spec"></i>
+        <i class="g-vig"></i>
+        <i class="g-bezel"></i>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="rig">
+  <strong>DEMO RIG</strong>
+  <span>Scheme</span>
+  <div class="rig-row" id="schemerow"></div>
+  <span>CRT</span>
+  <div class="rig-row" id="crtrow"></div>
+  <span>Feed</span>
+  <div class="rig-row" id="feedrow"></div>
+  <span>Viewport</span>
+  <div class="rig-row" id="vprow"></div>
+  <span>Run state</span>
+  <div class="rig-row" id="staterow"></div>
+  <div class="rig-row"><button id="replay">REPLAY LOAD</button></div>
+  <span class="rig-meas" id="meas"></span>
+  <span>Feed row swaps the camera treatment: INK is the scheme-tinted 1-bit dither, TRUE is that same dither untinted (the source art is monochrome, so this is its real colour), FULL COLOUR is a colourised re-dither. LOADOUT.CFG as an instrument panel. EVA MULTI codes colour as state: amber structure, ivory data, GREEN nominal (READY, the live mode), RED risk (strain in the low band, which also floods inverse video so the signal is never colour alone), cyan for the camera feed only. SINGLE INK collapses every role back onto one accent, which is the v2 law, and the HUE row drives that. All three viewports render the same arrangement. The stage is laid out at true resolution and scaled to fit, so container queries still see the real width.</span>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ================= shipped catalog, mirrored =================
+   * kit.ts / patch-cells.ts / save.ts constants and desc functions,
+   * transcribed so the study's numbers can never drift from the game. */
+
+  var SCAN_RANGE = { 1: 3, 2: 6, 3: 99 };
+  var ATTACK_WIDTH = { 1: 1, 2: 2, 3: 3 };
+  var DEFEND_WIDTH = { 1: 1, 2: 2, 3: 3 };
+  var WARD_RADIUS = { 1: 1, 2: 2, 3: 3 };
+  var SIPHON_STEAL = { 1: 2, 2: 3, 3: 4 };
+  var LOCK_ROUNDS = 2;
+  var WARD_ROUNDS = 2;
+  var PLACE_COST = 2;
+  var POUCH_MAX = 5;
+
+  var ATK_LABEL = { redirect: "REDIRECT", armHalt: "ARM: HALT", armSiphon: "ARM: SIPHON" };
+  var DEF_LABEL = { purge: "PURGE", lock: "LOCK", ward: "WARD" };
+  var ATK_ALL = ["redirect", "armHalt", "armSiphon"];
+  var DEF_ALL = ["purge", "lock", "ward"];
+
+  function attackModeDesc(mode, tier) {
+    var w = ATTACK_WIDTH[tier];
+    if (mode === "redirect") {
+      return "Twist " + (w === 1 ? "any enemy or open junction" : w + " enemy or open junctions") +
+        " anywhere on the board a quarter turn, no reach limit. Cuts power to everything downstream.";
+    }
+    if (mode === "armHalt") {
+      return "Plant a halt trap on " + (w === 1 ? "an open junction" : w + " open junctions") +
+        ". When their signal claims it, they lose a full turn.";
+    }
+    return "Plant a siphon trap on " + (w === 1 ? "an open junction" : w + " open junctions") +
+      ". When it fires, " + SIPHON_STEAL[tier] + " RAM drains from their next turn into yours.";
+  }
+
+  function defendModeDesc(mode, tier) {
+    var w = DEFEND_WIDTH[tier];
+    if (mode === "purge") {
+      return "Disarm " + (w === 1 ? "one revealed trap" : w + " revealed traps") +
+        ". Scan first; you cannot defuse what you cannot see.";
+    }
+    if (mode === "lock") {
+      return "Freeze " + (w === 1 ? "a junction" : w + " junctions") + " for " + LOCK_ROUNDS +
+        " rounds: nothing rotates or redirects " + (w === 1 ? "it" : "them") +
+        ". Bolt down your line, or a junction it needs.";
+    }
+    return "Ward a junction and everything within " + WARD_RADIUS[tier] + " of it for " + WARD_ROUNDS +
+      " rounds: no new traps land there, and REDIRECT cannot touch it.";
+  }
+
+  function scanDesc(tier) {
+    var r = SCAN_RANGE[tier];
+    return r >= 99
+      ? "Expose every armed node on the entire board, permanently. Always 1 RAM."
+      : "Expose every armed node within " + r + " of your territory, permanently. Always 1 RAM.";
+  }
+
+  /* TIER 0, tutorial gate item 3a: never truncate at a fixed character
+   * count. The budget sits above the longest shipped description (redirect
+   * at tier 3, 122 chars) and only ever cuts on a sentence boundary, so
+   * armHalt and armSiphon can never lose their effect clause behind a
+   * "...". The affordance is reserved for future content that exceeds it. */
+  var DESC_BUDGET = 150;
+  function clampDesc(text) {
+    if (text.length <= DESC_BUDGET) return { shown: text, rest: "" };
+    var cut = text.lastIndexOf(". ", DESC_BUDGET);
+    if (cut < 0) return { shown: text, rest: "" };
+    return { shown: text.slice(0, cut + 1), rest: text.slice(cut + 2) };
+  }
+
+  /* ================= the two run states ================= */
+
+  var STATES = {
+    day4: {
+      label: "DAY 4",
+      run: "07", day: "04", credits: "210",
+      scanTier: 2, attackTier: 1, defendTier: 2,
+      attackMode: "redirect", defendMode: "purge",
+      attackModes: ["redirect", "armHalt"],
+      defendModes: ["purge", "ward"],
+      augments: [
+        { name: "HOT BOOT", desc: "Start every dive with +1 RAM on your first turn." },
+        { name: "CLEAN RUN", desc: "Win a dive with zero strain billed and bank one random patch piece. A trap-free win that only misses at the round cap pays 15 credits instead." }
+      ],
+      boostSlots: 3,
+      pouch: [
+        { mask: 0x5, noun: "Straight" },
+        { mask: 0x3, noun: "Elbow" },
+        { mask: 0xf, noun: "Cross" },
+        { mask: 0x7, noun: "Tee" }
+      ],
+      strain: 62,
+      op: { clear: 23, lost: 6, ram: 6 },
+      clock: 22 * 3600 + 41 * 60 + 7
+    },
+    day1: {
+      label: "DAY 1 EARLY",
+      run: "01", day: "01", credits: "0",
+      scanTier: 1, attackTier: 1, defendTier: 1,
+      attackMode: "redirect", defendMode: "purge",
+      attackModes: ["redirect"],
+      defendModes: ["purge"],
+      augments: [],
+      boostSlots: 3,
+      pouch: [],
+      strain: 100,
+      op: { clear: 0, lost: 0, ram: 5 },
+      clock: 9 * 3600 + 12 * 60 + 40
+    },
+    /* the low-strain case, added so the RISK colour is reviewable rather
+     * than described. Late kit, four bays, strain down in the red band. */
+    day8: {
+      label: "DAY 8 STRAINED",
+      run: "07", day: "08", credits: "55",
+      scanTier: 3, attackTier: 2, defendTier: 2,
+      attackMode: "armSiphon", defendMode: "ward",
+      attackModes: ["redirect", "armHalt", "armSiphon"],
+      defendModes: ["purge", "ward"],
+      augments: [
+        { name: "HOT BOOT", desc: "Start every dive with +1 RAM on your first turn." },
+        { name: "CHEAP SHOT", desc: "Your first ATTACK each dive costs 0 RAM." },
+        { name: "ECHO TAP", desc: "Whenever one of your traps fires, gain 2 RAM on your next turn." },
+        { name: "FIRST FAULT", desc: "The first trap that fires on you each dive bills zero Neural Strain. Every trap after that costs full." }
+      ],
+      boostSlots: 4,
+      pouch: [
+        { mask: 0x3, noun: "Elbow" },
+        { mask: 0x7, noun: "Tee" }
+      ],
+      strain: 21,
+      op: { clear: 41, lost: 9, ram: 7 },
+      clock: 1 * 3600 + 58 * 60 + 12
+    }
+  };
+
+  var S = null;
+  var stateId = "day4";
+
+  /* ================= helpers ================= */
+
+  var REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var timers = [];
+  function later(fn, ms) {
+    if (REDUCED) { fn(); return; }
+    timers.push(setTimeout(fn, ms));
+  }
+  function clearTimers() {
+    timers.forEach(function (t) { clearTimeout(t); clearInterval(t); });
+    timers = [];
+  }
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+  function $(id) { return document.getElementById(id); }
+
+  function countUp(node, target, delay, interval) {
+    if (REDUCED) { node.textContent = String(target); return; }
+    node.textContent = "0";
+    var step = Math.max(1, Math.round(target / 26));
+    later(function () {
+      var v = 0;
+      var iv = setInterval(function () {
+        v = Math.min(target, v + step);
+        node.textContent = String(v);
+        if (v >= target) clearInterval(iv);
+      }, interval || 26);
+      timers.push(iv);
+    }, delay);
+  }
+
+  /* a typewriter scoped by a run token, so a mode click restarts only its
+   * own panel's description and never cancels the rest of the sweep */
+  var runTokens = {};
+  function typeIn(node, text, delay, key) {
+    var token = (runTokens[key] = (runTokens[key] || 0) + 1);
+    if (REDUCED) { node.textContent = text; return; }
+    node.textContent = "";
+    later(function () {
+      if (runTokens[key] !== token) return;
+      var i = 0;
+      var iv = setInterval(function () {
+        if (runTokens[key] !== token) { clearInterval(iv); return; }
+        i += 1;
+        node.textContent = text.slice(0, i);
+        if (i >= text.length) clearInterval(iv);
+      }, 6);
+      timers.push(iv);
+    }, delay);
+  }
+
+  /* glyph.ts patchGlyph, DOM for DOM */
+  var SVGNS = "http://www.w3.org/2000/svg";
+  function patchGlyph(mask, size) {
+    var svg = document.createElementNS(SVGNS, "svg");
+    svg.setAttribute("width", String(size));
+    svg.setAttribute("height", String(size));
+    svg.setAttribute("viewBox", "-12 -12 24 24");
+    svg.setAttribute("class", "kp-patch-glyph");
+    svg.setAttribute("aria-hidden", "true");
+    var ends = [[0, -10], [10, 0], [0, 10], [-10, 0]];
+    for (var d = 0; d < 4; d++) {
+      if ((mask & (1 << d)) === 0) continue;
+      var line = document.createElementNS(SVGNS, "line");
+      line.setAttribute("x1", "0"); line.setAttribute("y1", "0");
+      line.setAttribute("x2", String(ends[d][0])); line.setAttribute("y2", String(ends[d][1]));
+      line.setAttribute("class", "kp-pp-arm");
+      line.setAttribute("stroke-width", "3.5");
+      svg.appendChild(line);
+    }
+    var hub = document.createElementNS(SVGNS, "circle");
+    hub.setAttribute("cx", "0"); hub.setAttribute("cy", "0"); hub.setAttribute("r", "3");
+    hub.setAttribute("class", "kp-pp-node");
+    svg.appendChild(hub);
+    return svg;
+  }
+
+  /* ================= sound: minimal WebAudio voices =================
+   * The shipped tick / claimTick / pageFlip / loadoutReady characters plus
+   * the proposal's new instrumentLock, approximated for a standalone page
+   * with no sound.ts build (the dadlog study's precedent). */
+
+  var AC = null;
+  var interacted = false;
+  document.addEventListener("pointerdown", function () { interacted = true; }, true);
+  document.addEventListener("keydown", function () { interacted = true; }, true);
+
+  function blip(o) {
+    if (!interacted) return;
+    try {
+      if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)();
+      if (AC.state === "suspended") AC.resume();
+      var t = AC.currentTime;
+      var src;
+      if (o.type === "noise") {
+        var len = Math.ceil(AC.sampleRate * o.dur);
+        var buf = AC.createBuffer(1, len, AC.sampleRate);
+        var d = buf.getChannelData(0);
+        for (var i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+        src = AC.createBufferSource();
+        src.buffer = buf;
+      } else {
+        src = AC.createOscillator();
+        src.type = o.type;
+        src.frequency.setValueAtTime(o.freq, t);
+        if (o.freq2) src.frequency.setValueAtTime(o.freq2, t + o.jumpAt);
+      }
+      var node = src;
+      if (o.lpf) { var lf = AC.createBiquadFilter(); lf.type = "lowpass"; lf.frequency.value = o.lpf; node.connect(lf); node = lf; }
+      if (o.hpf) { var hf = AC.createBiquadFilter(); hf.type = "highpass"; hf.frequency.value = o.hpf; node.connect(hf); node = hf; }
+      var g = AC.createGain();
+      g.gain.setValueAtTime(o.vol, t);
+      g.gain.exponentialRampToValueAtTime(0.001, t + o.dur);
+      node.connect(g);
+      g.connect(AC.destination);
+      src.start(t);
+      src.stop(t + o.dur + 0.02);
+    } catch (e) { /* sound is never load bearing */ }
+  }
+
+  var SFX = {
+    tick: function () { blip({ type: "square", freq: 660, dur: 0.05, vol: 0.16, lpf: 3200 }); },
+    claimTick: function () { blip({ type: "square", freq: 520, freq2: 780, jumpAt: 0.04, dur: 0.13, vol: 0.2, lpf: 3000 }); },
+    pageFlip: function () { blip({ type: "noise", dur: 0.09, vol: 0.2, hpf: 1400 }); },
+    /* the new instrumentLock: quieter and lower than tick, so three in a
+     * row across the load read as a settle, not three dings */
+    instrumentLock: function () { blip({ type: "square", freq: 392, dur: 0.075, vol: 0.11, lpf: 1800 }); },
+    loadoutReady: function () { blip({ type: "square", freq: 300, freq2: 450, jumpAt: 0.07, dur: 0.24, vol: 0.17, lpf: 2200 }); }
+  };
+
+  /* ================= Z3: build the trinity ================= */
+
+  var trinity = $("trinity");
+  var panels = [];
+
+  function buildPanel(cfg) {
+    var art = el("article", "lo-panel");
+    art.appendChild(el("span", "lo-pname", cfg.name));
+
+    var heroline = el("div", "lo-heroline");
+    var num = el("span", "lo-num", "0");
+    heroline.appendChild(num);
+    heroline.appendChild(el("span", "lo-unit", cfg.unit));
+    art.appendChild(heroline);
+
+    var meter = el("div", "lo-meter");
+    meter.appendChild(el("span", "lo-tlabel", "TIER"));
+    var seg = el("span", "lo-tseg");
+    var segs = [];
+    for (var s = 0; s < 3; s++) { var i = el("i"); seg.appendChild(i); segs.push(i); }
+    meter.appendChild(seg);
+    meter.appendChild(el("span", "lo-tval", "T" + cfg.tier));
+    art.appendChild(meter);
+
+    var modeBtns = [];
+    if (cfg.modes) {
+      var row = el("div", "lo-modes");
+      cfg.modes.all.forEach(function (m) {
+        var owned = cfg.modes.owned.indexOf(m) >= 0;
+        var b = el("button", "lo-mode", cfg.modes.labels[m] + (owned ? "" : " ?"));
+        b.type = "button";
+        if (!owned) b.disabled = true;
+        if (cfg.modes.active === m) b.classList.add("mode-on");
+        b.addEventListener("click", function () {
+          if (!owned) return;
+          SFX.tick();
+          cfg.modes.active = m;
+          modeBtns.forEach(function (x) { x.btn.classList.toggle("mode-on", x.mode === m); });
+          setDesc(cfg.modes.desc(m), 0);
+        });
+        modeBtns.push({ btn: b, mode: m });
+        row.appendChild(b);
+      });
+      art.appendChild(row);
+    }
+
+    var desc = el("p", "lo-desc");
+    art.appendChild(desc);
+
+    var more = null;
+    function setDesc(text, delay) {
+      var c = clampDesc(text);
+      typeIn(desc, c.shown, delay, cfg.key);
+      if (more) { more.remove(); more = null; }
+      if (c.rest) {
+        more = el("button", "lo-more", "MORE");
+        more.type = "button";
+        more.addEventListener("click", function () {
+          SFX.tick();
+          desc.textContent = text;
+          more.remove();
+          more = null;
+        });
+        desc.appendChild(more);
+      }
+    }
+
+    var br = el("i", "lo-bracket");
+    br.appendChild(el("i"));
+    art.appendChild(br);
+
+    trinity.appendChild(art);
+    return { node: art, num: num, segs: segs, setDesc: setDesc, cfg: cfg };
+  }
+
+  function buildTrinity() {
+    trinity.textContent = "";
+    panels = [];
+    panels.push(buildPanel({
+      key: "scan", name: "SCAN.EXE", unit: "RANGE",
+      tier: S.scanTier, value: Math.min(SCAN_RANGE[S.scanTier], 99),
+      modes: null, desc: scanDesc(S.scanTier)
+    }));
+    panels.push(buildPanel({
+      key: "attack", name: "ATTACK.EXE", unit: "WIDTH",
+      tier: S.attackTier, value: ATTACK_WIDTH[S.attackTier],
+      modes: {
+        all: ATK_ALL, owned: S.attackModes, labels: ATK_LABEL, active: S.attackMode,
+        desc: function (m) { return attackModeDesc(m, S.attackTier); }
+      },
+      desc: attackModeDesc(S.attackMode, S.attackTier)
+    }));
+    panels.push(buildPanel({
+      key: "defend", name: "DEFEND.EXE", unit: "WIDTH",
+      tier: S.defendTier, value: DEFEND_WIDTH[S.defendTier],
+      modes: {
+        all: DEF_ALL, owned: S.defendModes, labels: DEF_LABEL, active: S.defendMode,
+        desc: function (m) { return defendModeDesc(m, S.defendTier); }
+      },
+      desc: defendModeDesc(S.defendMode, S.defendTier)
+    }));
+  }
+
+  /* ================= Z4: bays, pouch, strain ================= */
+
+  function buildBays() {
+    var wrap = $("bays");
+    wrap.textContent = "";
+    var pips = $("baypips");
+    pips.textContent = "";
+    for (var p = 0; p < S.boostSlots; p++) {
+      var pip = el("i", "kp-pip-sq kp-pip-sq-sm" + (p < S.augments.length ? " kp-pip-on" : ""));
+      pips.appendChild(pip);
+    }
+    $("baycount").textContent = S.augments.length + " / " + S.boostSlots;
+
+    for (var i = 0; i < 5; i++) {
+      var aug = i < S.augments.length ? S.augments[i] : null;
+      var future = i >= S.boostSlots;
+      var cls = aug ? "lo-bay lo-has" : future ? "lo-bay lo-bay-empty lo-bay-future" : "lo-bay lo-bay-empty";
+      var bay = el("div", cls);
+      bay.appendChild(el("span", null, aug ? aug.name : "EMPTY BAY"));
+      if (aug) attachPop(bay, aug.desc);
+      if (!REDUCED) {
+        bay.classList.add("kp-slot-anim");
+        bay.style.animationDelay = (760 + i * 90) + "ms";
+      }
+      wrap.appendChild(bay);
+    }
+  }
+
+  /* the bay popup. Hover and focus for pointer/keyboard, click to latch for
+   * touch. AT INTEGRATION this becomes the shipped TapTip component
+   * verbatim (tutorial gate item 2, hard condition). */
+  var openPop = null;
+  function attachPop(bay, text) {
+    function show() {
+      hide();
+      var pop = el("div", "lo-bay-pop", text);
+      bay.appendChild(pop);
+      openPop = pop;
+    }
+    function hide() { if (openPop) { openPop.remove(); openPop = null; } }
+    bay.tabIndex = 0;
+    bay.addEventListener("mouseenter", show);
+    bay.addEventListener("mouseleave", hide);
+    bay.addEventListener("focus", show);
+    bay.addEventListener("blur", hide);
+    bay.addEventListener("click", function (e) {
+      e.stopPropagation();
+      if (openPop && bay.contains(openPop)) hide(); else show();
+    });
+  }
+  document.addEventListener("click", function () { if (openPop) { openPop.remove(); openPop = null; } });
+
+  function buildPouch() {
+    var rack = $("rack");
+    rack.textContent = "";
+    $("pouchcount").textContent = S.pouch.length + " / " + POUCH_MAX;
+    S.pouch.forEach(function (pc, n) {
+      var s = el("span");
+      s.appendChild(patchGlyph(pc.mask, 30));
+      s.appendChild(el("span", null, pc.noun));
+      if (!REDUCED) {
+        s.classList.add("kp-slot-anim");
+        s.style.animationDelay = (1120 + n * 80) + "ms";
+      }
+      rack.appendChild(s);
+    });
+    for (var h = S.pouch.length; h < POUCH_MAX; h++) {
+      var hole = el("span");
+      hole.appendChild(el("span", "lo-hole"));
+      rack.appendChild(hole);
+    }
+  }
+
+  var SEGN = 30;
+  var strainBar = $("strainbar");
+  for (var sb = 0; sb < SEGN; sb++) strainBar.appendChild(el("i"));
+  /* appended AFTER the segments so strainBar.children[0..29] stays the bar */
+  var barFlash = el("i", "lo-riskflash");
+  barFlash.setAttribute("aria-hidden", "true");
+  strainBar.appendChild(barFlash);
+
+  /* ================= the load choreography ================= */
+
+  function sweep() {
+    clearTimers();
+
+    $("c-run").textContent = S.run;
+    $("c-day").textContent = S.day;
+    $("c-cred").textContent = S.credits;
+
+    var slab = $("slab");
+    slab.classList.remove("is-ready");
+    slab.textContent = "LOADING";
+    slab.appendChild(el("i", "kp-tick2"));
+    var status = $("status");
+    status.textContent = "DIVE KIT IS LOADING...";
+
+    var mon = $("mon");
+    mon.classList.remove("on");
+    void mon.offsetWidth;
+    later(function () { mon.classList.add("on"); }, 80);
+
+    buildTrinity();
+
+    /* tier meters sweep, hero numerals count, each panel locks with its own
+     * quiet voice the instant its numeral lands */
+    panels.forEach(function (p, pi) {
+      var base = 220 + pi * 160;
+      p.segs.forEach(function (seg, s) {
+        seg.classList.remove("on");
+        if (s < p.cfg.tier) later(function () { seg.classList.add("on"); }, base + s * 120);
+      });
+      countUp(p.num, p.cfg.value, base + 60, 60);
+      later(function () { SFX.instrumentLock(); }, base + 60 + 26 * 60);
+      p.setDesc(p.cfg.desc, base + 140);
+    });
+
+    buildBays();
+    buildPouch();
+
+    countUp($("op-clear"), S.op.clear, 500);
+    countUp($("op-lost"), S.op.lost, 620);
+    countUp($("op-ram"), S.op.ram, 740);
+
+    /* colour the strain readout by band: NOMINAL above 70, watch between,
+     * RISK at or below 35 (where it also floods inverse video) */
+    var ssub = $("strainsub");
+    ssub.classList.remove("lo-strain-ok", "lo-strain-low");
+    if (S.strain > 70) ssub.classList.add("lo-strain-ok");
+    else if (S.strain <= 35) ssub.classList.add("lo-strain-low");
+
+    var snum = $("strainval");
+    countUp(snum, S.strain, 900, 30);
+    var segsOn = Math.round(SEGN * S.strain / 100);
+    for (var i = 0; i < SEGN; i++) {
+      var seg = strainBar.children[i];
+      seg.classList.remove("on");
+      if (i < segsOn) {
+        (function (sg, k) { later(function () { sg.classList.add("on"); }, 900 + k * 34); })(seg, i);
+      }
+    }
+
+    later(function () {
+      status.textContent = "DIVE KIT READY.";
+      slab.textContent = "READY";
+      slab.appendChild(el("i", "kp-tick2"));
+      slab.classList.add("is-ready");
+      slab.classList.remove("lo-lock");
+      void slab.offsetWidth;
+      slab.classList.add("lo-lock");
+      SFX.loadoutReady();
+    }, 1800);
+
+    measure();
+    /* the descriptions type in, so the honest height is the settled one */
+    later(measure, 2100);
+  }
+
+  /* ================= the demo rig ================= */
+
+  function radioRow(rowId, opts, initial, onPick) {
+    var row = $(rowId);
+    row.textContent = "";
+    opts.forEach(function (o) {
+      var b = el("button", o.id === initial ? "rig-on" : "", o.label);
+      b.addEventListener("click", function () {
+        row.querySelectorAll("button").forEach(function (x) { x.className = ""; });
+        b.className = "rig-on";
+        onPick(o);
+      });
+      row.appendChild(b);
+    });
+  }
+
+  /* CRT: the five layers are added and REMOVED, never faded to zero, so OFF
+   * is a genuinely clean flat-ink print */
+  var glassLayers = Array.prototype.slice.call($("glass").children);
+  function setCrt(mode) {
+    var stage = $("stage");
+    var glass = $("glass");
+    stage.classList.toggle("crt-on", mode !== "off");
+    glass.textContent = "";
+    if (mode !== "off") glassLayers.forEach(function (l) { glass.appendChild(l); });
+  }
+
+  /* preloaded so the swap never waits on the file server */
+  ["art/loadout-feed-fine.png", "art/loadout-feed-color.png"].forEach(function (s) { new Image().src = s; });
+  function setFeed(id) {
+    var mon = $("mon");
+    mon.dataset.feed = id;
+    $("feedimg").src = id === "color" ? "art/loadout-feed-color.png" : "art/loadout-feed-fine.png";
+    mon.classList.remove("on");
+    void mon.offsetWidth;
+    later(function () { mon.classList.add("on"); }, 40);
+  }
+  radioRow("feedrow", [
+    { id: "ink", label: "INK TINT" },
+    { id: "true", label: "TRUE 1-BIT" },
+    { id: "color", label: "FULL COLOUR" }
+  ], "ink", function (o) { setFeed(o.id); });
+
+  radioRow("crtrow", [
+    { id: "flat", label: "FLAT" },
+    { id: "off", label: "OFF" }
+  ], "flat", function (o) { setCrt(o.id); });
+
+  /* SCHEME: the user ruling. EVA breaks colour into state roles; SINGLE INK
+   * collapses every role back onto one accent, which is the v2 law and what
+   * the HUE row drives. */
+  function setScheme(id) { document.documentElement.dataset.scheme = id; }
+  radioRow("schemerow", [
+    { id: "nerv", label: "NERV" },
+    { id: "tokyo", label: "TOKYO NIGHT" }
+  ], "nerv", function (o) { setScheme(o.id); });
+
+  /* 4:3 dropped per user review 2026-07-31 ("no reason to need to support
+   * 4:3 right now"). All three survivors render the SAME arrangement. */
+  var VIEWPORTS = [
+    { id: "169", label: "16:9", w: 1366, h: 768, win: 860 },
+    { id: "219", label: "21:9", w: 2560, h: 1080, win: 940 },
+    { id: "laptop", label: "LAPTOP 1280x800", w: 1280, h: 800, win: 760 }
+  ];
+  var VP = VIEWPORTS[0];
+
+  function applyViewport(v) {
+    VP = v;
+    var stage = $("stage");
+    stage.style.width = v.w + "px";
+    stage.style.height = v.h + "px";
+    $("term").style.setProperty("--lo-win", v.win + "px");
+    fit();
+    measure();
+  }
+
+  /* lay the stage out at TRUE resolution, then scale the whole thing to fit
+   * the reviewer's browser. Transform does not change layout size, so the
+   * container queries inside still resolve against the real window width. */
+  function fit() {
+    var availW = Math.max(320, window.innerWidth - 300);
+    var availH = Math.max(320, window.innerHeight - 90);
+    var k = Math.min(1, availW / VP.w, availH / VP.h);
+    $("fit").style.transform = "scale(" + k + ")";
+    $("fitwrap").style.width = Math.round(VP.w * k) + "px";
+    $("fitwrap").style.height = Math.round(VP.h * k) + "px";
+    return k;
+  }
+
+  function measure() {
+    var k = fit() || 1;
+    var term = $("term");
+    var h = Math.round(term.getBoundingClientRect().height / k);
+    var free = $("free");
+    var slack = VP.w - VP.win;
+    if (slack > 220) {
+      free.style.display = "flex";
+      free.style.right = "0px";
+      free.style.width = Math.round(slack / 2 - 24) + "px";
+      $("freelabel").textContent = "FREE DESK " + Math.round(slack / 2 - 24) + "PX";
+    } else {
+      free.style.display = "none";
+    }
+    var tier = VP.win - 34 >= 700 ? "WIDE" : "NARROW";
+    var m = $("meas");
+    m.innerHTML = "";
+    m.appendChild(document.createTextNode("WINDOW " + VP.win + "px / " + tier + " tier"));
+    m.appendChild(document.createElement("br"));
+    var hs = el("span", h > 820 ? "rig-over" : "", "HEIGHT " + h + "px / ceiling 820px");
+    m.appendChild(hs);
+  }
+
+  radioRow("vprow", VIEWPORTS, "169", function (o) { applyViewport(o); });
+  radioRow("staterow", [
+    { id: "day4", label: "DAY 4" },
+    { id: "day1", label: "DAY 1 EARLY" },
+    { id: "day8", label: "DAY 8 STRAINED" }
+  ], "day4", function (o) {
+    stateId = o.id;
+    S = STATES[stateId];
+    clockSec = S.clock;
+    sweep();
+  });
+
+  $("replay").addEventListener("click", sweep);
+
+  /* narrow-tier tabs */
+  function setTab(which) {
+    $("grid").dataset.tab = which;
+    $("tab-programs").setAttribute("aria-selected", String(which === "programs"));
+    $("tab-rig").setAttribute("aria-selected", String(which === "rig"));
+    if (!REDUCED) {
+      var g = $("grid");
+      g.classList.remove("kp-page-flip");
+      void g.offsetWidth;
+      g.classList.add("kp-page-flip");
+    }
+    SFX.pageFlip();
+    measure();
+  }
+  $("tab-programs").addEventListener("click", function () { setTab("programs"); });
+  $("tab-rig").addEventListener("click", function () { setTab("rig"); });
+
+  $("dive").addEventListener("click", function () { SFX.claimTick(); });
+  $("pouchbtn").addEventListener("click", function () { SFX.tick(); });
+
+  /* the feed clock ticks for real, and survives every load-sweep reset */
+  /* The clock is the last thing repainting inside the glass, and under
+   * CURVED every repaint re-runs the barrel filter over the whole stage.
+   * So it drops to minute resolution there (one refilter a minute instead
+   * of sixty), and every write is guarded on the text actually changing. */
+  var clockSec = STATES.day4.clock;
+  setInterval(function () {
+    clockSec = (clockSec + 1) % 86400;
+    var h = String(Math.floor(clockSec / 3600)).padStart(2, "0");
+    var m = String(Math.floor((clockSec % 3600) / 60)).padStart(2, "0");
+    var s = String(clockSec % 60).padStart(2, "0");
+    var feed = "DAY " + S.day + " " + h + ":" + m + ":" + s;
+    var bar = h + ":" + m;
+    if ($("clock").textContent !== feed) $("clock").textContent = feed;
+    if ($("barclock").textContent !== bar) $("barclock").textContent = bar;
+  }, 1000);
+
+  window.addEventListener("resize", function () { fit(); measure(); });
+
+  /* ================= go ================= */
+
+  S = STATES[stateId];
+  setScheme("nerv");
+  setCrt("flat");
+  setFeed("ink");
+  applyViewport(VP);
+  sweep();
+})();
+</script>
+</body>
+</html>

@@ -34,6 +34,19 @@ is how a gate stays honest without becoming a blanket NOTE dump.
    `quotes`/`winLine`. (b) DIVE.EXE's opponent identity tag (SIG-0 vs
    INTRUSION) had no ruling; recorded as ledger Resolved ruling 11. See
    [[project-canon-status]] for what these actually say.
+4. `ux-2026-07-29-dadlog`: one gap, distinct from that cycle's OTHER
+   canon event (a direct USER DIRECTIVE reframing DAD.LOG, recorded as
+   ruling 12 - not a gap, a straight ruling of what the user said). The
+   actual gap was whether "tower telemetry" and the player's own live
+   session logs/queries could coherently live on a volume labeled Dad's
+   own, read-only ("DAD.VOL // READ ONLY"), given the backroom entry's own
+   "NO ENTRY IN THIS SYSTEM, EVER." Ruled coherent (the tower's own local
+   drive vs. the shop's separate ticketing system are different systems)
+   and recorded as ledger Resolved ruling 13. Worth remembering as a
+   pattern in itself: a single brief can produce both a user-ruling item
+   (record verbatim, do not re-litigate) and a genuine gap-ruling item
+   (decide it yourself) in the same pass; do not conflate the two or cite
+   the wrong justification for either in the gate file.
 
 **How to apply:** any future gate where a proposal's fiction has no
 bible/ledger anchor either way - decide it, canonize minimally, cite the

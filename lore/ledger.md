@@ -233,3 +233,70 @@ remain.
     as a proper name or direct address rather than a diagnostic tag, and
     any claim that this ruling decides what the tag reads after the
     finale reveal, which it does not.
+12. DAD.LOG REFRAME (added 2026-07-29, USER DIRECTIVE, recorded on the
+    ux-2026-07-29-dadlog gate; verbatim: "I want it to feel like you're
+    really accessing your dad's old files. Write new text for it where it
+    helps with immersion. It currently reads like the user's journal
+    entries instead of actually discovering dad's files."): DAD.LOG's
+    presentation fiction changes from a diary the player keeps to an
+    archive reader, DAD.VOL, Dad's own read-only recovered volume, mounted
+    and read file by file, one more file pieced back with every dive
+    attempt. Unchanged, fixed by this ruling: every entry's id, its
+    unlockAtRun key, and the exact knowledge ceiling the run-by-run table
+    below allows it to carry. Changed: every entry now renders AS the
+    artifact itself (diegetic filename, doctype, provenance, then the
+    document's own plausible words), never as diary prose; the player's
+    own voice survives only as a terse bench annotation attached to a
+    file, typographically subordinate, never sharing the artifact body's
+    treatment. Forbids: any artifact body stating something its own
+    diegetic source (a clinic's billing system, a shop's ledger, the
+    tower's own telemetry) could not plausibly know or print; that class
+    of content, an inference, a comparison, a reaction, belongs in the
+    bench annotation, in the player's own voice, not the artifact's
+    printed text.
+13. DAD.VOL PROVENANCE (added 2026-07-29, Loremaster gate on
+    ux-2026-07-29-dadlog, ruling a gap the gate exposed rather than a
+    direct user call): DAD.VOL is the back-room tower's own local
+    storage, not the shop's separate ticketing/service system (the
+    backroom entry's "NO ENTRY IN THIS SYSTEM, EVER" refers to that
+    separate system finding no ticket, not to the tower's own drive
+    having no files). Named by Dad under the house naming rule, it
+    legitimately carries two kinds of material: Dad's own historical
+    files (papers scanned in, fragments recovered off damaged storage)
+    and the tower's own live telemetry about the player's current dives,
+    or the player's own queries against the shop's separate ledger and
+    ticket systems, filed onto the same volume because it is the same
+    machine and the only drive it has. "READ ONLY" describes DAD.LOG the
+    reader's access mode, not a claim that the underlying volume never
+    changes; the recovery-pass mechanic already implies ongoing change.
+    Permits: provenance lines describing the player's own session logs
+    and queries as "tower telemetry" or "shop system query, bench
+    terminal" filed onto DAD.VOL. Forbids: attributing that live
+    telemetry or those queries to Dad's own authorship, and any claim
+    that the shop's ticketing system holds a record of the tower.
+14. LOADOUT.CFG MULTI-HUE PALETTE (added 2026-07-31, USER DIRECTIVE,
+    recorded on round 2 of the ux-2026-07-31-loadout-eva gate; verbatim:
+    "I'm wanting to see if we can break away from the single color
+    design. I even said use Evangelion colors."): for the LOADOUT.CFG
+    instrument-panel study specifically, the KP/OS v2 single-ink-accent
+    law (ui-demos/RULINGS.md: "ONE unified scheme across the whole OS
+    ... a single ink accent that does everything ... No greys anywhere;
+    danger is inverse video ... never a second hue") is superseded by a
+    five-channel state-coded palette: amber #ffab3d (structural chrome,
+    neutral readouts), green #7bff5a (nominal: READY verdict, active
+    mode), red #ff3b30 (risk: NEURAL STRAIN when low), cyan #35d6ff
+    (BENCH FEED camera tint only), ivory #fff2d9 (hot highlight, hero
+    numerals). Scope, narrow reading, the default absent a further
+    ruling: this supersedes the single-ink law for LOADOUT.CFG's own
+    surface only (the study and, at integration, the shipped window it
+    replaces); it does not reopen any other KP/OS window to multi-hue,
+    and it does not revive the earlier-rejected per-window channel-
+    livery design (magenta darknet / phosphor ledger / indigo dadlog,
+    killed by the ux-2026-07-28-kpos-redesign round-2 ruling recorded in
+    RULINGS.md's "Pipeline notes" section) - that was a flat single-hue-
+    per-window assignment, a different design from this window's
+    internal state-coding by meaning. OPEN, for the user to settle, not
+    decided by this ruling: whether color-as-diagnostic-state should
+    become the general KP/OS law in place of single-ink-accent
+    everywhere, or stay a LOADOUT.CFG exception. Until the user says
+    otherwise, the narrow reading governs every other surface.

@@ -1,0 +1,1378 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>KP demo: MORNING.LOG (day start)</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=VT323&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" />
+<link rel="stylesheet" href="../_shared/kp.css" />
+<link rel="stylesheet" href="../_shared/system.css" />
+<style>
+/* MORNING.LOG: the DAY START surface, rebuilt to the KP/OS v3
+ * instrument-panel system (cycle ux-2026-07-31-morning-log, spec item
+ * morning-log-day-start-panel).
+ *
+ * This replaces StoryScene (components/game/screens.tsx), the last surface
+ * in the game that never had a v2 or v3 pass: a stacked flexbox of a 96px
+ * portrait, a name span, <p> lines at 21px and a ghost NEXT button, with no
+ * glance order, no role tokens, no container query, and full-colour pixel
+ * art where the system calls for 1-bit dither.
+ *
+ * The two problems the spec had to actually solve:
+ *
+ *  1. A DIALOGUE SURFACE IS A FIELD OF EVEN BODY TYPE, which is exactly
+ *     what law 2 forbids. The focal element is therefore the one thing on
+ *     the surface that is NOT prose: the DAY numeral, at 76-91px against a
+ *     21px body cap (3.6x to 4.3x, against law 2's 2x minimum). The body
+ *     copy holds its VT323 floor at every viewport and is never asked to
+ *     compete.
+ *
+ *  2. BEAT-TO-BEAT REFLOW. The shipped surface jumps on every click,
+ *     because a still beat is 384px taller than a terminal beat. Fixed
+ *     structurally: the imagery is a FIXTURE of the panel (one 288x216
+ *     cell, always present, always the same size) rather than a property of
+ *     the beat, and the body row is a flat 300px regardless of content. The
+ *     cell is the shop's own camera system, which is why it can be
+ *     permanent: CAM 1 is the counter, CAM 2 is the back room, STANDBY is
+ *     no signal. A beat selects a camera; it never resizes the panel.
+ */
+
+/* ---------- ROLE TOKENS: copied verbatim from loadout-eva/index.html ----------
+ * Colour is state, not decoration (RULINGS law 1, lore/ledger.md ruling 14).
+ * :root collapses every role back onto the single v2 accent, so a surface
+ * with no data-scheme renders exactly as v2 did; only data-scheme pulls
+ * them apart. Do not retype these hexes anywhere. */
+:root {
+  --r-struct: var(--ch-dim);
+  --r-line: var(--ch);
+  --r-data: var(--ch-hot);
+  --r-ok: var(--ch);
+  --r-warn: var(--ch);
+  --r-aux: var(--ch);
+  --r-hazard: var(--ch);
+  --r-note: var(--ch-dim);
+  --r-ok-glow: var(--px-glow);
+  --r-warn-glow: var(--px-glow);
+}
+
+:root[data-scheme="nerv"] {
+  --px-void: #0a0603;
+  --ch: #ff9a1f;
+  --ch2: #c2431a;
+  --ch-hot: #ffe9c4;
+  --r-struct: #a86a22;
+  --r-line: #ff9a1f;
+  --r-data: #ffe9c4;
+  --r-ok: #8dff3a;
+  --r-warn: #ff2a17;
+  --r-aux: #23d3ff;
+  --r-hazard: #d1381a;
+  --r-note: #6ea8ff;
+  --r-ok-glow: color-mix(in srgb, #8dff3a 45%, transparent);
+  --r-warn-glow: color-mix(in srgb, #ff2a17 60%, transparent);
+}
+
+:root[data-scheme="tokyo"] {
+  --px-void: #16161e;
+  --ch: #7aa2f7;
+  --ch2: #414868;
+  --ch-hot: #c0caf5;
+  --r-struct: #414868;
+  --r-line: #7aa2f7;
+  --r-data: #c0caf5;
+  --r-ok: #9ece6a;
+  --r-warn: #f7768e;
+  --r-aux: #7dcfff;
+  --r-hazard: #ff9e64;
+  --r-note: #bb9af7;
+  --r-ok-glow: color-mix(in srgb, #9ece6a 45%, transparent);
+  --r-warn-glow: color-mix(in srgb, #f7768e 55%, transparent);
+}
+
+body {
+  overflow: auto;
+  display: block;
+  height: auto;
+  min-height: 100%;
+  padding: 26px 16px 40px;
+}
+
+/* ---------- the viewport rig: a real-resolution stage, scaled to fit ----------
+ * Copied from loadout-eva. The stage is laid out at its TRUE pixel size and
+ * then transform-scaled to fit the reviewer's browser. Transforms do not
+ * change layout size, so every container query inside still resolves
+ * against the real window width: what you see at 47% is exactly what a
+ * 2560x1080 desk renders. */
+
+.lo-fit { transform-origin: top left; }
+.lo-fitwrap { margin: 0 auto; }
+
+.lo-stage {
+  position: relative;
+  overflow: hidden;
+  background: var(--px-void);
+  border: 1px solid var(--ch-faint);
+}
+.lo-warp { position: absolute; inset: 0; display: flex; flex-direction: column; }
+
+.lo-desk {
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-conic-gradient(color-mix(in srgb, var(--ch) 4%, transparent) 0% 25%, transparent 0% 50%),
+    radial-gradient(120% 90% at 50% 0%, color-mix(in srgb, var(--ch) 5%, transparent), transparent 70%);
+  background-size: 8px 8px, auto;
+}
+
+.lo-deskwrap {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 22px 0 0;
+  min-height: 0;
+}
+
+/* the leftover desk, drawn: the height ceiling made literal */
+.lo-free {
+  position: absolute;
+  top: 30px;
+  bottom: 14px;
+  border: 2px dashed var(--ch-faint);
+  opacity: 0.5;
+  display: flex;
+  align-items: flex-end;
+  padding: 6px 8px;
+  pointer-events: none;
+}
+.lo-free span {
+  font-family: var(--kp-display);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: var(--ch-faint);
+}
+.lo-free span::before { content: "// "; }
+
+.lo-stage-bar {
+  height: 44px;
+  flex: none;
+  position: relative;
+  background: var(--ch);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+}
+.lo-stage-bar span {
+  font-family: var(--kp-display);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: var(--px-void);
+}
+.lo-stage-bar i {
+  display: block;
+  width: 10px;
+  height: 10px;
+  background: var(--px-void);
+  opacity: 0.55;
+}
+.lo-stage-bar .lo-bar-sp { flex: 1; background: none; opacity: 1; }
+
+/* ---------- CRT: glass over the stage, six layers, FLAT and OFF ----------
+ * Copied verbatim from loadout-eva. CURVED is not rebuilt: it was built,
+ * measured and cut (RULINGS law 6). */
+
+.lo-stage.crt-on { border-radius: 18px; }
+.lo-stage.crt-on .lo-glass {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 40;
+  border-radius: 16px / 20px;
+  overflow: hidden;
+}
+.lo-glass > i { position: absolute; inset: 0; display: block; }
+
+.lo-glass .g-scan {
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.55) 0 1px,
+    rgba(0, 0, 0, 0.12) 1px 2px,
+    rgba(255, 255, 255, 0.03) 2px 3px);
+  mix-blend-mode: multiply;
+  opacity: 0.85;
+}
+.lo-glass .g-mask {
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(255, 0, 0, 0.05) 0 1px,
+    rgba(0, 255, 0, 0.05) 1px 2px,
+    rgba(0, 0, 255, 0.05) 2px 3px);
+  mix-blend-mode: screen;
+  opacity: 0.7;
+}
+.lo-glass .g-bloom {
+  background: radial-gradient(130% 95% at 50% 42%, var(--px-glow) 0%, transparent 62%);
+  opacity: 0.14;
+  mix-blend-mode: screen;
+}
+.lo-glass .g-spec {
+  background:
+    radial-gradient(58% 42% at 26% 14%, rgba(255, 255, 255, 0.11) 0%, transparent 70%),
+    linear-gradient(163deg, rgba(255, 255, 255, 0.055) 0%, transparent 34%);
+  mix-blend-mode: screen;
+}
+.lo-glass .g-vig {
+  background:
+    radial-gradient(102% 86% at 50% 48%, transparent 52%, rgba(0, 0, 0, 0.55) 82%, rgba(0, 0, 0, 0.92) 100%);
+  box-shadow:
+    inset 0 0 46px 12px rgba(0, 0, 0, 0.75),
+    inset 0 0 130px 40px rgba(0, 0, 0, 0.45);
+}
+.lo-glass .g-bezel {
+  border-radius: 16px / 20px;
+  box-shadow:
+    inset 0 0 0 3px rgba(0, 0, 0, 0.9),
+    inset 0 2px 2px 3px rgba(255, 255, 255, 0.07),
+    inset 0 -3px 3px 3px rgba(0, 0, 0, 0.6);
+}
+
+/* ---------- the window frame ---------- */
+
+.term {
+  width: var(--ml-win, 860px);
+  flex: none;
+  border: 3px solid var(--r-hazard);
+  background: var(--px-void);
+  position: relative;
+  z-index: 5;
+  filter:
+    drop-shadow(9px 9px 0 rgba(0, 0, 0, 0.8))
+    drop-shadow(0 0 26px color-mix(in srgb, var(--ch) 25%, transparent));
+}
+
+.term-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--ch);
+  padding: 7px 12px 7px 14px;
+}
+.term-bar h1 {
+  font-family: var(--kp-display);
+  font-size: 13px;
+  letter-spacing: 0.16em;
+  color: var(--px-void);
+  font-weight: 400;
+}
+.term-glyphs { display: flex; gap: 7px; align-items: center; }
+.term-glyphs i { display: block; background: var(--px-void); }
+.term-glyphs i:nth-child(1) { width: 11px; height: 3px; margin-top: 9px; }
+.term-glyphs i:nth-child(2) { width: 11px; height: 11px; background: transparent; border: 3px solid var(--px-void); }
+.term-glyphs i:nth-child(3) { width: 11px; height: 11px; }
+
+.term-body { position: relative; padding: 12px 14px; }
+.term-body::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: repeating-conic-gradient(color-mix(in srgb, var(--ch) 5%, transparent) 0% 25%, transparent 0% 50%);
+  background-size: 4px 4px;
+}
+.term-body > * { position: relative; }
+
+/* ---------- the container that drives everything ---------- */
+
+.ml-eva { container-type: inline-size; container-name: ml; }
+
+.ml-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-rows: auto 1fr;
+  /* the fluid ramp. cqi, never vw: a tiled window scales to its own tile.
+   * --ml-fs-body's formula is copied from loadout-eva's --lo-fs-body. */
+  --ml-fs-body: clamp(19px, calc(1cqi + 17px), 21px);
+  --ml-fs-label: clamp(9px, calc(0.6cqi + 8px), 11px);
+  --ml-fs-tickl: clamp(8px, calc(0.4cqi + 7.5px), 9px);
+  --ml-fs-tickv: clamp(11px, calc(0.7cqi + 9.5px), 13px);
+  /* THE FOCAL ELEMENT. 76px at the laptop's 726px content box, 82.6px at
+   * 16:9, 90.6px at 21:9, against a body cap of 21px: 3.6x to 4.3x. Law 2
+   * asks for one focal element at extreme scale and warns that 1.3x is not
+   * hierarchy; this is the only element on the surface allowed to grow. */
+  --ml-fs-num: clamp(76px, 10cqi, 128px);
+}
+
+/* ---------- ROW 1: the masthead. Persistent across every beat. ----------
+ * It sits OUTSIDE the per-beat remount boundary on purpose: MORNING.LOG is
+ * one of the highest-frequency surfaces in the game (every day open, every
+ * run open), so its chrome settles in once per scene and then holds dead
+ * still while the player clicks through. Chrome that re-animates on every
+ * click is chrome that reads as a glitch. */
+
+.ml-mast {
+  border: 1px solid var(--r-struct);
+  background: color-mix(in srgb, var(--r-line) 4%, var(--px-void));
+  padding: 9px 12px 11px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 10px 16px;
+}
+.ml-mast-l { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.ml-eyebrow {
+  font-family: var(--kp-display);
+  font-size: var(--ml-fs-label);
+  letter-spacing: 0.18em;
+  color: var(--r-note);
+}
+.ml-numwrap { display: flex; align-items: flex-end; gap: 10px; position: relative; padding: 2px 8px 0 2px; }
+.ml-unit {
+  font-family: var(--kp-display);
+  font-size: var(--ml-fs-label);
+  letter-spacing: 0.16em;
+  color: var(--r-note);
+  padding-bottom: 10px;
+}
+.ml-num {
+  font-family: var(--kp-display);
+  font-size: var(--ml-fs-num);
+  line-height: 0.78;
+  color: var(--r-data);
+  text-shadow: 0 0 24px var(--px-glow);
+  font-variant-numeric: tabular-nums;
+}
+
+/* the heavy corner brackets, copied from loadout-eva's .lo-bracket and
+ * scoped to the FOCAL element only (law 4: applying them everywhere
+ * destroys the emphasis they exist to create) */
+.ml-bracket, .ml-bracket > i { position: absolute; pointer-events: none; }
+.ml-bracket { inset: 0; }
+.ml-bracket > i { inset: 0; }
+.ml-bracket::before, .ml-bracket::after,
+.ml-bracket > i::before, .ml-bracket > i::after {
+  content: "";
+  position: absolute;
+  width: 24px;
+  height: 24px;
+}
+.ml-bracket::before { top: 0; left: 0; border-top: 4px solid var(--r-hazard); border-left: 4px solid var(--r-hazard); }
+.ml-bracket::after { top: 0; right: 0; border-top: 4px solid var(--r-hazard); border-right: 4px solid var(--r-hazard); }
+.ml-bracket > i::before { bottom: 0; left: 0; border-bottom: 4px solid var(--r-hazard); border-left: 4px solid var(--r-hazard); }
+.ml-bracket > i::after { bottom: 0; right: 0; border-bottom: 4px solid var(--r-hazard); border-right: 4px solid var(--r-hazard); }
+
+.ml-mast-r { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+/* the register chip. NOMINAL by default; the ONE alarm on this surface
+ * arms here and nowhere else. */
+.ml-regchip { position: relative; border-color: var(--r-struct); }
+.ml-regchip span { color: var(--r-note); }
+.ml-regchip em { color: var(--r-ok); }
+
+/* RISK. Law 1: --r-warn appears on exactly one thing per surface, and
+ * colour is never the only channel. So the chip floods inverse video AND
+ * moves. The motion is a composited difference-blend plate (copied from
+ * loadout-eva's .lo-riskflash) rather than an animated background, because
+ * animating paint properties inside the CRT's filtered subtree measured
+ * 50ms p95 there against 9.3ms for the opacity version. */
+.ml-regchip.is-warn { background: var(--r-warn); border-color: var(--r-warn); }
+.ml-regchip.is-warn span, .ml-regchip.is-warn em { color: var(--px-void); }
+.ml-riskflash {
+  position: absolute;
+  inset: -2px;
+  background: var(--r-warn);
+  mix-blend-mode: difference;
+  opacity: 0;
+  pointer-events: none;
+  will-change: opacity;
+}
+.ml-regchip.is-warn .ml-riskflash { animation: ml-risk-blink 1.2s steps(2) infinite; }
+@keyframes ml-risk-blink { 0%, 100% { opacity: 0; } 50% { opacity: 1; } }
+
+/* beat position. Unboxed and tiny: law 8 category 4, applied at design
+ * time rather than after hitting the ceiling. */
+.ml-beatdots { display: inline-flex; gap: 5px; align-items: center; }
+.ml-beatdots i {
+  display: block;
+  width: 9px;
+  height: 9px;
+  border: 2px solid var(--r-struct);
+  background: transparent;
+}
+.ml-beatdots i.on { background: var(--r-line); border-color: var(--r-line); }
+.ml-beatdots i.done { background: var(--r-struct); border-color: var(--r-struct); }
+
+/* the masthead settles in ONCE per scene */
+.ml-mast.ml-in { animation: ml-in 160ms steps(4) both; }
+@keyframes ml-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+
+/* ---------- ROW 2: the body. FIXED HEIGHT. ----------
+ * This flat 300px is the equal-footprint mechanism. Every beat shape
+ * (system/standby, Rhea/counter, system/backroom, Rhea/backroom) renders
+ * the identical row, so clicking through a scene never moves the window.
+ * The shipped surface reflowed by 384px on a still beat. */
+
+.ml-body {
+  display: grid;
+  grid-template-columns: 288px 1fr;
+  gap: 12px;
+  /* HEIGHT, not min-height. A minimum is not a guarantee: once the log
+   * accumulates, a min-height row grows with it and the window reflows
+   * again, which is the exact defect this panel exists to fix. 360px is the
+   * balance point: enough for the log to hold the previous beat beside the
+   * current one, not so much that the scene's opening beat sits in a mostly
+   * empty box. Lands the window near 550px against the 700px target. */
+  height: 360px;
+}
+.ml-body > * { min-height: 0; }
+
+/* ---------- the image stage: one cell, three fills ----------
+ * The imagery is a FIXTURE of the panel, not a property of the beat. That
+ * is what makes the footprint constant, and it is diegetic rather than a
+ * layout trick: the shop has two mounted cameras and the OS shows one of
+ * them. 288x216 at 1:1, never resized (law 5: to show less, crop). */
+
+.ml-stagecol { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+
+/* The frame and tag carry --r-aux, not the tint. USER RULING 2026-08-01:
+ * FULL COLOUR is the default treatment for this window's art. That drops the
+ * ink tint, so if --r-aux lived only in the tint the role would stop painting
+ * in the default state. Putting it on the cell's own chrome is the more
+ * honest assignment anyway: --r-aux means "a different signal class", which
+ * is true of the camera whatever treatment its picture is in. */
+.ml-stage {
+  position: relative;
+  width: 288px;
+  height: 216px;
+  flex: none;
+  overflow: hidden;
+  border: 2px solid var(--r-aux);
+  background: var(--px-void);
+}
+.ml-plate { position: absolute; inset: 0; }
+.ml-stage img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  image-rendering: pixelated;
+  filter: grayscale(1) contrast(1.15) brightness(1.05);
+}
+
+/* FEED TREATMENT (law 5's three treatments). INK is the house rule: the
+ * 1-bit dither multiplied to --r-aux, so the camera recolours with the
+ * scheme and reads as a different signal class from bench data. TRUE drops
+ * the tint, which is the image's actual colour since the source art is
+ * monochrome ink. FULL COLOUR swaps in a colourised 16-colour re-dither,
+ * a colourisation rather than a reveal. */
+.ml-stage .tint {
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-conic-gradient(rgba(0, 0, 0, 0.28) 0% 25%, transparent 0% 50%),
+    var(--r-aux);
+  background-size: 2px 2px, auto;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+.ml-stage[data-feed="true"] .tint,
+.ml-stage[data-feed="color"] .tint { display: none; }
+.ml-stage[data-feed="color"] img { filter: none; }
+
+/* STANDBY: no camera is framed, so there is nothing to tint and no REC
+ * light. A dead channel, not a decorated one. */
+.ml-stage[data-fill="standby"] img,
+.ml-stage[data-fill="standby"] .tint { display: none; }
+/* NO SIGNAL has to read as a dead channel, not as a box someone forgot to
+ * fill. A flat 288x216 of near-void looked like a bug in the first build, so
+ * the standby fill is a real no-signal field: a coarse dither at three
+ * densities behind a static band. Still dead still, per law 7. */
+.ml-nosig {
+  position: absolute;
+  inset: 0;
+  display: none;
+  background-image:
+    repeating-conic-gradient(color-mix(in srgb, var(--r-struct) 55%, transparent) 0% 25%, transparent 0% 50%),
+    repeating-conic-gradient(color-mix(in srgb, var(--r-struct) 32%, transparent) 0% 25%, transparent 0% 50%),
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.55) 0 1px, transparent 1px 3px);
+  background-size: 4px 4px, 8px 8px, auto;
+  background-position: 0 0, 2px 2px, 0 0;
+  opacity: 0.5;
+}
+.ml-nosig::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 44%;
+  height: 26px;
+  background: repeating-linear-gradient(90deg,
+    color-mix(in srgb, var(--r-struct) 70%, transparent) 0 7px,
+    transparent 7px 13px,
+    color-mix(in srgb, var(--r-struct) 45%, transparent) 13px 22px,
+    transparent 22px 31px);
+}
+.ml-stage[data-fill="standby"] .ml-nosig { display: block; }
+
+.ml-camtag {
+  position: absolute;
+  bottom: 4px;
+  left: 4px;
+  font-family: var(--kp-display);
+  font-size: 8px;
+  letter-spacing: 0.14em;
+  color: var(--r-aux);
+  background: var(--px-void);
+  padding: 3px 5px;
+}
+/* no signal is not a channel, so it takes neither the aux role nor its frame */
+.ml-stage[data-fill="standby"] .ml-camtag { color: var(--r-struct); }
+.ml-stage[data-fill="standby"] { border-color: color-mix(in srgb, var(--r-struct) 60%, var(--px-void)); }
+
+/* a record light is red on every camera ever built. It does NOT blink:
+ * law 7 reserves motion, and on this surface the alarm and the typewriter
+ * are the only two things allowed to move. (loadout-eva blinks its REC
+ * light; this panel is stricter, see NOTES.md.) */
+.ml-rec {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  display: none;
+  align-items: center;
+  gap: 4px;
+  background: var(--r-hazard);
+  color: var(--ch-hot);
+  font-family: var(--kp-display);
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  padding: 3px 5px;
+}
+.ml-stage[data-fill="counter"] .ml-rec { display: flex; }
+.ml-rec i { width: 5px; height: 5px; background: var(--ch-hot); }
+
+/* the cut between cameras: opacity only, on a promoted layer. A directional
+ * wipe would compete with the text panel's own motion. */
+.ml-plate.ml-cut { animation: ml-cut 140ms steps(4); will-change: opacity; }
+@keyframes ml-cut { from { opacity: 0; } to { opacity: 1; } }
+
+/* the shift readout, in the slack under the camera. See NOTES.md: this is
+ * a departure from the spec, which left this space empty and accepted it as
+ * instrument-panel breathing room. Two ticks of real DAY_CONFIGS data cost
+ * nothing (they sit inside the fixed row) and give the morning's actual
+ * subject a home. */
+/* pinned to the bottom of the column, so the camera sits under the masthead
+ * and the readout sits on the same baseline as the text panel's own footer
+ * rather than floating in the middle of the slack */
+.ml-ticks { display: flex; flex-direction: column; gap: 3px; margin-top: auto; }
+.ml-tick { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.ml-tick span {
+  font-family: var(--kp-display);
+  font-size: var(--ml-fs-tickl);
+  letter-spacing: 0.12em;
+  color: var(--r-note);
+}
+.ml-tick span::before { content: "// "; opacity: 0.7; }
+.ml-tick em {
+  font-style: normal;
+  font-family: var(--kp-mono);
+  font-size: var(--ml-fs-tickv);
+  font-weight: 600;
+  color: var(--r-line);
+}
+
+/* ---------- the text panel ---------- */
+
+.ml-text {
+  border: 1px solid var(--r-struct);
+  background: color-mix(in srgb, var(--r-line) 3%, var(--px-void));
+  padding: 14px 16px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  overflow: hidden;
+}
+.ml-name {
+  align-self: flex-start;
+  font-family: var(--kp-display);
+  font-size: var(--ml-fs-label);
+  letter-spacing: 0.16em;
+  color: var(--r-note);
+  border: 2px solid var(--r-struct);
+  padding: 4px 8px;
+}
+.ml-name::before { content: "// "; opacity: 0.7; }
+/* THE LOG. The window is called MORNING.LOG, so it behaves like one: beats
+ * already read stay on screen, dimmed, above the beat being read now. Two
+ * things fall out of that, and both were problems in the first build:
+ *  - the fixed 300px row is no longer 55% empty on a two-line beat, because
+ *    the scene fills it as it plays;
+ *  - the player can re-read what Rhea just said, which the shipped
+ *    one-beat-at-a-time player made impossible.
+ * The log is bottom-anchored, so the line currently typing never moves. No
+ * internal scrollbar, ever (law 8): when the log outgrows the box, JS drops
+ * whole entries off the top, the way a terminal does. */
+.ml-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+/* Bottom-anchored via an auto margin on the FIRST entry, not via
+ * justify-content: flex-end. That distinction is load bearing: flex-end
+ * overflows in the block-START direction, which scrollHeight cannot report,
+ * so the "does it fit" test silently passed while entries were clipped off
+ * the top. With an auto margin the overflow spills downward where
+ * scrollHeight sees it, and the drop-oldest loop actually fires. */
+.ml-lines > .ml-entry:first-child { margin-top: auto; }
+.ml-entry { display: flex; flex-direction: column; gap: 5px; }
+.ml-line {
+  font-family: var(--kp-term);
+  font-size: var(--ml-fs-body);
+  line-height: 1.3;
+  color: var(--r-line);
+  min-height: 1.3em;
+}
+/* already read: demoted, never deleted */
+.ml-entry.is-past .ml-line { color: var(--r-struct); }
+.ml-past-name {
+  font-family: var(--kp-display);
+  font-size: var(--ml-fs-tickl);
+  letter-spacing: 0.16em;
+  color: var(--r-struct);
+}
+.ml-past-name::before { content: "// "; opacity: 0.7; }
+/* the cursor sits on the line currently being revealed, and nowhere else */
+.ml-line.ml-typing::after {
+  content: "_";
+  color: var(--r-data);
+  animation: kp-cursor-blink 0.9s steps(2) infinite;
+}
+
+.ml-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.ml-hint {
+  font-family: var(--kp-display);
+  font-size: var(--ml-fs-tickl);
+  letter-spacing: 0.14em;
+  color: var(--r-struct);
+}
+/* the control is a readout as much as a button: ghost while the beat is
+ * still typing, --r-ok once the beat is fully revealed and it is genuinely
+ * ready to advance (--r-ok means NOMINAL, and this is what nominal means
+ * here) */
+.ml-next {
+  font-family: var(--kp-display);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  padding: 10px 18px;
+  border: none;
+  background: transparent;
+  color: var(--r-struct);
+  box-shadow: inset 0 0 0 2px var(--r-struct);
+  filter: none;
+}
+.ml-next.is-ready {
+  background: var(--r-ok);
+  color: var(--px-void);
+  box-shadow: none;
+  filter: drop-shadow(4px 4px 0 rgba(0, 0, 0, 0.7));
+}
+.ml-next.is-ready:hover { background: var(--r-data); }
+.ml-next:active { transform: translate(2px, 2px); }
+
+.ml-card { cursor: pointer; }
+
+/* ================= WIDE TIER =================
+ * One binary breakpoint at 700px of content inline-size, so all three
+ * supported viewports (16:9 1366x768, 21:9 2560x1080, 1280x800 laptop)
+ * render the SAME arrangement. */
+
+@container ml (min-width: 700px) {
+  .ml-body { grid-template-columns: 288px 1fr; }
+}
+
+/* ================= NARROW TIER: a tiling fallback, not a viewport ====== */
+
+@container ml (max-width: 699.98px) {
+  .ml-body { grid-template-columns: 1fr; }
+  .ml-stagecol { flex-direction: row; align-items: flex-start; gap: 12px; }
+  .ml-ticks { flex: 1; }
+}
+
+/* ---------- the demo rig's own readouts ---------- */
+
+.rig { top: auto; right: auto; bottom: 12px; left: 12px; }
+.rig em { font-style: normal; color: #ffd75e; }
+.rig .rig-meas { font-family: var(--kp-mono); font-size: 10px; color: #999; }
+.rig .rig-over { color: #ff6b6b; }
+
+@media (prefers-reduced-motion: reduce) {
+  /* the settled state in one frame: no typing, no cut, no blink */
+  .ml-mast.ml-in, .ml-plate.ml-cut { animation: none; }
+  .ml-line.ml-typing::after { animation: none; content: ""; }
+  .ml-regchip.is-warn .ml-riskflash { animation: none; opacity: 0; }
+}
+</style>
+</head>
+<body>
+
+<div class="lo-fitwrap" id="fitwrap">
+  <div class="lo-fit" id="fit">
+    <div class="lo-stage crt-on" id="stage">
+      <div class="lo-warp">
+        <div class="lo-desk" aria-hidden="true"></div>
+        <div class="lo-deskwrap">
+          <div class="lo-free" id="free" aria-hidden="true"><span id="freelabel">FREE DESK</span></div>
+
+          <div class="term" id="term">
+            <header class="term-bar">
+              <h1 id="wintitle">MORNING.LOG</h1>
+              <span class="term-glyphs"><i></i><i></i><i></i></span>
+            </header>
+            <div class="term-body">
+              <div class="ml-eva">
+                <div class="ml-grid ml-card" id="card">
+
+                  <!-- ROW 1: masthead, persistent within a scene -->
+                  <div class="ml-mast" id="mast">
+                    <div class="ml-mast-l">
+                      <span class="ml-eyebrow" id="eyebrow">MORNING.LOG // DAY START</span>
+                      <div class="ml-numwrap">
+                        <span class="ml-unit" id="unit">DAY</span>
+                        <span class="ml-num" id="num">01</span>
+                        <i class="ml-bracket" aria-hidden="true"><i></i></i>
+                      </div>
+                    </div>
+                    <div class="ml-mast-r">
+                      <span class="kp-chip-pct ml-regchip" id="regchip">
+                        <span id="reglabel">REGISTER</span><em id="regvalue">OPEN</em>
+                        <i class="ml-riskflash" aria-hidden="true"></i>
+                      </span>
+                      <span class="ml-beatdots" id="beatdots" aria-hidden="true"></span>
+                    </div>
+                  </div>
+
+                  <!-- ROW 2: fixed-height body. Never reflows between beats. -->
+                  <div class="ml-body">
+                    <div class="ml-stagecol">
+                      <div class="ml-stage" id="camstage" data-fill="standby" data-feed="ink">
+                        <div class="ml-plate" id="plate">
+                          <img id="camimg" src="art/morning-cam-counter.png" alt="" width="288" height="216" />
+                          <i class="tint"></i>
+                          <i class="ml-nosig"></i>
+                        </div>
+                        <span class="ml-rec"><i></i>REC</span>
+                        <span class="ml-camtag" id="camtag">STANDBY</span>
+                      </div>
+                      <div class="ml-ticks">
+                        <div class="ml-tick"><span>SPIKE</span><em id="t-spike">3 TICKETS</em></div>
+                        <div class="ml-tick"><span>ON THE BOOK</span><em id="t-book">10 DAYS</em></div>
+                      </div>
+                    </div>
+
+                    <div class="ml-text">
+                      <div class="ml-lines" id="lines"></div>
+                      <div class="ml-foot">
+                        <span class="ml-hint" id="hint">CLICK ANYWHERE</span>
+                        <button type="button" class="ml-next" id="next">NEXT</button>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="lo-stage-bar">
+          <span>KP/OS</span>
+          <i></i>
+          <span id="barname">MORNING.LOG</span>
+          <span class="lo-bar-sp"></span>
+          <span id="barclock">07:12</span>
+        </div>
+      </div>
+
+      <div class="lo-glass" id="glass" aria-hidden="true">
+        <i class="g-scan"></i>
+        <i class="g-mask"></i>
+        <i class="g-bloom"></i>
+        <i class="g-spec"></i>
+        <i class="g-vig"></i>
+        <i class="g-bezel"></i>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="rig">
+  <strong>DEMO RIG</strong>
+  <span>Scheme</span>
+  <div class="rig-row" id="schemerow"></div>
+  <span>CRT</span>
+  <div class="rig-row" id="crtrow"></div>
+  <span>Feed</span>
+  <div class="rig-row" id="feedrow"></div>
+  <span>Viewport</span>
+  <div class="rig-row" id="vprow"></div>
+  <span>Scenario</span>
+  <div class="rig-row" id="scenrow"></div>
+  <div class="rig-row"><button id="replay">REPLAY FROM BEAT 1</button></div>
+  <span class="rig-meas" id="meas"></span>
+  <span>MORNING.LOG is the day-start surface: Rhea's morning scene, rebuilt as an instrument panel. Click the card to advance; click mid-type to snap the current beat fully revealed without advancing. The focal element is the DAY numeral, because a dialogue surface is a field of even body type and the numeral is the one thing on it that is not prose. The 288x216 camera cell is a FIXTURE, not a per-beat property, which is what keeps the window from reflowing between beats. DAY 10 is the only scenario that arms the risk alarm.</span>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ================= shipped content, transcribed =================
+   * Every player-facing line below is copied verbatim from
+   * game/content/story.ts (dayOpenScene, runOpenerScene). Speaker names
+   * come from screens.tsx's SPEAKER_NAME map. The SPIKE and ON THE BOOK
+   * readouts come from content/arc.ts: DAY_CONFIGS[d].jobTiers has three
+   * entries for days 1..9, day 10 has no entry at all (FINAL_DAY = 10, the
+   * day the back room settles up and no tickets are taken). */
+
+  var FINAL_DAY = 10;
+
+  function bookLine(day) {
+    var left = FINAL_DAY - day + 1;
+    return left <= 1 ? "LAST DAY" : left + " DAYS";
+  }
+
+  var SCENES = {
+    day1: {
+      title: "MORNING.LOG",
+      eyebrow: "MORNING.LOG // DAY START",
+      unit: "DAY", num: "01",
+      reg: { label: "REGISTER", value: "OPEN", warn: false },
+      spike: "3 TICKETS", book: bookLine(1),
+      clock: 7 * 3600 + 12 * 60,
+      beats: [
+        { who: "SYSTEM", fill: "standby", lines: [
+          "DAY 1.",
+          "SPIKE: THREE TICKETS.",
+          "REGISTER: OPEN."
+        ] },
+        { who: "RHEA", fill: "counter", lines: [
+          "Till is counted. Spike is loaded. Try not to break anything before lunch.",
+          "Yell if the fans start smelling like smoke."
+        ] },
+        { who: "SYSTEM", fill: "standby", lines: [
+          "THE CURTAIN AT THE BACK DOES NOT MOVE.",
+          "IT NEVER DOES."
+        ] }
+      ]
+    },
+    day5: {
+      title: "MORNING.LOG",
+      eyebrow: "MORNING.LOG // DAY START",
+      unit: "DAY", num: "05",
+      reg: { label: "REGISTER", value: "OPEN", warn: false },
+      spike: "3 TICKETS", book: bookLine(5),
+      clock: 8 * 3600 + 4 * 60,
+      beats: [
+        { who: "SYSTEM", fill: "standby", lines: [
+          "DAY 5.",
+          "HALFWAY.",
+          "THE BACK ROOM HAS BEEN QUIET. JUST QUIET."
+        ] },
+        { who: "RHEA", fill: "counter", lines: [
+          "Halfway through the book and the shop is still standing. Small miracles.",
+          "Eat something. I will not ask twice."
+        ] },
+        /* still: STILL_LOCKED -> CAM 2 */
+        { who: "SYSTEM", fill: "backroom", lines: [
+          "THE PADLOCK CATCHES THE LIGHT WHEN THE SUN COMES THROUGH THE CURTAIN.",
+          "STILL CLOSED."
+        ] }
+      ]
+    },
+    day10: {
+      title: "MORNING.LOG",
+      eyebrow: "MORNING.LOG // DAY START",
+      unit: "DAY", num: "10",
+      /* THE ONE ALARM STATE ON THIS SURFACE. Day 10 has no DAY_CONFIGS
+       * entry: no tickets are taken, and the back room settles up. The
+       * scene's own first line says so. */
+      reg: { label: "REGISTER", value: "CLOSED", warn: true },
+      spike: "NONE", book: bookLine(10),
+      clock: 6 * 3600 + 41 * 60,
+      beats: [
+        { who: "SYSTEM", fill: "standby", lines: [
+          "DAY 10.",
+          "NO TICKETS ON THE SPIKE.",
+          "THE BACK ROOM SETTLES UP TODAY."
+        ] },
+        /* still: STILL_COUNTER in story.ts. The camera cuts to what she is
+         * TALKING about (the curtain, the padlock) rather than staying on
+         * her: any beat carrying a still shows CAM 2. */
+        { who: "RHEA", fill: "backroom", lines: [
+          "No customers today. Just you, the curtain, and that padlock.",
+          "I am not going to pretend I am fine with this. I am going to make coffee instead."
+        ] },
+        { who: "SYSTEM", fill: "standby", lines: [
+          "THE PADLOCK WAITS WHERE IT ALWAYS WAITS.",
+          "TODAY IT EITHER LETS GO OR IT DOES NOT."
+        ] },
+        { who: "RHEA", fill: "counter", lines: [
+          "Go on, then.",
+          "I will be at the counter. Same as always."
+        ] }
+      ]
+    },
+    run2: {
+      title: "SHOPFRONT.EXE",
+      eyebrow: "SHOPFRONT.EXE // COUNTER SCENE",
+      unit: "RUN", num: "02",
+      reg: { label: "BACK ROOM", value: "SEALED", warn: false },
+      spike: "3 TICKETS", book: bookLine(1),
+      clock: 6 * 3600 + 58 * 60,
+      beats: [
+        { who: "SYSTEM", fill: "standby", lines: [
+          "RUN 2.",
+          "The lock is where you left it. So is the debt."
+        ] },
+        { who: "RHEA", fill: "counter", lines: [
+          "You scared me last night. Whatever is wrong with that machine does not get to take my brother too."
+        ] },
+        { who: "RHEA", fill: "counter", lines: [
+          "You went back in. I heard the fans spin up at two in the morning.",
+          "It is a virus. Viruses do not need your whole night.",
+          "Customers first. Then do whatever it is you are doing."
+        ] }
+      ]
+    }
+  };
+
+  var CAM_TAG = {
+    counter: "CAM 1 // COUNTER",
+    backroom: "CAM 2 // BACK ROOM",
+    standby: "STANDBY"
+  };
+
+  /* ================= helpers ================= */
+
+  var REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var timers = [];
+  function later(fn, ms) {
+    if (REDUCED) { fn(); return; }
+    var t = setTimeout(fn, ms);
+    timers.push(t);
+    return t;
+  }
+  function clearTimers() {
+    timers.forEach(function (t) { clearTimeout(t); clearInterval(t); });
+    timers = [];
+  }
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+  function $(id) { return document.getElementById(id); }
+
+  /* ================= sound =================
+   * Minimal inline WebAudio (the dadlog/loadout-eva studies' precedent, no
+   * sound.ts build). The shipped `story` character plus the three presets
+   * this cycle proposes: storySkip, camSwitch, registerAlarm. */
+
+  var AC = null;
+  var interacted = false;
+  document.addEventListener("pointerdown", function () { interacted = true; }, true);
+  document.addEventListener("keydown", function () { interacted = true; }, true);
+
+  function blip(o) {
+    if (!interacted) return;
+    try {
+      if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)();
+      if (AC.state === "suspended") AC.resume();
+      var t = AC.currentTime;
+      var src;
+      if (o.type === "noise") {
+        var len = Math.ceil(AC.sampleRate * o.dur);
+        var buf = AC.createBuffer(1, len, AC.sampleRate);
+        var d = buf.getChannelData(0);
+        for (var i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+        src = AC.createBufferSource();
+        src.buffer = buf;
+      } else {
+        src = AC.createOscillator();
+        src.type = o.type;
+        src.frequency.setValueAtTime(o.freq, t);
+        if (o.freq2) src.frequency.exponentialRampToValueAtTime(o.freq2, t + o.dur);
+      }
+      var node = src;
+      if (o.lpf) { var lf = AC.createBiquadFilter(); lf.type = "lowpass"; lf.frequency.value = o.lpf; node.connect(lf); node = lf; }
+      if (o.hpf) { var hf = AC.createBiquadFilter(); hf.type = "highpass"; hf.frequency.value = o.hpf; node.connect(hf); node = hf; }
+      var g = AC.createGain();
+      g.gain.setValueAtTime(o.vol, t);
+      g.gain.exponentialRampToValueAtTime(0.001, t + o.dur);
+      node.connect(g);
+      g.connect(AC.destination);
+      src.start(t);
+      src.stop(t + o.dur + 0.02);
+    } catch (e) { /* sound is never load bearing */ }
+  }
+
+  var SFX = {
+    /* shipped: audio.ts `story`, wave 2 (sine), soft */
+    story: function () { blip({ type: "sine", freq: 420, dur: 0.1, vol: 0.2, lpf: 2600 }); },
+    /* new: thinner and higher than story, so a skip never reads as an advance */
+    storySkip: function () { blip({ type: "square", freq: 900, dur: 0.05, vol: 0.11, hpf: 700 }); },
+    /* new: a quiet static pop under the camera cut, textural not eventful */
+    camSwitch: function () { blip({ type: "noise", dur: 0.055, vol: 0.09, hpf: 2200 }); },
+    /* new: a low single-shot status flip, not a duel klaxon */
+    registerAlarm: function () { blip({ type: "sawtooth", freq: 165, freq2: 110, dur: 0.28, vol: 0.22, lpf: 900 }); }
+  };
+
+  /* ================= scene playback ================= */
+
+  var scene = SCENES.day1;
+  var sceneId = "day1";
+  var beat = 0;
+  var typing = false;
+  var token = 0;
+  var lineNodes = [];
+  var lineTexts = [];
+
+  function setBeatDots() {
+    var wrap = $("beatdots");
+    wrap.textContent = "";
+    scene.beats.forEach(function (b, i) {
+      var d = el("i");
+      if (i === beat) d.classList.add("on");
+      else if (i < beat) d.classList.add("done");
+      wrap.appendChild(d);
+    });
+  }
+
+  /* the camera cell. The fill is derived from the BEAT DATA, never from the
+   * speaker: a beat carrying a still shows CAM 2 (the thing being talked
+   * about), a beat carrying a portrait shows CAM 1, a bare system beat has
+   * no camera framed at all. */
+  function setFill(fill, animate) {
+    var st = $("camstage");
+    if (st.dataset.fill === fill && !animate) return;
+    st.dataset.fill = fill;
+    $("camtag").textContent = CAM_TAG[fill];
+    if (fill === "counter" || fill === "backroom") {
+      $("camimg").src = imgSrc(fill);
+    }
+    if (animate && !REDUCED) {
+      var plate = $("plate");
+      plate.classList.remove("ml-cut");
+      void plate.offsetWidth;
+      plate.classList.add("ml-cut");
+    }
+  }
+
+  var feed = "ink";
+  function imgSrc(fill) {
+    var base = fill === "backroom" ? "art/morning-cam-backroom" : "art/morning-cam-counter";
+    return base + (feed === "color" ? "-color.png" : ".png");
+  }
+
+  function settle() {
+    typing = false;
+    lineNodes.forEach(function (n) { n.classList.remove("ml-typing"); });
+    var b = $("next");
+    b.classList.add("is-ready");
+    b.textContent = beat >= scene.beats.length - 1 ? "CONTINUE" : "NEXT";
+    $("hint").textContent = "CLICK ANYWHERE";
+  }
+
+  function typeLines() {
+    var my = token;
+    var li = 0;
+    function nextLine() {
+      if (my !== token) return;
+      if (li >= lineTexts.length) { settle(); return; }
+      var node = lineNodes[li];
+      var text = lineTexts[li];
+      var ci = 0;
+      node.classList.add("ml-typing");
+      var iv = setInterval(function () {
+        if (my !== token) { clearInterval(iv); return; }
+        ci += 1;
+        node.textContent = text.slice(0, ci);
+        if (ci >= text.length) {
+          clearInterval(iv);
+          node.classList.remove("ml-typing");
+          li += 1;
+          timers.push(setTimeout(nextLine, 90));
+        }
+      }, 24);
+      timers.push(iv);
+    }
+    timers.push(setTimeout(nextLine, 70));
+  }
+
+  /* Only the BODY re-renders per beat. The masthead is untouched, so its
+   * numeral and chip never flicker while the player clicks through. */
+  function renderBeat(animateCut) {
+    clearTimers();
+    token += 1;
+    var b = scene.beats[beat];
+
+    setFill(b.fill, animateCut);
+    setBeatDots();
+
+    var wrap = $("lines");
+    wrap.textContent = "";
+
+    /* everything already read, demoted but still readable */
+    for (var i = 0; i < beat; i++) {
+      var past = scene.beats[i];
+      var pe = el("div", "ml-entry is-past");
+      pe.appendChild(el("span", "ml-past-name", past.who));
+      past.lines.forEach(function (t) { pe.appendChild(el("p", "ml-line", t)); });
+      wrap.appendChild(pe);
+    }
+
+    /* the beat being read now */
+    var cur = el("div", "ml-entry is-now");
+    cur.appendChild(el("span", "ml-name", b.who));
+    lineNodes = [];
+    lineTexts = b.lines.slice();
+    lineTexts.forEach(function (t) {
+      var p = el("p", "ml-line");
+      p.textContent = t; /* laid out FULL first, so the fit is measured
+                          * against the settled height, not the empty one */
+      cur.appendChild(p);
+      lineNodes.push(p);
+    });
+    wrap.appendChild(cur);
+
+    /* NO INTERNAL SCROLLBARS, EVER (law 8). When a long scene outgrows the
+     * fixed box, whole entries drop off the top the way a terminal scrolls.
+     * This runs against the FULLY TYPED text above, so the log settles its
+     * shape once and never reflows part-way through a reveal. */
+    while (wrap.scrollHeight > wrap.clientHeight && wrap.children.length > 1) {
+      wrap.removeChild(wrap.firstChild);
+    }
+    /* Reserve each line's SETTLED height before emptying it. Without this the
+     * log is bottom-anchored against growing content, so a line that wraps to
+     * two rows shoves everything above it upward halfway through typing. With
+     * it, the block is the same height empty as full and nothing moves while
+     * the beat reveals. offsetHeight is layout px, so the stage's fit-to-view
+     * transform does not corrupt the measurement. */
+    if (!REDUCED) {
+      lineNodes.forEach(function (n) { n.style.minHeight = n.offsetHeight + "px"; });
+      lineNodes.forEach(function (n) { n.textContent = ""; });
+    }
+
+    if (REDUCED) { settle(); return; }
+
+    typing = true;
+    var nb = $("next");
+    nb.classList.remove("is-ready");
+    nb.textContent = beat >= scene.beats.length - 1 ? "CONTINUE" : "NEXT";
+    $("hint").textContent = "CLICK TO SKIP";
+    typeLines();
+  }
+
+  function mountScene(id) {
+    sceneId = id;
+    scene = SCENES[id];
+    beat = 0;
+    clockSec = scene.clock;
+
+    $("wintitle").textContent = scene.title;
+    $("barname").textContent = scene.title;
+    $("eyebrow").textContent = scene.eyebrow;
+    $("unit").textContent = scene.unit;
+    $("num").textContent = scene.num;
+    $("t-spike").textContent = scene.spike;
+    $("t-book").textContent = scene.book;
+
+    $("reglabel").textContent = scene.reg.label;
+    $("regvalue").textContent = scene.reg.value;
+    $("regchip").classList.toggle("is-warn", !!scene.reg.warn);
+
+    /* the masthead settles in ONCE, here, and never again inside the scene */
+    var mast = $("mast");
+    mast.classList.remove("ml-in");
+    void mast.offsetWidth;
+    if (!REDUCED) mast.classList.add("ml-in");
+
+    renderBeat(false);
+    if (scene.reg.warn) SFX.registerAlarm();
+    measure();
+    later(measure, 900);
+  }
+
+  /* the whole card is the click target, exactly as the shipped surface is */
+  function onCardClick() {
+    if (typing) {
+      /* SKIP: snap this beat fully revealed. Do NOT advance. */
+      token += 1;
+      clearTimers();
+      lineNodes.forEach(function (n, i) { n.textContent = lineTexts[i]; });
+      settle();
+      SFX.storySkip();
+      return;
+    }
+    /* ADVANCE */
+    if (beat >= scene.beats.length - 1) {
+      SFX.story();
+      beat = 0;
+      renderBeat(true);
+      return;
+    }
+    var prevFill = scene.beats[beat].fill;
+    beat += 1;
+    var nextFill = scene.beats[beat].fill;
+    SFX.story();
+    if (nextFill !== prevFill) SFX.camSwitch();
+    renderBeat(nextFill !== prevFill);
+  }
+
+  $("card").addEventListener("click", onCardClick);
+
+  /* ================= the demo rig ================= */
+
+  function radioRow(rowId, opts, initial, onPick) {
+    var row = $(rowId);
+    row.textContent = "";
+    opts.forEach(function (o) {
+      var b = el("button", o.id === initial ? "rig-on" : "", o.label);
+      b.addEventListener("click", function (e) {
+        e.stopPropagation();
+        row.querySelectorAll("button").forEach(function (x) { x.className = ""; });
+        b.className = "rig-on";
+        onPick(o);
+      });
+      row.appendChild(b);
+    });
+  }
+
+  var glassLayers = Array.prototype.slice.call($("glass").children);
+  function setCrt(mode) {
+    var st = $("stage");
+    var glass = $("glass");
+    st.classList.toggle("crt-on", mode !== "off");
+    glass.textContent = "";
+    if (mode !== "off") glassLayers.forEach(function (l) { glass.appendChild(l); });
+  }
+
+  ["art/morning-cam-counter.png", "art/morning-cam-backroom.png",
+   "art/morning-cam-counter-color.png", "art/morning-cam-backroom-color.png"]
+    .forEach(function (s) { new Image().src = s; });
+
+  function setFeed(id) {
+    feed = id;
+    var st = $("camstage");
+    st.dataset.feed = id;
+    var fill = st.dataset.fill;
+    if (fill === "counter" || fill === "backroom") $("camimg").src = imgSrc(fill);
+  }
+
+  radioRow("schemerow", [
+    { id: "nerv", label: "NERV" },
+    { id: "tokyo", label: "TOKYO NIGHT" }
+  ], "nerv", function (o) { document.documentElement.dataset.scheme = o.id; });
+
+  radioRow("crtrow", [
+    { id: "flat", label: "FLAT" },
+    { id: "off", label: "OFF" }
+  ], "flat", function (o) { setCrt(o.id); });
+
+  radioRow("feedrow", [
+    { id: "ink", label: "INK TINT" },
+    { id: "true", label: "TRUE 1-BIT" },
+    { id: "color", label: "FULL COLOUR" }
+  ], "color", function (o) { setFeed(o.id); });
+
+  var VIEWPORTS = [
+    { id: "169", label: "16:9", w: 1366, h: 768, win: 860 },
+    { id: "219", label: "21:9", w: 2560, h: 1080, win: 940 },
+    { id: "laptop", label: "LAPTOP 1280x800", w: 1280, h: 800, win: 760 }
+  ];
+  var VP = VIEWPORTS[0];
+
+  function applyViewport(v) {
+    VP = v;
+    var st = $("stage");
+    st.style.width = v.w + "px";
+    st.style.height = v.h + "px";
+    $("term").style.setProperty("--ml-win", v.win + "px");
+    fit();
+    measure();
+  }
+
+  function fit() {
+    var availW = Math.max(320, window.innerWidth - 300);
+    var availH = Math.max(320, window.innerHeight - 90);
+    var k = Math.min(1, availW / VP.w, availH / VP.h);
+    $("fit").style.transform = "scale(" + k + ")";
+    $("fitwrap").style.width = Math.round(VP.w * k) + "px";
+    $("fitwrap").style.height = Math.round(VP.h * k) + "px";
+    return k;
+  }
+
+  function measure() {
+    var k = fit() || 1;
+    var h = Math.round($("term").getBoundingClientRect().height / k);
+    var free = $("free");
+    var slack = VP.w - VP.win;
+    if (slack > 220) {
+      free.style.display = "flex";
+      free.style.right = "0px";
+      free.style.width = Math.round(slack / 2 - 24) + "px";
+      $("freelabel").textContent = "FREE DESK " + Math.round(slack / 2 - 24) + "PX";
+    } else {
+      free.style.display = "none";
+    }
+    var tier = VP.win - 34 >= 700 ? "WIDE" : "NARROW";
+    var m = $("meas");
+    m.innerHTML = "";
+    m.appendChild(document.createTextNode("WINDOW " + VP.win + "px / " + tier + " tier"));
+    m.appendChild(document.createElement("br"));
+    m.appendChild(el("span", h > 820 ? "rig-over" : "", "HEIGHT " + h + "px / target 700, ceiling 820"));
+  }
+
+  radioRow("vprow", VIEWPORTS, "169", function (o) { applyViewport(o); });
+  radioRow("scenrow", [
+    { id: "day1", label: "DAY 1" },
+    { id: "day5", label: "DAY 5" },
+    { id: "day10", label: "DAY 10" },
+    { id: "run2", label: "RUN 2 OPENER" }
+  ], "day1", function (o) { mountScene(o.id); });
+
+  $("replay").addEventListener("click", function (e) {
+    e.stopPropagation();
+    beat = 0;
+    renderBeat(true);
+  });
+
+  /* the shop clock. Nothing else on this surface moves. */
+  var clockSec = SCENES.day1.clock;
+  setInterval(function () {
+    clockSec = (clockSec + 1) % 86400;
+    var h = String(Math.floor(clockSec / 3600)).padStart(2, "0");
+    var m = String(Math.floor((clockSec % 3600) / 60)).padStart(2, "0");
+    var bar = h + ":" + m;
+    if ($("barclock").textContent !== bar) $("barclock").textContent = bar;
+  }, 1000);
+
+  window.addEventListener("resize", function () { fit(); measure(); });
+
+  /* ================= go ================= */
+
+  document.documentElement.dataset.scheme = "nerv";
+  setCrt("flat");
+  setFeed("color");
+  applyViewport(VP);
+  mountScene("day1");
+})();
+</script>
+</body>
+</html>

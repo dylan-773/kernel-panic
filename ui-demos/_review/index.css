@@ -1,0 +1,281 @@
+/* The review index is a TOOL, not a surface of the game. It deliberately
+ * shares nothing with ui-demos/_shared/kp.css: no phosphor palette, no CRT
+ * overlay, no pixel fonts. Neutral, legible, scrollable, light/dark by
+ * system preference. Any KP styling here would compete with the demos it
+ * is supposed to be a neutral frame around. */
+
+:root {
+  color-scheme: light dark;
+
+  --bg: #ffffff;
+  --bg-sub: #f6f7f9;
+  --fg: #1a1c1f;
+  --fg-mid: #52585f;
+  --fg-dim: #7a8189;
+  --line: #dfe2e6;
+  --line-soft: #eceef1;
+  --accent: #2f5fd0;
+
+  --s-awaiting: #b45309;
+  --s-awaiting-bg: #fdf3e3;
+  --s-approved: #1f7a45;
+  --s-approved-bg: #e9f6ee;
+  --s-complete: #52585f;
+  --s-complete-bg: #f0f1f3;
+  --s-archived: #7a8189;
+  --s-archived-bg: #f6f7f9;
+
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #16181c;
+    --bg-sub: #1d2025;
+    --fg: #e6e8ea;
+    --fg-mid: #a8aeb6;
+    --fg-dim: #7c838c;
+    --line: #2e333a;
+    --line-soft: #24282e;
+    --accent: #7aa2f7;
+
+    --s-awaiting: #e0a04a;
+    --s-awaiting-bg: #33280f;
+    --s-approved: #62c98b;
+    --s-approved-bg: #14301f;
+    --s-complete: #a8aeb6;
+    --s-complete-bg: #24282e;
+    --s-archived: #7c838c;
+    --s-archived-bg: #1d2025;
+  }
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  padding: 28px 24px 64px;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.wrap { max-width: 900px; margin: 0 auto; }
+
+a { color: var(--accent); }
+
+/* ---------------- masthead ---------------- */
+
+.top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 18px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.tagline { color: var(--fg-dim); font-size: 13px; }
+
+/* ---------------- filter ---------------- */
+
+.tools {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 22px;
+}
+
+#filter {
+  flex: 1 1 240px;
+  min-width: 0;
+  font: inherit;
+  font-size: 14px;
+  padding: 7px 10px;
+  color: var(--fg);
+  background: var(--bg-sub);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+
+#filter:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+#filter::placeholder { color: var(--fg-dim); }
+
+.tools .hint { color: var(--fg-dim); font-size: 12px; }
+
+/* ---------------- sections ---------------- */
+
+.sect { margin-bottom: 30px; }
+.sect[hidden] { display: none; }
+
+.sect-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.sect-head h2 {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fg-mid);
+}
+
+.sect-head .count {
+  font-size: 12px;
+  color: var(--fg-dim);
+  font-variant-numeric: tabular-nums;
+}
+
+.empty-line { color: var(--fg-dim); font-size: 13px; }
+
+/* ---------------- rows ---------------- */
+
+.list {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.card { border-top: 1px solid var(--line-soft); padding: 14px 16px; }
+.card:first-child { border-top: 0; }
+.card[hidden] { display: none; }
+
+.card-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.card-head h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.chip {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 999px;
+}
+
+.st-awaiting { color: var(--s-awaiting); background: var(--s-awaiting-bg); }
+.st-approved { color: var(--s-approved); background: var(--s-approved-bg); }
+.st-complete { color: var(--s-complete); background: var(--s-complete-bg); }
+.st-archived { color: var(--s-archived); background: var(--s-archived-bg); }
+
+.summary { margin: 6px 0 0; color: var(--fg-mid); font-size: 14px; }
+
+.meta {
+  margin-top: 6px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--fg-dim);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+}
+
+.meta span { overflow-wrap: anywhere; }
+
+.note {
+  margin-top: 10px;
+  padding: 8px 11px;
+  border-left: 3px solid var(--line);
+  background: var(--bg-sub);
+  border-radius: 0 5px 5px 0;
+  font-size: 13.5px;
+  color: var(--fg-mid);
+}
+
+.card.s-awaiting .note { border-left-color: var(--s-awaiting); }
+.card.s-approved .note { border-left-color: var(--s-approved); }
+
+.note b {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+  margin-bottom: 2px;
+}
+
+.card-foot {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 11px;
+}
+
+.btn {
+  font: inherit;
+  font-size: 13px;
+  line-height: 1.2;
+  padding: 6px 11px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--bg-sub);
+  color: var(--fg);
+  text-decoration: none;
+}
+
+.btn:hover { border-color: var(--fg-dim); }
+
+.btn.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+@media (prefers-color-scheme: dark) {
+  .btn.primary { color: #10141c; }
+}
+
+.btn.primary:hover { filter: brightness(1.08); }
+
+/* ---------------- footer ---------------- */
+
+.foot-note {
+  margin-top: 34px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+  font-size: 13px;
+  color: var(--fg-dim);
+  line-height: 1.7;
+}
+
+.foot-note code {
+  font-family: var(--mono);
+  font-size: 12px;
+  background: var(--bg-sub);
+  border: 1px solid var(--line-soft);
+  border-radius: 4px;
+  padding: 1px 5px;
+  color: var(--fg-mid);
+}
+
+.no-hits { color: var(--fg-dim); font-size: 13px; }
+.no-hits[hidden] { display: none; }

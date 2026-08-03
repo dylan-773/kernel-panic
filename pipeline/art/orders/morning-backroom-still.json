@@ -1,0 +1,16 @@
+{
+  "id": "morning-backroom-still",
+  "from": "ux-agent",
+  "kind": "still",
+  "treatment": "dither-fine",
+  "target": "/assets/px/stills/morning-cam-backroom.png",
+  "size": [
+    288,
+    216
+  ],
+  "invert": false,
+  "brief": "MORNING.LOG / SHOPFRONT.EXE image-stage CAM 2, the back room camera. The curtain at the rear of the shop, pulled just far enough aside (or lit from behind just enough) to show the padlocked machine waiting in the gloom past it, matching the existing still-locked.png plate's subject: drifts of Dad's clutter, and the one padlock in the shop that never moves. 1990s anime OVA ink style, flat cel shading, moody and dim, no figures in frame, no text, no lettering, no panel borders, no speech bubbles anywhere. This is the image the whole story is actually about, so let the padlock and the sliver of machine behind the curtain read as the clear subject rather than losing them in the clutter; do not center a generic pile of junk and call it done. IMPORTANT: this cell is interchangeable with morning-rhea-feed in one fixed image-stage slot (the equal-footprint fix for beat-to-beat reflow), so match that order's tonal weight and composition density; both are read at native 288x216, never resized in the browser (law 5: crop, never downscale), so generate at high resolution in a 4:3-leaning composition and let the dither pass do the crop. Anchor the crop centered horizontally, weighted toward the lower-middle of frame where the lock sits, with curtain fabric filling the upper frame (suggested pipeline/tools/dither.py flags: --focus-x 0.5 --focus-y 0.58).",
+  "status": "done",
+  "result": "pipeline/art/done/morning-backroom-still.png",
+  "generation": "model: nano_banana_2, attempts: 1 (first accepted), credits: ~2, dither invocation: python3 pipeline/tools/dither.py raw-morning-backroom-still.png morning-backroom-still.png --width 288 --height 216 --variant fine --focus-x 0.5 --focus-y 0.58  ORCHESTRATOR CORRECTION (2026-07-31): the first dither was unreadable. The raw is 1200x896 and the target 288x216 shares its aspect, so `dither.py --width 288 --height 216` was a pure 4.17x downscale of the whole scene rather than a crop, and the padlock (the subject) landed at roughly 25px and dissolved. --focus-x/--focus-y are no-ops when source and target aspects already agree, which is the trap. Re-done by cropping the raw to a 576x432 window centred at (592,505) BEFORE the dither pass, then `dither.py --width 288 --height 216 --variant fine`. The cropped raw is kept at pipeline/art/done/raw-morning-backroom-still-crop.png; the plate at pipeline/art/done/morning-backroom-still.png is the corrected one. FULL COLOUR variants for both cameras generated with `colourise.py --width 288 --height 216 --ramp paper`."
+}

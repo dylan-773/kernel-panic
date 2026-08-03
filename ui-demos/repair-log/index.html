@@ -1,0 +1,1131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>KP demo: REPAIR.LOG</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=VT323&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" />
+<link rel="stylesheet" href="../_shared/kp.css" />
+<link rel="stylesheet" href="../_shared/system.css" />
+<style>
+/* REPAIR.LOG dive report study (green STATUS poster reference), standalone.
+ * The shipped result screen (screens.tsx ResultScreen) rebuilt as a dense
+ * status dossier: hero verdict, ECG strain trace, receipt rows, the augment
+ * draft as a dashed INVENTORY cache, patch piece poster card, pouch strip,
+ * and a tiny dive-log rail under the diver figure. Three scenarios cover
+ * every branch of lastResult: a rough win (chip breakdown + drop), a clean
+ * sweep (Clean Run bank), and a cap win with a dry cache (salvage + capped
+ * drop). Data mirrors shipped content: win lines, augment names and descs,
+ * drop flavor lines, and payout math (jobPay 40+25*tier, SALVAGE_PAY 25,
+ * PATCH_POUCH_MAX 5) are verbatim from the game modules. The bays-full
+ * swap flow is out of scope here (mock kit runs 2 of 3 bays). */
+
+body { overflow: auto; display: block; height: auto; min-height: 100%; padding: 40px 16px 60px; }
+
+/* ---------- the report window ---------- */
+
+.term {
+  margin: 0 auto;
+  width: min(1150px, 96vw);
+  display: flex;
+  flex-direction: column;
+  border: 3px solid var(--ch);
+  background: var(--px-void);
+  filter:
+    drop-shadow(9px 9px 0 rgba(0, 0, 0, 0.8))
+    drop-shadow(0 0 26px color-mix(in srgb, var(--ch) 25%, transparent));
+}
+.term.rearm { animation: kp-fw-in 180ms steps(4) both; }
+
+.term-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--ch);
+  padding: 8px 12px 8px 16px;
+}
+.term-bar h1 {
+  font-family: var(--kp-display);
+  font-size: 14px;
+  letter-spacing: 0.16em;
+  color: var(--px-void);
+  font-weight: 400;
+}
+.term-glyphs { display: flex; gap: 7px; align-items: center; }
+.term-glyphs i { display: block; background: var(--px-void); }
+.term-glyphs i:nth-child(1) { width: 11px; height: 3px; margin-top: 9px; }
+.term-glyphs i:nth-child(2) { width: 11px; height: 11px; background: transparent; border: 3px solid var(--px-void); }
+.term-glyphs i:nth-child(3) { width: 11px; height: 11px; }
+
+.term-body { position: relative; padding: 18px; }
+.term-body::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: repeating-conic-gradient(color-mix(in srgb, var(--ch) 5%, transparent) 0% 25%, transparent 0% 50%);
+  background-size: 4px 4px;
+}
+.term-body > * { position: relative; }
+
+/* ---------- three-rail grid ---------- */
+
+.rpt-grid { display: grid; grid-template-columns: 180px minmax(0, 1fr) 292px; gap: 16px; align-items: stretch; }
+.rpt-col { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+
+.rpt-label {
+  font-family: var(--kp-display);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  color: var(--ch);
+}
+.rpt-label::before { content: "// "; opacity: 0.7; }
+.rpt-label::after { content: " _"; opacity: 0.7; }
+
+/* ---------- left rail: diver figure + dive log ---------- */
+
+.figure-cell {
+  position: relative;
+  border: 3px solid var(--ch-dim);
+  background: var(--px-void);
+  padding: 6px;
+  height: 252px;
+  flex: none;
+}
+/* per-scenario happy-client print, pre-dithered at the cell's exact inner
+ * size (162x234) so one dither dot maps to one CSS pixel; image set inline
+ * by render() */
+.figure-crop {
+  position: absolute;
+  inset: 6px;
+  background-size: 100% 100%;
+  image-rendering: pixelated;
+}
+.figure-cell .tint {
+  position: absolute;
+  inset: 6px;
+  background: var(--ch);
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+.figure-dots { position: absolute; top: 12px; right: 12px; display: flex; gap: 5px; z-index: 2; }
+.figure-dots i { width: 9px; height: 9px; background: var(--px-void); box-shadow: inset 0 0 0 2px var(--ch); }
+.figure-tag {
+  position: absolute;
+  left: 6px;
+  bottom: 6px;
+  z-index: 2;
+  font-family: var(--kp-display);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: var(--px-void);
+  background: var(--ch);
+  padding: 3px 7px;
+}
+
+.divelog { flex: 1; display: flex; flex-direction: column; gap: 8px; min-height: 0; }
+.divelog-lines {
+  flex: 1;
+  border: 2px solid var(--ch-faint);
+  background: color-mix(in srgb, var(--ch) 3%, var(--px-void));
+  padding: 9px 10px;
+  font-family: var(--kp-term);
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--ch-dim);
+  overflow: hidden;
+}
+.divelog-lines div { min-height: 21px; white-space: nowrap; overflow: hidden; }
+.divelog-lines .hot { color: var(--ch-hot); }
+
+/* ---------- center rail ---------- */
+
+.hero-block { display: flex; flex-direction: column; gap: 9px; }
+.hero-verdict {
+  font-family: var(--kp-display);
+  font-size: clamp(24px, 3vw, 33px);
+  line-height: 1.05;
+  letter-spacing: 0.03em;
+  color: var(--ch);
+  text-shadow: 0 0 22px var(--px-glow);
+}
+.hero-quote {
+  font-family: var(--kp-term);
+  font-size: 21px;
+  line-height: 1.3;
+  color: var(--ch-hot);
+  min-height: 27px;
+}
+.hero-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* strain band: ECG trace + billed readout */
+.strainband {
+  --tick: var(--ch-dim);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 218px;
+  gap: 14px;
+  border: 3px solid var(--ch-dim);
+  background: var(--px-void);
+  padding: 12px;
+}
+.scopebox { border: 2px solid var(--ch-faint); padding: 8px 8px 4px; min-width: 0; }
+.scopebox svg { display: block; width: 100%; }
+.scopebox line.grid { stroke: var(--ch-faint); stroke-width: 1; }
+.scopebox polyline { fill: none; stroke: var(--ch); stroke-width: 2; }
+.scope-tag { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+.scope-tag b { font-family: var(--kp-mono); font-size: 11px; font-weight: 600; color: var(--ch-dim); }
+
+.strain-side { display: flex; flex-direction: column; gap: 8px; }
+.strain-big {
+  font-family: var(--kp-display);
+  font-size: 34px;
+  line-height: 1;
+  color: var(--ch-hot);
+  text-shadow: 0 0 16px var(--px-glow);
+}
+.strain-big.clean {
+  display: inline-block;
+  font-size: 22px;
+  padding: 6px 10px;
+  background: var(--ch-hot);
+  color: var(--px-void);
+  text-shadow: none;
+  width: max-content;
+}
+.strain-left { font-family: var(--kp-term); font-size: 18px; color: var(--ch-dim); }
+.strain-left em { font-style: normal; color: var(--ch); }
+
+/* receipt rows: square bullet, dim label, hot value (TASKS list form) */
+.receipt { display: flex; flex-direction: column; gap: 4px; padding: 0; }
+.receipt li {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--kp-term);
+  font-size: 17px;
+  line-height: 1.25;
+  color: var(--ch-dim);
+}
+.receipt li::before { content: ""; width: 6px; height: 6px; background: var(--ch); flex: none; }
+.receipt li em { font-style: normal; margin-left: auto; color: var(--ch-hot); white-space: nowrap; }
+.receipt li.inv {
+  background: var(--ch);
+  color: var(--px-void);
+  padding: 2px 8px 2px 6px;
+}
+.receipt li.inv::before { background: var(--px-void); }
+.receipt li.inv em { color: var(--px-void); }
+.receipt-pop { animation: kp-slot-in 240ms steps(4) both; }
+
+/* augment cache: the dashed inventory box */
+.cachebox {
+  border: 3px dashed var(--ch-dim);
+  background: color-mix(in srgb, var(--ch) 3%, var(--px-void));
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.cache-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.cache-title {
+  font-family: var(--kp-display);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: var(--px-void);
+  background: var(--ch);
+  padding: 4px 9px;
+}
+.draft-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.draft-card {
+  position: relative;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  border: 3px solid var(--ch-dim);
+  background: var(--px-void);
+  padding: 11px 12px 12px;
+  color: var(--ch);
+}
+.draft-card:hover:not(:disabled) { border-color: var(--ch-hot); }
+.draft-card:active:not(:disabled) { transform: translate(1px, 1px); }
+.draft-card:disabled { cursor: default; }
+.draft-kind {
+  width: max-content;
+  font-family: var(--kp-display);
+  font-size: 8px;
+  letter-spacing: 0.14em;
+  padding: 3px 6px;
+  box-shadow: inset 0 0 0 2px var(--ch-dim);
+  color: var(--ch);
+}
+.draft-kind.cfg { background: var(--ch); color: var(--px-void); box-shadow: none; }
+.draft-card strong { font-family: var(--kp-display); font-size: 12px; letter-spacing: 0.06em; color: var(--ch-hot); font-weight: 400; }
+.draft-card p { font-family: var(--kp-term); font-size: 17px; line-height: 1.28; color: var(--ch); }
+.draft-card .note { font-size: 15px; color: var(--ch-dim); }
+.draft-card.picked { border-color: var(--ch-hot); background: color-mix(in srgb, var(--ch) 12%, var(--px-void)); }
+.draft-card.dimmed { opacity: 0.35; }
+.draft-stamp {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  font-family: var(--kp-display);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  background: var(--ch-hot);
+  color: var(--px-void);
+  padding: 4px 8px;
+  animation: kp-slot-in 200ms steps(3) both;
+}
+.cache-dry {
+  font-family: var(--kp-term);
+  font-size: 19px;
+  color: var(--ch-dim);
+  text-align: center;
+  padding: 26px 12px;
+}
+
+/* telemetry quads (CPU/MEMORY/DISK/GPU form) */
+.quadstrip { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.quad { border: 2px solid var(--ch-faint); padding: 7px 8px 3px; min-width: 0; }
+.quad svg { display: block; width: 100%; }
+.quad polyline { fill: none; stroke: var(--ch); stroke-width: 2; }
+.quad line.grid { stroke: var(--ch-faint); stroke-width: 1; }
+.quad-tag { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px; }
+.quad-tag b { font-family: var(--kp-mono); font-size: 11px; font-weight: 600; color: var(--ch-hot); }
+
+/* ---------- right rail ---------- */
+
+.paycard {
+  --node: var(--ch-dim);
+  border: 3px solid var(--ch-dim);
+  background: var(--px-void);
+  padding: 13px 14px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.pay-big {
+  font-family: var(--kp-display);
+  font-size: 40px;
+  line-height: 1;
+  color: var(--ch-hot);
+  text-shadow: 0 0 18px var(--px-glow);
+}
+.pay-big i { font-style: normal; font-size: 16px; letter-spacing: 0.08em; color: var(--ch); margin-left: 6px; }
+
+.patchcard {
+  --tick: var(--ch);
+  position: relative;
+  border: 3px solid var(--ch-dim);
+  background: var(--px-void);
+  padding: 0 0 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.patch-head {
+  font-family: var(--kp-display);
+  font-size: 10px;
+  letter-spacing: 0.13em;
+  color: var(--px-void);
+  background: var(--ch);
+  padding: 6px 12px;
+}
+.patch-stage {
+  align-self: center;
+  width: 108px;
+  height: 108px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-image: repeating-conic-gradient(color-mix(in srgb, var(--ch) 8%, transparent) 0% 25%, transparent 0% 50%);
+  background-size: 4px 4px;
+  box-shadow: inset 0 0 0 2px var(--ch-faint);
+}
+.patch-stage.pop svg { animation: kp-slot-in 260ms steps(4) both; }
+.patch-stage.void svg { opacity: 0.35; }
+.patch-noun {
+  text-align: center;
+  font-family: var(--kp-display);
+  font-size: 14px;
+  letter-spacing: 0.14em;
+  color: var(--ch-hot);
+}
+.patch-line { font-family: var(--kp-term); font-size: 17px; line-height: 1.3; color: var(--ch-dim); padding: 0 12px; }
+.patch-status {
+  margin: 0 12px;
+  font-family: var(--kp-display);
+  font-size: 9px;
+  letter-spacing: 0.13em;
+  padding: 5px 8px;
+  box-shadow: inset 0 0 0 2px var(--ch-dim);
+  color: var(--ch);
+}
+.patch-status.inv { background: var(--ch); color: var(--px-void); box-shadow: none; animation: kp-danger-blink 1.2s steps(2) infinite; }
+
+.pouch { display: flex; flex-direction: column; gap: 8px; }
+.pouch-row { display: flex; gap: 8px; align-items: center; }
+.pouch-slot {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--ch-dim);
+  background: color-mix(in srgb, var(--ch) 4%, var(--px-void));
+}
+.pouch-slot.empty { border-style: dashed; border-color: var(--ch-faint); }
+.pouch-slot.fresh { border-color: var(--ch-hot); }
+.pouch-slot.fresh::after {
+  content: "NEW";
+  position: absolute;
+  top: -9px;
+  right: -7px;
+  font-family: var(--kp-display);
+  font-size: 7px;
+  letter-spacing: 0.1em;
+  background: var(--ch-hot);
+  color: var(--px-void);
+  padding: 2px 4px;
+}
+.pouch-slot.lost { border-style: dashed; opacity: 0.45; }
+.pouch-slot.lost::before {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  background:
+    linear-gradient(45deg, transparent calc(50% - 1px), var(--ch) calc(50% - 1px), var(--ch) calc(50% + 1px), transparent calc(50% + 1px)),
+    linear-gradient(-45deg, transparent calc(50% - 1px), var(--ch) calc(50% - 1px), var(--ch) calc(50% + 1px), transparent calc(50% + 1px));
+}
+.pouch-plus { font-family: var(--kp-term); font-size: 19px; color: var(--ch-dim); }
+
+/* ---------- footer ---------- */
+
+.rpt-foot {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border-top: 2px solid var(--ch-faint);
+  padding-top: 14px;
+  margin-top: 2px;
+}
+.foot-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--kp-display);
+  font-size: 9px;
+  letter-spacing: 0.13em;
+  color: var(--ch-dim);
+}
+.foot-batt { display: flex; align-items: center; gap: 3px; }
+.foot-batt i { display: block; width: 6px; height: 12px; background: var(--ch-dim); }
+.foot-batt i:last-child { width: 3px; height: 6px; }
+.foot-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-left: auto; }
+.rpt-foot .kp-btn2 { flex: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .term.rearm, .receipt-pop, .draft-stamp, .patch-stage.pop svg, .patch-status.inv { animation: none; }
+}
+</style>
+</head>
+<body>
+<div class="term" id="term">
+  <header class="term-bar">
+    <h1>REPAIR.LOG</h1>
+    <span class="term-glyphs"><i></i><i></i><i></i></span>
+  </header>
+  <div class="term-body" id="body"></div>
+</div>
+
+<div class="rig">
+  <strong>DEMO RIG</strong>
+  <span>Scenario</span>
+  <div class="rig-row" id="scenrow"></div>
+  <span>Hue</span>
+  <div class="rig-row" id="huerow"></div>
+  <span>REPAIR.LOG dive report study. Three states of the shipped result screen: read the strain bill, bank patch pieces, pick an augment. The footer button walks the day's tickets. Win lines, augment copy, and payout math are shipped content.</span>
+</div>
+
+<div class="kp-crt" aria-hidden="true"></div>
+
+<script>
+(function () {
+  /* Three lastResult states, one per ticket of the mock day 04. Customer
+   * rows, win lines, augment names/descs, and drop flavor are verbatim
+   * shipped content (customers.ts, kit.ts, screens.tsx). Dive log lines
+   * are demo-mock flavor in the duel vocabulary. */
+  var SCENARIOS = {
+    clean: {
+      key: "clean",
+      rigLabel: "CLEAN SWEEP",
+      client: "JUNO VEX",
+      device: "Hexlight arcade handheld",
+      tier: 1,
+      ticket: "1 OF 3",
+      winLine: "The records are mine again. First try. Tell nobody how long that actually took me.",
+      figureImg: "art/report-client-juno.png",
+      figureTag: "RECORDS RECLAIMED",
+      pay: 65,
+      payRows: null,
+      chip: 0,
+      strainLeft: 62,
+      chipRows: [],
+      rounds: 8,
+      trapRounds: [],
+      parRounds: [],
+      patch: {
+        title: "CLEAN RUN",
+        mask: 0b1010,
+        noun: "STRAIGHT",
+        line: "Zero strain billed. Banked a random straight.",
+        status: "BANKED. POUCH 4 OF 5",
+        capped: false
+      },
+      pouch: [0b0101, 0b1111, 0b0111],
+      banked: 0b1010,
+      lostPiece: null,
+      draft: [
+        { id: "cfgArmHalt", kind: "config", name: "HALT DRIVER", desc: "ATTACK config: plant halt traps. A sprung trap costs the intrusion its whole next turn." },
+        { id: "tapLine", kind: "boost", name: "TAP LINE", desc: "SCAN also traces the intrusion's planned route to the core, visible for 2 rounds." },
+        { id: "longArms", kind: "boost", name: "LONG ARMS", desc: "Rotate open junctions up to 4 steps from your territory instead of 2, and place patch pieces just as far. Bigger setups, bigger cascades." }
+      ],
+      credits: 275,
+      lastJob: false,
+      log: [
+        "R01 LINK UP. HEXLIGHT BOOTS TO ATTRACT MODE",
+        "R01 INTRUSION SIGNS ARM:SIPHON",
+        "R02 SCAN SW QUAD. CACHE CLEAN",
+        "R03 ROTATE J-02 CW. UNDER PAR",
+        "R04 WARD HOLDS THE SCORE TABLE",
+        "R05 SIPHON TRAP DEFUSED BEFORE IT SET",
+        "R06 ROTATE J-06 CCW. UNDER PAR",
+        "R07 INTRUSION STARVED OF RAM",
+        "R08 CORE SEALED. ZERO STRAIN BILLED"
+      ],
+      quads: { ram: "6/T", rot: "4", trap: "0", noise: "LOW" }
+    },
+    rough: {
+      key: "rough",
+      rigLabel: "ROUGH WIN",
+      client: "SABLE OKONKWO",
+      device: "Kestrel courier drone",
+      tier: 2,
+      ticket: "2 OF 3",
+      winLine: "She flies straight again. First clean run all month. You are on my good list, which is short.",
+      figureImg: "art/report-client-sable.png",
+      figureTag: "ON THE GOOD LIST",
+      pay: 90,
+      payRows: null,
+      chip: 8,
+      strainLeft: 54,
+      chipRows: [
+        ["2 rotations over par", "-4"],
+        ["1 trap sprung", "-4"]
+      ],
+      rounds: 10,
+      trapRounds: [5],
+      parRounds: [4, 7],
+      patch: {
+        title: "PATCH PIECE RECOVERED",
+        mask: 0b0011,
+        noun: "ELBOW",
+        line: "An elbow pulled from the wreck. Bent, but sound.",
+        status: "BANKED. POUCH 5 OF 5",
+        capped: false
+      },
+      pouch: [0b0101, 0b1111, 0b0111, 0b1010],
+      banked: 0b0011,
+      lostPiece: null,
+      draft: [
+        { id: "cfgWard", kind: "config", name: "WARD DRIVER", desc: "DEFEND config: ward an area so no new traps can land in it, and REDIRECT cannot touch anything inside it either, for the full duration on both sides." },
+        { id: "echoTap", kind: "boost", name: "ECHO TAP", desc: "Whenever one of your traps fires, gain 2 RAM on your next turn." },
+        { id: "cheapShot", kind: "boost", name: "CHEAP SHOT", desc: "Your first ATTACK each dive costs 0 RAM." }
+      ],
+      credits: 365,
+      lastJob: false,
+      log: [
+        "R01 LINK UP. KESTREL ACCEPTS THE HANDSHAKE",
+        "R01 INTRUSION SIGNS REDIRECT",
+        "R02 SCAN NE QUAD. 2 TRAPS FLAGGED",
+        "R03 ROTATE J-04 CCW",
+        "R04 REDIRECT PUSHES THE FEED WIDE. OVER PAR",
+        "R05 TRAP SPRUNG AT J-09. 4 STRAIN BILLED",
+        "R06 PURGE CLEARS THE WEST RUN",
+        "R07 ROTATE J-11 CW. OVER PAR",
+        "R08 PATCH PIECE SET AT THE SLAG LINE",
+        "R09 INTRUSION ROUTE COLLAPSES",
+        "R10 CORE SEALED. FLIGHT PLAN RESTORED"
+      ],
+      quads: { ram: "6/T", rot: "9", trap: "1", noise: "MID" }
+    },
+    cap: {
+      key: "cap",
+      rigLabel: "CAP AND DRY",
+      client: "ALDOUS WICK",
+      device: "Meridian ledger terminal",
+      tier: 4,
+      ticket: "3 OF 3",
+      winLine: "The books balance. First time since spring. You do honest work, son.",
+      figureImg: "art/report-client-aldous.png",
+      figureTag: "BOOKS BALANCED",
+      pay: 95,
+      payRows: [
+        ["ticket rate", "140 cr"],
+        ["reduced rate, you hit the turn cap", "-70 cr"],
+        ["salvage, augment cache dry", "+25 cr"]
+      ],
+      chip: 22,
+      strainLeft: 32,
+      chipRows: [
+        ["3 traps sprung", "-12"],
+        ["hit the turn cap", "-10"]
+      ],
+      rounds: 14,
+      trapRounds: [4, 8, 12],
+      parRounds: [],
+      capWobble: true,
+      patch: {
+        title: "PATCH PIECE RECOVERED",
+        mask: 0b1110,
+        noun: "TEE",
+        line: "Tee piece pulled from the wreck, but the pouch already holds the maximum of 5. Left on the bench.",
+        status: "LEFT ON THE BENCH",
+        capped: true
+      },
+      pouch: [0b0101, 0b1111, 0b0111, 0b1010, 0b0011],
+      banked: null,
+      lostPiece: 0b1110,
+      draft: [],
+      credits: 460,
+      lastJob: true,
+      log: [
+        "R01 LINK UP. MERIDIAN LEDGER ANSWERS SLOW",
+        "R01 INTRUSION SIGNS ARM:HALT",
+        "R02 SCAN NE QUAD. 3 TRAPS FLAGGED",
+        "R04 TRAP SPRUNG AT J-03. 4 STRAIN BILLED",
+        "R06 PURGE CLEARS TWO. ONE RESEEDS",
+        "R08 TRAP SPRUNG AT J-12. 4 STRAIN BILLED",
+        "R10 ROTATIONS HOLD AT PAR",
+        "R12 TRAP SPRUNG AT J-05. 4 STRAIN BILLED",
+        "R14 TURN CAP HIT. 10 STRAIN BILLED",
+        "R14 CORE SEALED AT THE BUZZER"
+      ],
+      quads: { ram: "6/T", rot: "12", trap: "3", noise: "HIGH" }
+    }
+  };
+  /* footer button walks the day's tickets in order */
+  var NEXT = { clean: "rough", rough: "cap", cap: "clean" };
+
+  var REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var term = document.getElementById("term");
+  var bodyEl = document.getElementById("body");
+  var timers = [];
+  var current = "rough";
+  var picked = null;
+
+  function clearTimers() {
+    timers.forEach(function (t) { clearInterval(t); clearTimeout(t); });
+    timers = [];
+  }
+  function stage(fn, delay) {
+    if (REDUCED) { fn(); return; }
+    var t = setTimeout(fn, delay);
+    timers.push(t);
+  }
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text !== undefined && text !== null) n.textContent = text;
+    return n;
+  }
+  function seeded(id) {
+    var s = 0;
+    for (var i = 0; i < id.length; i++) s = (s * 31 + id.charCodeAt(i)) >>> 0;
+    return function () { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s; };
+  }
+
+  /* async typewriter with blinking caret; instant under reduced motion */
+  function typeIn(elm, text, delay, interval) {
+    if (REDUCED) { elm.textContent = text; return; }
+    var caret = el("span", "kp-boot-cursor", "_");
+    var i = 0;
+    var start = setTimeout(function () {
+      elm.appendChild(caret);
+      var iv = setInterval(function () {
+        i++;
+        elm.textContent = text.slice(0, i);
+        elm.appendChild(caret);
+        if (i >= text.length) { clearInterval(iv); caret.remove(); }
+      }, interval || 24);
+      timers.push(iv);
+    }, delay || 0);
+    timers.push(start);
+  }
+
+  /* stepped counter roll, CRT odometer feel */
+  function rollUp(elm, target, suffixNode, delay) {
+    if (REDUCED) { elm.textContent = String(target); if (suffixNode) elm.appendChild(suffixNode); return; }
+    var steps = 9;
+    var n = 0;
+    var start = setTimeout(function () {
+      var iv = setInterval(function () {
+        n++;
+        var v = Math.round(target * n / steps);
+        elm.textContent = String(v);
+        if (suffixNode) elm.appendChild(suffixNode);
+        if (n >= steps) clearInterval(iv);
+      }, 55);
+      timers.push(iv);
+    }, delay || 0);
+    timers.push(start);
+  }
+
+  /* patch glyph: DOM port of the game's PatchGlyph, arms N/E/S/W by bit */
+  var SVG = "http://www.w3.org/2000/svg";
+  function patchGlyph(mask, size) {
+    var svg = document.createElementNS(SVG, "svg");
+    svg.setAttribute("width", String(size));
+    svg.setAttribute("height", String(size));
+    svg.setAttribute("viewBox", "-12 -12 24 24");
+    svg.setAttribute("class", "kp-patch-glyph");
+    svg.setAttribute("aria-hidden", "true");
+    var ends = [[0, -10], [10, 0], [0, 10], [-10, 0]];
+    for (var d = 0; d < 4; d++) {
+      if ((mask & (1 << d)) === 0) continue;
+      var line = document.createElementNS(SVG, "line");
+      line.setAttribute("x1", "0");
+      line.setAttribute("y1", "0");
+      line.setAttribute("x2", String(ends[d][0]));
+      line.setAttribute("y2", String(ends[d][1]));
+      line.setAttribute("class", "kp-pp-arm");
+      line.setAttribute("stroke-width", "3.5");
+      svg.appendChild(line);
+    }
+    var hub = document.createElementNS(SVG, "circle");
+    hub.setAttribute("cx", "0");
+    hub.setAttribute("cy", "0");
+    hub.setAttribute("r", "3");
+    hub.setAttribute("class", "kp-pp-node");
+    svg.appendChild(hub);
+    return svg;
+  }
+
+  function gridLines(svg, W, H, stepX, stepY) {
+    for (var x = 0; x <= W; x += stepX) {
+      var lv = document.createElementNS(SVG, "line");
+      lv.setAttribute("x1", x); lv.setAttribute("x2", x);
+      lv.setAttribute("y1", 0); lv.setAttribute("y2", H);
+      lv.setAttribute("class", "grid");
+      svg.appendChild(lv);
+    }
+    for (var y = 0; y <= H; y += stepY) {
+      var lh = document.createElementNS(SVG, "line");
+      lh.setAttribute("x1", 0); lh.setAttribute("x2", W);
+      lh.setAttribute("y1", y); lh.setAttribute("y2", y);
+      lh.setAttribute("class", "grid");
+      svg.appendChild(lh);
+    }
+  }
+
+  /* length computed from the points attribute so it never depends on the
+   * node being mounted and laid out first */
+  function drawIn(poly, delay) {
+    if (REDUCED) return;
+    var pts = poly.getAttribute("points").trim().split(/\s+/).map(function (p) {
+      return p.split(",").map(Number);
+    });
+    var L = 0;
+    for (var i = 1; i < pts.length; i++) {
+      L += Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]);
+    }
+    L = Math.ceil(L);
+    poly.style.strokeDasharray = L + " " + L;
+    poly.style.strokeDashoffset = L;
+    var t = setTimeout(function () {
+      poly.style.transition = "stroke-dashoffset 620ms steps(14)";
+      poly.style.strokeDashoffset = "0";
+    }, delay || 60);
+    timers.push(t);
+  }
+
+  /* ECG strain trace: flat pulse line, a spike per trap, a bump per
+   * over-par rotation, a wobble tail on a cap win */
+  function ecgSvg(sc) {
+    var W = 640, H = 96, base = 60;
+    var svg = document.createElementNS(SVG, "svg");
+    svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+    svg.setAttribute("preserveAspectRatio", "none");
+    svg.setAttribute("height", "96");
+    gridLines(svg, W, H, 32, 24);
+    var next = seeded(sc.key + "-ecg");
+    var events = [];
+    sc.trapRounds.forEach(function (r) { events.push({ x: (r - 0.5) / sc.rounds * W, amp: 40 }); });
+    sc.parRounds.forEach(function (r) { events.push({ x: (r - 0.5) / sc.rounds * W, amp: 16 }); });
+    var pts = [];
+    for (var x = 0; x <= W; x += 4) {
+      var y = base + ((next() % 100) / 100 - 0.5) * 5;
+      events.forEach(function (e) {
+        var d = Math.abs(x - e.x);
+        if (d < 20) y -= e.amp * (1 - d / 20);
+      });
+      if (sc.capWobble && x > W * 0.82) y += Math.sin(x / 9) * 9;
+      pts.push(x + "," + Math.round(y));
+    }
+    var poly = document.createElementNS(SVG, "polyline");
+    poly.setAttribute("points", pts.join(" "));
+    poly.setAttribute("shape-rendering", "crispEdges");
+    svg.appendChild(poly);
+    drawIn(poly, 140);
+    return svg;
+  }
+
+  /* small telemetry sparkline; kind shapes the wave */
+  function quadSvg(sc, kind, delay) {
+    var W = 300, H = 46;
+    var svg = document.createElementNS(SVG, "svg");
+    svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+    svg.setAttribute("preserveAspectRatio", "none");
+    svg.setAttribute("height", "46");
+    gridLines(svg, W, H, 30, 23);
+    var next = seeded(sc.key + "-" + kind);
+    var pts = [];
+    var x, y;
+    if (kind === "ram") {
+      for (x = 0; x <= W; x += 6) {
+        var phase = (x % 60) / 60;
+        y = 38 - phase * 26 + ((next() % 100) / 100 - 0.5) * 3;
+        pts.push(x + "," + Math.round(y));
+      }
+    } else if (kind === "rot") {
+      var lvl = 40;
+      for (x = 0; x <= W; x += 6) {
+        if (next() % 5 === 0 && lvl > 10) lvl -= 4;
+        pts.push(x + "," + lvl);
+      }
+    } else if (kind === "trap") {
+      var spikes = sc.trapRounds.map(function (r) { return (r - 0.5) / sc.rounds * W; });
+      for (x = 0; x <= W; x += 4) {
+        y = 38;
+        spikes.forEach(function (s) {
+          var d = Math.abs(x - s);
+          if (d < 10) y -= 28 * (1 - d / 10);
+        });
+        pts.push(x + "," + Math.round(y));
+      }
+    } else {
+      var amp = sc.key === "clean" ? 3 : sc.key === "rough" ? 8 : 14;
+      for (x = 0; x <= W; x += 4) {
+        y = 24 + ((next() % 100) / 100 - 0.5) * amp * 2;
+        pts.push(x + "," + Math.round(y));
+      }
+    }
+    var poly = document.createElementNS(SVG, "polyline");
+    poly.setAttribute("points", pts.join(" "));
+    poly.setAttribute("shape-rendering", "crispEdges");
+    svg.appendChild(poly);
+    drawIn(poly, delay);
+    return svg;
+  }
+
+  function chip(label, value) {
+    var c = el("span", "kp-chip-pct");
+    c.appendChild(el("span", "", label));
+    c.appendChild(el("em", "", value));
+    return c;
+  }
+
+  function receiptList(rows, startDelay) {
+    var ul = el("ul", "receipt");
+    rows.forEach(function (r, i) {
+      var li = el("li", r[2] === "inv" ? "inv" : "");
+      li.appendChild(document.createTextNode(r[0]));
+      li.appendChild(el("em", "", r[1]));
+      if (!REDUCED) {
+        li.classList.add("receipt-pop");
+        li.style.animationDelay = (startDelay + i * 90) + "ms";
+      }
+      ul.appendChild(li);
+    });
+    return ul;
+  }
+
+  function render(key) {
+    clearTimers();
+    var sc = SCENARIOS[key];
+    current = key;
+    picked = null;
+    bodyEl.textContent = "";
+
+    /* window re-entry pulse */
+    term.classList.remove("rearm");
+    void term.offsetWidth;
+    term.classList.add("rearm");
+
+    var grid = el("div", "rpt-grid");
+
+    /* ---------- left rail ---------- */
+    var left = el("div", "rpt-col");
+    var fig = el("div", "figure-cell");
+    var dots = el("span", "figure-dots");
+    for (var d = 0; d < 3; d++) dots.appendChild(el("i"));
+    fig.appendChild(dots);
+    var crop = el("i", "figure-crop");
+    crop.style.backgroundImage = "url(\"" + sc.figureImg + "\")";
+    fig.appendChild(crop);
+    fig.appendChild(el("i", "tint"));
+    fig.appendChild(el("span", "figure-tag", sc.figureTag));
+    left.appendChild(fig);
+
+    var divelog = el("div", "divelog");
+    divelog.appendChild(el("span", "rpt-label", "DIVE LOG"));
+    var lines = el("div", "divelog-lines");
+    sc.log.forEach(function (line, i) {
+      var row = el("div", /TRAP SPRUNG|TURN CAP/.test(line) ? "hot" : "");
+      lines.appendChild(row);
+      typeIn(row, line, 260 + i * 110, 9);
+    });
+    divelog.appendChild(lines);
+    left.appendChild(divelog);
+    grid.appendChild(left);
+
+    /* ---------- center rail ---------- */
+    var mid = el("div", "rpt-col");
+
+    var hero = el("div", "hero-block");
+    hero.appendChild(el("span", "rpt-label", "DIVE RESULT"));
+    hero.appendChild(el("h2", "hero-verdict", "REPAIR LOGGED"));
+    var stripe = el("div", "kp-frame-stripe");
+    stripe.style.opacity = "0.5";
+    hero.appendChild(stripe);
+    var quote = el("p", "hero-quote");
+    hero.appendChild(quote);
+    typeIn(quote, "\"" + sc.winLine + "\"", 160, 18);
+    var chips = el("div", "hero-chips");
+    chips.appendChild(chip("CLIENT", sc.client));
+    chips.appendChild(chip("DEVICE", sc.device));
+    chips.appendChild(chip("TICKET RATE", (40 + 25 * sc.tier) + " cr"));
+    hero.appendChild(chips);
+    mid.appendChild(hero);
+
+    var band = el("div", "strainband kp-frame-ticks");
+    band.appendChild(el("i", "kp-tick2"));
+    var scope = el("div", "scopebox");
+    var stag = el("div", "scope-tag");
+    stag.appendChild(el("span", "rpt-label", "STRAIN TRACE"));
+    stag.appendChild(el("b", "", sc.rounds + " ROUNDS"));
+    scope.appendChild(stag);
+    scope.appendChild(ecgSvg(sc));
+    band.appendChild(scope);
+
+    var side = el("div", "strain-side");
+    side.appendChild(el("span", "rpt-label", "NEURAL STRAIN"));
+    var big = el("div", "strain-big" + (sc.chip === 0 ? " clean" : ""));
+    side.appendChild(big);
+    if (sc.chip === 0) {
+      stage(function () { big.textContent = "CLEAN"; }, REDUCED ? 0 : 320);
+    } else {
+      rollUp(big, -sc.chip, null, 240);
+    }
+    var leftLine = el("p", "strain-left");
+    leftLine.appendChild(document.createTextNode(""));
+    var leftEm = el("em", "", String(sc.strainLeft));
+    leftLine.appendChild(leftEm);
+    leftLine.appendChild(document.createTextNode(" STRAIN LEFT"));
+    side.appendChild(leftLine);
+    if (sc.chipRows.length > 0) side.appendChild(receiptList(sc.chipRows, 420));
+    band.appendChild(side);
+    mid.appendChild(band);
+
+    /* augment cache: dashed inventory box, pick one */
+    var cache = el("div", "cachebox");
+    var chead = el("div", "cache-head");
+    chead.appendChild(el("span", "cache-title", "AUGMENT CACHE"));
+    var cstate = el("span", "rpt-label", sc.draft.length > 0 ? "PICK ONE" : "DRY");
+    chead.appendChild(cstate);
+    cache.appendChild(chead);
+    if (sc.draft.length > 0) {
+      var dgrid = el("div", "draft-grid");
+      var cards = [];
+      sc.draft.forEach(function (a, i) {
+        var card = el("button", "draft-card");
+        card.type = "button";
+        card.appendChild(el("span", "draft-kind" + (a.kind === "config" ? " cfg" : ""), a.kind === "config" ? "CONFIG" : "BOOST"));
+        card.appendChild(el("strong", "", a.name));
+        card.appendChild(el("p", "", a.desc));
+        if (a.kind === "config") {
+          card.appendChild(el("p", "note", "Unlocks the mode. Your active kit does not change; switch to it in LOADOUT.CFG when you want it."));
+        }
+        if (!REDUCED) {
+          card.classList.add("kp-slot-anim");
+          card.style.animationDelay = (300 + i * 110) + "ms";
+        }
+        card.addEventListener("click", function () {
+          if (picked !== null) return;
+          picked = a.id;
+          cards.forEach(function (c2, j) {
+            c2.disabled = true;
+            if (sc.draft[j].id === a.id) {
+              c2.classList.add("picked");
+              c2.appendChild(el("em", "draft-stamp", "INSTALLED"));
+            } else {
+              c2.classList.add("dimmed");
+            }
+          });
+          cstate.textContent = "INSTALLED";
+          setFootLabel(sc);
+        });
+        cards.push(card);
+        dgrid.appendChild(card);
+      });
+      cache.appendChild(dgrid);
+    } else {
+      cache.appendChild(el("p", "cache-dry", "Augment cache is dry. Salvage credited instead."));
+    }
+    mid.appendChild(cache);
+
+    /* telemetry quads */
+    var ruler = el("div", "kp-ruler");
+    ruler.appendChild(el("i"));
+    ruler.appendChild(el("span", "", "DIVE TELEMETRY"));
+    ruler.appendChild(el("i"));
+    mid.appendChild(ruler);
+    var quads = el("div", "quadstrip");
+    [["ram", "RAM FLOW", sc.quads.ram], ["rot", "ROTATIONS", sc.quads.rot], ["trap", "TRAP FEED", sc.quads.trap], ["noise", "LINK NOISE", sc.quads.noise]].forEach(function (q, i) {
+      var box = el("div", "quad");
+      var tag = el("div", "quad-tag");
+      tag.appendChild(el("span", "rpt-label", q[1]));
+      tag.appendChild(el("b", "", q[2]));
+      box.appendChild(tag);
+      box.appendChild(quadSvg(sc, q[0], 260 + i * 120));
+      quads.appendChild(box);
+    });
+    mid.appendChild(quads);
+    grid.appendChild(mid);
+
+    /* ---------- right rail ---------- */
+    var right = el("div", "rpt-col");
+
+    var pay = el("div", "paycard kp-frame-nodes");
+    var nodes = el("i", "kp-nodes");
+    for (var n = 0; n < 6; n++) nodes.appendChild(el("i"));
+    pay.appendChild(nodes);
+    pay.appendChild(el("span", "rpt-label", "PAYOUT"));
+    var payBig = el("div", "pay-big");
+    pay.appendChild(payBig);
+    rollUp(payBig, sc.pay, el("i", "", "cr"), 300);
+    if (sc.payRows) pay.appendChild(receiptList(sc.payRows, 520));
+    right.appendChild(pay);
+
+    var patch = el("div", "patchcard kp-frame-ticks");
+    patch.appendChild(el("i", "kp-tick2"));
+    patch.appendChild(el("span", "patch-head", sc.patch.title));
+    var stagePlate = el("div", "patch-stage" + (sc.patch.capped ? " void" : ""));
+    stagePlate.appendChild(patchGlyph(sc.patch.mask, 84));
+    if (!REDUCED) stage(function () { stagePlate.classList.add("pop"); }, 380);
+    patch.appendChild(stagePlate);
+    patch.appendChild(el("div", "patch-noun", sc.patch.noun));
+    patch.appendChild(el("p", "patch-line", sc.patch.line));
+    patch.appendChild(el("span", "patch-status" + (sc.patch.capped ? " inv" : ""), sc.patch.status));
+    right.appendChild(patch);
+
+    var pouch = el("div", "pouch");
+    var full = sc.pouch.length + (sc.banked !== null ? 1 : 0);
+    pouch.appendChild(el("span", "rpt-label", "PATCH POUCH " + full + " OF 5"));
+    var prow = el("div", "pouch-row");
+    sc.pouch.forEach(function (m) {
+      var slot = el("span", "pouch-slot");
+      slot.appendChild(patchGlyph(m, 26));
+      prow.appendChild(slot);
+    });
+    if (sc.banked !== null) {
+      var fresh = el("span", "pouch-slot fresh");
+      fresh.appendChild(patchGlyph(sc.banked, 26));
+      if (!REDUCED) {
+        fresh.classList.add("kp-slot-anim");
+        fresh.style.animationDelay = "520ms";
+      }
+      prow.appendChild(fresh);
+    }
+    for (var e = full; e < 5; e++) prow.appendChild(el("span", "pouch-slot empty"));
+    if (sc.lostPiece !== null) {
+      prow.appendChild(el("span", "pouch-plus", "+"));
+      var lost = el("span", "pouch-slot lost");
+      lost.appendChild(patchGlyph(sc.lostPiece, 26));
+      prow.appendChild(lost);
+    }
+    pouch.appendChild(prow);
+    right.appendChild(pouch);
+    grid.appendChild(right);
+
+    bodyEl.appendChild(grid);
+
+    /* ---------- footer ---------- */
+    var foot = el("div", "rpt-foot");
+    var brand = el("div", "foot-brand");
+    var batt = el("span", "foot-batt");
+    for (var b = 0; b < 4; b++) batt.appendChild(el("i"));
+    brand.appendChild(batt);
+    brand.appendChild(el("span", "", "KP/OS REPAIR BENCH v9.2"));
+    foot.appendChild(brand);
+    var fchips = el("div", "foot-chips");
+    fchips.appendChild(chip("DAY", "04"));
+    fchips.appendChild(chip("TICKET", sc.ticket));
+    fchips.appendChild(chip("CREDITS", sc.credits + " cr"));
+    foot.appendChild(fchips);
+    var btn = el("button", "kp-btn2");
+    btn.type = "button";
+    btn.id = "footbtn";
+    btn.addEventListener("click", function () { render(NEXT[current]); syncRig(); });
+    foot.appendChild(btn);
+    bodyEl.appendChild(foot);
+    setFootLabel(sc);
+  }
+
+  /* shipped label logic: skip while a draft waits, then walk the day */
+  function setFootLabel(sc) {
+    var btn = document.getElementById("footbtn");
+    if (!btn) return;
+    btn.textContent = sc.draft.length > 0 && picked === null
+      ? "SKIP THE DRAFT"
+      : sc.lastJob ? "CLOSE THE DAY" : "NEXT TICKET";
+  }
+
+  /* ---------- demo rig ---------- */
+  var scenrow = document.getElementById("scenrow");
+  ["rough", "clean", "cap"].forEach(function (k) {
+    var b = document.createElement("button");
+    b.textContent = SCENARIOS[k].rigLabel;
+    b.dataset.key = k;
+    b.addEventListener("click", function () { render(k); syncRig(); });
+    scenrow.appendChild(b);
+  });
+  function syncRig() {
+    scenrow.querySelectorAll("button").forEach(function (x) {
+      x.className = x.dataset.key === current ? "rig-on" : "";
+    });
+  }
+
+  var huerow = document.getElementById("huerow");
+  ["lavender", "magenta", "phosphor"].forEach(function (h, i) {
+    var b = document.createElement("button");
+    b.textContent = h.toUpperCase();
+    if (i === 0) b.className = "rig-on";
+    b.addEventListener("click", function () {
+      huerow.querySelectorAll("button").forEach(function (x) { x.className = ""; });
+      b.className = "rig-on";
+      document.documentElement.dataset.hue = h;
+    });
+    huerow.appendChild(b);
+  });
+
+  render("rough");
+  syncRig();
+})();
+</script>
+</body>
+</html>

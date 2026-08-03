@@ -1,0 +1,17 @@
+{
+  "id": "dadlog-attach-consult",
+  "from": "ux-agent",
+  "kind": "window-image",
+  "treatment": "dither-fine",
+  "target": "/assets/px/ui/dadlog-attach-consult.png",
+  "size": [304, 304],
+  "invert": false,
+  "brief": "DAD.LOG per-entry attachment for CONSULT_SUMMARY.SCN (dadlog-archive-reader ui-spec, section F, ROUND 3 addendum). A typed clinical summary sheet lying beside (or half emerging from) a slit-open envelope, canon detail: the envelope was sealed and never opened until now, so show the torn/slit top edge clearly, the flap open, the sheet partly slid out. The sheet reads as a dense typed block (monospaced-looking rows of a typewritten report), rendered as ILLEGIBLE typed-line texture (uniform short rule marks standing in for typed text, never actual readable characters - the dither must crush it to texture), with one short line near the top underlined twice to suggest emphasis (still illegible, just a doubled rule). 1990s anime OVA ink style, flat cel shading, crisp high-contrast linework so the envelope's torn edge and the sheet's typed-row texture read clearly after 1-bit dithering. Absolutely NO readable text, NO panel borders, NO speech bubbles anywhere; background a plain flat dark surface, nothing else in frame.",
+  "status": "done",
+  "result": "pipeline/art/done/dadlog-attach-consult.png",
+  "generation": {
+    "tool": "Higgsfield nano_banana_pro",
+    "credits": 2,
+    "attempts": 1
+  }
+}

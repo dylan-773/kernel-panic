@@ -1,0 +1,13 @@
+{
+  "id": "morning-rhea-feed",
+  "from": "ux-agent",
+  "kind": "still",
+  "treatment": "dither-fine",
+  "target": "/assets/px/stills/morning-cam-counter.png",
+  "size": [288, 216],
+  "invert": false,
+  "brief": "MORNING.LOG / SHOPFRONT.EXE image-stage CAM 1, the shop's own counter camera. Rhea Vance behind the counter, framed face and shoulders, caught mid-conversation and glancing toward the camera rather than posed for it: this is a fixed security-style plate, not a portrait sitting. The counter itself and its usual clutter (mugs, the ticket spike, the till, loose tools) fills the frame behind and around her instead of a plain backdrop. 1990s anime OVA ink style, flat cel shading, matching the existing sister.png portrait's design language (dark hair pulled up, practical work apron over a hoodie, tired but capable, a half-worried half-fond set to her mouth). No text, no lettering, no panel borders, no speech bubbles, no watermark or timestamp burned into the art itself (the OS draws its own CAM tag and REC dot in CSS on top of this plate). IMPORTANT: this cell is interchangeable with morning-backroom-still in one fixed image-stage slot (the equal-footprint fix for beat-to-beat reflow), so match that order's tonal weight, contrast level, and overall composition density; both are read at native 288x216, never resized in the browser (law 5: crop, never downscale), so generate at high resolution in a 4:3-leaning composition and let the dither pass do the crop. Anchor the crop on her face and upper shoulders, left-of-center and upper third of frame (suggested pipeline/tools/dither.py flags: --focus-x 0.42 --focus-y 0.36), with the counter clutter reading clearly across the right two-thirds and lower frame.",
+  "status": "done",
+  "result": "pipeline/art/done/morning-rhea-feed.png",
+  "generation": "model: nano_banana_2, attempts: 2 (first rejected for burned timestamp, second accepted), credits: ~4, dither invocation: python3 pipeline/tools/dither.py raw-morning-rhea-feed.png morning-rhea-feed.png --width 288 --height 216 --variant fine --focus-x 0.42 --focus-y 0.36"
+}

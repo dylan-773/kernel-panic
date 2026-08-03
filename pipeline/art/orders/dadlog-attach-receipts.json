@@ -1,0 +1,17 @@
+{
+  "id": "dadlog-attach-receipts",
+  "from": "ux-agent",
+  "kind": "window-image",
+  "treatment": "dither-fine",
+  "target": "/assets/px/ui/dadlog-attach-receipts.png",
+  "size": [304, 304],
+  "invert": false,
+  "brief": "DAD.LOG per-entry attachment for RECEIPTS.SCN (dadlog-archive-reader ui-spec, section F, ROUND 3 addendum). A fanned strip of small dated pharmacy receipt stubs, overlapping like a hand of cards or a fan of ticket stubs, resting loose in or half-spilling out of a plain cardboard shoebox (canon detail: found in a shoebox, six years of dated stubs). Each stub shows the faint suggestion of a printed header and a few line-item rows, all rendered as ILLEGIBLE printed-line texture (short flat rule marks standing in for text and numerals, never actual readable characters - the dither must crush it to texture). 1990s anime OVA ink style, flat cel shading, clean high-contrast linework so the overlapping stub edges and the shoebox's corrugated texture read clearly after 1-bit dithering. Absolutely NO readable text, NO panel borders, NO speech bubbles anywhere; background a plain flat dark surface, nothing else in frame.",
+  "status": "done",
+  "result": "pipeline/art/done/dadlog-attach-receipts.png",
+  "generation": {
+    "tool": "Higgsfield nano_banana_pro",
+    "credits": 2,
+    "attempts": 1
+  }
+}

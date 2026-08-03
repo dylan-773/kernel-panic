@@ -1,0 +1,973 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>KP demo: DARKNET.LNK</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=VT323&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" />
+<link rel="stylesheet" href="../_shared/kp.css" />
+<link rel="stylesheet" href="../_shared/system.css" />
+<style>
+/* DARKNET.LNK terminal study, standalone. The gray market as a real CLI:
+ * dial an address no registry knows, watch the hops link, then type (or
+ * click) trades with a dealer who has no name. One item for sale: a blind
+ * patch pull at the shipped darkPatchCost(day) price, rolled with the
+ * shipped PATCH_ROLL_WEIGHTS (I 40 / L 45 / T 12 / X 3, uniform rotation)
+ * off a seeded stream, never Math.random.
+ * Identity per the kpos ruling: the odd one out via the stepped-notch
+ * title bar, the chevron mark, and HEAVIER dither, never a second hue. */
+
+body { overflow: auto; display: block; height: auto; min-height: 100%; padding: 40px 16px 60px; }
+
+.term {
+  margin: 0 auto;
+  width: min(720px, 96vw);
+  display: flex;
+  flex-direction: column;
+  border: 3px solid var(--ch);
+  background: var(--px-void);
+  filter:
+    drop-shadow(9px 9px 0 rgba(0, 0, 0, 0.8))
+    drop-shadow(0 0 26px color-mix(in srgb, var(--ch) 25%, transparent));
+}
+
+/* ---------- the notched bar: darknet's own silhouette ---------- */
+
+.term-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--ch);
+  padding: 9px 12px 9px 22px;
+  clip-path: polygon(0 16px, 8px 16px, 8px 8px, 16px 8px, 16px 0, 100% 0, 100% 100%, 0 100%);
+}
+.term-bar h1 {
+  font-family: var(--kp-display);
+  font-size: 14px;
+  letter-spacing: 0.16em;
+  color: var(--px-void);
+  font-weight: 400;
+}
+.bar-chevron { display: flex; gap: 3px; }
+.bar-chevron i { width: 4px; height: 12px; background: var(--px-void); }
+.bar-chevron i:nth-child(2) { height: 8px; margin-top: 4px; }
+.bar-chevron i:nth-child(3) { height: 5px; margin-top: 7px; }
+
+/* weak-signal meter: three void bars, the tall one cutting out */
+.bar-sig { display: flex; gap: 3px; align-items: flex-end; margin-left: auto; }
+.bar-sig i { width: 5px; background: var(--px-void); }
+.bar-sig i:nth-child(1) { height: 5px; }
+.bar-sig i:nth-child(2) { height: 9px; }
+.bar-sig i:nth-child(3) { height: 13px; animation: kp-cursor-blink 1.7s steps(2) infinite; }
+.term-glyphs { display: flex; gap: 7px; align-items: center; }
+.term-glyphs i { display: block; background: var(--px-void); }
+.term-glyphs i:nth-child(1) { width: 11px; height: 3px; margin-top: 9px; }
+.term-glyphs i:nth-child(2) { width: 11px; height: 11px; background: transparent; border: 3px solid var(--px-void); }
+.term-glyphs i:nth-child(3) { width: 11px; height: 11px; }
+
+.term-stripe { height: 8px; background: repeating-linear-gradient(45deg, var(--ch-dim) 0 3px, transparent 3px 7px); }
+
+/* ---------- status strip: live boxed chips ---------- */
+
+.stat-strip { display: flex; gap: 6px; padding: 12px 14px 0; flex-wrap: wrap; }
+.stat-strip .kp-chip-pct { flex: 1; justify-content: space-between; }
+.chip-flash { animation: chip-flash 240ms steps(2); }
+@keyframes chip-flash {
+  from { background: var(--ch); }
+  to { background: var(--px-void); }
+}
+.chip-flash span, .chip-flash em { animation: chip-flash-ink 240ms steps(2); }
+@keyframes chip-flash-ink {
+  from { color: var(--px-void); }
+  to { color: currentColor; }
+}
+.chip-dead { background: var(--ch); border-color: var(--ch); }
+.chip-dead span, .chip-dead em { color: var(--px-void); }
+
+/* ---------- terminal viewport: bottom-anchored, clipped, no scrollbar ---------- */
+
+.log-clip {
+  position: relative;
+  height: 430px;
+  margin: 12px 14px 0;
+  overflow: hidden;
+  border: 2px solid var(--ch-faint);
+  /* the heavier dither: coarse checker OVER the standard fine grain */
+  background-image:
+    repeating-conic-gradient(color-mix(in srgb, var(--ch2) 11%, transparent) 0% 25%, transparent 0% 50%),
+    repeating-conic-gradient(color-mix(in srgb, var(--ch) 4%, transparent) 0% 25%, transparent 0% 50%);
+  background-size: 8px 8px, 4px 4px;
+}
+/* old lines fade off the clipped top */
+.log-clip::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 54px;
+  pointer-events: none;
+  background: linear-gradient(180deg, var(--px-void), transparent);
+}
+.log {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 12px 15px 10px;
+}
+
+.t-line { font-family: var(--kp-term); font-size: 20px; line-height: 1.25; color: var(--ch); min-height: 25px; overflow-wrap: anywhere; }
+.t-sys { color: var(--ch-dim); }
+.t-dim { color: color-mix(in srgb, var(--ch) 36%, var(--px-void)); }
+.t-you { color: var(--ch-hot); }
+.t-ven { color: var(--ch2); }
+.t-ven::before { content: "??> "; opacity: 0.8; }
+/* danger is inverse video, never a second hue */
+.t-warn {
+  align-self: flex-start;
+  background: var(--ch);
+  color: var(--px-void);
+  padding: 1px 10px;
+  font-family: var(--kp-term);
+  font-size: 20px;
+  line-height: 1.25;
+}
+.t-gap { height: 8px; flex: none; }
+
+/* the offline hero (darknet hero clamp 40px per the round-1 findings) */
+.t-hero {
+  font-family: var(--kp-display);
+  font-size: 40px;
+  line-height: 1.05;
+  letter-spacing: 0.02em;
+  color: var(--ch);
+  text-shadow: 0 0 22px var(--px-glow);
+  padding: 6px 0 2px;
+}
+.t-hero-dim { color: var(--ch-dim); text-shadow: none; }
+
+/* ---------- vendor banner: a splash the log scrolls like output ---------- */
+
+.banner {
+  --tick: var(--ch-dim);
+  position: relative;
+  margin: 8px 2px 4px;
+  padding: 16px 18px 14px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  border: 2px solid var(--ch-dim);
+  background-image: repeating-conic-gradient(color-mix(in srgb, var(--ch2) 16%, transparent) 0% 25%, transparent 0% 50%);
+  background-size: 8px 8px;
+}
+.banner-mark { flex: none; display: flex; }
+.banner-mark svg { display: block; shape-rendering: crispEdges; filter: drop-shadow(0 0 10px var(--px-glow)); }
+.banner-mark rect.a { fill: var(--ch); }
+.banner-mark rect.b { fill: var(--ch-hot); }
+.banner-word {
+  font-family: var(--kp-display);
+  font-size: 33px;
+  line-height: 1;
+  letter-spacing: 0.12em;
+  color: var(--ch);
+  -webkit-mask-image: repeating-linear-gradient(0deg, #000 0 2px, transparent 2px 4px);
+  mask-image: repeating-linear-gradient(0deg, #000 0 2px, transparent 2px 4px);
+}
+.banner-tag {
+  font-family: var(--kp-display);
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  background: var(--ch-dim);
+  color: var(--px-void);
+  padding: 4px 8px;
+  margin-top: 7px;
+  display: inline-block;
+}
+/* the occasional monochrome glitch slip (in-scheme motion, no color fringe) */
+.banner-glitch { animation: banner-slip 6s steps(1) infinite; }
+@keyframes banner-slip {
+  0%, 91% { transform: translate(0, 0); }
+  92%, 94% { transform: translate(-3px, 1px); }
+  95%, 97% { transform: translate(2px, -1px); }
+  98%, 100% { transform: translate(0, 0); }
+}
+
+/* ---------- rich output blocks (boxed CLI cards) ---------- */
+
+.o-card {
+  --tick: var(--ch-dim);
+  position: relative;
+  margin: 6px 2px;
+  padding: 12px;
+  display: flex;
+  gap: 14px;
+  border: 2px solid var(--ch-dim);
+  background: color-mix(in srgb, var(--ch) 4%, var(--px-void));
+}
+.o-cell {
+  position: relative;
+  flex: none;
+  width: 108px;
+  height: 108px;
+  border: 3px solid var(--ch-dim);
+  background-image: repeating-conic-gradient(color-mix(in srgb, var(--ch2) 18%, transparent) 0% 25%, transparent 0% 50%);
+  background-size: 8px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.o-cell .kp-scan-sweep {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 26px;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--ch) 30%, transparent), transparent);
+  animation: o-sweep 2.2s steps(18) infinite;
+}
+@keyframes o-sweep { from { transform: translateX(-30px); } to { transform: translateX(112px); } }
+.o-q {
+  font-family: var(--kp-display);
+  font-size: 44px;
+  color: var(--ch);
+  text-shadow: 0 0 18px var(--px-glow);
+  animation: o-q-pulse 1.4s steps(2) infinite;
+}
+@keyframes o-q-pulse { 50% { opacity: 0.45; } }
+.o-rows { flex: 1; display: flex; flex-direction: column; gap: 5px; justify-content: center; min-width: 0; }
+.o-rows .kp-datarow { padding: 5px 10px; }
+.o-rows .kp-datarow > span { font-size: 9px; }
+.o-rows .kp-datarow > em { font-size: 13px; }
+.o-tag {
+  position: absolute;
+  top: -12px;
+  left: 8px;
+  font-family: var(--kp-display);
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  background: var(--ch);
+  color: var(--px-void);
+  padding: 3px 8px;
+}
+
+/* the help table */
+.o-help { margin: 6px 2px; border: 2px solid var(--ch-faint); padding: 8px 12px; display: flex; flex-direction: column; gap: 1px; }
+.o-help p { font-family: var(--kp-term); font-size: 20px; line-height: 1.3; color: var(--ch); }
+.o-help p b { display: inline-block; min-width: 96px; font-weight: 400; color: var(--ch-hot); }
+
+/* escrow meter line */
+.o-escrow { display: flex; align-items: center; gap: 12px; margin: 2px 0; }
+.o-escrow span { font-family: var(--kp-display); font-size: 10px; letter-spacing: 0.14em; color: var(--ch); }
+.o-escrow span::before { content: "// "; opacity: 0.7; }
+.o-escrow .kp-bar-hatch { flex: 1; max-width: 240px; }
+.o-escrow em { font-style: normal; font-family: var(--kp-term); font-size: 20px; color: var(--ch-hot); }
+
+/* the reveal: glyph scramble in a heavy-dithered cell */
+.o-reveal .o-cell { border-color: var(--ch); }
+.o-reveal .o-cell svg { filter: drop-shadow(0 0 10px var(--px-glow)); }
+.o-landed { animation: kp-shake-1 180ms steps(4); }
+
+/* pouch strip printed in the log */
+.o-pouch { display: flex; align-items: center; gap: 9px; margin: 3px 0 2px; }
+.o-pouch .kp-piece-hole { width: 26px; height: 26px; border-width: 2px; }
+.o-pouch i.slot { width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; border: 2px solid var(--ch-dim); }
+.o-pouch span { font-family: var(--kp-display); font-size: 10px; letter-spacing: 0.14em; color: var(--ch-dim); }
+
+/* ---------- prompt ---------- */
+
+.prompt {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+  margin: 10px 14px 0;
+  padding: 8px 12px;
+  border: 2px solid var(--ch-dim);
+  background: color-mix(in srgb, var(--ch) 4%, var(--px-void));
+  cursor: text;
+}
+.prompt-label { font-family: var(--kp-term); font-size: 20px; color: var(--ch2); white-space: nowrap; }
+.prompt-input { font-family: var(--kp-term); font-size: 21px; color: var(--ch-hot); white-space: pre; overflow: hidden; }
+.prompt-caret { display: inline-block; width: 11px; height: 19px; background: var(--ch-hot); vertical-align: text-bottom; animation: kp-cursor-blink 0.9s steps(2) infinite; }
+.prompt.dead { opacity: 0.35; }
+.prompt.dead .prompt-caret { animation: none; background: var(--ch-faint); }
+
+/* clickable trades: they type themselves into the prompt */
+.cmd-row { display: flex; gap: 6px; padding: 9px 14px 0; flex-wrap: wrap; }
+.cmd-row button {
+  font-family: var(--kp-display);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  padding: 6px 11px;
+  background: transparent;
+  border: 2px solid var(--ch-dim);
+  color: var(--ch);
+}
+.cmd-row button:hover:not(:disabled) { background: var(--ch); color: var(--px-void); }
+.cmd-row button:active:not(:disabled) { transform: translate(1px, 1px); }
+.cmd-row button:disabled { color: var(--ch-faint); border-color: var(--ch-faint); cursor: not-allowed; }
+
+.term-foot {
+  font-family: var(--kp-term);
+  font-size: 17px;
+  color: var(--ch-dim);
+  padding: 10px 16px 14px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bar-sig i:nth-child(3), .o-q, .o-cell .kp-scan-sweep,
+  .banner-glitch, .chip-flash, .prompt-caret, .o-landed { animation: none; }
+}
+</style>
+</head>
+<body>
+<div class="term" id="term">
+  <header class="term-bar">
+    <span class="bar-chevron"><i></i><i></i><i></i></span>
+    <h1>DARKNET.LNK</h1>
+    <span class="bar-sig"><i></i><i></i><i></i></span>
+    <span class="term-glyphs"><i></i><i></i><i></i></span>
+  </header>
+  <div class="term-stripe"></div>
+
+  <div class="stat-strip" id="stats">
+    <span class="kp-chip-pct" id="chip-route"><span>ROUTE</span><em id="v-route">DIALING</em></span>
+    <span class="kp-chip-pct"><span>PEER</span><em>NO ID</em></span>
+    <span class="kp-chip-pct" id="chip-bal"><span>BAL</span><em id="v-bal">--</em></span>
+    <span class="kp-chip-pct" id="chip-pouch"><span>POUCH</span><em id="v-pouch">--</em></span>
+  </div>
+
+  <div class="log-clip"><div class="log" id="log"></div></div>
+
+  <div class="prompt" id="prompt">
+    <span class="prompt-label">nobody@nowhere:~$</span>
+    <span class="prompt-input" id="input"></span>
+    <span class="prompt-caret"></span>
+  </div>
+
+  <div class="cmd-row" id="cmds"></div>
+
+  <p class="term-foot">No refunds. No complaints line. Close the window if you want a guarantee.</p>
+</div>
+
+<div class="rig">
+  <strong>DEMO RIG</strong>
+  <span>Hue</span>
+  <div class="rig-row" id="huerow"></div>
+  <span>Scenario</span>
+  <div class="rig-row" id="scenrow"></div>
+  <span>DARKNET.LNK terminal study. Dial in, then type or click trades. One item: a blind patch pull at the shipped day price, rolled with shipped weights off a seeded stream. Copy is demo-mock.</span>
+</div>
+
+<div class="kp-crt" aria-hidden="true"></div>
+
+<script>
+(function () {
+  /* shipped constants, inlined verbatim (patch-cells.ts / duel-types.ts):
+   * darkPatchCost(day) = 25 + 5 * (day - 1); PATCH_POUCH_MAX = 5;
+   * roll weights I 40 / L 45 / T 12 / X 3, uniform rotation */
+  var POUCH_MAX = 5;
+  var WEIGHTS = [[0x5, 40], [0x3, 45], [0x7, 12], [0xf, 3]];
+  var NOUN = { I: "STRAIGHT", L: "ELBOW", T: "TEE", X: "CROSS" };
+  function price(day) { return 25 + 5 * (day - 1); }
+  function rot(mask, r) { r = ((r % 4) + 4) % 4; return ((mask << r) | (mask >> (4 - r))) & 0xf; }
+  function armCount(mask) { var n = 0; for (var d = 0; d < 4; d++) if (mask & (1 << d)) n++; return n; }
+  function shapeOf(mask) {
+    var n = armCount(mask);
+    if (n >= 4) return "X";
+    if (n === 3) return "T";
+    return mask === 0x5 || mask === 0xa ? "I" : "L";
+  }
+
+  /* seeded stream (seed 25 rolls L, T, L, X, I): deterministic demo beats,
+   * never Math.random */
+  var SEED = 25;
+  var rngS = SEED;
+  function next() { rngS = (Math.imul(rngS, 1664525) + 1013904223) >>> 0; return rngS; }
+  function rollPiece() {
+    var r = next() % 100;
+    for (var i = 0; i < WEIGHTS.length; i++) {
+      r -= WEIGHTS[i][1];
+      if (r < 0) return rot(WEIGHTS[i][0], next() % 4);
+    }
+    return rot(0xf, next() % 4);
+  }
+
+  /* scenarios: the shipped data.ts mock night, plus edge-state nights */
+  var SCEN = {
+    "NIGHT 4/5": { day: 4, credits: 210, pouch: [0x5, 0x3, 0xf, 0x7], open: true },
+    "FRESH NIGHT": { day: 4, credits: 210, pouch: [], open: true },
+    "BROKE": { day: 6, credits: 35, pouch: [0x3], open: true },
+    "SHOP HOURS": { day: 4, credits: 210, pouch: [0x5, 0x3, 0xf, 0x7], open: false }
+  };
+  var scen = "NIGHT 4/5";
+  var st = null; /* live { day, credits, pouch[], open } */
+
+  /* ?instant forces the reduced-motion path: every beat lands synchronously
+   * (review rig affordance; also what prefers-reduced-motion players get) */
+  var REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    || /instant/.test(location.search);
+  var log = document.getElementById("log");
+  var input = document.getElementById("input");
+  var promptEl = document.getElementById("prompt");
+  var vBal = document.getElementById("v-bal");
+  var vPouch = document.getElementById("v-pouch");
+  var vRoute = document.getElementById("v-route");
+  var chipRoute = document.getElementById("chip-route");
+  var timers = [];
+  var live = false;   /* prompt accepts input */
+  var buf = "";
+  var history = [];
+  var histAt = -1;
+
+  function stage(fn, ms) {
+    if (REDUCED) { fn(); return 0; }
+    var t = setTimeout(fn, ms);
+    timers.push(t);
+    return t;
+  }
+  function clearTimers() { timers.forEach(function (t) { clearTimeout(t); clearInterval(t); }); timers = []; }
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text) n.textContent = text;
+    return n;
+  }
+
+  /* ---------- log plumbing: append, ring-trim, no scrollbar ever ---------- */
+
+  var MAX_NODES = 110;
+  function push(node) {
+    log.appendChild(node);
+    while (log.children.length > MAX_NODES) log.removeChild(log.firstChild);
+    return node;
+  }
+  function line(cls, text) { return push(el("p", "t-line " + (cls || ""), text || "")); }
+  function gap() { push(el("i", "t-gap")); }
+
+  /* ---------- the sequential output queue: a CLI prints in order ---------- */
+
+  var q = [];
+  var busy = false;
+  function enq(fn) { q.push(fn); if (!busy) pump(); }
+  function pump() {
+    var fn = q.shift();
+    if (!fn) { busy = false; setChips(); return; }
+    busy = true;
+    setChips();
+    fn(function () { pump(); });
+  }
+
+  /* typed line: chars land on an interval; instant under reduced motion */
+  function typeLine(cls, text, cps) {
+    enq(function (done) {
+      var n = line(cls);
+      if (REDUCED) { n.textContent = text; done(); return; }
+      var i = 0;
+      var iv = setInterval(function () {
+        i++;
+        n.textContent = text.slice(0, i);
+        if (i >= text.length) { clearInterval(iv); done(); }
+      }, cps || 13);
+      timers.push(iv);
+    });
+  }
+  /* progress line: label, then dots crawl, then the verdict lands */
+  function dotsLine(label, verdict, nDots, slow) {
+    enq(function (done) {
+      var n = line("t-sys", label + " ");
+      if (REDUCED) { n.textContent = label + " ......... " + verdict; done(); return; }
+      var d = 0;
+      var iv = setInterval(function () {
+        d++;
+        n.textContent = label + " " + Array(d + 1).join(". ");
+        if (d >= (nDots || 7)) {
+          clearInterval(iv);
+          n.textContent = label + " " + Array(d + 1).join(". ") + verdict;
+          done();
+        }
+      }, slow || 110);
+      timers.push(iv);
+    });
+  }
+  function instant(fn) { enq(function (done) { fn(); done(); }); }
+  function wait(ms) { enq(function (done) { stage(done, ms); }); }
+
+  /* ---------- status chips ---------- */
+
+  function flash(chip) {
+    if (REDUCED) return;
+    chip.classList.remove("chip-flash");
+    void chip.offsetWidth;
+    chip.classList.add("chip-flash");
+  }
+  function setChips() {
+    var b = st.credits + " cr";
+    var p = st.pouch.length + "/" + POUCH_MAX;
+    if (vBal.textContent !== b && vBal.textContent !== "--") flash(document.getElementById("chip-bal"));
+    if (vPouch.textContent !== p && vPouch.textContent !== "--") flash(document.getElementById("chip-pouch"));
+    vBal.textContent = b;
+    vPouch.textContent = p;
+    document.getElementById("cmds").querySelectorAll("button").forEach(function (btn) {
+      btn.disabled = busy || !live;
+    });
+  }
+  function setRoute(text, dead) {
+    vRoute.textContent = text;
+    chipRoute.classList.toggle("chip-dead", !!dead);
+  }
+
+  /* ---------- glyphs (patch-glyph.tsx anatomy, DOM port) ---------- */
+
+  var SVG = "http://www.w3.org/2000/svg";
+  function glyph(mask, size) {
+    var svg = document.createElementNS(SVG, "svg");
+    svg.setAttribute("width", size);
+    svg.setAttribute("height", size);
+    svg.setAttribute("viewBox", "-12 -12 24 24");
+    svg.setAttribute("class", "kp-patch-glyph kp-glyph-signal");
+    var ends = [[0, -10], [10, 0], [0, 10], [-10, 0]];
+    for (var d = 0; d < 4; d++) {
+      if ((mask & (1 << d)) === 0) continue;
+      var ln = document.createElementNS(SVG, "line");
+      ln.setAttribute("x1", "0"); ln.setAttribute("y1", "0");
+      ln.setAttribute("x2", ends[d][0]); ln.setAttribute("y2", ends[d][1]);
+      ln.setAttribute("class", "kp-pp-arm");
+      ln.setAttribute("stroke-width", "3.5");
+      svg.appendChild(ln);
+    }
+    var hub = document.createElementNS(SVG, "circle");
+    hub.setAttribute("cx", "0"); hub.setAttribute("cy", "0"); hub.setAttribute("r", "3");
+    hub.setAttribute("class", "kp-pp-node");
+    svg.appendChild(hub);
+    return svg;
+  }
+
+  /* the vendor's double chevron: pixel bitmap, second stroke hot */
+  var MARK = [
+    "XX..YY...",
+    ".XX..YY..",
+    "..XX..YY.",
+    "...XX..YY",
+    "..XX..YY.",
+    ".XX..YY..",
+    "XX..YY..."
+  ];
+  function chevMark(cell) {
+    var svg = document.createElementNS(SVG, "svg");
+    svg.setAttribute("width", MARK[0].length * cell);
+    svg.setAttribute("height", MARK.length * cell);
+    svg.setAttribute("viewBox", "0 0 " + MARK[0].length + " " + MARK.length);
+    for (var r = 0; r < MARK.length; r++) {
+      for (var c = 0; c < MARK[r].length; c++) {
+        var ch = MARK[r][c];
+        if (ch === ".") continue;
+        var rect = document.createElementNS(SVG, "rect");
+        rect.setAttribute("x", c);
+        rect.setAttribute("y", r);
+        rect.setAttribute("width", 1);
+        rect.setAttribute("height", 1);
+        rect.setAttribute("class", ch === "X" ? "a" : "b");
+        svg.appendChild(rect);
+      }
+    }
+    return svg;
+  }
+
+  function pouchStrip() {
+    var row = el("div", "o-pouch");
+    for (var i = 0; i < POUCH_MAX; i++) {
+      if (i < st.pouch.length) {
+        var slot = el("i", "slot");
+        slot.appendChild(glyph(st.pouch[i], 20));
+        row.appendChild(slot);
+      } else {
+        row.appendChild(el("i", "kp-piece-hole"));
+      }
+    }
+    row.appendChild(el("span", "", "POUCH " + st.pouch.length + "/" + POUCH_MAX));
+    return row;
+  }
+
+  function datarow(label, value) {
+    var r = el("div", "kp-datarow");
+    r.appendChild(el("span", "", label));
+    r.appendChild(el("em", "", value));
+    return r;
+  }
+
+  /* ---------- trades ---------- */
+
+  function cmdHelp() {
+    instant(function () {
+      var box = el("div", "o-help");
+      [["LIST", "what is on the table tonight"],
+       ["BUY", "one blind pull, " + price(st.day) + " cr"],
+       ["BAL", "what you hold"],
+       ["POUCH", "what you carry"],
+       ["EXIT", "burn the channel"]].forEach(function (pair) {
+        var p = el("p");
+        p.appendChild(el("b", "", pair[0]));
+        p.appendChild(document.createTextNode(pair[1]));
+        box.appendChild(p);
+      });
+      push(box);
+    });
+  }
+
+  function cmdList() {
+    typeLine("t-ven", "Tonight, same as every night. One crate.", 15);
+    instant(function () {
+      var card = el("div", "o-card kp-frame-ticks");
+      card.appendChild(el("i", "kp-tick2"));
+      card.appendChild(el("span", "o-tag", "TONIGHT ONLY"));
+      var cell = el("div", "o-cell");
+      cell.appendChild(el("span", "o-q", "?"));
+      cell.appendChild(el("i", "kp-scan-sweep"));
+      card.appendChild(cell);
+      var rows = el("div", "o-rows");
+      rows.appendChild(datarow("ITEM", "PATCH PIECE"));
+      rows.appendChild(datarow("SHAPE", "UNSORTED"));
+      rows.appendChild(datarow("PRICE", price(st.day) + " CR"));
+      rows.appendChild(datarow("STOCK", "A CRATE FULL"));
+      card.appendChild(rows);
+      push(card);
+    });
+    typeLine("t-ven", "Pay first. Shape is the surprise. That is the whole business model here.", 13);
+  }
+
+  function cmdBal() {
+    instant(function () { push(datarowLine("BAL", st.credits + " CR")); });
+    typeLine("t-ven", "It spends the same as clean money.", 15);
+  }
+  function datarowLine(label, value) {
+    var wrap = el("div");
+    wrap.style.margin = "3px 0";
+    wrap.style.maxWidth = "230px";
+    wrap.appendChild(datarow(label, value));
+    return wrap;
+  }
+
+  function cmdPouch() {
+    instant(function () { push(pouchStrip()); });
+    if (st.pouch.length >= POUCH_MAX) typeLine("t-ven", "That is a full bag. I admire the appetite.", 15);
+  }
+
+  function cmdBuy() {
+    var cost = price(st.day);
+    if (st.pouch.length >= POUCH_MAX) {
+      typeLine("t-ven", "Dealer is not a storage locker. Pouch is full. Come back with room.", 13);
+      return;
+    }
+    if (st.credits < cost) {
+      instant(function () { push(el("p", "t-warn", "// SHORT _ NEED " + cost + " CR. YOU HOLD " + st.credits + " CR.")); });
+      typeLine("t-ven", "No tab. A tab needs a name and there are no names here.", 13);
+      return;
+    }
+
+    /* escrow: the hatch bar fills while the credits tick down */
+    enq(function (done) {
+      var row = el("div", "o-escrow");
+      row.appendChild(el("span", "", "ESCROW"));
+      var bar = el("span", "kp-bar-hatch");
+      var fill = el("i");
+      fill.style.width = "0%";
+      bar.appendChild(fill);
+      row.appendChild(bar);
+      var amt = el("em", "", "0 cr");
+      row.appendChild(amt);
+      push(row);
+      var startBal = st.credits;
+      if (REDUCED) {
+        fill.style.width = "97%";
+        amt.textContent = cost + " cr";
+        st.credits = startBal - cost;
+        setChips();
+        done();
+        return;
+      }
+      var step = 0;
+      var iv = setInterval(function () {
+        step++;
+        var f = step / 8;
+        fill.style.width = Math.round(f * 97) + "%";
+        amt.textContent = Math.round(f * cost) + " cr";
+        st.credits = startBal - Math.round(f * cost);
+        setChips();
+        if (step >= 8) { clearInterval(iv); done(); }
+      }, 90);
+      timers.push(iv);
+    });
+    dotsLine("handoff at the dead relay", "DONE", 5, 130);
+    typeLine("t-sys", "package inbound on the wire.", 16);
+
+    /* the reveal: glyph scramble, decelerating, lands on the rolled piece */
+    enq(function (done) {
+      var mask = rollPiece();
+      var card = el("div", "o-card o-reveal kp-frame-ticks");
+      card.appendChild(el("i", "kp-tick2"));
+      card.appendChild(el("span", "o-tag", "SIGNAL DROP"));
+      var cell = el("div", "o-cell");
+      card.appendChild(cell);
+      var rows = el("div", "o-rows");
+      card.appendChild(rows);
+      push(card);
+
+      function land() {
+        cell.textContent = "";
+        cell.appendChild(glyph(mask, 68));
+        cell.appendChild(el("i", "kp-scan-sweep"));
+        if (!REDUCED) {
+          card.classList.remove("o-landed");
+          void card.offsetWidth;
+          card.classList.add("o-landed");
+        }
+        var cls = shapeOf(mask);
+        rows.appendChild(datarow("SHAPE", NOUN[cls]));
+        rows.appendChild(datarow("ARMS", String(armCount(mask))));
+        rows.appendChild(datarow("GUARANTEE", "NONE"));
+        st.pouch.push(mask);
+        setChips();
+        if (cls === "X") {
+          push(el("p", "t-warn", "// JACKPOT _ A CROSS. FOUR ARMS. THREE IN A HUNDRED."));
+        }
+        done();
+      }
+
+      if (REDUCED) { land(); return; }
+      /* scramble: cycle masks with a growing interval, then land */
+      var cycle = [0x3, 0xa, 0x7, 0x9, 0x5, 0xe, 0x6, 0xd];
+      var beats = [70, 70, 70, 80, 90, 110, 130, 160, 200, 260];
+      var b = 0;
+      function tick() {
+        cell.textContent = "";
+        cell.appendChild(glyph(cycle[b % cycle.length], 68));
+        b++;
+        if (b < beats.length) { timers.push(setTimeout(tick, beats[b])); }
+        else { timers.push(setTimeout(land, 200)); }
+      }
+      tick();
+    });
+
+    var closers = [
+      "Told you. Never know what you're gonna get.",
+      "It is a good one. They are all good ones if you squint.",
+      "Solder it to something. It will not sort itself out."
+    ];
+    enq(function (done) {
+      var lastShape = shapeOf(st.pouch[st.pouch.length - 1]);
+      var text = lastShape === "X"
+        ? "A cross. Do not ask which machine gave that up."
+        : closers[(st.pouch.length + st.credits) % closers.length];
+      var n = line("t-ven");
+      if (REDUCED) { n.textContent = text; done(); return; }
+      var i = 0;
+      var iv = setInterval(function () {
+        i++;
+        n.textContent = text.slice(0, i);
+        if (i >= text.length) { clearInterval(iv); done(); }
+      }, 14);
+      timers.push(iv);
+    });
+    instant(function () { push(pouchStrip()); });
+  }
+
+  function cmdExit() {
+    live = false;
+    typeLine("t-sys", "keys burned. session never happened.", 18);
+    wait(300);
+    instant(function () {
+      gap();
+      push(el("p", "t-hero t-hero-dim", "NO CARRIER"));
+      promptEl.classList.add("dead");
+      setRoute("CLOSED", true);
+      setChips();
+    });
+  }
+
+  var EGGS = {
+    who: "Nobody. That is rather the point.",
+    whoami: "Whoever you want. That is also the point.",
+    refund: "Funny.",
+    haggle: null, /* price line, built at call time */
+    hello: "We are not friends. What do you want.",
+    hi: "We are not friends. What do you want."
+  };
+
+  function runCmd(raw) {
+    var cmd = raw.trim().toLowerCase();
+    if (!cmd) return;
+    history.unshift(raw);
+    histAt = -1;
+    instant(function () { line("t-you", "> " + raw); });
+    if (cmd === "help" || cmd === "?") cmdHelp();
+    else if (cmd === "list" || cmd === "ls" || cmd === "wares") cmdList();
+    else if (cmd === "buy" || cmd === "pull") cmdBuy();
+    else if (cmd === "bal" || cmd === "balance" || cmd === "credits") cmdBal();
+    else if (cmd === "pouch" || cmd === "bag" || cmd === "inv") cmdPouch();
+    else if (cmd === "exit" || cmd === "quit" || cmd === "logout") cmdExit();
+    else if (cmd === "haggle") typeLine("t-ven", "The price climbs by the day. Tonight it is " + price(st.day) + " cr. Tomorrow it is more.", 13);
+    else if (EGGS[cmd]) typeLine("t-ven", EGGS[cmd], 15);
+    else typeLine("t-dim", "no such trade. HELP lists what there is.", 14);
+  }
+
+  /* ---------- keyboard: the prompt is real ---------- */
+
+  document.addEventListener("keydown", function (e) {
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    if (!live || busy) return;
+    if (e.key === "Enter") {
+      e.preventDefault();
+      var v = buf;
+      buf = "";
+      input.textContent = "";
+      runCmd(v);
+    } else if (e.key === "Backspace") {
+      e.preventDefault();
+      buf = buf.slice(0, -1);
+      input.textContent = buf;
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      if (history.length) { histAt = Math.min(histAt + 1, history.length - 1); buf = history[histAt]; input.textContent = buf; }
+    } else if (e.key === "ArrowDown") {
+      e.preventDefault();
+      histAt = Math.max(histAt - 1, -1);
+      buf = histAt === -1 ? "" : history[histAt];
+      input.textContent = buf;
+    } else if (e.key.length === 1 && buf.length < 28) {
+      e.preventDefault();
+      buf += e.key;
+      input.textContent = buf;
+    }
+  });
+
+  /* clickable trades type themselves into the prompt, then run */
+  var TRADE_BTNS = ["HELP", "LIST", "BUY", "BAL", "POUCH", "EXIT"];
+  var cmds = document.getElementById("cmds");
+  TRADE_BTNS.forEach(function (name) {
+    var b = el("button", "", name);
+    b.type = "button";
+    b.addEventListener("click", function () {
+      if (!live || busy) return;
+      var word = name.toLowerCase();
+      buf = "";
+      input.textContent = "";
+      if (REDUCED) { runCmd(word); return; }
+      var i = 0;
+      busy = true;
+      setChips();
+      var iv = setInterval(function () {
+        i++;
+        input.textContent = word.slice(0, i);
+        if (i >= word.length) {
+          clearInterval(iv);
+          input.textContent = "";
+          busy = false;
+          runCmd(word);
+        }
+      }, 46);
+      timers.push(iv);
+    });
+    cmds.appendChild(b);
+  });
+
+  /* ---------- dial-in ---------- */
+
+  function connect() {
+    clearTimers();
+    q = [];
+    busy = false;
+    live = false;
+    buf = "";
+    input.textContent = "";
+    log.textContent = "";
+    promptEl.classList.remove("dead");
+    rngS = SEED;
+    var s = SCEN[scen];
+    st = { day: s.day, credits: s.credits, pouch: s.pouch.slice(), open: s.open };
+    vBal.textContent = "--";
+    vPouch.textContent = "--";
+    setRoute("DIALING", false);
+    setChips();
+    vBal.textContent = st.credits + " cr";
+    vPouch.textContent = st.pouch.length + "/" + POUCH_MAX;
+
+    typeLine("t-dim", "KP/OS TERM LINK 9.2 // UNREGISTERED CHANNEL", 8);
+    typeLine("t-you", "> dial darknet.lnk", 20);
+    typeLine("t-sys", "resolving name... no such address on record.", 14);
+    typeLine("t-sys", "trying anyway.", 22);
+    dotsLine("hop 1 // exchange node", "LINKED", 6, 100);
+
+    if (!st.open) {
+      dotsLine("hop 2 // dead relay", "dead air", 8, 150);
+      wait(250);
+      instant(function () {
+        gap();
+        push(el("p", "t-hero", "MARKET OFFLINE."));
+      });
+      typeLine("t-sys", "Signal only holds after the shop shuts. Trades resume at day close.", 14);
+      instant(function () {
+        setRoute("DEAD", true);
+        promptEl.classList.add("dead");
+      });
+      return;
+    }
+
+    dotsLine("hop 2 // dead relay", "LINKED", 5, 110);
+    dotsLine("hop 3 // [no record]", "LINKED", 4, 120);
+    typeLine("t-sys", "crypt: keys traded. names were not.", 14);
+    typeLine("t-sys", "carrier locked at 300 baud. it is enough.", 14);
+    instant(function () { setRoute("SCRAMBLED", false); });
+    wait(200);
+    instant(function () {
+      var ban = el("div", "banner" + (REDUCED ? "" : " banner-glitch"));
+      var mark = el("span", "banner-mark");
+      mark.appendChild(chevMark(5));
+      ban.appendChild(mark);
+      var col = el("div");
+      col.appendChild(el("div", "banner-word", "DARKNET"));
+      col.appendChild(el("span", "banner-tag", "SALVAGE EXCHANGE // NO NAMES ON FILE"));
+      ban.appendChild(col);
+      push(ban);
+    });
+    wait(260);
+    typeLine("t-ven", "Salvage off a hundred dead machines, sorted by nobody.", 14);
+    typeLine("t-dim", "type HELP for trades.", 18);
+    instant(function () { live = true; setChips(); });
+  }
+
+  promptEl.addEventListener("click", function () { /* focus is global; the tap just reads as "this is a prompt" */ });
+
+  /* ---------- rig ---------- */
+
+  var huerow = document.getElementById("huerow");
+  ["lavender", "magenta", "phosphor"].forEach(function (h, i) {
+    var b = el("button", i === 0 ? "rig-on" : "", h.toUpperCase());
+    b.addEventListener("click", function () {
+      huerow.querySelectorAll("button").forEach(function (x) { x.className = ""; });
+      b.className = "rig-on";
+      document.documentElement.dataset.hue = h;
+    });
+    huerow.appendChild(b);
+  });
+
+  var scenrow = document.getElementById("scenrow");
+  Object.keys(SCEN).forEach(function (name, i) {
+    var b = el("button", i === 0 ? "rig-on" : "", name);
+    b.addEventListener("click", function () {
+      scenrow.querySelectorAll("button").forEach(function (x) { x.className = ""; });
+      b.className = "rig-on";
+      scen = name;
+      connect();
+    });
+    scenrow.appendChild(b);
+  });
+  var rc = el("button", "", "RECONNECT");
+  rc.addEventListener("click", connect);
+  scenrow.appendChild(rc);
+
+  connect();
+})();
+</script>
+</body>
+</html>

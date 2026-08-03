@@ -39,3 +39,15 @@ to re-check against shipped code every cycle until it graduates or is
 proven still pending, not a status to leave untouched. See also
 [new-input-modality-not-automatic-teaching-gap](new_input_modality_not_automatic_teaching_gap.md)
 and [waiver-citations-die-silently-on-redesign](waiver_citations_die_silently_on_redesign.md).
+
+**Addendum (`ux-2026-07-31-loadout-eva`): a correct CONCLUSION can still cite
+the wrong EVIDENCE.** A `cuts` entry claimed `duel.tsx:785,937` taught both
+the placement cost and the sourcing facts of a paragraph being cut. The
+conclusion (safe to cut) was right, but the citation was half wrong: those
+two lines never mention sourcing at all, and only weakly cover "one per
+turn" via a non-touch-safe native `title`. The actual strongest evidence was
+one file away and uncited: `solder.tsx:30-33,490` renders the IDENTICAL
+sentence being cut, unconditionally, on every visit. Read every cited line
+number yourself and confirm it says what the proposal claims it says, even
+when you already agree with where the proposal is heading; a right answer
+built on a wrong citation is a gate that got lucky, not one that checked.

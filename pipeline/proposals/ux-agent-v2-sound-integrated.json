@@ -1,0 +1,207 @@
+{
+  "agent": "ux-agent",
+  "brief": "ui-integration-2026-07-29",
+  "cycle": "ux-2026-07-29-v2-sound",
+  "notes": "INTEGRATION RECORD, reconstructed by the Orchestrator. The ux-agent wrote this cycle to pipeline/proposals/ux-agent.json at 14:44 on 2026-07-29 (59 items); at 15:29 a parallel session's dadlog cycle (ux-2026-07-29-dadlog) replaced that file wholesale under the single-current-cycle house style, after the Orchestrator had read the full cycle and begun integrating but before the loremaster gate read it (gate returned BLOCKED, see pipeline/gates/loremaster-review.md). This record restores the cycle's integrated substance verbatim from the Orchestrator's pre-overwrite read: all 13 adds with exact params as now shipped in audio.ts, the retire and flag, and the three wiring specs as implemented. The 38 keep items are the pre-existing audio.ts palette unchanged (no retunes were proposed); the three music-brief items (desk-bed-v2-direction, dive-bed-v2-direction, finale-bed-v2-direction) were direction-only and are NOT reproduced here because their text was not captured before the overwrite; they remain un-integrated and can be re-requested from the ux-agent if wanted. House-style lesson for the crew: concurrent sessions clobber the single proposal file; when two cycles are live, the later writer must archive the earlier cycle rather than replace it.",
+  "identity": "One phosphor, one voice: the core square-wave voice does all routine chrome, arps jump in hard steps (never slides) to match steps() motion, noise-register cues are reserved for print/static/danger, and danger is loudness plus downward motion, never a second timbre family. Frequent cues (typing, log arrivals, hovers) sit at the bottom of the loudness ladder (vol <= 0.3, short decay); one-shot moments get punch.",
+  "items": [
+    {
+      "id": "inboxGrow",
+      "type": "sfx",
+      "action": "add",
+      "status": "integrated",
+      "name": "inboxGrow",
+      "params": { "wave": 0, "baseFreq": 0.22, "duty": 0.3, "arpMod": 0.4, "arpSpeed": 0.55, "sustain": 0.05, "decay": 0.13, "punch": 0.2, "hpfCutoff": 0.08, "volume": 0.3 },
+      "bus": "ui",
+      "callSite": { "file": "inbox.tsx", "event": "vertical phase: fires the instant the measured target height is written" },
+      "character": "a short, low, single upward chirp: the core voice with one clean pitch jump partway through the decay, no slide"
+    },
+    {
+      "id": "inboxWide",
+      "type": "sfx",
+      "action": "add",
+      "status": "integrated",
+      "name": "inboxWide",
+      "params": { "wave": 0, "baseFreq": 0.3, "duty": 0.16, "arpMod": 0.4, "arpSpeed": 0.68, "sustain": 0.04, "decay": 0.12, "punch": 0.2, "hpfCutoff": 0.1, "volume": 0.3 },
+      "bus": "ui",
+      "callSite": { "file": "inbox.tsx", "event": "the stage() that sets wide and calls onWide(true), 200ms after grow" },
+      "character": "a slightly higher, thinner companion chirp to inboxGrow: narrower duty reads thinner, an apt analog for the width axis; quicker arp onset reads snappier"
+    },
+    {
+      "id": "inboxGenie",
+      "type": "sfx",
+      "action": "add",
+      "status": "integrated",
+      "name": "inboxGenie",
+      "params": { "wave": 0, "baseFreq": 0.36, "duty": 0.22, "arpMod": 0.45, "arpSpeed": 0.6, "sustain": 0.07, "decay": 0.16, "punch": 0.4, "lpfCutoff": 0.65, "volume": 0.42 },
+      "bus": "ui",
+      "callSite": { "file": "inbox.tsx", "event": "the genie effect, right before wrap.classList.add('grow')" },
+      "character": "the richest of the three open beats: fuller punch and a softened lpf tail so it resolves cleanly before the card's own field typewriters really get going"
+    },
+    {
+      "id": "inboxFile",
+      "type": "sfx",
+      "action": "add",
+      "status": "integrated",
+      "name": "inboxFile",
+      "params": { "wave": 0, "baseFreq": 0.34, "duty": 0.22, "arpMod": -0.22, "arpSpeed": 0.55, "sustain": 0.05, "decay": 0.18, "punch": 0.2, "lpfCutoff": 0.6, "volume": 0.34 },
+      "bus": "ui",
+      "callSite": { "file": "inbox.tsx", "event": "the FILE AWAY branch, at setClosing(true)" },
+      "character": "the mirror of inboxGenie: a gentle downward jump rather than up, covering the whole shrink-into-row collapse in one breath rather than mirroring all three open beats individually"
+    },
+    {
+      "id": "teachIn",
+      "type": "sfx",
+      "action": "add",
+      "status": "integrated",
+      "name": "teachIn",
+      "params": { "wave": 2, "baseFreq": 0.42, "arpMod": 0.3, "arpSpeed": 0.5, "sustain": 0.04, "decay": 0.14, "punch": 0.15, "volume": 0.3 },
+      "bus": "ui",
+      "callSite": { "file": "teach.tsx", "event": "the showing effect; replaces sfx('icon')" },
+      "character": "a gentle two-part sine chime, soft register on purpose: teaching is supportive, never alarming, so this must never read like a warning"
+    },
+    {
+      "id": "ledgerTick",
+      "type": "sfx",
+      "action": "add",
+      "status": "integrated",
+      "name": "ledgerTick",
+      "params": { "wave": 3, "baseFreq": 0.75, "sustain": 0.008, "decay": 0.025, "punch": 0.15, "hpfCutoff": 0.55, "volume": 0.22 },
+      "bus": "ui",
+      "callSite": { "file": "audio.ts playLedgerPrint()", "event": "6 calls at 32ms spacing, rate jittered 0.9 to 1.2, mimicking print-head strikes" },
+      "character": "one dot-matrix print-head strike: thin, high-pass filtered noise, extremely short"
+    },
+    {
+      "id": "ledgerSettle",
+      "type": "sfx",
+      "action": "add",
+      "status": "integrated",
+      "name": "ledgerSettle",
+      "params": { "wave": 3, "baseFreq": 0.22, "sustain": 0.02, "decay": 0.12, "punch": 0.4, "lpfCutoff": 0.45, "volume": 0.4 },
+      "bus": "ui",
+      "callSite": { "file": "audio.ts playLedgerPrint()", "event": "once, 240ms after the first ledgerTick" },
+      "character": "the sheet dropping into the tray: lower and rounder than ledgerTick, a closing thunk rather than a strike"
+    },
+    {
+      "id": "darknetLinkUp",
+      "type": "sfx",
+      "action": "add",
+      "status": "integrated",
+      "name": "darknetLinkUp",
+      "params": { "wave": 3, "baseFreq": 0.35, "freqSlide": 0.18, "sustain": 0.05, "decay": 0.16, "hpfCutoff": 0.3, "vibDepth": 0.1, "vibSpeed": 0.45, "volume": 0.34 },
+      "bus": "ui",
+      "callSite": { "file": "darknet.tsx", "event": "useEffect on the open boolean: fires when the market comes online, including mounting straight into a live market" },
+      "character": "static resolving upward into a connection, a touch of wobble reading as uncertain-but-arriving rather than hostile (no phaser, no downward slide, so it never reads as the intrusion's own fingerprint)"
+    },
+    {
+      "id": "darknetLinkDown",
+      "type": "sfx",
+      "action": "add",
+      "status": "integrated",
+      "name": "darknetLinkDown",
+      "params": { "wave": 3, "baseFreq": 0.4, "freqSlide": -0.22, "sustain": 0.04, "decay": 0.14, "hpfCutoff": 0.3, "volume": 0.3 },
+      "bus": "ui",
+      "callSite": { "file": "darknet.tsx", "event": "same effect, open true to false; window close itself stays winClose's job" },
+      "character": "the mirror of darknetLinkUp: a clean downward cut, no vibrato, reading as final rather than uncertain"
+    },
+    {
+      "id": "busLogArrival",
+      "type": "sfx",
+      "action": "add",
+      "status": "integrated",
+      "name": "busLogArrival",
+      "params": { "wave": 2, "baseFreq": 0.5, "sustain": 0.006, "decay": 0.02, "volume": 0.14 },
+      "bus": "ui",
+      "callSite": { "file": "duel.tsx", "event": "the 4 staggered boot lines only: rate 1.0 tap-spliced, 1.15 CONNECT, 0.85 round divider, 1.05 bus-live; no other logLine site plays it" },
+      "character": "the quietest cue in the whole palette on purpose: a near-inaudible sine tick, a texture rather than an event"
+    },
+    {
+      "id": "hueSwap",
+      "type": "sfx",
+      "action": "add",
+      "status": "integrated",
+      "name": "hueSwap",
+      "params": { "wave": 0, "baseFreq": 0.4, "duty": 0.25, "arpMod": 0.5, "arpSpeed": 0.7, "sustain": 0.03, "decay": 0.1, "punch": 0.25, "volume": 0.34 },
+      "bus": "ui",
+      "callSite": { "file": "shop-os.tsx", "event": "the start menu HUE button onClick" },
+      "character": "a peppy, quick upward chirp: core voice, a bigger jump than the inbox axis cues, fitting a playful cosmetic toggle"
+    },
+    {
+      "id": "dayClose",
+      "type": "sfx",
+      "action": "add",
+      "status": "integrated",
+      "name": "dayClose",
+      "params": { "wave": 0, "baseFreq": 0.26, "duty": 0.18, "freqSlide": -0.08, "sustain": 0.06, "decay": 0.28, "punch": 0.4, "lpfCutoff": 0.45, "volume": 0.46 },
+      "bus": "ui",
+      "callSite": { "file": "night.tsx", "event": "CLOSE THE NIGHT onClick; replaces claimTick" },
+      "character": "a warm, weighty settle: core voice with a small downward slide and lpf warmth, reading as a mechanism sealing shut rather than a bright reward chime"
+    },
+    {
+      "id": "loadoutReady",
+      "type": "sfx",
+      "action": "add",
+      "status": "integrated",
+      "name": "loadoutReady",
+      "params": { "wave": 0, "baseFreq": 0.42, "duty": 0.18, "arpMod": 0.35, "arpSpeed": 0.55, "sustain": 0.05, "decay": 0.2, "punch": 0.3, "lpfCutoff": 0.6, "volume": 0.4 },
+      "bus": "ui",
+      "callSite": { "file": "loadout.tsx", "event": "the mount effect's 1800ms DIVE KIT READY snap" },
+      "character": "a clean 'systems nominal' resolve: core voice, one upward jump, shorter and less ornamented than granted so it never gets mistaken for an actual reward"
+    },
+    {
+      "id": "icon",
+      "type": "sfx",
+      "action": "retire",
+      "status": "integrated",
+      "name": "icon",
+      "bus": "ui",
+      "character": "a generic arpeggiated core-voice blip, previously the palette's catch-all",
+      "rationale": "orphaned by sound-window-voice-centralize (FloatingWindow's own winOpen/winClose now covers every window transition) and by teachIn (replaces its teach.tsx use). Definition kept in audio.ts as a plain generic click for any future surface; zero call sites remain."
+    },
+    {
+      "id": "strainCrack",
+      "type": "sfx",
+      "action": "flag",
+      "status": "acknowledged",
+      "name": "strainCrack",
+      "character": "a noise-register crack, zero call sites (predates this cycle), as does the legacy FxKind/playFx mapping",
+      "rationale": "left in place; housekeeping deferred by the Orchestrator"
+    },
+    {
+      "id": "sound-window-voice-centralize",
+      "type": "ui-spec",
+      "status": "integrated",
+      "area": "windows",
+      "spec": "A. FloatingWindow's mount effect gains an unmount cleanup playing winClose, so open/close are symmetric and centralized in wm.tsx (matching the existing winFocus pattern). B. shop-os closeWindow drops its explicit winClose. C. All 12 sfx('icon') chrome calls removed (4 in-screen redirects, 8 desktop icon handlers); the resulting mounts/unmounts/focus voice themselves via winOpen/winClose/winFocus. D. Previously silent chrome voiced: ABANDON taskbar button and KEEP DIVING get press; the ABANDON confirm gets turnLost at vol 0.6 on the ui bus (the dialog's own copy states it ends the run exactly like a loss); MUSIC toggle, SND toggle and start menu CLOSE get tick (the binary-toggle precedent); LOG OUT gets press. E. No dispatch, reducer, window content, size or position changes.",
+      "acceptance": [
+        "opening any currently-closed window from any entry point plays exactly one sound (winOpen), never two overlapping cues"
+      ]
+    },
+    {
+      "id": "duel-connect-boot-stagger",
+      "type": "ui-spec",
+      "status": "integrated",
+      "area": "duel",
+      "spec": "The 4 BUS.LOG boot lines (tap-spliced, per-device CONNECT, round-01 divider, bus-live) now arrive at 0/160/340/520ms via setTimeouts inside the same mount effect, each playing busLogArrival at its stated rate. Display cadence only: the board, program keys and RAM are interactive from t=0; no dispatch is delayed; reduced-motion timing unchanged (matching BUS.LOG's gameplay arrivals, which ignore that media query); no other logLine site changed.",
+      "acceptance": [
+        "on entering any dive the 4 boot lines arrive at approximately 0/160/340/520ms rather than in one render",
+        "the board is fully interactive from t=0 regardless of the stagger",
+        "each staggered arrival plays busLogArrival at the moment its line is appended",
+        "timing is identical with prefers-reduced-motion on or off",
+        "no other logLine call site changes in any way"
+      ]
+    },
+    {
+      "id": "ledger-print-reveal",
+      "type": "ui-spec",
+      "status": "integrated",
+      "area": "windows",
+      "spec": "LedgerContent gains a mount useEffect calling the new playLedgerPrint() composite in audio.ts (6 ledgerTick strikes at 32ms spacing, rate jittered 0.9 to 1.2, then ledgerSettle at 240ms; structured like playCascade). Visually paired: LedgerFoot's 64 dotmatrix cells get inline animationDelay i*4.5ms driving a steps(1) opacity pop (kp-dotmatrix-print / kp-dot-print), so the strip prints in sync. Replays on every window open (the window unmounts when closed): a fresh statement each visit. Under prefers-reduced-motion all 64 cells render immediately with no stagger; the sound still plays once (sound is not a motion concern).",
+      "acceptance": [
+        "opening LEDGER.LOG staggers its 64 dotmatrix cells in over roughly 300ms and plays playLedgerPrint at the same time",
+        "under prefers-reduced-motion all cells render immediately; the sound still plays once",
+        "every other LEDGER.LOG field is unchanged"
+      ]
+    }
+  ]
+}

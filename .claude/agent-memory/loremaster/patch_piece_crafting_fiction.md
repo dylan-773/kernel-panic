@@ -37,5 +37,18 @@ methodology: when a proposal claims a game-copy string is reused
 proposal's own notes, before approving on that basis (see
 [[feedback-verify-unchanged-claims]]).
 
+**A cut is fine if the fact survives verbatim elsewhere in the game, not
+just elsewhere in the proposal's prose.** `ux-2026-07-31-loadout-eva`
+(loadout-eva-instrument-panel) cut LOADOUT.CFG's full pouch paragraph,
+including the darknet-sourcing sentence ("Pieces come off the darknet,
+drop from cleared jobs, or bank on clean wins"), down to a chip plus the
+pointer sentence "CRAFT AT THE BENCH: SOLDER.BAY." Approved after
+confirming directly against source (not the proposal's claim) that
+`solder.tsx`'s `FOOT_LINE` carries the identical sentence verbatim: the
+fact isn't lost from the game, it's relocated to the window the cut chip
+points the player toward. The check that matters is "does this fact still
+exist verbatim somewhere the player can reach," not "does this specific
+window still say it."
+
 See also [[icon_fiction_native_vs_darknet]] for the icon-style side of
 this same gate.

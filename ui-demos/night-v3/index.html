@@ -1,0 +1,1557 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>KP demo: NIGHT.SYS (instrument panel)</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=VT323&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" />
+<link rel="stylesheet" href="../_shared/kp.css" />
+<link rel="stylesheet" href="../_shared/system.css" />
+<style>
+/* NIGHT.SYS rebuilt as a KP/OS v3 instrument panel
+ * (cycle ux-2026-07-31-night-v3, spec item night-v3-instrument-panel).
+ *
+ * This is the LOW DENSITY proof. RULINGS.md law 11 calls NIGHT.SYS out by
+ * name: "small surface; a candidate for proving the system at low density."
+ * LOADOUT.CFG showed the system can organise eleven blocks. This surface has
+ * six, and its failure mode is the opposite one: padding. Every law below is
+ * answered by ARRANGEMENT, never by adding material to fill the panel.
+ *
+ * The central structural move: the shipped surface is seven stacked blocks
+ * (header, regen band, 4-tile grid, three full-width shop rows, footer). Here
+ * it is FOUR grid rows, each sharing its zones, per law 8's closing lesson
+ * that a row you do not share is a row you pay for in full:
+ *
+ *   Z1 TOP STRIP   day marker (demoted) + strain readout, one row
+ *   Z2 PICK ROW    the focal hero card + the compact option strip, one row
+ *   Z3 SHOP ROW    all three purchases three-up, one row
+ *   Z4 FOOTER      pointer line + CLOSE THE NIGHT
+ *
+ * GLANCE ORDER (law 2), stated and then enforced by the type scale:
+ *   1st  THE PICK, at --nt-fs-hero. The only thing here the player must ACT
+ *        on, permanent for the run, and the thing blocking the exit.
+ *   2nd  STRAIN, at --nt-fs-strain. The run's life, and what the night's
+ *        purchases exist to defend. A readout, nudged indirectly, so it is
+ *        loud but never focal.
+ *   3rd  the shop row.
+ *   ambient  the DAY marker (rejected as focal: pure state, no decision
+ *        attached), the footer pointer line, all chrome.
+ *
+ * Measured ratio hero:strain is ~2.2x at all three supported viewports, above
+ * law 2's 2x floor. See the rig's live HEIGHT readout for the law 3 budget.
+ */
+
+/* ---------- ROLE TOKENS: colour as state, not decoration ----------
+ * Copied verbatim from loadout-eva/index.html per RULINGS law 9 step 1.
+ * :root collapses every role back onto the single v2 accent, so a surface
+ * with no data-scheme renders exactly as v2 did; only data-scheme pulls them
+ * apart. That reversibility is the point and is kept intact here.
+ *
+ * Owners on THIS surface (law 1 requires every role assigned or explicitly
+ * unowned; giving a role a job just to use it is the thing to avoid):
+ *   struct  card hairlines, meter track, unfilled pips, disabled outlines
+ *   note    names only: eyebrow, STRAIN, hero pname, shape nouns, cr suffix
+ *   line    live values: strain in the neutral band, filled pips, cost numerals
+ *   data    hot values: the hero glyph (focal), plus the CREDITS balance on
+ *           the shop divider (revision 2026-08-01; was the hero alone)
+ *   ok      selected/armed/nominal: SELECTED, the reticle, +N STRAIN, CLOSE,
+ *           and the 1px live-control outline (revision 2026-08-01)
+ *   warn    RISK ONLY: the strain readout at or below 35. Nothing else, ever.
+ *   aux     UNOWNED. This surface carries no imagery; see NOTES.md.
+ *   hazard  structural red: window edge, hero brackets, the shop divider
+ */
+:root {
+  --r-struct: var(--ch-dim);
+  --r-line: var(--ch);
+  --r-data: var(--ch-hot);
+  --r-ok: var(--ch);
+  --r-warn: var(--ch);
+  --r-aux: var(--ch);
+  --r-hazard: var(--ch);
+  --r-note: var(--ch-dim);
+  --r-ok-glow: var(--px-glow);
+  --r-warn-glow: var(--px-glow);
+}
+
+:root[data-scheme="nerv"] {
+  --px-void: #0a0603;
+  --ch: #ff9a1f;
+  --ch2: #c2431a;
+  --ch-hot: #ffe9c4;
+  --r-struct: #a86a22;
+  --r-line: #ff9a1f;
+  --r-data: #ffe9c4;
+  --r-ok: #8dff3a;
+  --r-warn: #ff2a17;
+  --r-aux: #23d3ff;
+  --r-hazard: #d1381a;
+  --r-note: #6ea8ff;
+  --r-ok-glow: color-mix(in srgb, #8dff3a 45%, transparent);
+  --r-warn-glow: color-mix(in srgb, #ff2a17 60%, transparent);
+}
+
+:root[data-scheme="tokyo"] {
+  --px-void: #16161e;
+  --ch: #7aa2f7;
+  --ch2: #414868;
+  --ch-hot: #c0caf5;
+  --r-struct: #414868;
+  --r-line: #7aa2f7;
+  --r-data: #c0caf5;
+  --r-ok: #9ece6a;
+  --r-warn: #f7768e;
+  --r-aux: #7dcfff;
+  --r-hazard: #ff9e64;
+  --r-note: #bb9af7;
+  --r-ok-glow: color-mix(in srgb, #9ece6a 45%, transparent);
+  --r-warn-glow: color-mix(in srgb, #f7768e 55%, transparent);
+}
+
+body {
+  overflow: auto;
+  display: block;
+  height: auto;
+  min-height: 100%;
+  padding: 26px 16px 40px;
+}
+
+/* ---------- the viewport rig: a real-resolution stage, scaled to fit ----------
+ * Copied from loadout-eva. The stage is laid out at TRUE pixel size and then
+ * transform-scaled to fit the browser. Transforms do not change layout size,
+ * so container queries inside still resolve against the real window width:
+ * what you see at 47% is what a 2560x1080 desk renders. */
+
+.nt-fit { transform-origin: top left; }
+.nt-fitwrap { margin: 0 auto; }
+
+.nt-stage {
+  position: relative;
+  overflow: hidden;
+  background: var(--px-void);
+  border: 1px solid var(--ch-faint);
+}
+.nt-warp { position: absolute; inset: 0; display: flex; flex-direction: column; }
+
+.nt-desk {
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-conic-gradient(color-mix(in srgb, var(--ch) 4%, transparent) 0% 25%, transparent 0% 50%),
+    radial-gradient(120% 90% at 50% 0%, color-mix(in srgb, var(--ch) 5%, transparent), transparent 70%);
+  background-size: 8px 8px, auto;
+}
+
+.nt-deskwrap {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 22px 0 0;
+  min-height: 0;
+}
+
+/* the leftover desk, drawn: the footprint fix made literal */
+.nt-free {
+  position: absolute;
+  top: 30px;
+  bottom: 14px;
+  border: 2px dashed var(--ch-faint);
+  opacity: 0.5;
+  display: flex;
+  align-items: flex-end;
+  padding: 6px 8px;
+  pointer-events: none;
+}
+.nt-free span {
+  font-family: var(--kp-display);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: var(--ch-faint);
+}
+.nt-free span::before { content: "// "; }
+
+.nt-stage-bar {
+  height: 44px;
+  flex: none;
+  position: relative;
+  background: var(--ch);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+}
+.nt-stage-bar span {
+  font-family: var(--kp-display);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: var(--px-void);
+}
+.nt-stage-bar i { display: block; width: 10px; height: 10px; background: var(--px-void); opacity: 0.55; }
+.nt-stage-bar .nt-bar-sp { flex: 1; background: none; opacity: 1; }
+
+/* ---------- the tube (law 6): six glass layers, copied verbatim ----------
+ * FLAT and OFF only. CURVED is not rebuilt: it was built, measured and cut on
+ * the reference build (it read the same as flat, bowed the taskbar, and cost
+ * every sub-second animation on the stage). OFF removes every layer outright
+ * rather than fading them, and this surface must still read as a finished
+ * flat-ink print, because none of its richness lives in the CRT layer. */
+
+.nt-stage.crt-on { border-radius: 18px; }
+.nt-stage.crt-on .nt-glass {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 40;
+  border-radius: 16px / 20px;
+  overflow: hidden;
+}
+.nt-glass > i { position: absolute; inset: 0; display: block; }
+
+/* 1. phosphor lines: a bright line and a dark gap, not a faint tint */
+.nt-glass .g-scan {
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.55) 0 1px,
+    rgba(0, 0, 0, 0.12) 1px 2px,
+    rgba(255, 255, 255, 0.03) 2px 3px);
+  mix-blend-mode: multiply;
+  opacity: 0.85;
+}
+/* 2. aperture grille, vertical triads */
+.nt-glass .g-mask {
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(255, 0, 0, 0.05) 0 1px,
+    rgba(0, 255, 0, 0.05) 1px 2px,
+    rgba(0, 0, 255, 0.05) 2px 3px);
+  mix-blend-mode: screen;
+  opacity: 0.7;
+}
+/* 3. bloom off the phosphor, tinted to the live ink */
+.nt-glass .g-bloom {
+  background: radial-gradient(130% 95% at 50% 42%, var(--px-glow) 0%, transparent 62%);
+  opacity: 0.14;
+  mix-blend-mode: screen;
+}
+/* 4. specular: the room reflected in the glass */
+.nt-glass .g-spec {
+  background:
+    radial-gradient(58% 42% at 26% 14%, rgba(255, 255, 255, 0.11) 0%, transparent 70%),
+    linear-gradient(163deg, rgba(255, 255, 255, 0.055) 0%, transparent 34%);
+  mix-blend-mode: screen;
+}
+/* 5. tube falloff: corners sit furthest from the gun */
+.nt-glass .g-vig {
+  background:
+    radial-gradient(102% 86% at 50% 48%, transparent 52%, rgba(0, 0, 0, 0.55) 82%, rgba(0, 0, 0, 0.92) 100%);
+  box-shadow:
+    inset 0 0 46px 12px rgba(0, 0, 0, 0.75),
+    inset 0 0 130px 40px rgba(0, 0, 0, 0.45);
+}
+/* 6. the bezel lip: moulded plastic catching light. border-radius stays
+ *    banned on UI chrome and is used only here, on hardware. */
+.nt-glass .g-bezel {
+  border-radius: 16px / 20px;
+  box-shadow:
+    inset 0 0 0 3px rgba(0, 0, 0, 0.9),
+    inset 0 2px 2px 3px rgba(255, 255, 255, 0.07),
+    inset 0 -3px 3px 3px rgba(0, 0, 0, 0.6);
+}
+
+/* ---------- the window frame ---------- */
+
+.term {
+  width: var(--nt-win, 860px);
+  flex: none;
+  border: 3px solid var(--r-hazard);
+  background: var(--px-void);
+  position: relative;
+  z-index: 5;
+  filter:
+    drop-shadow(9px 9px 0 rgba(0, 0, 0, 0.8))
+    drop-shadow(0 0 26px color-mix(in srgb, var(--ch) 25%, transparent));
+}
+
+.term-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--ch);
+  padding: 7px 12px 7px 14px;
+}
+.term-bar h1 {
+  font-family: var(--kp-display);
+  font-size: 13px;
+  letter-spacing: 0.16em;
+  color: var(--px-void);
+  font-weight: 400;
+}
+.term-glyphs { display: flex; gap: 7px; align-items: center; }
+.term-glyphs i { display: block; background: var(--px-void); }
+.term-glyphs i:nth-child(1) { width: 11px; height: 3px; margin-top: 9px; }
+.term-glyphs i:nth-child(2) { width: 11px; height: 11px; background: transparent; border: 3px solid var(--px-void); }
+.term-glyphs i:nth-child(3) { width: 11px; height: 11px; }
+
+.term-body { position: relative; padding: 12px 14px; }
+.term-body::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: repeating-conic-gradient(color-mix(in srgb, var(--ch) 5%, transparent) 0% 25%, transparent 0% 50%);
+  background-size: 4px 4px;
+}
+.term-body > * { position: relative; }
+
+/* ---------- the container that drives everything (law 3) ---------- */
+
+.nt-eva { container-type: inline-size; container-name: nt; }
+
+.nt-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 1fr;
+  grid-template-areas: "top" "hero" "strip" "shop" "foot";
+  /* the fluid ramp. cqi, never vw: a tiled window scales to its own tile.
+   * NOTE: cqi in a custom property resolves at the USE SITE. --nt-fs-hero is
+   * declared here but only ever USED inside .nt-hero, which is its own
+   * container, so it resolves against the hero card's width (~416 to 521px
+   * across the three supported viewports) rather than the window's. That is
+   * deliberate, not a bug: it is what keeps the glyph inside its card. */
+  --nt-fs-body: clamp(19px, calc(1cqi + 17px), 21px);
+  --nt-fs-label: clamp(9px, calc(0.6cqi + 8px), 11px);
+  --nt-fs-pill: clamp(10px, calc(0.6cqi + 9px), 12px);
+  --nt-fs-slab: clamp(18px, 2.4cqi, 24px);
+  --nt-fs-strain: clamp(22px, 3.2cqi, 30px);
+  --nt-fs-tickl: clamp(8px, calc(0.4cqi + 7.5px), 9px);
+  /* THE FOCAL TOKEN. Measured against the hero card's CONTENT box (cqi is the
+   * content box, not the border box), which is where this one resolves: 447px
+   * at 16:9, 494px at 21:9, 392px on the laptop. 13.5% of those lands 60/67/53
+   * against a 26/29/23px strain readout, so the ratio holds at ~2.3x on every
+   * supported viewport, above law 2's 2x floor. */
+  --nt-fs-hero: clamp(48px, 13.5cqi, 82px);
+}
+
+/* ================= Z1 TOP STRIP: day marker + strain, one row ============ */
+
+.nt-top {
+  grid-area: top;
+  border: 3px solid var(--ch-dim);
+  background: color-mix(in srgb, var(--ch) 4%, var(--px-void));
+  padding: 7px 11px 8px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 8px 18px;
+}
+.nt-mast-l { display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1 1 300px; }
+.nt-eyebrow {
+  font-family: var(--kp-display);
+  font-size: var(--nt-fs-label);
+  letter-spacing: 0.18em;
+  color: var(--r-note);
+}
+/* THE DEMOTED DAY MARKER. Rejected as the focal element: it is pure state
+ * with no decision attached, a chapter marker read once per night. It takes
+ * NO role token (not --r-data, which is reserved for the hero glyph alone)
+ * and renders in plain ambient ink, so it signals its demotion by treatment
+ * as well as by size. */
+.nt-slab {
+  font-family: var(--kp-display);
+  font-size: var(--nt-fs-slab);
+  line-height: 1;
+  letter-spacing: 0.04em;
+  color: var(--ch);
+}
+.nt-slab b { font-weight: 400; color: var(--ch-hot); }
+.nt-line {
+  font-family: var(--kp-term);
+  font-size: var(--nt-fs-body);
+  line-height: 1.15;
+  color: var(--ch-dim);
+}
+
+/* strain: 2nd in the glance order. Loud, never focal. */
+.nt-strainzone { display: flex; flex-direction: column; gap: 4px; flex: 0 1 auto; min-width: 0; }
+.nt-strainhead { display: flex; align-items: baseline; gap: 9px; }
+.nt-strainlabel {
+  font-family: var(--kp-display);
+  font-size: var(--nt-fs-label);
+  letter-spacing: 0.2em;
+  color: var(--r-note);
+}
+/* the regen pop keeps its room whether or not it fires, so the silent branch
+ * (lastRegen 0) occupies the identical footprint: law 4 applied to a beat
+ * that sometimes does not happen */
+.nt-pop {
+  font-style: normal;
+  font-family: var(--kp-display);
+  font-size: var(--nt-fs-tickl);
+  letter-spacing: 0.14em;
+  color: var(--r-ok);
+  min-width: 84px;
+  visibility: hidden;
+}
+.nt-pop.on { visibility: visible; }
+
+.nt-strainrow { display: flex; align-items: center; gap: 10px; }
+/* line-height must be >= 1 here, not the 0.9 crush the reference uses at its
+ * larger size. Silkscreen's glyph box at 26px is 29px tall; against a 0.9 line
+ * box the digits overflowed the padding box, so the RISK band's inverse-video
+ * flood painted only a red slab with the digits hanging outside it, dark on
+ * dark. Channel 2 of the alarm has to actually cover its own number.
+ * font-weight stays 400: the <b> was pulling Silkscreen Bold, which mushes
+ * into the phosphor scanlines at this size. */
+.nt-strainnum {
+  position: relative;
+  font-family: var(--kp-display);
+  font-size: var(--nt-fs-strain);
+  font-weight: 400;
+  line-height: 1.15;
+  padding: 3px 7px;
+  color: var(--r-data);
+  text-shadow: 0 0 16px var(--px-glow);
+  font-variant-numeric: tabular-nums;
+  min-width: 3.4ch;
+  text-align: right;
+}
+.nt-strainnum b { font-weight: 400; }
+.nt-strainbar { position: relative; display: flex; gap: 2px; width: 264px; height: 18px; flex: none; }
+.nt-strainbar i { flex: 1; background: var(--ch-faint); }
+.nt-strainbar i.on { background: var(--r-line); box-shadow: 0 0 6px var(--px-glow); }
+
+/* NOMINAL band, above 70 */
+.nt-strain-ok .nt-strainnum { color: var(--r-ok); text-shadow: 0 0 16px var(--r-ok-glow); }
+.nt-strain-ok .nt-strainbar i.on { background: var(--r-ok); box-shadow: 0 0 6px var(--r-ok-glow); }
+
+/* RISK band, at or below 35. Note the POLARITY: strain counts DOWN as the run
+ * wears, so risk is the LOW end of the meter, the inverse of the usual
+ * "fuller is worse" read. Channel 1 is colour (a hotter, purer red than the
+ * ambient --r-hazard chrome). Channel 2 is the inverse-video flood below,
+ * which is the shipped danger idiom, is the constant state under the alarm,
+ * and survives a colourblind reader and the CRT layer alike. */
+.nt-strain-low .nt-strainnum { background: var(--r-warn); color: var(--px-void); text-shadow: none; }
+.nt-strain-low .nt-strainbar i.on { background: var(--r-warn); box-shadow: 0 0 6px var(--r-warn-glow); }
+.nt-strain-low .nt-strainlabel { color: var(--r-warn); }
+
+/* Channel 3, MOTION, and why it is built this way.
+ * Animating background/box-shadow works and costs 50ms p95 inside the glass,
+ * because every paint there re-runs the stage's filters. An opacity animation
+ * on a promoted layer goes to the compositor instead and measured 9.3ms p95
+ * on the reference build. So the inverse flip is COMPOSITED, not painted: a
+ * difference-blend plate over the readout fading in and out on the shipped
+ * 1.2s steps(2) cadence. Ambient chrome (window edge, hero brackets, shop
+ * divider) NEVER animates, and that asymmetry is the entire mechanism. */
+.nt-riskflash {
+  position: absolute;
+  inset: -2px;
+  background: var(--r-warn);
+  mix-blend-mode: difference;
+  opacity: 0;
+  pointer-events: none;
+  will-change: opacity;
+}
+/* steps(1), NOT steps(2), and three stops rather than two.
+ * The reference build's cadence is `steps(2)` over `0%,100%{opacity:0}
+ * 50%{opacity:1}`, which does NOT produce a square wave: steps(2) subdivides
+ * each keyframe interval, so the plate spends half its cycle at opacity 0.5.
+ * That is precisely the value at which a difference plate destroys the
+ * readout, because 0.5*|plate - backdrop| + 0.5*backdrop maps BOTH the red
+ * flood (255,42,23) and the void digits (10,6,3) to the same (127,21,11):
+ * the alarm renders as a featureless red slab with its number gone, half the
+ * time. steps(1) across three stops holds 0 for 600ms then 1 for 600ms, a
+ * true two-state flip, which is what "inverse-blink, not a hue" means.
+ * Worth carrying back to loadout-eva at integration; see NOTES.md. */
+.nt-strain-low .nt-riskflash { animation: nt-risk-blink 1.2s steps(1) infinite; }
+@keyframes nt-risk-blink { 0% { opacity: 0; } 50% { opacity: 1; } 100% { opacity: 0; } }
+
+/* ================= Z2 PICK ROW: the focal zone ========================== */
+
+/* THE FOCAL PANEL. Hairline border carrying heavy corner brackets, scoped to
+ * this ONE panel: applying them everywhere destroys the emphasis they exist
+ * to create (law 4). */
+.nt-hero {
+  grid-area: hero;
+  container-type: inline-size;
+  container-name: nthero;
+  position: relative;
+  border: 1px solid var(--r-struct);
+  background: color-mix(in srgb, var(--ch) 3%, var(--px-void));
+  padding: 13px 14px 12px;
+  min-width: 0;
+  min-height: 186px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.nt-hero.is-empty { border-style: dashed; }
+
+.nt-bracket, .nt-bracket > i { position: absolute; pointer-events: none; }
+.nt-bracket { inset: -1px; }
+.nt-bracket > i { inset: 0; }
+.nt-bracket::before, .nt-bracket::after,
+.nt-bracket > i::before, .nt-bracket > i::after {
+  content: "";
+  position: absolute;
+  width: 24px;
+  height: 24px;
+}
+.nt-bracket::before { top: 0; left: 0; border-top: 4px solid var(--r-hazard); border-left: 4px solid var(--r-hazard); }
+.nt-bracket::after { top: 0; right: 0; border-top: 4px solid var(--r-hazard); border-right: 4px solid var(--r-hazard); }
+.nt-bracket > i::before { bottom: 0; left: 0; border-bottom: 4px solid var(--r-hazard); border-left: 4px solid var(--r-hazard); }
+.nt-bracket > i::after { bottom: 0; right: 0; border-bottom: 4px solid var(--r-hazard); border-right: 4px solid var(--r-hazard); }
+
+/* the reticle: the house idiom for an active option, inset from the hazard
+ * brackets so the two corner treatments never collide. The outer 24px/4px
+ * hazard brackets say "this is the focal panel" and are always present; this
+ * inner 8px/2px ok reticle says "this option is selected" and appears only
+ * once a pick exists. A second channel on top of the SELECTED stamp. */
+.nt-hero.is-picked .nt-reticle::before,
+.nt-hero.is-picked .nt-reticle::after {
+  content: "";
+  position: absolute;
+  width: 8px;
+  height: 8px;
+}
+.nt-reticle { position: absolute; inset: 7px; pointer-events: none; }
+.nt-hero.is-picked .nt-reticle::before { top: 0; left: 0; border-top: 2px solid var(--r-ok); border-left: 2px solid var(--r-ok); }
+.nt-hero.is-picked .nt-reticle::after { bottom: 0; right: 0; border-bottom: 2px solid var(--r-ok); border-right: 2px solid var(--r-ok); }
+
+.nt-pname {
+  font-family: var(--kp-display);
+  font-size: var(--nt-fs-label);
+  letter-spacing: 0.16em;
+  color: var(--r-note);
+  min-height: 1.2em;
+}
+.nt-heroline { display: flex; align-items: flex-end; gap: 10px; min-width: 0; }
+/* the FOCAL use of --r-data. Since the 2026-08-01 revision the role has one
+ * other, smaller owner (the CREDITS balance); the hero stays the largest
+ * text on the surface by measurement, not assertion. */
+.nt-num {
+  font-family: var(--kp-display);
+  font-size: var(--nt-fs-hero);
+  line-height: 0.82;
+  color: var(--r-data);
+  text-shadow: 0 0 22px var(--px-glow);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.nt-hero.is-empty .nt-num { color: var(--ch-faint); text-shadow: none; }
+.nt-stamp {
+  font-style: normal;
+  font-family: var(--kp-display);
+  font-size: var(--nt-fs-tickl);
+  letter-spacing: 0.16em;
+  color: var(--px-void);
+  background: var(--r-ok);
+  padding: 4px 6px;
+  margin-bottom: 5px;
+  white-space: nowrap;
+}
+.nt-detail {
+  font-family: var(--kp-term);
+  font-size: var(--nt-fs-body);
+  line-height: 1.06;
+  color: var(--ch);
+  min-height: 2.12em;
+  margin-top: auto;
+}
+
+/* the option strip: every option that is not in the hero slot */
+.nt-strip { grid-area: strip; display: flex; flex-direction: column; gap: 6px; align-content: start; min-width: 0; }
+.nt-opt {
+  position: relative;
+  text-align: left;
+  font-family: var(--kp-display);
+  font-size: var(--nt-fs-pill);
+  letter-spacing: 0.1em;
+  line-height: 1.25;
+  padding: 9px 10px;
+  background: transparent;
+  color: var(--ch);
+  border: 2px solid var(--r-struct);
+  min-height: 36px;
+}
+/* CLICKABLE-CONTROL AFFORDANCE (revision 2026-08-01, review feedback: "I'm
+ * not sure that the buttons to select a tier upgrade are easily discerned as
+ * buttons"). The reviewer gave the same note on another panel and asked for
+ * green or blue outlines, so this is the shared cross-panel treatment: every
+ * LIVE control carries a visible 1px --r-ok outline, offset outside its
+ * chrome, on top of the existing idioms (inverse-video hover flood, the
+ * translate press state, the corner-tick reticle on the ACTIVE option).
+ * Disabled controls keep their dashed --r-struct family chrome and take no
+ * outline, so affordable/live vs capped/unaffordable is readable at a glance
+ * without reaching for --r-warn. Outlines do not participate in layout, so
+ * the equal-footprint law is untouched. --r-ok already owns selected/armed
+ * on this surface; "live control" is the same signal class: press me. */
+.nt-opt:not(:disabled) { outline: 1px solid var(--r-ok); outline-offset: 2px; cursor: pointer; }
+.nt-opt:hover:not(:disabled) { background: var(--ch); color: var(--px-void); border-color: var(--ch); }
+.nt-opt:active:not(:disabled) { transform: translate(1px, 1px); }
+/* MAXED options take --r-struct, never --r-warn: nobody reaches for red twice */
+.nt-opt:disabled { border-style: dashed; color: var(--ch-faint); border-color: var(--ch-faint); cursor: not-allowed; }
+.nt-opt.nt-flash { animation: nt-opt-flash 140ms steps(2); }
+@keyframes nt-opt-flash { 50% { border-color: var(--ch); color: var(--ch-hot); } }
+
+/* ================= Z3 SHOP ROW: three purchases, one row ================= */
+
+.nt-shop { grid-area: shop; display: flex; flex-direction: column; gap: 9px; min-width: 0; }
+
+.nt-div { display: flex; align-items: center; gap: 9px; }
+.nt-div i { flex: 1; height: 8px; background: repeating-linear-gradient(45deg, var(--r-hazard) 0 3px, transparent 3px 7px); }
+.nt-div span {
+  font-family: var(--kp-display);
+  font-size: var(--nt-fs-label);
+  letter-spacing: 0.2em;
+  color: var(--ch-dim);
+  flex: none;
+}
+
+/* THE CREDITS BALANCE (revision 2026-08-01, review feedback: "I would prefer
+ * if your CR balance was made very apparent toward the area where you can
+ * spend it"). The one number every shop decision is judged against rides the
+ * spend zone's own header, anchoring the right end of the // NIGHT SHOP
+ * divider, so the balance and the three costs it gates share a single glance
+ * and the player never leaves the zone to find it. It re-renders on every
+ * purchase, so it visibly drains as you buy.
+ *
+ * This revises two of this study's original decisions, both recorded in
+ * NOTES.md: --r-data gains a second owner (it was "the hero glyph alone"),
+ * and un-added item 1 ("no CREDITS chip") is overturned by review. Size is
+ * --nt-fs-slab, the DAY marker's step: prominent, but below STRAIN and less
+ * than half the hero, so it supports the decision without becoming a second
+ * hero. NOTE the selectors: `.nt-div span` above outranks a lone class, so
+ * the children are styled at two-class specificity. font-weight stays 400 on
+ * the <b>: Silkscreen Bold mushes into the scanlines (see the strain note). */
+.nt-crbal {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  flex: none;
+  border: 1px solid var(--r-struct);
+  background: color-mix(in srgb, var(--ch) 4%, var(--px-void));
+  padding: 3px 9px 4px;
+}
+.nt-div .nt-crlab { font-size: var(--nt-fs-label); letter-spacing: 0.18em; color: var(--r-note); }
+.nt-crbal b {
+  font-family: var(--kp-display);
+  font-weight: 400;
+  font-size: var(--nt-fs-slab);
+  line-height: 1;
+  color: var(--r-data);
+  text-shadow: 0 0 14px var(--px-glow);
+  font-variant-numeric: tabular-nums;
+  min-width: 3ch;
+  text-align: right;
+}
+.nt-div .nt-crunit { font-size: var(--nt-fs-label); letter-spacing: 0.08em; color: var(--r-note); }
+
+.nt-shopgrid { display: grid; gap: 9px; grid-template-columns: 1fr; }
+.nt-cell {
+  border: 2px solid var(--ch-dim);
+  background: color-mix(in srgb, var(--ch) 3%, var(--px-void));
+  padding: 8px 9px 9px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+/* min-height reserves TWO lines of label whether or not this button's label
+ * needs them. Without it, "INSTALL BOOST BAY (150 cr)" wraps to two lines and
+ * "INSTALL BOOST BAY (MAX)" does not, which made a late-run capped night 16px
+ * shorter than an early-run live one: the window would jump between visits.
+ * Law 4's equal-footprint rule reaches control labels, not just empty slots. */
+.nt-buy {
+  font-family: var(--kp-display);
+  font-size: var(--nt-fs-pill);
+  letter-spacing: 0.08em;
+  line-height: 1.3;
+  text-align: left;
+  padding: 8px 9px;
+  background: transparent;
+  color: var(--ch);
+  border: 2px solid var(--ch-dim);
+  /* box-sizing is border-box here, so the reserve has to carry the 16px of
+   * padding and 4px of border as well as the two 1.3em lines.
+   * Deliberately NOT display:flex. Flexing this button to centre the label
+   * promotes its text nodes and its amount/unit spans to flex items, which
+   * drops the whitespace-only nodes between them: "300 cr" rendered "300CR"
+   * and the label broke across the box. It stays a block. */
+  display: block;
+  min-height: calc(2.6em + 20px);
+}
+/* the live-control outline, same rule as the pick strip: one idiom, learned
+ * once, true everywhere on the surface */
+.nt-buy:not(:disabled) { outline: 1px solid var(--r-ok); outline-offset: 2px; cursor: pointer; }
+.nt-buy:hover:not(:disabled) { background: var(--ch); color: var(--px-void); border-color: var(--ch); }
+.nt-buy:active:not(:disabled) { transform: translate(1px, 1px); }
+/* unaffordable and capped states take --r-struct, never --r-warn */
+.nt-buy:disabled { border-style: dashed; color: var(--ch-faint); border-color: var(--ch-faint); cursor: not-allowed; }
+.nt-buy .cr { color: var(--r-note); }
+.nt-buy .amt { color: var(--r-line); }
+.nt-buy:hover:not(:disabled) .cr, .nt-buy:hover:not(:disabled) .amt { color: var(--px-void); }
+.nt-buy:disabled .cr, .nt-buy:disabled .amt { color: var(--ch-faint); }
+
+/* the shop row is deliberately ambient: its status sentences stay plain dim
+ * text with no per-token colour splitting (see NOTES.md, un-added item 4) */
+.nt-status {
+  font-family: var(--kp-term);
+  font-size: var(--nt-fs-body);
+  line-height: 1.08;
+  color: var(--ch-dim);
+  min-height: 2.16em;
+}
+.nt-aux { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: auto; min-height: 34px; }
+
+/* the pouch rack: equal-footprint holes so a 1-piece pouch and a 5-piece
+ * pouch occupy the same room (law 4) */
+.nt-rack { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.nt-rack > span { display: flex; flex-direction: column; align-items: center; gap: 1px; }
+.nt-rack > span > span {
+  font-family: var(--kp-display);
+  font-size: var(--nt-fs-tickl);
+  letter-spacing: 0.06em;
+  color: var(--r-note);
+}
+.nt-hole { width: 26px; height: 26px; border: 2px dashed var(--ch-faint); display: block; }
+.nt-rack .nt-hole + span { visibility: hidden; }
+
+/* ================= Z4 FOOTER =========================================== */
+
+.nt-foot {
+  grid-area: foot;
+  border: 2px solid var(--ch-faint);
+  padding: 7px 10px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.nt-pointer {
+  font-family: var(--kp-term);
+  font-size: var(--nt-fs-body);
+  line-height: 1.1;
+  color: var(--ch-dim);
+  min-width: 0;
+}
+/* CLOSE THE NIGHT: --r-ok owns the ARMED state, --r-struct the locked one.
+ * The lock is the third of the pick state machine's three guarantees. */
+.nt-close {
+  font-family: var(--kp-display);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  padding: 11px 18px;
+  border: 2px solid var(--ch-faint);
+  background: transparent;
+  color: var(--ch-faint);
+  flex: none;
+  cursor: not-allowed;
+}
+.nt-close.is-armed {
+  background: var(--r-ok);
+  border-color: var(--r-ok);
+  color: var(--px-void);
+  cursor: pointer;
+  outline: 1px solid var(--r-ok);
+  outline-offset: 2px;
+  filter: drop-shadow(4px 4px 0 rgba(0, 0, 0, 0.7));
+}
+.nt-close.is-armed:active { transform: translate(2px, 2px); filter: drop-shadow(2px 2px 0 rgba(0, 0, 0, 0.7)); }
+
+/* ================= WIDE TIER: the arrangement every supported viewport gets
+ * One binary breakpoint at 700px of content inline-size, so 16:9, 21:9 and
+ * the 1280x800 laptop all render the SAME arrangement. The narrow tier below
+ * survives only as a tiling fallback; no supported viewport reaches it. */
+
+@container nt (min-width: 700px) {
+  .nt-grid {
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    grid-template-areas:
+      "top  top"
+      "hero strip"
+      "shop shop"
+      "foot foot";
+    gap: 10px 12px;
+  }
+  /* three purchases on ONE row. Stacked, they cost three full-width rows for
+   * three short controls; beside each other their height is free. A row you
+   * do not share is a row you pay for in full. */
+  .nt-shopgrid { grid-template-columns: 1fr 1.15fr 1fr; }
+  .nt-strainbar { width: 300px; }
+}
+
+/* the tight end of WIDE (the 760px laptop window): same arrangement, packed
+ * a little tighter rather than rearranged */
+@container nt (min-width: 700px) and (max-width: 800px) {
+  .nt-strainbar { width: 232px; }
+  .nt-cell { padding: 7px 8px 8px; }
+  .nt-hero { padding: 11px 12px 10px; min-height: 172px; }
+}
+
+/* ================= NARROW TIER: a different layout, not a smaller one ==== */
+
+@container nt (max-width: 699.98px) {
+  .nt-top { flex-direction: column; align-items: stretch; }
+  .nt-strainbar { width: auto; flex: 1; }
+  /* the strip spends the now-full width and saves the now-precious height */
+  .nt-strip { flex-direction: row; flex-wrap: wrap; }
+  .nt-opt { flex: 1 1 46%; }
+  .nt-hero { min-height: 0; }
+}
+
+/* ---------- the demo rig's own readouts ---------- */
+
+.rig { top: auto; right: auto; bottom: 12px; left: 12px; max-width: 300px; }
+.rig em { font-style: normal; color: #ffd75e; }
+.rig .rig-meas { font-family: var(--kp-mono); font-size: 10px; color: #999; }
+.rig .rig-over { color: #ff6b6b; }
+
+@media (prefers-reduced-motion: reduce) {
+  /* the alarm falls back to the static inverse flood, which is still inverse
+   * video and still colourblind-safe (law 7) */
+  .nt-strain-low .nt-riskflash { animation: none; opacity: 0; }
+  .nt-opt.nt-flash { animation: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="nt-fitwrap" id="fitwrap">
+  <div class="nt-fit" id="fit">
+    <div class="nt-stage crt-on" id="stage">
+     <div class="nt-warp">
+      <div class="nt-desk" aria-hidden="true"></div>
+      <div class="nt-deskwrap">
+        <div class="nt-free" id="free" aria-hidden="true"><span id="freelabel">FREE DESK</span></div>
+
+        <div class="term" id="term">
+          <header class="term-bar">
+            <h1>NIGHT.SYS</h1>
+            <span class="term-glyphs"><i></i><i></i><i></i></span>
+          </header>
+          <div class="term-body">
+            <div class="nt-eva">
+              <div class="nt-grid" id="grid">
+
+                <!-- Z1 TOP STRIP: the demoted day marker beside strain -->
+                <div class="nt-top">
+                  <div class="nt-mast-l">
+                    <span class="nt-eyebrow">NIGHT.SYS // DAY CLOSE</span>
+                    <span class="nt-slab" id="slab">DAY <b>5</b> CLOSED</span>
+                    <span class="nt-line">One upgrade holds for the rest of the run.</span>
+                  </div>
+                  <div class="nt-strainzone" id="strainzone">
+                    <div class="nt-strainhead">
+                      <span class="nt-strainlabel" id="strainlabel">STRAIN</span>
+                      <em class="nt-pop" id="pop">+10 STRAIN</em>
+                    </div>
+                    <div class="nt-strainrow">
+                      <span class="nt-strainnum" id="strainnum"><b id="strainval">0</b><i class="nt-riskflash" aria-hidden="true"></i></span>
+                      <span class="nt-strainbar" id="strainbar"></span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Z2 PICK ROW: the focal hero card beside the option strip -->
+                <article class="nt-hero is-empty" id="hero">
+                  <span class="nt-pname" id="heroname"></span>
+                  <div class="nt-heroline">
+                    <span class="nt-num" id="heronum">NO PICK</span>
+                    <em class="nt-stamp" id="herostamp" hidden>SELECTED</em>
+                  </div>
+                  <p class="nt-detail" id="herodetail"></p>
+                  <i class="nt-bracket" aria-hidden="true"><i></i></i>
+                  <i class="nt-reticle" aria-hidden="true"></i>
+                </article>
+
+                <div class="nt-strip" id="strip"></div>
+
+                <!-- Z3 SHOP ROW: all three purchases, three-up -->
+                <section class="nt-shop">
+                  <div class="nt-div"><i></i><span>// NIGHT SHOP</span><i></i><span class="nt-crbal" id="crbal"><span class="nt-crlab">CREDITS</span><b id="crval">0</b><span class="nt-crunit">cr</span></span></div>
+                  <div class="nt-shopgrid">
+                    <div class="nt-cell">
+                      <button type="button" class="nt-buy" id="buypatch"></button>
+                      <p class="nt-status" id="patchstatus"></p>
+                      <div class="nt-aux"></div>
+                    </div>
+                    <div class="nt-cell">
+                      <button type="button" class="nt-buy" id="buyblind">BUY BLIND: SEE DARKNET.LNK</button>
+                      <p class="nt-status" id="blindstatus"></p>
+                      <div class="nt-aux"><div class="nt-rack" id="rack"></div></div>
+                    </div>
+                    <div class="nt-cell">
+                      <button type="button" class="nt-buy" id="buybay"></button>
+                      <p class="nt-status" id="baystatus"></p>
+                      <div class="nt-aux">
+                        <span class="kp-pip-row" id="baypips"></span>
+                        <span class="nt-status" style="min-height:0">A full bay drafts as a swap. More bays, more boosts held.</span>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                <!-- Z4 FOOTER -->
+                <div class="nt-foot">
+                  <span class="nt-pointer" id="pointer">Pick one upgrade above to close the night.</span>
+                  <button type="button" class="nt-close" id="close" disabled>CLOSE THE NIGHT</button>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="nt-stage-bar">
+        <span>KP/OS</span>
+        <i></i>
+        <span>NIGHT.SYS</span>
+        <span class="nt-bar-sp"></span>
+        <span id="barclock">23:40</span>
+      </div>
+     </div>
+
+      <div class="nt-glass" id="glass" aria-hidden="true">
+        <i class="g-scan"></i>
+        <i class="g-mask"></i>
+        <i class="g-bloom"></i>
+        <i class="g-spec"></i>
+        <i class="g-vig"></i>
+        <i class="g-bezel"></i>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="rig">
+  <strong>DEMO RIG</strong>
+  <span>Scheme</span>
+  <div class="rig-row" id="schemerow"></div>
+  <span>CRT</span>
+  <div class="rig-row" id="crtrow"></div>
+  <span>Viewport</span>
+  <div class="rig-row" id="vprow"></div>
+  <span>Run state</span>
+  <div class="rig-row" id="staterow"></div>
+  <div class="rig-row"><button id="replay">REPLAY LOAD</button></div>
+  <span class="rig-meas" id="meas"></span>
+  <span>NIGHT.SYS as an instrument panel, and the system's low-density proof. THE PICK is focal at ~2.2x the next largest element; the DAY marker is deliberately demoted to an ambient slab; STRAIN is second and owns the only alarm. Click any option in the right strip to promote it into the hero card: the pick is free and fully reversible until CLOSE THE NIGHT, which stays locked until one exists. The shop buttons really spend credits, and the CREDITS balance riding the shop divider drains as they do. Live controls carry a 1px ok-role outline; capped and unaffordable ones stay dashed struct with none. DAY 8 STRAINED shows the risk alarm on all three channels; DAY 9 CAPPED is the equal-footprint proof with every branch disabled at once.</span>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ================= shipped constants, transcribed =================
+   * run-reducer.ts / patch-cells.ts / save.ts / windows/night.tsx, copied so
+   * the study's numbers and copy can never drift from the game. */
+
+  var PATCH_HEAL = 12;          // run-reducer.ts
+  var MAX_RAM = 9;              // run-reducer.ts
+  var DAY_REST_REGEN = 10;      // run-reducer.ts
+  var BOOST_SLOTS_MAX = 5;      // run-reducer.ts
+  var BOOST_SLOT_COSTS = [150, 300];
+  var BOOST_SLOTS_BASE = 3;
+  var PATCH_POUCH_MAX = 5;      // patch-cells.ts
+
+  function nightPatchCost(day) { return 45 + 5 * day; }              // run-reducer.ts
+  function slotCost(boostSlots) {                                     // run-reducer.ts
+    if (boostSlots >= BOOST_SLOTS_MAX) return null;
+    return BOOST_SLOT_COSTS[Math.min(boostSlots - BOOST_SLOTS_BASE, BOOST_SLOT_COSTS.length - 1)];
+  }
+
+  /* windows/night.tsx NIGHT_PICK_LABEL, verbatim */
+  var NIGHT_PICK_LABEL = {
+    ram: "+1 RAM / TURN",
+    scan: "the SCAN.EXE tier",
+    attack: "the ATTACK.EXE tier",
+    defend: "the DEFEND.EXE tier"
+  };
+
+  /* windows/night.tsx tile detail lines, verbatim. The scan/attack/defend
+   * lines are static in the shipped source; only ram's varies with state. */
+  var DETAIL = {
+    scan: "Wider sweep radius. Still always 1 RAM.",
+    attack: "One more node per cast: redirect or trap in bulk.",
+    defend: "One more node per cast: purge, lock, or a wider ward."
+  };
+
+  /* THE HERO SPLIT TABLE. The hero glyph must stay 2 to 7 characters, because
+   * Silkscreen at 50 to 65px cannot hold a 19-character label on one line in a
+   * ~450px card. So each tile's shipped label is split into a pname caption
+   * and a hero token, both verbatim substrings, never reworded. Note the split
+   * direction INVERTS between ram (hero is the token before the first space)
+   * and the three .exe tiles (hero is the remainder): this is a fixed 4-row
+   * table, not a runtime string-splitting heuristic. */
+  function tiles(S) {
+    var ramMax = S.ramPerTurn >= MAX_RAM;
+    return [
+      {
+        key: "ram",
+        maxed: ramMax,
+        label: ramMax ? "RAM / TURN MAXED" : "+1 RAM / TURN",
+        pname: "RAM / TURN",
+        hero: "+1",
+        detail: S.ramPerTurn + " to " + (S.ramPerTurn + 1) + ". More moves, more programs, every single turn."
+      },
+      {
+        key: "scan",
+        maxed: S.kit.scanTier >= 3,
+        label: S.kit.scanTier >= 3 ? "SCAN.EXE MAXED" : "SCAN.EXE T" + S.kit.scanTier + " > T" + (S.kit.scanTier + 1),
+        pname: "SCAN.EXE",
+        hero: "T" + S.kit.scanTier + " > T" + (S.kit.scanTier + 1),
+        detail: DETAIL.scan
+      },
+      {
+        key: "attack",
+        maxed: S.kit.attackTier >= 3,
+        label: S.kit.attackTier >= 3 ? "ATTACK.EXE MAXED" : "ATTACK.EXE T" + S.kit.attackTier + " > T" + (S.kit.attackTier + 1),
+        pname: "ATTACK.EXE",
+        hero: "T" + S.kit.attackTier + " > T" + (S.kit.attackTier + 1),
+        detail: DETAIL.attack
+      },
+      {
+        key: "defend",
+        maxed: S.kit.defendTier >= 3,
+        label: S.kit.defendTier >= 3 ? "DEFEND.EXE MAXED" : "DEFEND.EXE T" + S.kit.defendTier + " > T" + (S.kit.defendTier + 1),
+        pname: "DEFEND.EXE",
+        hero: "T" + S.kit.defendTier + " > T" + (S.kit.defendTier + 1),
+        detail: DETAIL.defend
+      }
+    ];
+  }
+
+  /* ================= the four run states =================
+   * Field values from the spec item's runStates block. Each pick total is
+   * cross-checked against the day (day N means N-1 nights already closed), so
+   * no state describes a run the game could not actually produce. */
+
+  var STATES = {
+    day2: {
+      id: "day2", label: "DAY 2 EARLY",
+      day: 2, strain: 100, lastRegen: 0, credits: 60, ramPerTurn: 5,
+      kit: { scanTier: 2, attackTier: 1, defendTier: 1 },
+      boostSlots: 3, augmentsHeld: 1,
+      pouch: [{ mask: 0x3, noun: "Elbow" }],
+      clock: 23 * 3600 + 12 * 60
+    },
+    day5: {
+      id: "day5", label: "DAY 5 MID",
+      day: 5, strain: 64, lastRegen: 10, credits: 180, ramPerTurn: 6,
+      kit: { scanTier: 3, attackTier: 2, defendTier: 1 },
+      boostSlots: 4, augmentsHeld: 3,
+      pouch: [{ mask: 0x3, noun: "Elbow" }, { mask: 0x7, noun: "Tee" }],
+      clock: 23 * 3600 + 40 * 60
+    },
+    day8: {
+      id: "day8", label: "DAY 8 STRAINED",
+      day: 8, strain: 25, lastRegen: 10, credits: 140, ramPerTurn: 8,
+      kit: { scanTier: 3, attackTier: 3, defendTier: 1 },
+      boostSlots: 4, augmentsHeld: 4,
+      pouch: [
+        { mask: 0x5, noun: "Straight" }, { mask: 0x3, noun: "Elbow" },
+        { mask: 0x7, noun: "Tee" }, { mask: 0xf, noun: "Cross" }
+      ],
+      clock: 1 * 3600 + 58 * 60
+    },
+    day9: {
+      id: "day9", label: "DAY 9 CAPPED",
+      day: 9, strain: 100, lastRegen: 0, credits: 35, ramPerTurn: 7,
+      kit: { scanTier: 3, attackTier: 3, defendTier: 3 },
+      boostSlots: 5, augmentsHeld: 5,
+      pouch: [
+        { mask: 0x5, noun: "Straight" }, { mask: 0x3, noun: "Elbow" },
+        { mask: 0x7, noun: "Tee" }, { mask: 0xf, noun: "Cross" }, { mask: 0x3, noun: "Elbow" }
+      ],
+      clock: 2 * 3600 + 24 * 60
+    }
+  };
+
+  var stateId = "day5";
+  var S = null;        // a working COPY, so purchases can really spend
+  var pick = null;     // RunState.nightPick, always null on mount
+
+  function loadState(id) {
+    var src = STATES[id];
+    S = {
+      day: src.day, strain: src.strain, lastRegen: src.lastRegen,
+      credits: src.credits, ramPerTurn: src.ramPerTurn,
+      kit: { scanTier: src.kit.scanTier, attackTier: src.kit.attackTier, defendTier: src.kit.defendTier },
+      boostSlots: src.boostSlots, augmentsHeld: src.augmentsHeld,
+      pouch: src.pouch.slice(), clock: src.clock
+    };
+    pick = null;
+  }
+
+  /* ================= helpers, copied from loadout-eva ================= */
+
+  var REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var timers = [];
+  function later(fn, ms) {
+    if (REDUCED) { fn(); return; }
+    timers.push(setTimeout(fn, ms));
+  }
+  function clearTimers() {
+    timers.forEach(function (t) { clearTimeout(t); clearInterval(t); });
+    timers = [];
+  }
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+  function $(id) { return document.getElementById(id); }
+
+  /* glyph.ts patchGlyph, DOM for DOM */
+  var SVGNS = "http://www.w3.org/2000/svg";
+  function patchGlyph(mask, size) {
+    var svg = document.createElementNS(SVGNS, "svg");
+    svg.setAttribute("width", String(size));
+    svg.setAttribute("height", String(size));
+    svg.setAttribute("viewBox", "-12 -12 24 24");
+    svg.setAttribute("class", "kp-patch-glyph");
+    svg.setAttribute("aria-hidden", "true");
+    var ends = [[0, -10], [10, 0], [0, 10], [-10, 0]];
+    for (var d = 0; d < 4; d++) {
+      if ((mask & (1 << d)) === 0) continue;
+      var line = document.createElementNS(SVGNS, "line");
+      line.setAttribute("x1", "0"); line.setAttribute("y1", "0");
+      line.setAttribute("x2", String(ends[d][0])); line.setAttribute("y2", String(ends[d][1]));
+      line.setAttribute("class", "kp-pp-arm");
+      line.setAttribute("stroke-width", "3.5");
+      svg.appendChild(line);
+    }
+    var hub = document.createElementNS(SVGNS, "circle");
+    hub.setAttribute("cx", "0"); hub.setAttribute("cy", "0"); hub.setAttribute("r", "3");
+    hub.setAttribute("class", "kp-pp-node");
+    svg.appendChild(hub);
+    return svg;
+  }
+
+  /* ================= sound: minimal WebAudio voices =================
+   * The four shipped presets this surface already uses, approximated for a
+   * standalone page with no sound.ts build (the dadlog study's precedent).
+   * No NEW preset is proposed: every beat here has a shipped voice.
+   * Characters transcribed from audio.ts:
+   *   tick           wave 2, baseFreq .62, decay .045   short and high
+   *   granted        wave 0, baseFreq .44, slide +.18   rising, a purchase
+   *   dayCloseRegen  wave 2, baseFreq .30, slide +.28   long, warm, the rest
+   *   dayClose       wave 0, baseFreq .26, slide -.08   low and falling */
+
+  var AC = null;
+  var interacted = false;
+  document.addEventListener("pointerdown", function () { interacted = true; }, true);
+  document.addEventListener("keydown", function () { interacted = true; }, true);
+
+  function blip(o) {
+    if (!interacted) return;
+    try {
+      if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)();
+      if (AC.state === "suspended") AC.resume();
+      var t = AC.currentTime;
+      var src = AC.createOscillator();
+      src.type = o.type;
+      src.frequency.setValueAtTime(o.freq, t);
+      if (o.freq2) src.frequency.linearRampToValueAtTime(o.freq2, t + o.dur * 0.8);
+      var node = src;
+      if (o.lpf) { var lf = AC.createBiquadFilter(); lf.type = "lowpass"; lf.frequency.value = o.lpf; node.connect(lf); node = lf; }
+      var g = AC.createGain();
+      g.gain.setValueAtTime(o.vol, t);
+      g.gain.exponentialRampToValueAtTime(0.001, t + o.dur);
+      node.connect(g);
+      g.connect(AC.destination);
+      src.start(t);
+      src.stop(t + o.dur + 0.02);
+    } catch (e) { /* sound is never load bearing */ }
+  }
+
+  var SFX = {
+    tick: function () { blip({ type: "square", freq: 660, dur: 0.05, vol: 0.16, lpf: 3200 }); },
+    granted: function () { blip({ type: "square", freq: 330, freq2: 520, dur: 0.3, vol: 0.2, lpf: 2600 }); },
+    dayCloseRegen: function () { blip({ type: "triangle", freq: 210, freq2: 460, dur: 0.62, vol: 0.22, lpf: 1900 }); },
+    dayClose: function () { blip({ type: "square", freq: 150, freq2: 124, dur: 0.34, vol: 0.24, lpf: 1500 }); }
+  };
+
+  /* ================= Z1: the strain readout and its fill ================= */
+
+  var SEGN = 30;                                   /* shipped <SegMeter segs={30}/> */
+  var strainBar = $("strainbar");
+  for (var sb = 0; sb < SEGN; sb++) strainBar.appendChild(el("i"));
+
+  function paintStrain(v) {
+    var segsOn = Math.round(SEGN * v / 100);
+    for (var i = 0; i < SEGN; i++) strainBar.children[i].classList.toggle("on", i < segsOn);
+    $("strainval").textContent = String(v);
+    /* the band re-evaluates against the CURRENTLY DISPLAYED value, so a fill
+     * that crosses a threshold flips the alarm as it crosses, not before */
+    var z = $("strainzone");
+    z.classList.remove("nt-strain-ok", "nt-strain-low");
+    if (v > 70) z.classList.add("nt-strain-ok");
+    else if (v <= 35) z.classList.add("nt-strain-low");
+  }
+
+  /* ONE fill routine, two call sites: the mount-time rest (150ms lead, the
+   * dayCloseRegen voice) and a manual NIGHT PATCH purchase (0ms lead, since a
+   * direct click response is not a page reveal, and the granted voice). Both
+   * run the shipped SegMeter's own parameters, 300ms across steps(8). */
+  function fillStrain(from, to, lead, done) {
+    paintStrain(from);
+    if (REDUCED || from === to) { paintStrain(to); if (done) done(); return; }
+    var STEPS = 8, DUR = 300;
+    later(function () {
+      var n = 0;
+      var iv = setInterval(function () {
+        n += 1;
+        paintStrain(Math.round(from + (to - from) * (n / STEPS)));
+        if (n >= STEPS) { clearInterval(iv); paintStrain(to); if (done) done(); }
+      }, DUR / STEPS);
+      timers.push(iv);
+    }, lead);
+  }
+
+  /* ================= Z2: the pick row ================= */
+
+  function renderPick(animate) {
+    var list = tiles(S);
+    var hero = $("hero");
+    var chosen = null;
+    for (var i = 0; i < list.length; i++) if (list[i].key === pick) chosen = list[i];
+
+    /* GUARANTEE (a): exactly one selection, enforced STRUCTURALLY. There is
+     * one hero slot in the DOM and the strip is derived as "every option that
+     * is not in it", so the layout cannot represent two selections even by a
+     * styling mistake. */
+    hero.classList.toggle("is-empty", !chosen);
+    hero.classList.toggle("is-picked", !!chosen);
+    $("heroname").textContent = chosen ? chosen.pname : "";
+    $("heronum").textContent = chosen ? chosen.hero : "NO PICK";
+    $("herostamp").hidden = !chosen;
+    $("herodetail").textContent = chosen ? chosen.detail : "";
+    if (animate && !REDUCED) {
+      hero.classList.remove("kp-slot-anim");
+      void hero.offsetWidth;
+      hero.classList.add("kp-slot-anim");
+    }
+
+    var strip = $("strip");
+    strip.textContent = "";
+    list.forEach(function (t, n) {
+      if (chosen && t.key === chosen.key) return;
+      var b = el("button", "nt-opt", t.label);
+      b.type = "button";
+      b.dataset.key = t.key;
+      if (t.maxed) { b.disabled = true; b.setAttribute("aria-disabled", "true"); }
+      b.addEventListener("click", function () {
+        if (t.maxed) return;
+        SFX.tick();
+        /* GUARANTEE (b): reversible. No confirmation, no cost, no lock: the
+         * previous pick simply returns to the strip. Mirrors the shipped
+         * chooseUpgrade case, which does NOT end the night. */
+        pick = t.key;
+        renderPick(true);
+        var back = strip.querySelector('[data-key="' + (chosen ? chosen.key : "") + '"]');
+        if (back && !REDUCED) { back.classList.add("nt-flash"); }
+        renderFooter();
+      });
+      if (animate && !REDUCED) {
+        b.classList.add("kp-slot-anim");
+        b.style.animationDelay = (300 + n * 90) + "ms";
+      }
+      strip.appendChild(b);
+    });
+  }
+
+  /* ================= Z3: the shop row ================= */
+
+  /* the purchase pulse on the divider balance: the shared kp-slot-in
+   * keyframe, steps() by construction, skipped under reduced motion */
+  function flashBal() {
+    if (REDUCED) return;
+    var cv = $("crval");
+    cv.classList.remove("kp-slot-anim");
+    void cv.offsetWidth;
+    cv.classList.add("kp-slot-anim");
+  }
+
+  function renderShop(animate) {
+    /* the divider balance: the SAME S.credits every affordability guard
+     * below reads, re-rendered on every purchase so it visibly drains */
+    $("crval").textContent = String(S.credits);
+
+    /* cell 1, NIGHT PATCH. Shipped label and guard, verbatim. */
+    var pc = nightPatchCost(S.day);
+    var patchBtn = $("buypatch");
+    patchBtn.textContent = "";
+    patchBtn.appendChild(document.createTextNode("NIGHT PATCH: +" + PATCH_HEAL + " STRAIN ("));
+    patchBtn.appendChild(el("span", "amt", String(pc)));
+    patchBtn.appendChild(document.createTextNode(" "));
+    patchBtn.appendChild(el("span", "cr", "cr"));
+    patchBtn.appendChild(document.createTextNode(")"));
+    patchBtn.disabled = S.credits < pc || S.strain >= 100;
+    $("patchstatus").textContent =
+      "STRAIN " + S.strain + "/100 - " + S.credits + " cr - rest restored +" + DAY_REST_REGEN;
+
+    /* cell 2, BUY BLIND. Always live in the shipped source: the affordability
+     * and pouch-full guards live inside DARKNET.LNK, which is out of scope
+     * here, so this control is INERT in this study by design, not broken. */
+    $("blindstatus").textContent =
+      "POUCH " + S.pouch.length + "/" + PATCH_POUCH_MAX + " - " + S.credits +
+      " cr - Pay first. Shape is the surprise.";
+
+    var rack = $("rack");
+    rack.textContent = "";
+    S.pouch.forEach(function (p, n) {
+      var s = el("span");
+      s.appendChild(patchGlyph(p.mask, 26));
+      s.appendChild(el("span", null, p.noun));
+      if (animate && !REDUCED) {
+        s.classList.add("kp-slot-anim");
+        s.style.animationDelay = (860 + n * 70) + "ms";
+      }
+      rack.appendChild(s);
+    });
+    /* equal-footprint holes: a 1-piece pouch takes the room a 5-piece one does */
+    for (var h = S.pouch.length; h < PATCH_POUCH_MAX; h++) {
+      var hole = el("span");
+      hole.appendChild(el("span", "nt-hole"));
+      hole.appendChild(el("span", null, "."));
+      rack.appendChild(hole);
+    }
+
+    /* cell 3, INSTALL BOOST BAY. Shipped label, including the (MAX) branch. */
+    var bc = slotCost(S.boostSlots);
+    var bayBtn = $("buybay");
+    bayBtn.textContent = "";
+    bayBtn.appendChild(document.createTextNode("INSTALL BOOST BAY ("));
+    if (bc === null) {
+      bayBtn.appendChild(el("span", "amt", "MAX"));
+    } else {
+      bayBtn.appendChild(el("span", "amt", String(bc)));
+      bayBtn.appendChild(document.createTextNode(" "));
+      bayBtn.appendChild(el("span", "cr", "cr"));
+    }
+    bayBtn.appendChild(document.createTextNode(")"));
+    bayBtn.disabled = bc === null || S.credits < bc;
+    $("baystatus").textContent = "BAYS " + S.augmentsHeld + "/" + S.boostSlots + " - " + S.credits + " cr";
+
+    /* PipRow filled={boostSlots} total=5: filled tracks CAPACITY bought, not
+     * augments held. Two different numbers, and the shipped component uses
+     * this one. */
+    var pips = $("baypips");
+    pips.textContent = "";
+    for (var p = 0; p < BOOST_SLOTS_MAX; p++) {
+      pips.appendChild(el("i", "kp-pip-sq kp-pip-sq-sm" + (p < S.boostSlots ? " kp-pip-on" : "")));
+    }
+  }
+
+  $("buypatch").addEventListener("click", function () {
+    var pc = nightPatchCost(S.day);
+    if (S.credits < pc || S.strain >= 100) return;              // shipped guard
+    SFX.granted();
+    var from = S.strain;
+    S.credits -= pc;
+    S.strain = Math.min(100, S.strain + PATCH_HEAL);
+    renderShop(false);
+    flashBal();
+    fillStrain(from, S.strain, 0);
+    measure();
+  });
+
+  $("buybay").addEventListener("click", function () {
+    var bc = slotCost(S.boostSlots);
+    if (bc === null || S.credits < bc) return;                  // shipped guard
+    SFX.granted();
+    S.credits -= bc;
+    S.boostSlots += 1;
+    renderShop(false);
+    flashBal();
+    var pips = $("baypips").children;
+    var lit = pips[S.boostSlots - 1];
+    if (lit && !REDUCED) lit.classList.add("kp-slot-anim");
+    measure();
+  });
+
+  /* inert by design: DARKNET.LNK does not exist in this standalone study, and
+   * the shipped source fires no sfx on this control either */
+  $("buyblind").addEventListener("click", function () { /* no-op */ });
+
+  /* ================= Z4: the footer ================= */
+
+  function renderFooter() {
+    var armed = pick !== null;
+    var btn = $("close");
+    /* GUARANTEE (c): locked until a pick exists. Mirrors the shipped
+     * closeNight guard (run.nightPick === null). */
+    btn.disabled = !armed;
+    btn.classList.toggle("is-armed", armed);
+    $("pointer").textContent = armed
+      ? "Closing the night applies " + NIGHT_PICK_LABEL[pick] + " and opens day " + (S.day + 1) + "."
+      : "Pick one upgrade above to close the night.";
+  }
+
+  $("close").addEventListener("click", function () {
+    if (pick === null) return;
+    SFX.dayClose();
+  });
+
+  /* ================= the load choreography ================= */
+
+  function sweep() {
+    clearTimers();
+    loadState(stateId);
+
+    $("slab").textContent = "";
+    $("slab").appendChild(document.createTextNode("DAY "));
+    $("slab").appendChild(el("b", null, String(S.day)));
+    $("slab").appendChild(document.createTextNode(" CLOSED"));
+
+    /* t=0: the meter renders at the PRE-rest value with no motion, matching
+     * the shipped strainShown logic exactly. Static chrome never animates. */
+    var pre = S.lastRegen > 0 ? S.strain - S.lastRegen : S.strain;
+    var pop = $("pop");
+    pop.classList.remove("on");
+    pop.textContent = "+" + S.lastRegen + " STRAIN";
+    paintStrain(pre);
+
+    if (S.lastRegen > 0) {
+      /* t=150ms, the exact shipped setTimeout: the rest lands. */
+      later(function () { SFX.dayCloseRegen(); }, 150);
+      fillStrain(pre, S.strain, 150, function () {
+        /* t=450ms: the pop, on the shared kp-slot-in keyframe */
+        pop.classList.add("on");
+        if (!REDUCED) { pop.classList.remove("kp-slot-anim"); void pop.offsetWidth; pop.classList.add("kp-slot-anim"); }
+        measure();
+      });
+    } else {
+      /* THE SILENT BRANCH (strain was already full pre-rest). No sound, no
+       * segment motion, no pop. The pop's room is reserved either way, so the
+       * silent branch occupies the identical footprint. */
+      paintStrain(S.strain);
+    }
+
+    renderPick(true);
+    renderShop(true);
+    renderFooter();
+
+    measure();
+    later(measure, 1300);
+  }
+
+  /* ================= the demo rig ================= */
+
+  function radioRow(rowId, opts, initial, onPick) {
+    var row = $(rowId);
+    row.textContent = "";
+    opts.forEach(function (o) {
+      var b = el("button", o.id === initial ? "rig-on" : "", o.label);
+      b.addEventListener("click", function () {
+        row.querySelectorAll("button").forEach(function (x) { x.className = ""; });
+        b.className = "rig-on";
+        onPick(o);
+      });
+      row.appendChild(b);
+    });
+  }
+
+  /* CRT: the six layers are added and REMOVED, never faded to zero, so OFF is
+   * a genuinely clean flat-ink print */
+  var glassLayers = Array.prototype.slice.call($("glass").children);
+  function setCrt(mode) {
+    var stage = $("stage");
+    var glass = $("glass");
+    stage.classList.toggle("crt-on", mode !== "off");
+    glass.textContent = "";
+    if (mode !== "off") glassLayers.forEach(function (l) { glass.appendChild(l); });
+  }
+  radioRow("crtrow", [{ id: "flat", label: "FLAT" }, { id: "off", label: "OFF" }], "flat", function (o) { setCrt(o.id); });
+
+  function setScheme(id) { document.documentElement.dataset.scheme = id; }
+  radioRow("schemerow", [
+    { id: "nerv", label: "NERV" },
+    { id: "tokyo", label: "TOKYO NIGHT" }
+  ], "nerv", function (o) { setScheme(o.id); });
+
+  var VIEWPORTS = [
+    { id: "169", label: "16:9", w: 1366, h: 768, win: 860 },
+    { id: "219", label: "21:9", w: 2560, h: 1080, win: 940 },
+    { id: "laptop", label: "LAPTOP 1280x800", w: 1280, h: 800, win: 760 }
+  ];
+  var VP = VIEWPORTS[0];
+
+  function applyViewport(v) {
+    VP = v;
+    $("stage").style.width = v.w + "px";
+    $("stage").style.height = v.h + "px";
+    $("term").style.setProperty("--nt-win", v.win + "px");
+    fit();
+    measure();
+  }
+
+  function fit() {
+    var availW = Math.max(320, window.innerWidth - 340);
+    var availH = Math.max(320, window.innerHeight - 90);
+    var k = Math.min(1, availW / VP.w, availH / VP.h);
+    $("fit").style.transform = "scale(" + k + ")";
+    $("fitwrap").style.width = Math.round(VP.w * k) + "px";
+    $("fitwrap").style.height = Math.round(VP.h * k) + "px";
+    return k;
+  }
+
+  function measure() {
+    var k = fit() || 1;
+    var h = Math.round($("term").getBoundingClientRect().height / k);
+    var free = $("free");
+    var slack = VP.w - VP.win;
+    if (slack > 220) {
+      free.style.display = "flex";
+      free.style.right = "0px";
+      free.style.width = Math.round(slack / 2 - 24) + "px";
+      $("freelabel").textContent = "FREE DESK " + Math.round(slack / 2 - 24) + "PX";
+    } else {
+      free.style.display = "none";
+    }
+    var tier = VP.win - 34 >= 700 ? "WIDE" : "NARROW";
+    var m = $("meas");
+    m.innerHTML = "";
+    m.appendChild(document.createTextNode("WINDOW " + VP.win + "px / " + tier + " tier"));
+    m.appendChild(document.createElement("br"));
+    m.appendChild(el("span", h > 820 ? "rig-over" : "", "HEIGHT " + h + "px / target 700px"));
+  }
+
+  radioRow("vprow", VIEWPORTS, "169", function (o) { applyViewport(o); });
+  radioRow("staterow", [
+    { id: "day2", label: "DAY 2 EARLY" },
+    { id: "day5", label: "DAY 5 MID" },
+    { id: "day8", label: "DAY 8 STRAINED" },
+    { id: "day9", label: "DAY 9 CAPPED" }
+  ], "day5", function (o) { stateId = o.id; sweep(); });
+
+  $("replay").addEventListener("click", sweep);
+
+  /* the taskbar clock ticks for real */
+  var clockSec = STATES[stateId].clock;
+  setInterval(function () {
+    clockSec = (clockSec + 1) % 86400;
+    var hh = String(Math.floor(clockSec / 3600)).padStart(2, "0");
+    var mm = String(Math.floor((clockSec % 3600) / 60)).padStart(2, "0");
+    var bar = hh + ":" + mm;
+    if ($("barclock").textContent !== bar) $("barclock").textContent = bar;
+  }, 1000);
+
+  window.addEventListener("resize", function () { fit(); measure(); });
+
+  /* ================= go ================= */
+
+  setScheme("nerv");
+  setCrt("flat");
+  applyViewport(VP);
+  sweep();
+})();
+</script>
+</body>
+</html>

@@ -74,8 +74,11 @@ and journal.ts's bills entry. Shipped copy and the lore files agree.
   computers. Between the two of you there is exactly one whole shopkeeper."
 - A natural diver. Learned patience at Dad's bench as a child (the soldering
   lesson: "it only sticks where you have cleaned").
-- Keeps DAD.LOG, the journal. Voice: wry, grieving, methodical. Refers to
-  Patch as "it" in his own notes, even after the finale.
+- Reads DAD.LOG, the recovered archive of Dad's own files, mounted and read
+  file by file; his own voice survives only as terse bench annotations
+  attached to a file, never the artifact's primary text (ledger Resolved
+  ruling 12). Voice: wry, grieving, methodical. Refers to Patch as "it" in
+  his own bench notes, even after the finale.
 
 ### Rhea - the sister
 - Runs the counter, keeps the books, keeps her brother alive (coffee, soup,
@@ -129,7 +132,7 @@ and journal.ts's bills entry. Shipped copy and the lore files agree.
   synthesis).
 - Personality once open: warm, confident, lightly competitive ("Deal me in.
   I am very good. You may have noticed."). Laughs at the edges the way Dad
-  did. Rhea says "he"; the player's journal says "it".
+  did. Rhea says "he"; the player's own bench notes say "it".
 - Post-finale place in the shop: "Counter is mine, bench is yours, back room
   is his."
 
@@ -173,8 +176,10 @@ nothing without a ruling.
 Hexlight, Kestrel, Meridian (one conglomerate: office/ledger hardware and
 Meridian Neurocare the clinic, both), Copperline, Nocta, Halcyon, Ferrox,
 Ivora, Apothek, Ledgerstone, Polyverb.
-NF-3: neurofilament degradation. KP/OS: the shop terminal. DAD.LOG: the
-player's journal. Night Patch: the 60-credit strain restore (lowercase
+NF-3: neurofilament degradation. KP/OS: the shop terminal. DAD.LOG: DAD.VOL,
+Dad's own read-only recovered volume; the player mounts it and reads his
+files back, file by file, not a diary the player keeps (ledger Resolved
+ruling 12). Night Patch: the 60-credit strain restore (lowercase
 "patch" coincidence is allowed to sit there unremarked before the finale).
 
 ## Voice - hard laws

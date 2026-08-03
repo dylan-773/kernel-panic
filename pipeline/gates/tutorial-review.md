@@ -1,409 +1,637 @@
-# Tutorial gate: ui-integration-2026-07-29
+# Tutorial gate: ux-2026-07-31-loadout-eva
 
-Brief: `ui-integration-2026-07-29` (`pipeline/BRIEF.md`). **This file REWRITES
-`pipeline/gates/tutorial-review.md` wholesale**, replacing the
-`ux-2026-07-28-kpos-redesign` review. That prior review's two "still owed"
-items (`solder-bay-intro`/`pieceDragCarry`, and the `copy-patch-craft`
-wording revision) are resolved below, not carried forward: both are
-overtaken by direct evidence from the now-shipped surface.
+Reviewed: `pipeline/proposals/ux-agent.json`, item `loadout-eva-instrument-panel`
+(the maximalist LOADOUT.CFG instrument-panel study, `ui-demos/loadout-eva/`).
+Scope per `pipeline/BRIEF.md` `ux-2026-07-31-loadout-eva`: standalone study
+only, nothing integrates this cycle. This cycle **replaces** the prior
+`ux-2026-07-29-darknet-cli` review wholesale (house style: this file is not
+append-only, `tutorial/ledger.md` carries the durable record). Per the
+dadlog cycle's own precedent (`tutorial/ledger.md` loop history, 2026-07-29),
+a pre-integration study review records its full findings here and in the
+ledger, not as `pipeline/proposals/tutorial-agent.json` items that would
+imply readiness to integrate today. No proposal file changes this cycle; see
+ledger loop history for the explicit note.
 
-**Ground truth read in full this cycle, not assumed from proposal text**:
-`kernel-panic-site/app/src/game/content/teaching.ts`,
-`dev/teach-sim.ts`, `components/game/screens.tsx`, `components/game/duel.tsx`,
-`components/game/duel-board.tsx` (grep), `components/os/shop-os.tsx`, and
-every new window component: `components/os/windows/inbox.tsx`, `report.tsx`,
-`solder.tsx`, `night.tsx`, `loadout.tsx`, `darknet.tsx`. Also
-`ui-demos/kpos-shell/w-solder.ts`, `dive.ts`, `inbox.html`, and the README.
+Grounded directly against shipped code, not the proposal's own citations:
+`kernel-panic-site/app/src/components/game/duel.tsx` (lines 776-949),
+`.../components/os/windows/solder.tsx` (lines 1-40, 396-490),
+`.../components/os/windows/loadout.tsx` (lines 140-430),
+`.../components/os/windows/report.tsx`, `.../components/os/windows/darknet.tsx`,
+`.../game/content/kit.ts` (lines 79-109), `.../game/patch-cells.ts` (lines 20,
+26), `.../src/styles.css` (mode/bay pill classes), and `tutorial/ledger.md`'s
+Coverage table and waiver log.
 
-**Load-bearing finding before anything else**: the actual shipped app is
-substantially further along than either `pipeline/proposals/ux-agent.json`'s
-own notes or the prior ledger entry assumed. INBOX, REPAIR.LOG, LOADOUT.CFG,
-NIGHT.SYS, and DARKNET.LNK all already exist as real, wired, native
-`components/os/windows/*.tsx` components bound to live run state, not
-proposals awaiting integration. Only DIVE.EXE (the duel screen's own reskin)
-is still the pre-redesign `kp-dive2` layout in `duel.tsx`. Every verdict
-below is grounded in which of these two states actually applies, named
-explicitly per item.
+**Five items reviewed. 3 COVERED outright, 2 NEEDS-TEACHING (both tier 0).**
 
----
+## 1. The pouch paragraph cut
 
-## Verdict table: `pipeline/proposals/ux-agent.json`, all 12 `ui-spec` items
+**COVERED**, with a correction to the proposal's own citation.
 
-| # | item | verdict | cites |
-|---|---|---|---|
-| 1 | `kpos-v2-tokens-system` | COVERED | n/a, pure chrome; `WIN_DEFS` already carries 9 entries in `shop-os.tsx:46-56` |
-| 2 | `kpos-inbox-window` | **NEEDS-TEACHING** | ledger `jobBoard` (line 86, waiver log 172-187), `threatTier` (line 89) |
-| 3 | `kpos-repairlog-window` | COVERED | ledger `strainChip` (85), `turnCap` (102), `patchDrop` (103), `gridlockChip` (104), `augmentDraft`/`augmentCadence`/`boostSwap` (92-95) |
-| 4 | `kpos-dive-exe` | COVERED (plan) | no mechanic-inventory entry changes; reasoning below |
-| 5 | `kpos-dive-tutorial-finale-dressing` | COVERED (plan), one non-blocking note | n/a |
-| 6 | `kpos-night-sys` | COVERED | ledger `darkWebBuy` (99), `slotBuy` (100), `nightPatch` (97), `credits` (105, waiver log 136-145) |
-| 7 | `kpos-morning-log` | COVERED (plan) | ledger `finaleGate` (108), unaffected |
-| 8 | `kpos-backroom-lck` | COVERED (plan) | ledger `finaleGate` (108), unaffected |
-| 9 | `kpos-desktop-idle` | COVERED (plan) | ledger `saveSlots`-adjacent, no mechanic touched |
-| 10 | `kpos-abandon-dialog` | COVERED | ledger `runReset` (107, waiver log 148-159) |
-| 11 | `kpos-teach-callout-v2` | COVERED, one anchor now moot | ledger `patchCraft` (84, waiver log 208-234) |
-| 12 | `kpos-utility-window-deltas` | COVERED | ledger `manualRef` (87), `augmentEffects`/`modeEffects` (110-111) |
+The proposal's `cuts` entry claims duel.tsx:785,937 (teaching moment
+`patch-cell-use`) plus SOLDER.BAY (solder.tsx:32-33) already teach "the
+placement cost and sourcing facts." Verified directly, fact by fact, against
+the shipped surfaces and `tutorial/ledger.md`:
 
-One item is **NEEDS-TEACHING**. Everything else is COVERED, several
-confirmed directly against already-live code rather than judged as a plan.
+- **2 RAM placement cost.** TAUGHT. Stated three times independent of the cut
+  paragraph: the coachmark `patch-cell-use` ("fuse it in for 2 RAM",
+  `content/teaching.ts` lines 374-386, ledger row `patchCellUse`/`patchShapes`,
+  ledger lines 82-83), the live console line at `duel.tsx:785`
+  (`` `PATCH PIECE: pick a slag block within reach. ${PLACE_COST} RAM.` ``,
+  shown every time a piece is armed), and the button `title` at `duel.tsx:937`.
+  The redesign's own `PLACE COST / 2 RAM` chip is a fourth, redundant
+  restatement. Safe to cut the prose.
+- **Single use.** TAUGHT. The `patch-cell-use` coachmark's own second clause,
+  "One use, then it is gone." Unaffected by anything in this proposal.
+- **One per turn.** TAUGHT, but NOT by the citation given. The
+  `patch-cell-use` coachmark never says "per turn," only cost and single-use.
+  The real carriers are `duel.tsx:937`'s button `title`
+  (`econ.placedThisTurn ? "One piece per turn" : ...`, a native hover title,
+  not TapTip-wrapped, so it is not confirmed touch-safe, and it only appears
+  once a player has already placed one piece and tries for a second) and,
+  unconditionally, SOLDER.BAY's own footline: `solder.tsx:30-33` defines
+  `FOOT_LINE` as the IDENTICAL sentence being cut from LOADOUT.CFG ("...2
+  RAM, one per turn, single use. Pieces come off the darknet, drop from
+  cleared jobs, or bank on clean wins; the pouch holds
+  ${PATCH_POUCH_MAX}."), rendered unconditionally at `solder.tsx:490`
+  (`<p className="kp-solder-caption">{FOOT_LINE}</p>`) every visit to
+  SOLDER.BAY, not gated behind hover. This is a stronger, more complete
+  restatement than the proposal cited. Cutting the LOADOUT.CFG copy is safe
+  because SOLDER.BAY (which the pouch panel's own click-through button opens,
+  `loadout.tsx:409`) carries the full sentence, not because duel.tsx does.
+- **Sourcing (darknet, job drop, clean-run bank).** TAUGHT/WAIVED, and NOT by
+  duel.tsx:785/937 as claimed; those two sites never mention sourcing at all.
+  The real coverage: the darknet route is TAUGHT by the `night-shop` coachmark
+  (ledger row `darkWebBuy`, ledger line 99); the job-drop and clean-run-bank
+  routes are WAIVED via the `patchDrop` row (ledger line 103, "The drop row
+  names the recovered shape in text with its glyph inline, on the only screen
+  a piece can arrive," confirmed live on REPAIR.LOG). All three routes are
+  also restated verbatim in SOLDER.BAY's `FOOT_LINE`.
+- **Pouch cap of 5.** WAIVED, self-evident, no prose ever required. Confirmed
+  live on four independent surfaces beyond the cut paragraph: the five-slot
+  `patchGlyph` rack with visible holes (kept unchanged by this proposal's own
+  Z4 spec, and confirmed present in both RUN STATE snapshots, including "0/5
+  pouch glyphs (5 holes)" for DAY 1 EARLY); SOLDER.BAY's numeric
+  `{pouch.length}/{PATCH_POUCH_MAX}` counter and its own five-slot rack
+  (`solder.tsx:398-403`); REPAIR.LOG's drop row, which prints the literal
+  status label `POUCH FULL` when a drop cannot bank because the pouch is
+  already at cap (`report.tsx:337`, feeding the `patchDrop` waiver); and
+  DARKNET.LNK's own `POUCH {n}/{PATCH_POUCH_MAX}` chip plus its
+  `patchPouch.length >= PATCH_POUCH_MAX` purchase gate (`darknet.tsx:338,
+  347, 731`).
 
----
+**Condition, not a blocker:** the five-slot glyph rack (filled + dashed
+holes) must ship in the study exactly as specced in Z4, since it is now
+doing real teaching work (the cap-of-5 affordance) that the redesign does not
+otherwise restate in words. The proposal's own acceptance checks already
+require this ("0/5 pouch glyphs (5 holes)" for DAY 1 EARLY), so no change
+needed, just flagging why that particular check is load-bearing.
 
-## Reasoning on the five scrutiny questions the brief named
+**Non-blocking, out of scope this cycle:** `duel.tsx:937`'s "One piece per
+turn" title is a raw HTML `title`, not wrapped in `TapTip` the way every
+other tip in this game now is (`touch-safe-tooltips`, ledger Closed
+2026-07-26/re-confirmed 2026-07-29). This is a pre-existing crack in
+DIVE.EXE, unrelated to the LOADOUT.CFG redesign under review (DIVE.EXE is
+explicitly out of scope this cycle and this proposal does not touch it).
+Logged to the ledger's Open Work for whenever DIVE.EXE's own reskin cycle
+comes up; not a finding against this item.
 
-### (a) INBOX absorb: do `analyze-readout` and `threatTier` survive the move?
+## 2. The boost-bay descriptions (always-visible paragraph to hover/focus/tap popup)
 
-Read directly against the shipped `components/os/windows/inbox.tsx`, not the
-proposal text.
+**NEEDS-TEACHING** (tier 0), narrowly: the popup mechanism itself is fine,
+one specific gap needs a fix before this ships.
 
-**The coachmark and the expanded card: yes, confirmed, byte-for-byte.**
-`CustomerCard` (inbox.tsx:170-293) mounts `<Teach id="analyze-readout" />`
-(line 290) exactly where the brief promised, and the MODE_TELL line the
-brief singled out as at-risk is present and correctly labeled: `<p
-className="kp-readout-tell"><Typed text={MODE_TELL[job.dominant]} .../></p>`
-under a `READOUT` label (lines 256-260). The full READOUT field set
-(dominant routine, THREAT TIERS as diamonds, GRID, INTRUSION RAM, the
-head-start WARNING) is present and matches the old `AnalyzeScreen` fields
-one for one; none of the card study's own demo-only TICKET RATE / LAST CLEAN
-BOOT / POUCH DROPS rows survive, as speced. The THREAT TIERS row on the
-expanded card is wrapped in `<TapTip text={tip("threatTier")}>` (line
-238), so the tip renders correctly there too. **COVERED**, cites ledger
-`analyzeTell` (line 88) and the coachmark half of `threatTier` (line 89).
+The proposal's precedent claim is accurate: `loadout.tsx:182,353,370`
+confirms mode chips already reveal their owned description only via
+`TapTip` (`modes.tipFor` returns `attackModeDesc`/`defendModeDesc` for owned
+modes), not as always-visible text, for every mode except the currently
+active one (which also gets a `TypedDesc` paragraph below). So hover/tap-only
+disclosure of a game-mechanic description is an established, working pattern
+in this exact window, not a new risk class.
 
-**The tip's OTHER home, and a waiver's entire premise: no, confirmed broken.**
-Before this integration, `threatTier`'s tip lived on the JobBoard's
-per-ticket badge (`screens.tsx:234-239`, every row), letting a player
-compare all three tickets' difficulty before opening any of them. The
-shipped `InboxContent`'s collapsed list (inbox.tsx:384-400) renders each
-`kp-inbox-item` row as `{subjectFor(c)}` and nothing else (a `CLEARED` tag
-if done): no tier, no portrait, no payout. This is not a reading of the
-proposal's intent, it is the literal JSX. Separately, and more seriously:
-the `jobBoard` waiver's entire premise ("JobBoard's own header states this
-permanently, every visit: three tickets, strain shared, order is yours")
-depended on a header paragraph that also does not exist in the shipped
-component. `InboxContent`'s `kp-screen-head` (lines 373-379) renders only
-the `DAY N OF 10` hero, no subtitle. **This waiver does not currently
-hold**, and `teach-sim` cannot see it, since it only checks that the waiver
-string exists in code and is long enough, never that the sentence it quotes
-still renders anywhere. See ledger waiver log (172-187) for the full
-account, and Open work (278-293) for what is owed. The footer (STRAIN/RAM
-tips, credits, pouch, kit summary) is confirmed intact, so this is narrower
-than "INBOX lost its day-board data": exactly two things are gone, both
-identified precisely, neither hypothetical.
+The `augmentEffects` blanket waiver (`content/teaching.ts` lines 236-242,
+ledger line 110, ledger waiver log lines 179-182) covers this: "Every
+augment carries its own desc on the draft card, in the loadout, and in
+MANUAL.TXT," premise `augmentDescs`, checked against the DATA (every
+`AUGMENT` has a `desc` field), not the rendering, so it is explicitly
+reskin-proof per the ledger's own note. A tap-to-reveal popup still
+satisfies "in the loadout." `manualRef` (ledger line 87, TEACH_TIPS
+`manualRef`) remains an independent, always-available fallback regardless of
+what LOADOUT.CFG does. So the CONTENT survives; nothing here is untaught.
 
-**Verdict: NEEDS-TEACHING for `kpos-inbox-window`.** Mechanic: `jobBoard`
-(a waiver, currently false) and the list-view half of `threatTier` (a tip
-that lost one of its two homes). Surface: the INBOX collapsed list. Tier: 0
-for both, a UI fix, not a new coachmark, since both facts were previously
-carried by a permanent, always-visible element and the fix is to restore an
-equivalent element, not to interrupt with a callout. Trigger: `firstSight`
-of the collapsed list, i.e. every time INBOX is open on `day`. `ui-spec`
-`inbox-collapsed-row-parity` filed this cycle
-(`pipeline/proposals/tutorial-agent.json`) asks for both back and flags,
-non-blocking, that the per-ticket payout also vanished for the same reason
-(porting `inbox.html`'s bare demo anatomy, which never modeled live data at
-all, rather than a deliberate cut).
+**The gap:** unlike a mode chip, which needs no visible "holds more" cue
+because the active mode's description is ALSO always shown in full below it,
+an augment pill has no such fallback: all owned augments are simultaneously
+in effect (not mutually exclusive like modes), so a compact pill reading
+only a bare name (e.g. "OVERTIME CLAUSE") gives zero visual signal that
+hovering or tapping reveals anything at all. This is the exact case the
+ledger's own standing Open Work note already flagged as unresolved: "nothing
+on screen says a control holds more... a ui-spec for ux-agent whenever chrome
+changes are back in budget" (`tutorial/ledger.md`, Open Work, "Touch tips'
+discoverability affordance," 2026-07-29). This cycle is that budget window:
+a full LOADOUT.CFG chrome rebuild, and the first case in the game where
+hover/tap is the ONLY path to an augment's effect text rather than a bonus on
+top of always-visible text.
 
-### (b) DIVE.EXE respec: BUS.LOG legibility, qualitative route rows, INTRUSION rename
+**Fix (tier 0, ui-spec, addressed to ux-agent):** give `.lo-bay-pill` a
+small, persistent visual marker that it holds more: a dot or dotted underline
+under the augment name, consistent with (and closing) the ledger's existing
+open ask, scoped for now to this control since it is the one where the
+absence is load-bearing. Locked/future pills (which hold no augment, hence
+no popup) should not carry the marker. This is a small addition to the
+existing `.lo-bay-pill` spec, not a new zone.
 
-`duel.tsx` is confirmed unintegrated for this item: it still renders the
-pre-redesign `kp-dive2` layout, still shows the countdown threat banner
-(`INTRUSION {oppNear} ROTATION{S} FROM THE CORE`, `duel.tsx:670`), and
-`duel-board.tsx:186` still tags the opposing port `SIG-0`. Judgment below is
-therefore on the PLAN, matching the `PLANNED` convention this ledger already
-uses for exactly this situation.
+**Hard condition for integration, already promised by the proposal itself,
+restated here so it is not lost in a later pass:** the study's own vanilla
+hover/click-toggle implementation is explicitly a placeholder; at
+integration this MUST become the shipped `TapTip` component verbatim, not a
+bespoke reimplementation, per the proposal's own note. Flagging as a
+condition, not a new ask.
 
-**BUS.LOG needs no new mechanic-inventory entry.** It is a live transcript
-of events the player is already causing or watching (rotate, cast, cascade,
-a trap firing), all of which are already-taught mechanics (`rotate`,
-`scan`, `defend`, `attack`, `cascade`). A log line appearing in tight
-correlation with an event the player just performed or watched happen on the
-board is self-teaching by co-occurrence, the same way a fighting game's
-input log needs no tutorial of its own once the moves themselves are taught.
-Nothing about the log gates a decision the player cannot already make from
-the board and the existing coachmarks. **COVERED.** Flagging for the
-record, non-blocking: the actual `duel.tsx` already builds an ALL-CAPS,
-round-prefixed transcript today (`R01 TRAP SPRUNG. 4 STRAIN BILLED`,
-confirmed at `duel.tsx:340-365`) for REPAIR.LOG's dive-log rail, which is a
-different register from the narrative-director's proposed lowercase
-`ui-copy-dive-buslog` vocabulary (`twist 0x2A`, `trap sprung`). Both
-registers are equally self-evident from a teaching standpoint; which one
-ships is a presentation call for the Orchestrator and ux-agent, not a
-teaching question.
+## 3. Narrow-tier paging and truncation
 
-**Qualitative route rows (OPEN/SEVERED/CLOSING/CUT/AT THE CORE) need no new
-teaching.** Checked the exact thresholds in `dive.ts:1478-1482`: the
-player's own route is binary (OPEN/SEVERED), the opponent's is four-bucket
-(OPEN/CLOSING at `oppNear <= 2`/AT THE CORE at `oppNear === 0`/CUT). These
-are self-evident English words, and the underlying skill they support
-(reading rising danger and reacting to it) is already taught by the opening
-dive's telegraph beats (`watch-it-move`, `holding-back`,
-`no-longer-holding`), which train pattern-reading over exact-count
-tracking as the actual intended skill. **COVERED**, no coachmark, no tip.
-One legibility note for the record, not a teaching gap: collapsing "1
-rotation away" and "2 rotations away" into a single CLOSING bucket removes
-the exact number a player could previously read off the countdown banner.
-This is a real information-density question, but it is a balance/UX
-judgment already settled by the study's own "NO COUNTDOWN NUMBERS" ruling
-(quoted in the README and in the narrative-director's own item text), not a
-comprehension gap this seat gates.
+Two separate questions, two different verdicts.
 
-**The SIG-0 to INTRUSION rename carries no teaching consequence either
-way.** No mechanic in the inventory names the opponent's identity tag;
-`telegraph`'s coverage is about the fact that the machine aims before it
-strikes, independent of what its port is labeled. Whichever way the
-loremaster rules, no coachmark, tip, or mechanic-inventory entry changes.
-Deferring entirely to that gate.
+### 3a. Truncating a program description to ~60 characters plus tap-to-expand
 
-**Verdict: COVERED (plan)** for `kpos-dive-exe`.
+**NEEDS-TEACHING** (tier 0 fix to the truncation rule itself).
 
-### (c) REPAIR.LOG: itemized bill, cache, and telemetry readable without new teaching?
+Checked the actual six mode descriptions in `kit.ts:79-109` against a hard
+60-character cut, not the idea of truncation in general. Two of six put
+their entire mechanical payoff PAST character 60, so a player who never taps
+"..." sees an incomplete sentence with no verb telling them what the mode
+actually does:
 
-Confirmed live, not a plan: `components/os/windows/report.tsx` is fully
-integrated and already handles this cleanly.
+- `armHalt` (`kit.ts:85-86`): `"Plant a halt trap on an open junction. When
+  their signal claims it, they lose a full turn."` At 60 characters this
+  reads `"Plant a halt trap on an open junction. When their signal cla"`,
+  cut immediately before "claims it, they lose a full turn." The entire
+  effect (lose a turn) is invisible without expanding.
+- `armSiphon` (`kit.ts:87-88`): `"Plant a siphon trap on an open junction.
+  When it fires, {n} RAM drains from their next turn into yours."` At 60
+  characters this reads `"Plant a siphon trap on an open junction. When it
+  fires, {n"`, cut before "RAM drains from their next turn into yours." The
+  entire effect (how much RAM, and that it steals from them into you) is
+  invisible without expanding.
 
-- **Itemized bill.** `chipRows` (report.tsx:305-311) reproduces the exact
-  wording the `turnCap` and `gridlockChip` waivers cite ("reduced rate, you
-  hit the turn cap", "link collapsed in gridlock") verbatim from the old
-  `ResultScreen`, rendered through a `<Receipt>` list. Both waivers'
-  premises hold, confirmed directly, cited at ledger lines 102 and 104.
-- **The patch poster.** The `poster` object (report.tsx:324-362) reproduces
-  the banked/capped/no-piece-this-ticket three-state machine exactly as
-  speced, and the glyph rendering (`poster.mask !== null ? <PatchGlyph
-  .../> : ...`) is UNCONDITIONAL on `r.patchDrop.mask` for the drop case,
-  meaning the capped case gets a glyph too, which exceeds what the
-  `patch-drop-row-naming` ui-spec actually required (it asked only that the
-  capped case NAME the shape in text, not necessarily show its glyph). The
-  `patchDrop` waiver (line 103) is confirmed earned, not merely provisional.
-- **Telemetry.** The ROTATIONS quad's header reads `OVER PAR
-  ${r.overRotations}` verbatim, matching the exact wording the prior
-  cycle's ui-spec required so it never claims data the reducer does not
-  keep (report.tsx:546). TRAP FEED reads the real `r.trapsFired` count.
-  RAM FLOW and LINK NOISE stay flavor-shaped, as speced, with no false claim
-  attached to either.
-- **Augment cache.** `<Teach id="strain-chip" />`, `<Teach id="augment-draft"
-  signals={{draftOffered: ...}} />`, and `<Teach id="boost-swap"
-  signals={{swapOffered: ...}} />` are all mounted (report.tsx:639-641),
-  wired to the identical `pickAugment` dispatch and swap-panel state machine
-  as the old `ResultScreen`.
+This is exactly the `modeEffects` blanket waiver's premise
+(`content/teaching.ts` lines 243-249, ledger line 111, ledger waiver log
+lines 183-184: "each carries its own desc... in the kit card") being
+undercut on one specific viewport tier: the waiver is checked against the
+DATA having a desc, not against a rendering that cuts the desc before its
+own payoff clause. `redirect`, `purge`, `lock`, `ward`, and `scanDesc` all
+happen to state their core effect before or within roughly the first
+sentence, so 60 characters is a survivable (if tight) cut for those five;
+`armHalt` and `armSiphon` are the two where it is not.
 
-**Verdict: COVERED**, no new teaching needed, confirmed rather than assumed.
-Cites ledger lines 85, 92-95, 102-104.
+**Fix (tier 0, ui-spec, addressed to ux-agent):** do not truncate at a fixed
+character count. Truncate at a sentence boundary only, and never cut before
+the sentence that states the ability's numeric or mechanical effect (for
+`armHalt`/`armSiphon` this means keeping BOTH sentences, since the effect is
+in the second one). Concretely: measure the longest full description across
+every tier of `attackModeDesc`/`defendModeDesc`/`scanDesc` (my own spot
+check puts the longest around 125-130 characters, `redirect` at higher
+tiers) and set the pre-expand budget at or above that measured max, so no
+description shipped today ever needs the "..." affordance to state its own
+effect; reserve the expand affordance for future content that actually
+exceeds it. This is a one-line change to the truncation length plus a
+sentence-boundary clamp, not a new zone or a coachmark.
 
-### (d) The leader-line teach callout form change (`kpos-teach-callout-v2`)
+### 3b. Paging half the window behind PROGRAMS / RIG & STATUS tabs
 
-The item's own scope (re-anchoring eight existing CSS classes against new
-window layouts, no trigger/copy change) is sound and unaffected by anything
-found this cycle, with one update: the item's text explicitly keeps
-`kp-teach-craft` (the `patch-craft` moment's anchor) on NIGHT.SYS,
-"reskinned in place, not relocated." This gate's ruling on the SOLDER.BAY
-question below retires that moment entirely, so `kp-teach-craft` is now an
-orphaned anchor class with nothing mounted to it. Harmless to leave
-unstyled; nothing points at it. The other seven anchor reassignments
-(`readout`, `rows`, `draft`, `par`, `screen`, `patch`, `grid`) are
-unaffected and stand as speced. **COVERED**, noted in the ledger's Open
-work (line 306-310).
+**COVERED.**
 
-### (e) SOLDER.BAY: is the owed `solder-bay-intro` coachmark still owed?
+Checked what specifically sits behind the RIG & STATUS tab in narrow tier:
+Z2 (gutter: operator stats, monitor bezel, all non-mechanic flavor, no
+`MECHANIC_INVENTORY` entry) and Z4 (boost bays, patch pouch, neural strain).
+None of these mechanics' FIRST CONTACT is LOADOUT.CFG:
 
-**No. Retiring the recommendation, not merely declining to act on it again.**
-Read `components/os/windows/solder.tsx` in full, since it now exists as a
-real, shipped component the prior gate never had access to (SOLDER.BAY was
-still a study when `pieceDragCarry` was first recommended). Two separate
-questions, both resolved by direct code evidence:
+- `boostSlots` firstContact is `result` (ledger line 146), already TAUGHT
+  there via the `boostSwap` coachmark and the `boostSlots` tip before a
+  player would ever need to check it again in LOADOUT.CFG.
+- `patchCellUse`/`patchShapes` firstContact is `duel` (ledger lines 82-83),
+  already TAUGHT there.
+- `strainChip` firstContact is `result` (ledger line 85), already TAUGHT
+  there via coachmark plus tip.
 
-**Is the drag gesture a "new input modality nothing rewards," as the prior
-gate assumed?** No. `onSlotPointerMove` (solder.tsx:299-323) only arms a
-drag `if ((e.pointerType === "mouse" || e.pointerType === "pen") && dist >
-6)`; touch input never satisfies this and always falls through to the plain
-`onClick`/`tapActivate` handler, the identical tap-to-select-then-CRAFT flow
-every other interaction in this game already teaches and uses. Both paths
-resolve through the same legality check and reach identical outcomes
-(`fuseAt` on a legal pair, `rejectCancel` otherwise). Nothing is reachable
-by drag that tap cannot also reach; drag is a strictly optional accelerator
-over an already-complete, already-familiar verb. This fails the bar for even
-a coachmark ("does this change what they should do?": no) let alone a beat.
+LOADOUT.CFG has only ever been a REFERENCE surface for these three (a place
+to re-check a number already explained elsewhere), never the first-contact
+surface, so paging it behind one extra tap does not create a first-contact
+gap for any mechanic in the inventory. The masthead (verdict slab, sentence
+line, DIVE button) stays persistently visible above both tabs per the spec,
+so the one thing a returning player actually needs immediately (am I ready,
+can I dive) is never behind the tab. This matches the BRIEF's own sanctioned
+mechanism ("reflow, page, or tab, never scroll").
 
-**Does the outgrow rule (the actual thing the prior gate wanted taught) need
-a coachmark?** No, and by a wide margin. `SolderContent`'s status line
-states it verbatim, every single time a piece is picked up, for the life of
-the save: `"PICK A PARTNER. THE WELD MUST OUTGROW BOTH."` (solder.tsx:36).
-The `Schematic` component visually blinks exactly which arms a candidate
-partner would add (the `arm-gain` styling, solder.tsx:82-118). The rack
-marks any non-outgrowing partner dead and disabled
-(`legalPartners`/`kp-slot-dead`, solder.tsx:155-159, 413-415), meaning a
-player cannot select, drag onto, or drop on an illegal partner through the
-shipped interface AT ALL. The specific risk the old `patch-craft` coachmark
-warned about ("equal or smaller spends both pieces for nothing") cannot
-actually be triggered by a player using the real interface. This is tier 0,
-stronger than a coachmark could ever be (re-stated on every interaction,
-never dismissed once and gone).
+Non-blocking observation, not a teaching finding: the spec does not state
+which tab is the default-active one in narrow tier. Since Z3 (programs) is
+glanceOrder 1 (the most decision-relevant content), defaulting to PROGRAMS
+rather than RIG & STATUS would match that stated priority; this is a UX
+sequencing call for the ux-agent, not something with teaching consequences,
+since no mechanic's first contact depends on it either way.
 
-**Consequence beyond the direct question asked**: this finding does not
-just clear `solder-bay-intro`, it also retires the EXISTING `patch-craft`
-coachmark outright (see the ruling on the brief's third integration
-question, directly below), since the same evidence that makes a NEW
-coachmark unnecessary also makes the OLD one redundant.
+## 4. New visual codes to decode
 
-**Verdict: no coachmark owed, on either question.** `MECHANIC_INVENTORY`
-gains no `pieceDragCarry` entry. Full reasoning and the standing lesson in
-`tutorial/ledger.md`'s waiver log ("pieceDragCarry, NOT ADDED", "boost-swap,
-considered and kept" for the control case that was checked the same way and
-kept).
+**COVERED**, item by item.
 
----
+- **Hero numeral + small unit caption (RANGE/WIDTH).** COVERED. The numeral
+  is never bare; the spec pairs it with a `RANGE`/`WIDTH` caption, which is
+  the exact same label already used and already WAIVED at normal scale
+  (`programTiers`, ledger line 91: "LOADOUT.CFG's program rows show each
+  program's live RANGE or WIDTH number directly beside its TIER meter").
+  Scaling that pairing up to hero size does not change what is being said,
+  only how loud. Watch item for the ux-agent, not a teaching gap: at a
+  64-116px numeral against a 9px caption, verify in the actual build that
+  the caption stays legibly attached rather than reading as a stray label
+  under a giant number, especially under the heavier CRT bloom/vignette
+  layers this study adds.
+- **Corner-tick "reticle" on the active mode chip.** COVERED, and redundant
+  by design, which is the right call. `styles.css:2980` confirms
+  `.kp-mode2.mode-on` already floods inverse video (ink fill, void text),
+  the same "shared press-state/selected" language used system-wide for
+  "this is the active one." The reticle adds a second visual channel
+  reinforcing a fact an established, already-self-evident convention already
+  states unambiguously. It teaches nothing new; it is not required to.
+- **Equal-footprint empty vs. locked-future boost bay pills.** COVERED. This
+  is the exact shipped distinction carried into a new shape, not a new
+  code: `styles.css:3015-3017` already differentiates `.kp-bay-empty`
+  (dashed) from `.kp-bay-future` (dashed, fainter border, lower opacity) in
+  card form today. The RULE behind the distinction (3 active, buyable to 5)
+  is independently TAUGHT by the `boostSlots` tip (ledger line 94), which
+  the spec keeps mounted on the same `BOOST BAYS` section head in Z4. The
+  pill-level visual difference is reinforcement, not the sole teacher of the
+  rule.
+- **One-word READY/LOADING verdict slab.** COVERED, and already correctly
+  self-scoped by the proposal's own `owedCopyNote`: the full verbatim
+  sentence ("DIVE KIT READY."/"DIVE KIT IS LOADING...") ships directly
+  beside the one-word slab, so the slab restates a fact stated in full on
+  the same screen at the same moment. No new information, no gap.
 
-## Integration facts (item 3 of the task)
+## 5. Anything else needing a teaching path
 
-### NIGHT.SYS's blind-buy signpost
+**COVERED.** No other new mechanic, stat, resource, or purchase was found in
+this item. The container-query fluid-type strategy, the CRT layer
+construction, the amber hue token block, and the demo rig's own switches
+(CRT/HUE/VIEWPORT/RUN STATE) are presentation and review tooling, not
+player-facing rules. The gutter's demotion of DIVES CLEARED/LOST/RAM PER
+TURN from boxed rows to unboxed ticks is a glance-order change to
+non-mechanic historical flavor (no `MECHANIC_INVENTORY` entry exists or is
+warranted for it), consistent with the proposal's own `cuts` rationale.
 
-Confirmed live and correct, not a plan: `components/os/windows/night.tsx`'s
-patch row (lines 147-157) is already `<Btn label="BUY BLIND: SEE
-DARKNET.LNK" variant="ghost" onClick={onOpenDarknet} />`, dispatching
-nothing itself; `components/os/windows/darknet.tsx`'s own `BUY BLIND ({cost}
-cr)` button (lines 42-52) is the one that dispatches `buyDarkPatch`, with
-the cost, a hatch bar, and the live balance all in the same row
-(`kp-darknet-row`). The `night-shop` coachmark's shipped copy ("DARKNET.LNK
-sells one blind pull, price climbing by the day") was already forward-
-compatible with this exact behavior; no rewrite needed. This also widens
-the `credits` waiver's confirmed scope to include DARKNET.LNK, now a real
-transactional surface for the first time. **COVERED**, ledger lines 99, 105
-(waiver log 136-145).
+## Summary for the build
 
-### The `patch-craft` moment's anchor
+Two fixes needed before this study is ready for user review, both tier 0,
+both scoped to the ux-agent's own spec, neither requiring a coachmark or a
+copy order:
 
-Resolved above under (e): not relocated to a new `solder` surface as the
-brief's own framing anticipated, but retired entirely, since direct
-inspection of the shipped bench found its rule taught better at tier 0 than
-any coachmark placement could achieve. This also surfaced a live defect the
-relocation framing would have quietly worked around rather than fixed: the
-coachmark's current mount (`night.tsx:199-208`, keyed to a live `craftReady`
-signal) sits on a DIFFERENT window than the one with the actual crafting
-interface (`solder.tsx`, which mounts no `<Teach>` at all). A player who
-crafts mid-day in SOLDER.BAY, consuming their legal pair before NIGHT.SYS
-next opens, could complete a full run without this coachmark ever firing.
-Retiring it removes a moment that was simultaneously misplaced and made
-redundant by superior always-on coverage. See `tutorial/ledger.md` waiver
-log (208-234) for the full citation trail, and the `mechanic-waiver` and
-`mechanic` items in `pipeline/proposals/tutorial-agent.json`.
+1. Add a small persistent "holds more" marker (dot or dotted underline) to
+   `.lo-bay-pill`'s augment name, on filled pills only. Item 2 above.
+2. Replace the fixed ~60-character truncation on narrow-tier program
+   descriptions with a sentence-boundary clamp sized to the longest actual
+   description in `kit.ts` (all tiers), so `armHalt` and `armSiphon` never
+   ship with their effect clause hidden behind an unexpanded "...". Item 3a
+   above.
 
-Engine ask, pre-authorized, small: `TeachSurface` (`content/teaching.ts`)
-gains a `"solder"` member and `WINDOW_SURFACES` (`dev/teach-sim.ts:54`)
-gains `"solder"` alongside `loadout`/`desktop`/`tutorial`, purely so
-`patchCraft`'s `firstContact` can name its real surface and be exempted from
-the run-walk reachability check the same way the other window surfaces
-already are. No new moment, anchor, or copy order rides on this.
+Everything else in `loadout-eva-instrument-panel` is COVERED as specced.
 
----
-
-## One more surface-changed waiver check, outside the named 12 items
-
-The task's fourth instruction (check every existing waiver whose named
-surface changed this cycle) covers more than the 12 items under direct
-review, since `LOADOUT.CFG` is one of the four study windows this whole
-integration arc is landing (`pipeline/BRIEF.md`'s own list: INBOX,
-LOADOUT.CFG, SOLDER.BAY, REPAIR.LOG) even though no `ui-spec` item in the
-CURRENT `ux-agent.json` targets it again this round (it landed under a
-prior cycle's `kpos-loadout`). Read `components/os/windows/loadout.tsx`
-directly rather than skip it because it is not one of the 12.
-
-**Finding: `programTiers`'s citation is dead, but the mechanic is better
-supported than before, not worse.** The waiver's original text cited the
-old `KitScreen` header (`screens.tsx:359-364`, "tiers come from closed
-days..."). That header does not exist anywhere in the shipped
-`LoadoutContent`, confirmed directly: its replacement, a `DIVE KIT` status
-readout, does not restate the fact in prose anywhere. But `LoadoutContent`'s
-`ProgRow` (loadout.tsx:137-203) shows each program's live RANGE or WIDTH
-number directly beside its TIER segment meter, every visit, for all three
-programs, which demonstrates the fact this mechanic actually cares about (a
-tier number correlates with a bigger output number) more concretely than
-the old prose sentence ever did. **Re-cited, not broken**: filed a
-`mechanic-waiver` item this cycle updating the citation. `kitConfig`, the
-sibling mechanic the same dead header used to also back, is unaffected: its
-TAUGHT status was never resting on that header alone, only partly (the
-ledger's own standing "kitConfig: NOT a waiver" entry), and its actual
-basis, the `modeLocked` tip, is confirmed still live on every locked mode
-button in `ProgRow`'s `tipFor` (loadout.tsx:348, 365).
-
-This is the same failure shape as `jobBoard`'s break (a plain-language
-sentence a waiver depended on silently dropped when its window was
-redesigned), landing on the safer side purely because a replacement fact
-happened to exist nearby. Both are cited together in `tutorial/ledger.md`'s
-Loop history as the same systemic pattern this cycle surfaced twice.
+`tutorial/ledger.md` updated this cycle: a loop history entry records this
+full review; no Coverage-table rows change (no mechanic gains or loses
+status, this is a presentation-layer review of an unshipped study); no
+waiver's underlying claim is affected since none of the surfaces this
+proposal touches have integrated. No `pipeline/proposals/tutorial-agent.json`
+items filed, matching the pre-integration-study precedent set by the
+`ux-2026-07-29-dadlog` cycle: findings live here and in the ledger until the
+study is approved and headed for integration.
 
 ---
 
-## `pipeline/proposals/narrative-director.json`: teaching implications only
+# Tutorial gate: ux-2026-07-31-loadout-eva (round 2)
 
-Thirteen `inbox-subject`/`ui-copy` items reviewed for exactly one question
-each: does any new label hide a cost or a state the player needs?
+Reviewed: the round-2 revision to `loadout-eva-instrument-panel` requested by
+the user after seeing round 1 (`ui-demos/manifest.json`, `loadout-eva`
+history, 2026-07-31: "I'm wanting to see if we can break away from the single
+color design... use Evangelion colors... the deck feed is underlapping with
+scan.exe, and attack.exe is not vertically in line... The layout on 16:9,
+21:9, and 1280x800 should be the same. I see no reason to need to support 4:3
+right now."). Round 1's content above is unchanged and still stands; this is
+an addition, not a replacement, per this round's own instruction.
 
-Twelve are clean. Costs are named inline wherever a number changes hands
-(`{PLACE_COST} RAM` in the console hints, the darknet/night-patch/boost-bay
-prices, all pre-existing live values, not new copy inventing a number). The
-route-row and threat-banner replacements are addressed under (b) above. The
-INTRUSION identity item is explicitly routed to the loremaster by its own
-text; no teaching consequence either way, also addressed under (b).
+Grounded directly against the LIVE demo file, which already implements this
+round rather than merely planning it: `ui-demos/loadout-eva/index.html`
+(role-token block lines 58-102, `.lo-mode.mode-on` lines 563-572, strain
+threshold CSS lines 698-732, threshold JS lines 1492-1496, the new `day8` run
+state lines 1085-1109 and its `label`, the `@container` breakpoint change to
+700px lines 754/809/826 with the 4:3-dropped comment at 1578-1579, and the
+sentence-clamp `DESC_BUDGET` at 1053-1064 confirming round 1's tier-0 fix
+already landed) rather than the proposal text, per this seat's own standing
+practice. Also read: `kernel-panic-site/app/src/components/os/shop-os.tsx:588`,
+`.../components/os/windows/inbox.tsx:586`, `.../game/run-reducer.ts` lines
+83, 252, 357, 406, 481, 537 (strain semantics), `.../styles.css:773-775,
+814-815,2969-2981` (the shared inverse-video idiom), and `tutorial/ledger.md`
+Coverage rows `strainChip` (line 85), `kitConfig` (line 90), `programTiers`
+(line 91), `boostSlots` (line 94), `modeEffects` (line 111).
 
-**One real finding**: `ui-copy-dive-result-overlay`'s `newDiveButton`
-("NEW DIVE" replacing the shipped small overlay's single "CONTINUE" label,
-`duel.tsx:918`) is proposed as an unconditional replacement, but `duel.tsx`
-uses that ONE button for all four dive outcomes today (win/core,
-win/gridlock, loss/severed, loss/core). Relabeling all four "NEW DIVE" would
-misstate two of them: a loss (there is no new dive, the run just ended, the
-next screen is the run-end scene) and a win that closes the day's last
-ticket (the next screen is NIGHT.SYS, not a dive). This is a label-accuracy
-question in this seat's charter, the same shape as the `runReset` waiver's
-prior finding about the ABANDON dialog's old inaccurate confirm text: a
-control's face has to tell the truth about what pressing it does. `ui-spec`
-`dive-overlay-continue-label-accuracy` filed this cycle: NEW DIVE only when
-the result is a win with at least one ticket still open that day, CONTINUE
-(accurate for all four cases, the existing safe default) otherwise. The
-narrative-director's own notes on this item independently flagged the exact
-same ambiguity ("whether removing... is an Orchestrator integration
-decision, not a copy one"); this gate is answering that open question with
-a concrete rule.
+**Five items reviewed. 4 COVERED. 1 NEEDS-TEACHING (tier 0), and the fix
+belongs to two already-shipped call sites, not to this study.**
+
+## 1. Color now carries semantics: does hue-as-state need teaching?
+
+**COVERED.**
+
+The load-bearing fact: every state this scheme recolors was ALREADY carrying
+its meaning through a non-hue channel before this round, and that channel is
+untouched. `.lo-mode.mode-on` (index.html:563-572) still floods full
+inverse-video fill (`background: var(--r-ok)`) AND keeps its round-1 corner
+reticle marks, now also recolored but still present as their own shape cue;
+the shipped equivalent this stands in for, `.kp-mode2.mode-on`
+(`styles.css:2980`), does the identical fill-flip today with a single ink.
+Hue is a SECOND, additive channel layered on top of a fill/shape distinction
+that already fully carries "this is the active one," confirmed against
+`kitConfig` (ledger line 90) and `modeEffects` (ledger line 111): a colorblind
+player loses only the bonus reinforcement, not the fact itself.
+
+On the specific question asked: does GREEN-for-active plus RED-for-risk
+resolve or worsen the standing ambiguity that inverse video means both
+"danger" and "selected" system-wide (`kp-datarow-warn`, `kp-chip-crimson`,
+`kp-mode2.mode-on` all share one CSS treatment, `styles.css:773-775,814-815,
+2980`, unchanged by this study)? It resolves it, for a sighted player,
+without weakening it for anyone else. Under the single-ink scheme that
+ambiguity is only ever disambiguated by WHERE the fill appears (a mode chip
+vs. a strain number) and by context, never by the fill itself. Giving
+"selected/nominal" its own hue (green) and "danger/risk" its own hue (red)
+means the two meanings of inverse-video now also differ in hue wherever both
+hues are visible, on top of the position-based disambiguation that already
+worked and still works unchanged. No case exists on this window where an
+active-mode chip and a risk-band strain reading could be confused for each
+other; they are different controls in different zones. No coachmark needed:
+this is reinforcement of an already-self-evident, already-taught state, not
+new information.
+
+The cyan BENCH FEED tint (aux channel, camera-only) and the amber
+structural/neutral base carry no rule either: cyan marks "this is a video
+feed, not managed UI" by simple visual convention (a different texture
+class, matching the FIG.01 imagery precedent round 1 already cleared), and
+amber is simply the renamed default single-ink role. Neither needs a moment.
+
+## 2. Neural Strain gains a threshold color
+
+**NEEDS-TEACHING (tier 0), but not on this study.** The study's own threshold
+logic is COVERED; this review surfaced a live, independent, and more severe
+problem on two already-shipped screens that this study's correctness now
+throws into contrast.
+
+**The study, checked on its own merits: COVERED.** `run.strain` counts DOWN
+from `START_STRAIN = 100` (`run-reducer.ts:83`) toward 0, where the run ends
+("severs", `run-reducer.ts:406`); high strain is safe, low strain is
+dangerous, matching REPAIR.LOG's own "`{run.strain}` STRAIN LEFT" phrasing
+(`report.tsx:442`). The study's threshold (`index.html:1492-1496`: NOMINAL
+`> 70`, RISK `<= 35`, silent WATCH band between) has the direction right.
+More importantly, the RISK band is NOT color-only: `.lo-strain-low
+.lo-strainnum` (`index.html:720-724`) floods full inverse video (`background:
+var(--r-warn); color: var(--px-void)`), the identical shipped danger idiom
+(`kp-chip-crimson`, `styles.css:814-815`), so a colorblind reader loses
+nothing at the one threshold that actually calls for action. The NOMINAL
+band (`.lo-strain-ok`, `index.html:717-718`) is color-only (green text vs.
+the default ivory), but this is low-stakes: NOMINAL and the silent WATCH
+band both mean "keep going," so a colorblind player who cannot tell them
+apart loses a reassurance, not a warning. No coachmark needed: the specific
+cut points (70, 35) correspond to no mechanical rule (searched for any
+gameplay effect gated at 35 or 70 strain and found none beyond these color
+thresholds themselves), so there is no fact to teach beyond what `strainChip`
+already teaches (ledger line 85: "Strain is shared... will not recover
+between them. Zero ends the run," `strain-chip` coachmark,
+`content/teaching.ts:307-320`, plus the `strain` tip, lines 427-431); the
+color is illustrative urgency on an already-explained number, not a new rule.
+
+**The real finding, tier 0, urgent, and outside this study's files.**
+`shop-os.tsx:588` and `windows/inbox.tsx:586` both apply the shared danger
+treatment (`kp-chip-crimson`) to the STRAIN chip on the condition
+`run.strain > 70`. Given the semantics just confirmed (`run.strain` is
+remaining health, high is safe), this is backwards: it floods the danger
+idiom onto the SAFEST band of the stat and leaves the actual risk band
+(approaching 0) in plain, unflagged text. Because every run starts at
+`strain: 100` (`run-reducer.ts:252`), this fires from the very first frame of
+every player's very first ticket, before a single point of strain has been
+spent, showing "danger" chrome on a fully healthy stat. This is not
+hypothetical or edge-case: it is the default state of the game. It also now
+sits in direct, checkable contradiction with the correct direction this
+study just built for the same stat on the same class of screen: if
+`loadout-eva-instrument-panel` ever integrates unfixed, a player would see
+STRAIN read green-safe-at-100 in LOADOUT.CFG and simultaneously read
+red-danger-at-100 on the taskbar and in INBOX's footer, for the identical
+number, on the identical screen, at the identical moment.
+
+**Fix (tier 0, not a coachmark, and not this study's job):** invert the
+condition at both call sites to trigger on LOW strain, e.g. `run.strain <=
+35` (matching the threshold this study just established, so the two
+surfaces agree once both are correct) instead of `run.strain > 70`, in
+`kernel-panic-site/app/src/components/os/shop-os.tsx:588` and
+`.../components/os/windows/inbox.tsx:586`. This is independent of whether
+`loadout-eva-instrument-panel` integrates at all; it is wrong today, on the
+currently shipped desktop, and should not wait on this cycle's UI decision.
+Filed to `tutorial/ledger.md` Open Work, urgent, this round; no
+`pipeline/proposals/tutorial-agent.json` item filed for it this round since
+the standing scope for this cycle is gate-plus-ledger only (see round 1's own
+note), but it is precise enough to build directly from this entry.
+
+## 3. A third run state (DAY 8 STRAINED)
+
+**COVERED.** Demo-only rig chrome, not player-facing copy, the same class of
+artifact as the existing "DAY 4" / "DAY 1 EARLY" scenario labels round 1
+already treated as non-gated. Confirmed it actually exercises the claim it
+exists for: `strain: 21` (`index.html`, the `day8` state object) sits at 21,
+comfortably inside the `<= 35` RISK band, so the red/inverse-video state is
+genuinely reviewable rather than merely described. No mechanic-inventory or
+accuracy obligation attaches to a reviewer-facing scenario switch.
+
+## 4. Narrow-tier paging removed from the supported viewports
+
+**COVERED,** and the removal makes the case stronger than round 1's, not
+weaker. Confirmed directly in the live CSS: the WIDE-tier `@container`
+breakpoint moved to `min-width: 700px` (`index.html:754`), and all three
+surviving VIEWPORT options (16:9 at 860px, 21:9 at 940px, laptop at 760px)
+sit above that line, so all three now render the identical WIDE arrangement
+with no tab strip, matching the user's ask verbatim. The 4:3 option (480px)
+is confirmed dropped from the rig's own `VIEWPORTS` list, with a code comment
+recording why (`index.html:1578-1579`). Round 1's verdict already established
+that none of the three mechanics behind the old hidden tab (`boostSlots`
+ledger line 94, `patchCellUse`/`patchShapes` ledger lines 82-83, `strainChip`
+ledger line 85) have their first contact at LOADOUT.CFG; with the tab gone
+entirely at every supported width, that question is now moot rather than
+merely answered, since there is no gated content left to have a first-contact
+gap. The narrow path (`@container lo (max-width: 699.98px)`, `index.html:826`)
+still exists in the CSS as the stated defensive fallback for extreme tiling,
+so round 1's tier-0 fix for that path (the sentence-boundary description
+clamp) still matters if it is ever reached; confirmed it already landed
+(`DESC_BUDGET = 150`, clamped at `". "` boundaries, `index.html:1053-1064`,
+matching the `NOTES.md` "Gate fixes built in" section), so nothing further is
+owed there either.
+
+## 5. The ATTACK.EXE 10px stagger is removed
+
+**COVERED**, trivially. Round 1's own spec explicitly stated the stagger was
+"purely a placement device," never a hierarchy signal, so its removal
+subtracts no information a player relied on. Confirmed absent from the live
+CSS: no `translateY` offset remains on `.lo-panel` or the trinity row (the
+only `translateY` uses left in the file are the monitor scan-wipe, the feed
+roll, and the CRT roll keyframes, all unrelated). Cosmetic in, cosmetic out.
+
+## Summary for the build
+
+No new mechanic, tip, or coachmark is needed anywhere in this round. One real
+fix is owed, and it is not a change to `ui-demos/loadout-eva/`: invert the
+`run.strain > 70` crimson condition to a low-strain check (e.g. `<= 35`) at
+`shop-os.tsx:588` and `windows/inbox.tsx:586`, so the shipped desktop stops
+flagging a full-health stat as danger from turn one, and so it no longer
+contradicts the correct threshold direction this study just established for
+the same number. `tutorial/ledger.md` updated this round: a round-2 addendum
+on the existing 2026-07-31 loop-history entry, and a new urgent Open Work
+bullet for the strain-chip inversion. No Coverage-table status changes (no
+mechanic graduates this round; this is still a pre-integration study plus one
+finding on already-shipped, unrelated screens) and no
+`pipeline/proposals/tutorial-agent.json` or copy-order files, matching this
+cycle's own round-1 scope note.
 
 ---
 
-## Items filed this cycle
+# Tutorial gate: ux-2026-07-31-loadout-eva (round 3)
 
-`pipeline/proposals/tutorial-agent.json` (brief `ui-integration-2026-07-29`):
+Reviewed against the LIVE file, `ui-demos/loadout-eva/index.html`: the role
+token block (lines 58 to 161, all five schemes), the window border (line
+361), the REC light (lines 552 to 567, markup line 1047), the trinity
+bracket CSS (lines 616 to 632) and its unconditional per-panel construction
+(`buildPanel`, lines 1496 to 1501), the hazard stripe divider (line 724),
+the strain readout (lines 824 to 858), the BENCH FEED crop (lines 496 to
+521, 944 to 962) against its source art, and the CURVED CRT disable rules
+and clock logic (lines 259 to 287, 1836 to 1852). Also read
+`kernel-panic-site/app/src/styles.css` lines 846 to 851 and 1323 to 1330
+(the shipped `kp-danger-blink` idiom) and `shop-os.tsx` lines 122, 546 to
+550 (the live HUE picker). The color direction is settled (lore ledger
+ruling 14) and is not re-litigated below.
 
-- `ui-spec` `inbox-collapsed-row-parity`, restoring the `jobBoard` header
-  sentence and the `threatTier` tip's list-view badge to INBOX's collapsed
-  view.
-- `ui-spec` `dive-overlay-continue-label-accuracy`, conditioning the dive
-  overlay's NEW DIVE label on a win with a ticket remaining.
-- `mechanic` (revision) plus `mechanic-waiver` `patchCraft`, retiring the
-  `patch-craft` coachmark, waiving the mechanic to SOLDER.BAY's shipped
-  tier-0 coverage, moving `firstContact` to the new `solder` surface.
-- `mechanic-waiver` (re-citation) `programTiers`, same waiver, new
-  citation, since the old one (KitScreen's header) no longer exists.
-- `mechanic-waiver` (narrowing) `jobBoard`, stating plainly that the waiver
-  does not currently hold, pending `inbox-collapsed-row-parity`.
+**Five verdicts: 1 NEEDS-TEACHING (tier 0), 4 COVERED.**
 
-No new coachmark this cycle, so no new copy order for a moment. One copy
-order cancelled: `pipeline/copy/orders/copy-patch-craft.json`, status set to
-`cancelled`, superseded by the `patch-craft` retirement; no further words
-are owed on it.
+## Question 1: does the RISK band still read as an alarm?
 
----
+**NEEDS-TEACHING (tier 0).** Cites `tutorial/ledger.md` line 85
+(`strainChip`) and the round 2 addendum's own premise (ledger lines 594 to
+599: the RISK band "floods inverse video exactly like the shipped danger
+idiom, so it survives a colorblind reader"), a premise round 3's ambient red
+now pressures.
 
-## `tutorial/ledger.md` updates this cycle
+`--r-hazard` is confirmed to paint four permanent, unconditional things:
+the window border (line 361), all three trinity brackets alike (`buildPanel`
+applies `.lo-bracket` with no state check at all, lines 1496 to 1501), the
+REC chip fill (line 560), and the hazard divider (line 724). RISK keeps
+three real signals: a hotter, more saturated `--r-warn` against the duller
+`--r-hazard` (confirmed distinct in every scheme, e.g. nerv `#ff2a17` vs
+`#d1381a`), the inverse-video flood (confirmed structurally different from
+the REC chip: strain-low sets void TEXT on a colored fill, the same
+construction as `.lo-mode.mode-on`'s "active" idiom; REC sets light text on
+a colored fill, a plain label, never the inverse idiom at all), and
+position, the only place `--r-warn` renders in the file. That is a real,
+three-part, colorblind-safe case, and it still loses to habituation: none of
+the three signals involve motion, and a page with four to five static
+red-family shapes on every healthy visit trains the eye to stop sampling
+hue and fill for the one time it needs to matter. Static chrome cannot be
+outrun by more static distinction; it can be outrun by motion, which the
+ambient chrome structurally does not have.
 
-Full rewrite of the Coverage table and Waiver log against direct code
-evidence, not the prior entry's word. Net: seven mechanics graduated from a
-stale `PLANNED` to their true current `TAUGHT`/`WAIVED` status
-(`patchShapes`, `darkWebBuy`, `slotBuy`, `boostSlots`, `boostSwap`,
-`patchDrop`, `gridlockChip`), five firing-correctness asterisks cleared
-after direct re-confirmation (`cascade`, `ram`, `strainChip`, `credits`,
-`runReset`), one waiver re-cited (`programTiers`), one waiver found broken
-and narrowed (`jobBoard`, the most severe finding this cycle since
-`teach-sim` cannot detect it), one coachmark retired in favor of a stronger
-waiver (`patchCraft`), and one two-cycle-old gate recommendation overturned
-rather than acted on (`pieceDragCarry`). Two items in "Flagged to other
-seats" moved from open to resolved after direct re-confirmation
-(`ram-upgrade-cap-parity`, `touch-safe-tooltips`), having already shipped
-without the ledger catching up. Full reasoning, citations, and three
-standing lessons recorded in the new Loop history entry.
+**Fix:** give `.lo-strain-low`'s numeral and active bar segments a
+`kp-danger-blink`-style motion channel (`styles.css:846-851`, "danger:
+inverse-blink, not a hue," a 1.2s `steps(2)` alternation between full fill
+and a hollow ink-outlined state), built on the `--r-warn` role token so it
+still collapses under SINGLE INK. Leave the window border, brackets, REC,
+and divider fully static, forever; that asymmetry is what makes motion mean
+something. Add the new animation to the existing `prefers-reduced-motion`
+block (lines 990 to 993), falling back to the current static full flood,
+mirroring `kp-danger-blink`'s own suppression (`styles.css:1323-1330`).
+Verify under CRT ON, curved, that the blink still reads through the bloom
+and mask layers rather than smearing into them.
+
+## Question 2: does permanent red bracket chrome teach a false alarm?
+
+**COVERED.** Cites `tutorial/ledger.md` lines 90 to 91 (`kitConfig`,
+`programTiers`). The bracket is unconditional on all three panels
+(`buildPanel`, lines 1496 to 1501, no branch on tier, lock, or active mode),
+so it carries no claim about a state that could vary and cannot misstate
+one; it reads closer to a title bar's ink fill than a status readout. The
+facts that actually vary per program, lock state and tier, are carried on
+untouched channels: a locked mode chip is dashed `--ch-faint`, not hazard
+colored, and a program's live tier sits in `--r-line` beside its meter,
+exactly the fact `programTiers` is already waived on. Permanent hazard
+striping on a housing that never changes with operating state also matches
+the correct real-world register (a fuse box lid is taped whether or not it
+is faulted): this is dangerous equipment, not this equipment is broken. The
+real risk here, static red training players to stop reading red as urgent,
+is Question 1's finding, not a false claim made by this uniform chrome
+itself, and Question 1's fix (motion reserved to the one state that needs
+it) is what keeps this chrome from ever being mistaken for a status report.
+
+## Question 3: do four schemes create a teaching problem?
+
+**COVERED, resting on a stated assumption.** Cites `tutorial/ledger.md`
+lines 579 to 591 (round 2: hue is additive reinforcement, not the sole
+signal). Assumption: SCHEME is a review-time switch, matching every other
+row on this demo's rig (CRT, HUE, VIEWPORT, RUN STATE, none of which have
+ever shipped as a player control) and this cycle's own BRIEF scoping the
+main game code out of scope. One scheme ships; a player never sees the
+others.
+
+Checked the harder case too, since the game already ships a live HUE picker
+(`shop-os.tsx:122,546-550`, LAVENDER/MAGENTA/PHOSPHOR, pressable mid-run,
+never treated as a teaching problem because it swaps one neutral accent
+uniformly while the fill-flip danger mechanism stays hue-independent). The
+four EVA schemes hold the same invariant: `--r-ok` is green-family in all
+four and `--r-warn` is red-family in all four, so "green means nominal, red
+means risk" is scheme-invariant even though the exact shade shifts. Only
+`--r-hazard` shifts hue-family (orange-rust vs vector's magenta), and
+Question 2 already established that role carries no state, so a hue-family
+shift on a role that says nothing teaches nothing either way. Verdict holds
+under both readings, on the condition that any scheme added later keeps the
+same green-ok/red-warn/fill-flip invariant; flagging that condition, not the
+scheme count, as the load-bearing fact.
+
+## Question 4: the BENCH FEED resize and reframe
+
+**COVERED.** Cites `tutorial/ledger.md` lines 7 to 9 (decoration needs
+neither a moment nor a waiver) and the `journalRunGate` precedent (lines 319
+to 339) for when imagery DOES need a finding, only when paired with a
+caption making a checkable claim. The crop (200x150, x 100 to 300 / y 58 to
+208 of the native 304x227 image, stepping to 150x113 at the laptop
+breakpoint) shows more of the same already-accepted dithered photo, still
+1:1, still tinted `--r-aux` under the same "this is a camera, not managed
+UI" convention round 2 cleared. No caption sits on this cell asserting
+anything the crop could contradict, unlike `journalRunGate`'s actual
+problem. A bigger, better-composed crop of already-accepted decorative art
+needs no `MECHANIC_INVENTORY` row now for the same reason it needed none at
+112x84.
+
+## Question 5: does losing the REC blink and terminal cursor under CURVED cost signal?
+
+**COVERED**, one non-blocking build note. Cites `tutorial/ledger.md` lines
+690 to 692 (dadlog precedent: a blinking caret's reduced-motion removal
+"fully covers the comprehension risk" when the underlying state is
+otherwise clear). The feed's rolling band is pure ambient texture with no
+state binding. REC's markup (line 1047) renders unconditionally regardless
+of feed state, so its dot is reinforcement of a fact the static "REC" text
+already states in full, not the sole carrier of it; REC is also, by
+construction, not the inverse-video idiom (light text on a fill, not void
+text), so it has no bearing on Question 1 either. The terminal cursor
+(`kp-boot-cursor`) is a non-issue for a different reason: the class is
+defined as a shared primitive but is not applied to any element anywhere in
+this file's markup, so the disable rule at line 287 is currently inert;
+nothing is lost because nothing currently renders. Non-blocking: this reads
+like a defensively carried-over line from another demo's CURVED disable
+list; flag for a future revision to either wire it to a real element or
+drop the dead selector. The clock's dropped seconds cost nothing either, no
+mechanic in `run-reducer.ts` ties to wall-clock granularity.
+
+## Summary for the build
+
+One fix owed, tier 0, scoped to `ui-demos/loadout-eva/index.html`: a
+`kp-danger-blink`-style motion channel on `.lo-strain-low`'s numeral and bar
+segments, reduced-motion-safe, with every hazard-colored structural element
+left fully static. Everything else this round is COVERED as built. No
+`pipeline/proposals/tutorial-agent.json` items or copy orders filed,
+matching this cycle's round 1 and round 2 scope: findings recorded here and
+in `tutorial/ledger.md`, precise enough to build directly from this entry.

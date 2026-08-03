@@ -1,0 +1,18 @@
+{
+  "id": "cust-card-wren-device",
+  "from": "orchestrator",
+  "kind": "window-image",
+  "treatment": "dither-fine",
+  "target": "/assets/px/window/card-wren-tallis-device.png",
+  "size": [304, 304],
+  "invert": false,
+  "brief": "CUSTOMER.REC card device macro for Wren Tallis's studio master ledger (customers.ts), matching the ratified card macro construction (pipeline/art/done/cust-card-juno-device.png, cust-card-dex-device reference in ui-demos/kpos-shell/art/): an extreme close-up macro of a hardware studio master recorder, 1990s anime OVA ink style, flat cel shading, no text or speech bubbles or panel borders or lettering anywhere (meters and displays show only abstract glow and needle positions, never legible in-fiction text). Rack-style master deck: a row of VU meters, a strip of faders, a tape or drive slot at the frame edge. The wrong detail, kept subtle: one VU needle holds mid-scale, steady as a held breath, while every other meter sits at rest, like something inside is breathing between tracks. Background a plain soft dark gradient only. Repair context: her CUSTOMER.REC device cell currently falls back to the old still-bench Dad still, reported by the user 2026-07-29 as unacceptable.",
+  "status": "done",
+  "result": "pipeline/art/done/cust-card-wren-device.png",
+  "generation": {
+    "tool": "Higgsfield nano_banana_pro",
+    "attempts": 2,
+    "credits_spent": 4,
+    "notes": "First attempt had legible meter numerals and 'VU' text; rejected per no-text rule. Second attempt with explicit ban on numerals and scale markings succeeded. Final output re-dithered by the orchestrator from raw to the ordered square 304x304 (cover + center-crop), 1-bit fine, no text, clean gauge needles with one at mid-scale, matching existing device card construction. Integrated as /assets/px/window/card-wren-tallis-device.png."
+  }
+}

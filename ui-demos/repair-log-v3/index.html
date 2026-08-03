@@ -1,0 +1,2308 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>KP demo: REPAIR.LOG (instrument panel)</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=VT323&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" />
+<link rel="stylesheet" href="../_shared/kp.css" />
+<link rel="stylesheet" href="../_shared/system.css" />
+<style>
+/* REPAIR.LOG rebuilt as an instrument panel
+ * (cycle ux-2026-07-31-repair-log-v3, spec item repair-log-v3-instrument-panel).
+ *
+ * The KP/OS v3 system is ui-demos/RULINGS.md; loadout-eva is the reference
+ * implementation, and the role tokens, glass layers, stage rig and load
+ * choreography helpers below are copied from it verbatim rather than
+ * re-derived, per law 9.
+ *
+ * The one design argument this page makes on its own account is its GLANCE
+ * ORDER, because it overrules the panel queue's standing note. RULINGS law 11
+ * says "the verdict is the obvious focal element" for this window. It is not,
+ * and the reason is in the game code: run-reducer.ts `duelFinished` routes a
+ * loss to screen "runEnd" with lastResult null, and the finale to
+ * "finaleWin". REPAIR.LOG therefore only ever renders on a WIN, so the string
+ * REPAIR LOGGED is INVARIANT here. A constant carries no information and
+ * cannot be the focal element of a report. What varies ticket to ticket is
+ * the transaction: what the ticket credited, what it billed in strain, and
+ * what it recovered. So THE BILL is the focal zone, and the verdict keeps
+ * masthead slab scale.
+ */
+
+/* ---------- ROLE TOKENS: colour as state, not decoration ----------
+ * Copied from loadout-eva/index.html. :root collapses every role back onto
+ * the single v2 accent, so a surface with no data-scheme renders exactly as
+ * v2 did; only data-scheme pulls them apart. That reversibility is the point.
+ *
+ * On THIS surface the eight roles own:
+ *   struct  panel hairlines, dividers, the cam bezel
+ *   note    labels that NAME: the masthead eyebrow, the gutter spine and
+ *           tick labels, the numeral units, the piece shape noun, the scope
+ *           tag, and the status of a ticket that recovered nothing
+ *   line    live data: the ECG trace, receipt values, pouch glyph arms,
+ *           the dive log
+ *   data    the two hero numerals, and nothing else
+ *   ok      NOMINAL: CLEAN, BANKED, INSTALLED, the PICK ONE state
+ *   warn    RISK: the strain alarm, and nothing else, ever
+ *   aux     the CLIENT CAM still, a different signal class
+ *   hazard  structural red: window edge, focal brackets, hazard stripe,
+ *           trap markers, LEFT ON THE BENCH
+ */
+:root {
+  --r-struct: var(--ch-dim);
+  --r-line: var(--ch);
+  --r-data: var(--ch-hot);
+  --r-ok: var(--ch);
+  --r-warn: var(--ch);
+  --r-aux: var(--ch);
+  --r-hazard: var(--ch);
+  --r-note: var(--ch-dim);
+  --r-ok-glow: var(--px-glow);
+  --r-warn-glow: var(--px-glow);
+}
+
+:root[data-scheme="nerv"] {
+  --px-void: #0a0603;
+  --ch: #ff9a1f;
+  --ch2: #c2431a;
+  --ch-hot: #ffe9c4;
+  --r-struct: #a86a22;
+  --r-line: #ff9a1f;
+  --r-data: #ffe9c4;
+  --r-ok: #8dff3a;
+  --r-warn: #ff2a17;
+  --r-aux: #23d3ff;
+  --r-hazard: #d1381a;
+  --r-note: #6ea8ff;
+  --r-ok-glow: color-mix(in srgb, #8dff3a 45%, transparent);
+  --r-warn-glow: color-mix(in srgb, #ff2a17 60%, transparent);
+}
+
+:root[data-scheme="tokyo"] {
+  --px-void: #16161e;
+  --ch: #7aa2f7;
+  --ch2: #414868;
+  --ch-hot: #c0caf5;
+  --r-struct: #414868;
+  --r-line: #7aa2f7;
+  --r-data: #c0caf5;
+  --r-ok: #9ece6a;
+  --r-warn: #f7768e;
+  --r-aux: #7dcfff;
+  --r-hazard: #ff9e64;
+  --r-note: #bb9af7;
+  --r-ok-glow: color-mix(in srgb, #9ece6a 45%, transparent);
+  --r-warn-glow: color-mix(in srgb, #f7768e 55%, transparent);
+}
+
+body {
+  overflow: auto;
+  display: block;
+  height: auto;
+  min-height: 100%;
+  padding: 26px 16px 40px;
+}
+
+/* ---------- the viewport rig: a real-resolution stage, scaled to fit ----------
+ * Copied from loadout-eva. The stage is laid out at its TRUE pixel size and
+ * transform-scaled to fit the reviewer's browser; transforms do not change
+ * layout size, so every container query inside still resolves against the
+ * real window width. What you see at 47% is what a 2560x1080 desk renders. */
+
+.lo-fit { transform-origin: top left; }
+.lo-fitwrap { margin: 0 auto; }
+
+.lo-stage {
+  position: relative;
+  overflow: hidden;
+  background: var(--px-void);
+  border: 1px solid var(--ch-faint);
+}
+.lo-warp { position: absolute; inset: 0; display: flex; flex-direction: column; }
+
+.lo-desk {
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-conic-gradient(color-mix(in srgb, var(--ch) 4%, transparent) 0% 25%, transparent 0% 50%),
+    radial-gradient(120% 90% at 50% 0%, color-mix(in srgb, var(--ch) 5%, transparent), transparent 70%);
+  background-size: 8px 8px, auto;
+}
+
+.lo-deskwrap {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 22px 0 0;
+  min-height: 0;
+}
+
+/* the leftover desk, drawn: a window that leaves room to tile is the whole
+ * point of the height ceiling, so the page makes the leftover room literal */
+.lo-free {
+  position: absolute;
+  top: 30px;
+  bottom: 14px;
+  border: 2px dashed var(--ch-faint);
+  opacity: 0.5;
+  display: flex;
+  align-items: flex-end;
+  padding: 6px 8px;
+  pointer-events: none;
+}
+.lo-free span {
+  font-family: var(--kp-display);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: var(--ch-faint);
+}
+.lo-free span::before { content: "// "; }
+
+.lo-stage-bar {
+  height: 44px;
+  flex: none;
+  position: relative;
+  background: var(--ch);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+}
+.lo-stage-bar span {
+  font-family: var(--kp-display);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: var(--px-void);
+}
+.lo-stage-bar i { display: block; width: 10px; height: 10px; background: var(--px-void); opacity: 0.55; }
+.lo-stage-bar .lo-bar-sp { flex: 1; background: none; opacity: 1; }
+
+/* ---------- the tube: glass over the stage, FLAT or OFF ----------
+ * Six layers, copied verbatim. CURVED is not rebuilt: RULINGS law 6 records
+ * that it was built, measured and cut. border-radius stays banned on UI
+ * chrome and is used only here, because a picture tube is hardware. */
+.lo-stage.crt-on { border-radius: 18px; }
+.lo-stage.crt-on .lo-glass {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 40;
+  border-radius: 16px / 20px;
+  overflow: hidden;
+}
+.lo-glass > i { position: absolute; inset: 0; display: block; }
+.lo-glass .g-scan {
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.55) 0 1px,
+    rgba(0, 0, 0, 0.12) 1px 2px,
+    rgba(255, 255, 255, 0.03) 2px 3px);
+  mix-blend-mode: multiply;
+  opacity: 0.85;
+}
+.lo-glass .g-mask {
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(255, 0, 0, 0.05) 0 1px,
+    rgba(0, 255, 0, 0.05) 1px 2px,
+    rgba(0, 0, 255, 0.05) 2px 3px);
+  mix-blend-mode: screen;
+  opacity: 0.7;
+}
+.lo-glass .g-bloom {
+  background: radial-gradient(130% 95% at 50% 42%, var(--px-glow) 0%, transparent 62%);
+  opacity: 0.14;
+  mix-blend-mode: screen;
+}
+.lo-glass .g-spec {
+  background:
+    radial-gradient(58% 42% at 26% 14%, rgba(255, 255, 255, 0.11) 0%, transparent 70%),
+    linear-gradient(163deg, rgba(255, 255, 255, 0.055) 0%, transparent 34%);
+  mix-blend-mode: screen;
+}
+.lo-glass .g-vig {
+  background:
+    radial-gradient(102% 86% at 50% 48%, transparent 52%, rgba(0, 0, 0, 0.55) 82%, rgba(0, 0, 0, 0.92) 100%);
+  box-shadow:
+    inset 0 0 46px 12px rgba(0, 0, 0, 0.75),
+    inset 0 0 130px 40px rgba(0, 0, 0, 0.45);
+}
+.lo-glass .g-bezel {
+  border-radius: 16px / 20px;
+  box-shadow:
+    inset 0 0 0 3px rgba(0, 0, 0, 0.9),
+    inset 0 2px 2px 3px rgba(255, 255, 255, 0.07),
+    inset 0 -3px 3px 3px rgba(0, 0, 0, 0.6);
+}
+
+/* ---------- the window frame ---------- */
+
+.term {
+  width: var(--lo-win, 900px);
+  flex: none;
+  border: 3px solid var(--r-hazard);
+  background: var(--px-void);
+  position: relative;
+  z-index: 5;
+  filter:
+    drop-shadow(9px 9px 0 rgba(0, 0, 0, 0.8))
+    drop-shadow(0 0 26px color-mix(in srgb, var(--ch) 25%, transparent));
+}
+.term-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--ch);
+  padding: 7px 12px 7px 14px;
+}
+.term-bar h1 {
+  font-family: var(--kp-display);
+  font-size: 13px;
+  letter-spacing: 0.16em;
+  color: var(--px-void);
+  font-weight: 400;
+}
+.term-glyphs { display: flex; gap: 7px; align-items: center; }
+.term-glyphs i { display: block; background: var(--px-void); }
+.term-glyphs i:nth-child(1) { width: 11px; height: 3px; margin-top: 9px; }
+.term-glyphs i:nth-child(2) { width: 11px; height: 11px; background: transparent; border: 3px solid var(--px-void); }
+.term-glyphs i:nth-child(3) { width: 11px; height: 11px; }
+
+.term-body { position: relative; padding: 9px 12px 10px; }
+.term-body::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: repeating-conic-gradient(color-mix(in srgb, var(--ch) 5%, transparent) 0% 25%, transparent 0% 50%);
+  background-size: 4px 4px;
+}
+.term-body > * { position: relative; }
+
+/* ---------- the container that drives every size ---------- */
+
+.rl-wrap { container-type: inline-size; container-name: rl; }
+
+.rl-grid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 1fr;
+  grid-template-areas: "mast" "tabs" "bill" "trace" "cache" "cam" "gutter";
+  /* the fluid ramp. cqi, never vw: a tiled window scales to its own tile. */
+  --rl-fs-body: clamp(19px, calc(1cqi + 17px), 21px);
+  --rl-fs-label: clamp(9px, calc(0.6cqi + 8px), 11px);
+  --rl-fs-pill: clamp(9px, calc(0.5cqi + 8.5px), 10.5px);
+  --rl-fs-hero: clamp(44px, 7.8cqi, 68px);
+  --rl-fs-slab: clamp(18px, 2.5cqi, 25px);
+  --rl-fs-tickl: clamp(8px, calc(0.4cqi + 7.5px), 9px);
+  --rl-fs-tickv: clamp(12px, calc(0.8cqi + 10px), 14px);
+  --rl-fs-log: clamp(15px, calc(0.7cqi + 13px), 17px);
+}
+
+/* ---------- CLICKABLE MEANS OUTLINED (reviewer ruling, 2026-08-01) ----------
+ * Every interactive control on the surface carries a 1px --r-ok outline, so
+ * clickable and static are discriminable at a glance; static plates never
+ * take it. The outline is a channel on top of the existing idioms, not a
+ * replacement: hover and the inverse-video press floods stay, and the
+ * corner-tick reticle stays reserved for the ACTIVE option (law 4). Outline,
+ * not border, so no layout shifts; a disabled control drops it, because a
+ * control you cannot press is not clickable. Under :root with no scheme the
+ * ring collapses onto the single v2 accent with everything else, as designed. */
+.rl-tab,
+.rl-card:not(:disabled),
+.rl-more,
+.rl-skipcard:not(:disabled),
+.rl-div .kp-btn2:not(:disabled),
+.rl-cacherail .kp-btn2:not(:disabled) {
+  outline: 1px solid var(--r-ok);
+  outline-offset: 1px;
+}
+
+/* ================= Z1 MASTHEAD: the verdict, at slab scale ================= */
+
+/* The masthead is a COLUMN, not a two-up row. Sitting the client chips
+ * beside the verdict squeezed the win line into a 340px measure, which
+ * wrapped it to three lines and cost 24px of desk for nothing; the chips
+ * ride the eyebrow row instead and the quote gets the full width. */
+.rl-mast {
+  grid-area: mast;
+  border: 3px solid var(--ch-dim);
+  background: color-mix(in srgb, var(--ch) 4%, var(--px-void));
+  padding: 3px 11px 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.rl-mast-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-width: 0; }
+.rl-eyebrow {
+  font-family: var(--kp-display);
+  font-size: var(--rl-fs-label);
+  letter-spacing: 0.18em;
+  color: var(--r-note);
+}
+.rl-slabwrap { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.rl-slab {
+  font-family: var(--kp-display);
+  font-size: var(--rl-fs-slab);
+  line-height: 1;
+  letter-spacing: 0.04em;
+  color: var(--r-ok);
+  --tick: var(--r-ok);
+  padding: 2px 8px 4px;
+  text-shadow: 0 0 20px var(--r-ok-glow);
+}
+.rl-slab.rl-lock { animation: rl-slab-lock 200ms steps(4); }
+@keyframes rl-slab-lock {
+  0%, 100% { background: transparent; color: var(--r-ok); }
+  50% { background: var(--r-ok); color: var(--px-void); }
+}
+/* the client's own words. VT323 body, never a label: this is the one line of
+ * human voice on a page of instrumentation. The measure is reserved at two
+ * lines whatever the line's length, so a short win line and a long one leave
+ * the masthead exactly the same height (law 4). */
+.rl-quote {
+  font-family: var(--kp-term);
+  font-size: var(--rl-fs-body);
+  line-height: 1.12;
+  color: var(--ch);
+  min-height: 2.24em;
+}
+/* the chips shrink and truncate rather than dropping to a second masthead
+ * row, which cost 38px at the laptop tier for no extra information */
+.rl-mast-r { display: flex; align-items: center; gap: 6px; justify-content: flex-end; min-width: 0; }
+.rl-mast-r .kp-chip-pct { min-width: 0; overflow: hidden; }
+.rl-mast-r .kp-chip-pct em { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* the win line and the ticket's controls share one row: the quote takes the
+ * measure it needs and the action group sits at its right, so neither pays
+ * for a row of its own */
+.rl-mast-mid { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-width: 0; }
+/* the primary control sits on the slab's own row, so it costs no height of
+ * its own beyond what the verdict already occupies */
+.rl-mast-act { display: flex; align-items: center; gap: 6px; flex: none; min-width: 0; }
+.rl-mast-act .kp-chip-pct { min-width: 0; overflow: hidden; }
+.rl-mast-act .kp-chip-pct em { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 15ch; }
+
+/* ---------- the narrow-tier tab strip (a tiling fallback only) ---------- */
+
+.rl-tabs { grid-area: tabs; display: flex; gap: 4px; }
+.rl-tab {
+  flex: 1;
+  font-family: var(--kp-display);
+  font-size: var(--rl-fs-pill);
+  letter-spacing: 0.14em;
+  padding: 9px 6px;
+  background: transparent;
+  color: var(--ch);
+  border: 2px solid var(--ch-dim);
+}
+.rl-tab[aria-selected="true"] { background: var(--ch); color: var(--px-void); border-color: var(--ch); }
+
+/* ================= Z2 GUTTER: ambient, never competing ================= */
+
+/* the stats rail. With the cam gone to its own row, this stack stands beside
+ * the trace, and it must never OUT-TALL the trace: the row it shares is paid
+ * at the taller of the two (law 8), so the rhythm here is deliberately
+ * tighter than it was when the tall cam bound the column anyway. */
+.rl-gutter { grid-area: gutter; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+
+/* the CLIENT CAM STILL. The shop camera on the counter caught the handover;
+ * what the log files is the CAPTURE, not the feed, so the live furniture
+ * (REC light, scan roll, boot wipe) is gone: a report shows evidence, it
+ * does not stream. Reviewer ruling, revision 2026-08-01.
+ *
+ * The still is its own grid cell in the BILL's row, and the rail column is
+ * sized so the box lands at EXACTLY a transaction cell's footprint (see the
+ * --rl-rail math at the wide tier): the reviewer asked for the cam at the
+ * same size as the CREDITED / BILLED / RECOVERED boxes, with the stats
+ * below sharing the same width, so the left rail reads as one aligned stack.
+ *
+ * The print inside is a 1:1 crop, never a downscale (law 5): the art is cut
+ * at the LARGEST box any viewport renders, anchored top centre, and the box
+ * crops it. object-fit none scales nothing. */
+/* 201x204 is the print's own size: the largest box the wide tier renders
+ * (21:9 width x the laptop clean-sweep row height), measured, so every
+ * smaller box CROPS the print and none stretches it */
+.rl-cam {
+  grid-area: cam;
+  position: relative;
+  width: 201px;
+  height: 204px;
+  overflow: hidden;
+  border: 2px solid var(--r-struct);
+  background: var(--px-void);
+}
+.rl-cam img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: none;
+  object-position: 50% 0;
+  image-rendering: pixelated;
+  filter: grayscale(1) contrast(1.15) brightness(1.05);
+}
+/* FEED TREATMENT, per law 5. INK is the house rule: the 1-bit dither
+ * multiplied to --r-aux so the camera recolours with the scheme. TRUE drops
+ * the tint, which is the print's actual colour because the source art is
+ * monochrome ink. COLOUR swaps in a colourised re-dither, which is a
+ * COLOURISATION and not a reveal. */
+.rl-cam[data-feed="true"] .tint,
+.rl-cam[data-feed="color"] .tint { display: none; }
+.rl-cam[data-feed="color"] img { filter: none; }
+.rl-cam .tint {
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-conic-gradient(rgba(0, 0, 0, 0.28) 0% 25%, transparent 0% 50%),
+    var(--r-aux);
+  background-size: 2px 2px, auto;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+/* the label NAMES the cell, so it takes the annotation role, printed over
+ * the still the way the transaction cells print their // labels */
+.rl-camlabel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: var(--px-void);
+  color: var(--r-note);
+  font-family: var(--kp-display);
+  font-size: 8px;
+  letter-spacing: 0.12em;
+  padding: 3px 5px;
+}
+.rl-camtag {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--r-aux);
+  color: var(--px-void);
+  font-family: var(--kp-display);
+  font-size: 8px;
+  letter-spacing: 0.12em;
+  padding: 3px 5px;
+  text-align: center;
+}
+
+/* the four telemetry readouts. These are what is left of the shipped
+ * window's four boxed sparklines, which are CUT (see NOTES): four boxes of
+ * the same idea, none of which survived being shrunk to fit the ceiling. The
+ * VALUES they carried survive here as unboxed ticks at the gutter's own
+ * lowest priority, which is the honest weight for them. */
+.rl-ticks { display: flex; flex-direction: column; gap: 1px; }
+.rl-tick { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; line-height: 1.05; }
+.rl-tick span {
+  font-family: var(--kp-display);
+  font-size: var(--rl-fs-tickl);
+  letter-spacing: 0.12em;
+  color: var(--r-note);
+}
+.rl-tick em {
+  font-style: normal;
+  font-family: var(--kp-mono);
+  font-size: var(--rl-fs-tickv);
+  font-weight: 600;
+  color: var(--ch);
+}
+
+/* the pouch strip: equal-footprint slots, so a full pouch and an empty one
+ * take exactly the same room */
+.rl-pouch { display: flex; flex-direction: column; gap: 3px; }
+.rl-pouchrow { display: flex; gap: 4px; align-items: center; }
+.rl-pslot {
+  width: 26px;
+  height: 26px;
+  flex: none;
+  border: 2px solid var(--ch-faint);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.rl-pslot.empty { border-style: dashed; }
+.rl-pslot.fresh { border-color: var(--r-ok); box-shadow: 0 0 8px var(--r-ok-glow); }
+.rl-pslot.fresh .kp-pp-arm { stroke: var(--r-ok); }
+.rl-pslot.fresh .kp-pp-node { fill: var(--r-ok); }
+
+/* ================= Z3 THE BILL: the focal zone ================= */
+
+.rl-bill { grid-area: bill; display: grid; gap: 8px; grid-template-columns: 1fr; min-width: 0; }
+
+/* NOT a container. An earlier pass made each cell `container-type:
+ * inline-size`, which meant `cqi` inside it resolved against the CELL: the
+ * two hero numerals came out different sizes because BILLED's cell is wider
+ * than CREDITED's, and card body text fell to 17px, under the VT323 floor.
+ * With no container here every cqi inside resolves against the window, so
+ * the pair matches and the type scale is uniform across the surface. */
+.rl-cell {
+  position: relative;
+  border: 1px solid var(--ch-faint);
+  background: color-mix(in srgb, var(--ch) 3%, var(--px-void));
+  padding: 7px 10px 8px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+/* heavy corner brackets carry the framing weight the hairline gives up, and
+ * are scoped to the FOCAL cells only. Applying them everywhere would destroy
+ * the emphasis they exist to create (law 4). */
+.rl-bracket, .rl-bracket > i { position: absolute; pointer-events: none; }
+.rl-bracket { inset: -1px; }
+.rl-bracket > i { inset: 0; }
+.rl-bracket::before, .rl-bracket::after,
+.rl-bracket > i::before, .rl-bracket > i::after {
+  content: "";
+  position: absolute;
+  width: 22px;
+  height: 22px;
+}
+.rl-bracket::before { top: 0; left: 0; border-top: 4px solid var(--r-hazard); border-left: 4px solid var(--r-hazard); }
+.rl-bracket::after { top: 0; right: 0; border-top: 4px solid var(--r-hazard); border-right: 4px solid var(--r-hazard); }
+.rl-bracket > i::before { bottom: 0; left: 0; border-bottom: 4px solid var(--r-hazard); border-left: 4px solid var(--r-hazard); }
+.rl-bracket > i::after { bottom: 0; right: 0; border-bottom: 4px solid var(--r-hazard); border-right: 4px solid var(--r-hazard); }
+
+/* one line, always: a two-line label on one branch and a one-line label on
+ * another moved the whole focal row by 17px */
+.rl-cname {
+  font-family: var(--kp-display);
+  font-size: var(--rl-fs-label);
+  letter-spacing: 0.16em;
+  color: var(--ch);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* reserved at the hero numeral's own line box. CLEAN renders as a word at a
+ * smaller size than a numeral, and without this the focal row shrinks by
+ * 22px on exactly the ticket that billed nothing. */
+.rl-heroline {
+  display: flex;
+  align-items: flex-end;
+  gap: 7px;
+  min-width: 0;
+  min-height: calc(var(--rl-fs-hero) * 0.8 + 8px);
+}
+.rl-num {
+  position: relative;
+  font-family: var(--kp-display);
+  font-size: var(--rl-fs-hero);
+  line-height: 0.8;
+  color: var(--r-data);
+  text-shadow: 0 0 22px var(--px-glow);
+  font-variant-numeric: tabular-nums;
+  padding: 2px 4px;
+}
+.rl-unit {
+  font-family: var(--kp-display);
+  font-size: var(--rl-fs-label);
+  letter-spacing: 0.16em;
+  color: var(--r-note);
+  padding-bottom: 6px;
+}
+/* zero strain billed reads as a VERDICT, not as a number, so it takes the
+ * nominal role and the word rather than a numeral */
+.rl-num.is-clean { color: var(--r-ok); text-shadow: 0 0 20px var(--r-ok-glow); font-size: clamp(26px, 4.4cqi, 40px); }
+
+/* the itemized receipt. Values are --r-line: they are live data, not alarms.
+ * Nothing in a receipt is ever allowed to reach for red.
+ *
+ * THREE rows are reserved whatever the branch actually bills, so a clean
+ * sweep, a two-line chip breakdown and a capped three-line bill all leave
+ * the bill cell exactly the same height (law 4). */
+/* padding: 0 matters. kp.css resets margin on everything but not padding,
+ * so a bare <ul> keeps the browser's 40px list indent: every receipt row was
+ * losing 40px of its cell, which is most of why the labels were truncating. */
+.rl-receipt { display: flex; flex-direction: column; gap: 1px; margin-top: 1px; padding: 0; min-height: 3.2em; }
+.rl-receipt li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  list-style: none;
+  font-family: var(--kp-term);
+  font-size: var(--rl-fs-log);
+  line-height: 1.06;
+  color: var(--ch-dim);
+  min-width: 0;
+}
+/* one row is one line, always. A wrapped receipt row is what makes a capped
+ * bill a different height from a plain one, and law 4 wants them identical. */
+.rl-receipt li > span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.rl-receipt li em {
+  font-style: normal;
+  font-family: var(--kp-mono);
+  font-size: var(--rl-fs-tickv);
+  font-weight: 600;
+  color: var(--r-line);
+  flex: none;
+}
+/* the capped bill row: inverse video, the shipped idiom for "this is the
+ * rule biting", and hazard rather than warn so the alarm keeps its colour */
+.rl-receipt li.inv {
+  background: var(--r-hazard);
+  color: var(--px-void);
+  padding: 0 3px;
+  gap: 6px;
+}
+.rl-receipt li.inv em { color: var(--px-void); }
+
+.rl-cellfoot {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-top: auto;
+  padding-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  font-family: var(--kp-display);
+  font-size: var(--rl-fs-tickl);
+  letter-spacing: 0.14em;
+  color: var(--r-note);
+}
+.rl-cellfoot em {
+  font-style: normal;
+  font-family: var(--kp-mono);
+  font-size: var(--rl-fs-tickv);
+  font-weight: 600;
+  color: var(--ch);
+}
+
+/* ---------- THE ALARM, and why it is built this way ----------
+ * Law 1: --r-warn appears on exactly one thing per surface. On REPAIR.LOG
+ * that is the strain the run has LEFT, armed at or below 35, which is the
+ * same risk band LOADOUT.CFG uses. Not "this ticket billed a lot": an
+ * expensive ticket you can afford is not an emergency. Strain severs the run
+ * at zero, so the alarm is the distance to zero.
+ *
+ * Law 1 also forbids colour being the only channel, and the reference build
+ * learned the harder half of that lesson: with hazard red already on the
+ * window edge, the brackets, the stripe and the REC light, STATIC distinction
+ * cannot beat habituation. So the alarm takes the one channel the ambient
+ * chrome structurally does not have, MOTION, and the chrome stays dead still
+ * forever. If the chrome ever animates, this fix is void.
+ *
+ * The inverse flip is COMPOSITED, not painted. Animating background or
+ * box-shadow measured 50ms p95 on the reference build; the identical effect
+ * as an opacity cross-fade on a promoted layer with a difference-blend plate
+ * measured 9.3ms. Same idiom, cheaper route. */
+.rl-cell.is-risk .rl-num { background: var(--r-warn); color: var(--px-void); text-shadow: none; }
+.rl-cell.is-risk .rl-cellfoot { color: var(--r-warn); }
+.rl-cell.is-risk .rl-cellfoot em { color: var(--r-warn); }
+.rl-riskflash {
+  position: absolute;
+  inset: -2px;
+  background: var(--r-warn);
+  mix-blend-mode: difference;
+  opacity: 0;
+  pointer-events: none;
+  will-change: opacity;
+}
+.rl-cell.is-risk .rl-riskflash { animation: rl-risk-blink 1.2s steps(2) infinite; }
+@keyframes rl-risk-blink { 0%, 100% { opacity: 0; } 50% { opacity: 1; } }
+
+/* the strain-left meter, the alarm's fourth channel: position on a scale,
+ * which survives both a colourblind reader and the CRT layer */
+.rl-strainbar { position: relative; display: flex; gap: 2px; height: 9px; margin-top: 3px; }
+.rl-strainbar i { flex: 1; background: var(--ch-faint); }
+.rl-strainbar i.on { background: var(--r-line); box-shadow: 0 0 6px var(--px-glow); }
+.rl-cell.is-ok .rl-strainbar i.on { background: var(--r-ok); box-shadow: 0 0 6px var(--r-ok-glow); }
+.rl-cell.is-risk .rl-strainbar i.on { background: var(--r-warn); box-shadow: 0 0 6px var(--r-warn-glow); }
+
+/* ---------- the RECOVERED cell: the ticket's third line item ----------
+ * The shipped window gave the patch piece a full poster card with a title, a
+ * flavour paragraph and a status band. It is a line item on a receipt, so it
+ * becomes the bill's third cell at the same weight as the two numerals, with
+ * the glyph doing the work the numeral does in the other two. */
+.rl-piece { display: flex; align-items: center; gap: 9px; }
+.rl-piecestage {
+  width: 62px;
+  height: 62px;
+  flex: none;
+  border: 2px solid var(--ch-faint);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--px-void);
+}
+.rl-piecestage.void { border-style: dashed; }
+.rl-piecemeta { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.rl-noun {
+  font-family: var(--kp-display);
+  font-size: var(--rl-fs-label);
+  letter-spacing: 0.16em;
+  color: var(--r-note);
+}
+.rl-pstatus {
+  font-family: var(--kp-display);
+  font-size: var(--rl-fs-tickl);
+  letter-spacing: 0.1em;
+  color: var(--r-ok);
+  align-self: flex-start;
+  padding: 2px 4px;
+  border: 1px solid var(--r-ok);
+}
+.rl-pstatus.capped { color: var(--px-void); background: var(--r-hazard); border-color: var(--r-hazard); }
+/* recovered nothing: neither a win nor a loss, so it takes the annotation
+ * role rather than borrowing either verdict colour */
+.rl-pstatus.none { color: var(--r-note); border-color: var(--r-note); }
+.rl-pline {
+  font-family: var(--kp-term);
+  font-size: var(--rl-fs-log);
+  line-height: 1.06;
+  color: var(--ch-dim);
+  margin-top: 3px;
+  /* Five lines, reserved AND capped. The longest branch line is the capped
+   * drop at 96 chars, which takes five lines in the narrowest cell the wide
+   * tier renders; reserving four let it spill and moved the focal row by
+   * 18px on the laptop. Reserved and clamped to the same number means the
+   * cell is the same height whichever branch fired, and nothing is ever
+   * actually hidden, because five lines holds the longest line there is. */
+  min-height: 5.3em;
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ================= Z4 THE TRACE: the surface's signature readout ========= */
+
+.rl-trace { grid-area: trace; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.rl-scope {
+  border: 1px solid var(--ch-faint);
+  background: color-mix(in srgb, var(--ch) 3%, var(--px-void));
+  padding: 3px 8px 1px;
+}
+.rl-scopetag { display: flex; align-items: baseline; gap: 8px; }
+.rl-scopetag span {
+  font-family: var(--kp-display);
+  font-size: var(--rl-fs-tickl);
+  letter-spacing: 0.16em;
+  color: var(--r-note);
+}
+.rl-scopetag b {
+  font-family: var(--kp-mono);
+  font-size: var(--rl-fs-tickl);
+  font-weight: 600;
+  color: var(--ch-dim);
+  margin-left: auto;
+}
+.rl-scope svg { display: block; width: 100%; }
+.rl-scope line.grid { stroke: var(--ch-faint); stroke-width: 1; }
+.rl-scope polyline { fill: none; stroke: var(--r-line); stroke-width: 2; }
+/* trap markers: hazard, so a spike is legible as an EVENT without spending
+ * the alarm colour on a readout */
+.rl-scope line.trap { stroke: var(--r-hazard); stroke-width: 2; stroke-dasharray: 3 3; }
+
+/* the dive log. The shipped rail typed 14 lines in a narrow column; here it
+ * sits under the trace it annotates, two columns wide, capped at 4 lines. */
+.rl-log { display: grid; grid-template-columns: 1fr; gap: 0 14px; }
+.rl-logline {
+  font-family: var(--kp-term);
+  font-size: var(--rl-fs-log);
+  line-height: 1.02;
+  color: var(--ch-dim);
+  white-space: nowrap;
+  overflow: hidden;
+}
+.rl-logline.hot { color: var(--r-line); }
+
+/* ================= Z5 THE CACHE: the only thing that needs a hand ======== */
+
+/* The cache is a GRID sharing the window's two-column system: the divider
+ * spans, the decline rail takes the same rail track the cam and the stats
+ * sit in, and the draft takes the bill's column. Two reviewer complaints die
+ * here at once (revision 2026-08-01). "Skip the draft" was the masthead
+ * button wearing a different label, a window-level control carrying a
+ * zone-level decision; it is now the rail slot OF the draft group, so the
+ * choice reads: pick one of the drafts, or skip. And the card row was the
+ * one zone whose boxes sat on no column line the rest of the surface uses,
+ * which is what made the middle card (ECHO TAP on the default ticket) read
+ * as floating; on the shared tracks the cards align with the stack above. */
+.rl-cache {
+  grid-area: cache;
+  display: grid;
+  gap: 4px;
+  grid-template-columns: 1fr;
+  grid-template-areas: "cdiv" "cbody" "crail";
+  min-width: 0;
+}
+.rl-div { grid-area: cdiv; }
+.rl-cachebody { grid-area: cbody; min-width: 0; }
+.rl-cacherail { grid-area: crail; display: flex; flex-direction: column; min-width: 0; }
+/* a dry cache has nothing to decline, so the rail row collapses and the dry
+ * box takes the full width, at the same reserved height as a live draft */
+.rl-cache.no-choice { grid-template-areas: "cdiv" "cbody"; }
+.rl-cache.no-choice .rl-cacherail { display: none; }
+
+/* the decline slot: dashed is the house vocabulary for "nothing here", which
+ * is exactly what skipping banks. Subordinate to the picks by treatment
+ * (ghost fill, dashed hairline, label scale), part of the group by position. */
+.rl-skipcard {
+  flex: 1;
+  min-height: 44px;
+  border: 2px dashed var(--ch-dim);
+  background: transparent;
+  color: var(--ch);
+  font-family: var(--kp-display);
+  font-size: var(--rl-fs-label);
+  letter-spacing: 0.14em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 6px 8px;
+  position: relative;
+}
+/* the eject flow's own decline shares the rail; the narrower track wants the
+ * narrower padding, and the label may wrap rather than truncate */
+.rl-cacherail .kp-btn2 { align-self: stretch; padding: 11px 8px; }
+.rl-skipcard:hover:not(:disabled) { border-color: var(--ch); }
+/* the shipped press idiom: flood inverse video */
+.rl-skipcard:active:not(:disabled) { background: var(--ch); color: var(--px-void); }
+.rl-skipcard:disabled { opacity: 0.4; cursor: not-allowed; }
+/* skipped IS the taken option, so it gets the picked treatment: the nominal
+ * role plus the reticle, the same second channel the picked card carries */
+.rl-skipcard.skipped { opacity: 1; border-color: var(--r-ok); color: var(--r-ok); }
+.rl-skipcard.skipped::before, .rl-skipcard.skipped::after {
+  content: "";
+  position: absolute;
+  width: 9px;
+  height: 9px;
+}
+.rl-skipcard.skipped::before { top: -4px; left: -4px; border-top: 3px solid var(--r-ok); border-left: 3px solid var(--r-ok); }
+.rl-skipcard.skipped::after { bottom: -4px; right: -4px; border-bottom: 3px solid var(--r-ok); border-right: 3px solid var(--r-ok); }
+.rl-div { display: flex; align-items: center; gap: 9px; }
+.rl-div i { flex: 1; height: 8px; background: repeating-linear-gradient(45deg, var(--r-hazard) 0 3px, transparent 3px 7px); }
+.rl-div span {
+  font-family: var(--kp-display);
+  font-size: var(--rl-fs-label);
+  letter-spacing: 0.2em;
+  color: var(--ch-dim);
+  flex: none;
+}
+.rl-div em {
+  font-style: normal;
+  font-family: var(--kp-display);
+  font-size: var(--rl-fs-tickl);
+  letter-spacing: 0.16em;
+  color: var(--r-ok);
+  border: 1px solid var(--r-ok);
+  padding: 2px 5px;
+  flex: none;
+}
+.rl-div em.done { color: var(--ch-dim); border-color: var(--ch-dim); }
+/* the window's advance action, restored by review ruling: CLOSE THE DAY
+ * needs somewhere to live. It rides the divider's right end at chip scale,
+ * never the masthead (the top right carries no buttons), and at PICK ONE
+ * height it costs the ceiling nothing. */
+.rl-div .kp-btn2 { padding: 1px 9px 2px; flex: none; }
+
+.rl-draft { display: grid; gap: 7px; grid-template-columns: 1fr; }
+.rl-card {
+  position: relative;
+  text-align: left;
+  border: 2px solid var(--ch-dim);
+  background: color-mix(in srgb, var(--ch) 3%, var(--px-void));
+  padding: 7px 9px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.rl-card:hover:not(:disabled) { border-color: var(--ch); }
+.rl-kind {
+  font-family: var(--kp-display);
+  font-size: var(--rl-fs-tickl);
+  letter-spacing: 0.12em;
+  color: var(--r-note);
+}
+.rl-card strong {
+  font-family: var(--kp-display);
+  font-size: var(--rl-fs-label);
+  letter-spacing: 0.12em;
+  color: var(--ch-hot);
+  font-weight: 400;
+}
+/* The description is BODY text and takes the body size: a draft card is
+ * where the player meets an augment for the first time, so it never drops
+ * below the VT323 floor to win space.
+ *
+ * It is clamped to THREE LINES by CSS rather than by a character budget in
+ * JS. A char budget was tried first and cannot work here: the cards are
+ * different widths at different viewports, so any budget that fits at the
+ * laptop wastes a line at 16:9, and a sentence-boundary rule at a budget low
+ * enough to be safe starts hiding effect clauses behind the MORE control,
+ * which is what the loadout-eva tutorial gate ruled against. Rendered lines
+ * is the thing actually being reserved, so reserve that. */
+.rl-card p {
+  font-family: var(--kp-term);
+  font-size: var(--rl-fs-body);
+  line-height: 1.02;
+  color: var(--ch);
+  min-height: 3.06em;
+}
+.rl-card p.clamped {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+/* the MORE row is reserved on EVERY card, shown only where there is more, so
+ * a card with a long description and a card with a short one are the same
+ * height (law 4). A hidden remainder always carries a visible control: a
+ * bare name with no marker is a dead end. */
+.rl-morerow { display: flex; margin-top: auto; padding-top: 1px; min-height: 18px; }
+.rl-more {
+  font-family: var(--kp-display);
+  font-size: var(--rl-fs-tickl);
+  letter-spacing: 0.12em;
+  background: transparent;
+  border: 2px solid var(--ch-dim);
+  color: var(--ch);
+  padding: 2px 5px;
+}
+.rl-more.hidden { visibility: hidden; }
+.rl-card.picked { border-color: var(--r-ok); background: color-mix(in srgb, var(--r-ok) 10%, var(--px-void)); }
+/* the reticle: a second, colour-independent channel saying WHICH was taken */
+.rl-card.picked::before, .rl-card.picked::after {
+  content: "";
+  position: absolute;
+  width: 9px;
+  height: 9px;
+}
+.rl-card.picked::before { top: -4px; left: -4px; border-top: 3px solid var(--r-ok); border-left: 3px solid var(--r-ok); }
+.rl-card.picked::after { bottom: -4px; right: -4px; border-bottom: 3px solid var(--r-ok); border-right: 3px solid var(--r-ok); }
+.rl-card.dimmed { opacity: 0.4; }
+.rl-stamp {
+  position: absolute;
+  right: 6px;
+  top: 6px;
+  font-style: normal;
+  font-family: var(--kp-display);
+  font-size: var(--rl-fs-tickl);
+  letter-spacing: 0.12em;
+  background: var(--r-ok);
+  color: var(--px-void);
+  padding: 2px 5px;
+}
+/* a dry cache occupies exactly the room a live draft does, so the window
+ * does not jump between one ticket and the next (law 4). Reserved from the
+ * SAME parts a draft card is built from rather than a magic number: three
+ * description lines, the MORE row, the kind and name lines, and the card's
+ * own padding and border. */
+.rl-dry {
+  border: 2px dashed var(--ch-dim);
+  padding: 9px 11px;
+  font-family: var(--kp-term);
+  font-size: var(--rl-fs-body);
+  line-height: 1.1;
+  color: var(--ch-dim);
+  min-height: calc(3.06em + 18px + 1.62em + 26px);
+  display: flex;
+  align-items: center;
+}
+/* the eject flow. Bays full means the pick becomes a swap, so the panel
+ * replaces the draft row in place rather than opening below it: an extra row
+ * here would blow the ceiling on exactly the state that needs the most room. */
+.rl-swap { display: flex; flex-direction: column; gap: 6px; }
+.rl-swap h4 {
+  font-family: var(--kp-display);
+  font-size: var(--rl-fs-tickl);
+  letter-spacing: 0.14em;
+  color: var(--ch-hot);
+  font-weight: 400;
+}
+.rl-swaprow { display: grid; gap: 6px; grid-template-columns: 1fr; }
+
+/* The footer row is GONE. It carried three chips, the primary button and a
+ * KP/OS REPAIR BENCH v9.2 brand plate with battery pips, and cost 48px plus
+ * a 9px gap. The 1366x768 desk this window has to fit is only about 702px
+ * after the taskbar, and the brand plate was pure decoration, so the chips
+ * move up into the masthead and the plate is cut outright. The advance
+ * button lives on the cache divider, never the masthead: the top right
+ * carries no buttons (review ruling 2026-08-01, reaffirmed when the button
+ * was restored so CLOSE THE DAY has somewhere to go). */
+
+/* ================= WIDE TIER: the arrangement every desk renders =========
+ * One binary breakpoint on the window's OWN inline-size, at 700px, so 16:9,
+ * 21:9 and the 1280x800 laptop all land wide and render the same thing. */
+
+@container rl (min-width: 700px) {
+  .rl-grid {
+    /* THE RAIL TRACK. The reviewer asked for the cam still at exactly a
+     * transaction cell's footprint. The RECOVERED cell is (bill - 16px of
+     * gaps) / 3.6fr of the content column, and the content column is
+     * 100cqi - rail - 11px gap, so rail = recovered solves to
+     * rail = (100cqi - 27px) / 4.6. One equation, and the equality holds at
+     * every viewport by construction instead of by tuning. The cache grid
+     * below reuses the same track, so the cam, the stats and the skip slot
+     * stand on one column line. */
+    --rl-rail: calc((100cqi - 27px) / 4.6);
+    grid-template-columns: var(--rl-rail) 1fr;
+    grid-template-areas:
+      "mast    mast"
+      "cam     bill"
+      "gutter  trace"
+      "cache   cache";
+    gap: 8px 11px;
+  }
+  .rl-tabs { display: none; }
+
+  /* the cam shares the BILL's row, so its box is the row's height: the same
+   * footprint as the three cells beside it, with no second number to keep
+   * in sync. The art is cut at the largest box this can render and the box
+   * crops it (law 5). */
+  .rl-cam { width: auto; height: auto; }
+
+  /* the stats sit BESIDE the trace on purpose. They are a short stack, the
+   * trace is short; giving them their own row would cost it in full.
+   * A row you do not share is a row you pay for in full (law 8). */
+  .rl-gutter { padding-top: 1px; }
+
+  /* the cache on the same two tracks: rail (the skip slot) + content (the
+   * draft). The dry state has nothing to decline, so the body spans. */
+  .rl-cache {
+    grid-template-columns: var(--rl-rail) 1fr;
+    gap: 4px 11px;
+    grid-template-areas:
+      "cdiv  cdiv"
+      "crail cbody";
+  }
+  .rl-cache.no-choice { grid-template-areas: "cdiv cdiv" "cbody cbody"; }
+
+  /* THREE cells: what the ticket credited, what it billed, what it recovered.
+   * Two numerals plus the piece glyph, one line item each.
+   *
+   * BILLED gets the widest cell: it is the one that carries an itemized
+   * receipt, and at 1fr the rows wrapped to two lines each, which cost 43px
+   * on exactly the ticket that already has the most to say. */
+  /* minmax(0, Nfr), never a bare Nfr. A bare fr is minmax(AUTO, Nfr), so
+   * BILLED's nowrap receipt rows set a min-content floor that squeezed
+   * CREDITED and RECOVERED down to about 120px and truncated their labels to
+   * 46px of visible text. minmax(0, ...) makes the ratios mean what they say. */
+  .rl-bill { grid-template-columns: minmax(0, 1.3fr) minmax(0, 1.3fr) minmax(0, 1fr); }
+
+  .rl-log { grid-template-columns: 1fr 1fr; }
+  /* the draft rides the BILL's own tracks, not equal thirds: the reviewer
+   * read the middle card off BILLED's column line as misalignment, twice.
+   * Same ratios, same gap, so every vertical line the cards draw is one the
+   * cells above already drew. */
+  .rl-draft { grid-template-columns: minmax(0, 1.3fr) minmax(0, 1.3fr) minmax(0, 1fr); gap: 8px; }
+  /* 135px, not 150: the swap row now lives in the content column, and at
+   * the laptop's 590px column four minmax(150px) kit cards wrapped to a
+   * second row, which is 120px the strained state cannot pay */
+  .rl-swaprow { grid-template-columns: repeat(auto-fit, minmax(135px, 1fr)); }
+}
+
+/* The tight end of WIDE (the 790px laptop window). Same arrangement, packed
+ * tighter. The rail track needs no override: the --rl-rail equation already
+ * resolves per viewport. */
+@container rl (min-width: 700px) and (max-width: 800px) {
+  /* the receipt and the alarm's note take their floors here rather than
+   * truncating: both are annotation rows, not body text, so the smaller
+   * step is in range for them */
+  .rl-grid { --rl-fs-log: 15px; }
+  .rl-cellfoot { letter-spacing: 0.08em; gap: 5px; }
+  .rl-cell { padding: 7px 9px 8px; }
+  .rl-card { padding: 6px 8px 7px; }
+}
+
+/* ================= NARROW TIER: a different layout, not a smaller one ==== */
+
+@container rl (max-width: 699.98px) {
+  .rl-grid[data-tab="ticket"] .rl-gutter,
+  .rl-grid[data-tab="ticket"] .rl-cam,
+  .rl-grid[data-tab="ticket"] .rl-trace { display: none; }
+  .rl-grid[data-tab="dive"] .rl-bill,
+  .rl-grid[data-tab="dive"] .rl-cache { display: none; }
+  .rl-gutter { flex-direction: row; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
+  .rl-ticks { flex: 1; min-width: 150px; }
+  /* the still keeps the print's own size here: the box never scales the
+   * print, and this tier is a tiling fallback no supported viewport reaches */
+  .rl-cam { justify-self: start; }
+}
+
+/* ---------- the demo rig's own readouts ---------- */
+
+.rig { top: auto; right: auto; bottom: 12px; left: 12px; }
+.rig em { font-style: normal; color: #ffd75e; }
+.rig .rig-meas { font-family: var(--kp-mono); font-size: 10px; color: #999; }
+.rig .rig-over { color: #ff6b6b; }
+
+@media (prefers-reduced-motion: reduce) {
+  .rl-slab.rl-lock { animation: none; }
+  /* the alarm falls back to the static inverse flood it has underneath,
+   * which is still inverse video and still colourblind safe */
+  .rl-cell.is-risk .rl-riskflash { animation: none; opacity: 0; }
+}
+</style>
+</head>
+<body>
+
+<div class="lo-fitwrap" id="fitwrap">
+  <div class="lo-fit" id="fit">
+    <div class="lo-stage crt-on" id="stage">
+     <div class="lo-warp">
+      <div class="lo-desk" aria-hidden="true"></div>
+      <div class="lo-deskwrap">
+        <div class="lo-free" id="free" aria-hidden="true"><span id="freelabel">FREE DESK</span></div>
+
+        <div class="term" id="term">
+          <header class="term-bar">
+            <h1>REPAIR.LOG</h1>
+            <span class="term-glyphs"><i></i><i></i><i></i></span>
+          </header>
+          <div class="term-body">
+            <div class="rl-wrap">
+              <div class="rl-grid" id="grid" data-tab="ticket">
+
+                <!-- Z1 MASTHEAD -->
+                <div class="rl-mast">
+                  <div class="rl-mast-top">
+                    <span class="rl-eyebrow" id="eyebrow">REPAIR.LOG // TICKET</span>
+                    <div class="rl-mast-r">
+                      <span class="kp-chip-pct"><span>DAY</span><em id="c-day">04</em></span>
+                      <span class="kp-chip-pct"><span>TICKET</span><em id="c-ticket">2 OF 3</em></span>
+                      <span class="kp-chip-pct"><span>CREDITS</span><em id="c-cred">365</em></span>
+                    </div>
+                  </div>
+                  <div class="rl-mast-mid">
+                    <span class="rl-slab kp-frame-ticks" id="slab"><i class="kp-tick2"></i>REPAIR LOGGED</span>
+                    <div class="rl-mast-act">
+                      <span class="kp-chip-pct"><span>CLIENT</span><em id="c-client">--</em></span>
+                      <span class="kp-chip-pct"><span>DEVICE</span><em id="c-device">--</em></span>
+                    </div>
+                  </div>
+                  <p class="rl-quote" id="quote"></p>
+                </div>
+
+                <!-- the narrow-tier tab strip -->
+                <div class="rl-tabs" id="tabs" role="tablist">
+                  <button type="button" class="rl-tab" id="tab-ticket" role="tab" aria-selected="true">THE TICKET</button>
+                  <button type="button" class="rl-tab" id="tab-dive" role="tab" aria-selected="false">THE DIVE</button>
+                </div>
+
+                <!-- Z2 THE RAIL: the client cam still, then the stats below it -->
+                <div class="rl-cam" id="cam">
+                  <img src="art/client-sable-fine.png" alt="" id="camimg" />
+                  <i class="tint"></i>
+                  <span class="rl-camlabel">// CLIENT CAM</span>
+                  <span class="rl-camtag" id="camtag">REPAIR LOGGED</span>
+                </div>
+                <aside class="rl-gutter">
+                  <div class="rl-ticks">
+                    <div class="rl-tick"><span>RAM FLOW</span><em id="t-ram">0</em></div>
+                    <div class="rl-tick"><span>OVER PAR</span><em id="t-rot">0</em></div>
+                    <div class="rl-tick"><span>TRAPS SPRUNG</span><em id="t-trap">0</em></div>
+                    <div class="rl-tick"><span>LINK NOISE</span><em id="t-noise">LOW</em></div>
+                  </div>
+                  <div class="rl-pouch">
+                    <div class="rl-tick"><span>PATCH POUCH</span><em id="t-pouch">0 / 5</em></div>
+                    <div class="rl-pouchrow" id="pouchrow"></div>
+                  </div>
+                </aside>
+
+                <!-- Z3 THE BILL: the focal zone -->
+                <div class="rl-bill" id="bill"></div>
+
+                <!-- Z4 THE TRACE -->
+                <section class="rl-trace">
+                  <div class="rl-scope">
+                    <div class="rl-scopetag">
+                      <span>STRAIN TRACE</span>
+                      <b id="scoperounds">0 ROUNDS</b>
+                    </div>
+                    <svg id="ecg" viewBox="0 0 640 54" preserveAspectRatio="none" height="54" aria-hidden="true"></svg>
+                  </div>
+                  <div class="rl-log" id="log"></div>
+                </section>
+
+                <!-- Z5 THE CACHE: the divider, the decline rail, the draft -->
+                <section class="rl-cache" id="cache">
+                  <div class="rl-div"><i></i><span>// AUGMENT CACHE</span><em id="cachestate">PICK ONE</em><i></i><button type="button" class="kp-btn2 kp-btn2-signal" id="next">NEXT TICKET</button></div>
+                  <div class="rl-cacherail" id="cacherail"></div>
+                  <div class="rl-cachebody" id="cachebody"></div>
+                </section>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="lo-stage-bar">
+        <span>KP/OS</span>
+        <i></i>
+        <span>REPAIR.LOG</span>
+        <span class="lo-bar-sp"></span>
+        <span id="barclock">22:41</span>
+      </div>
+     </div>
+
+      <div class="lo-glass" id="glass" aria-hidden="true">
+        <i class="g-scan"></i>
+        <i class="g-mask"></i>
+        <i class="g-bloom"></i>
+        <i class="g-spec"></i>
+        <i class="g-vig"></i>
+        <i class="g-bezel"></i>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="rig">
+  <strong>DEMO RIG</strong>
+  <span>Scheme</span>
+  <div class="rig-row" id="schemerow"></div>
+  <span>CRT</span>
+  <div class="rig-row" id="crtrow"></div>
+  <span>Feed</span>
+  <div class="rig-row" id="feedrow"></div>
+  <span>Viewport</span>
+  <div class="rig-row" id="vprow"></div>
+  <span>Scenario</span>
+  <div class="rig-row" id="scenrow"></div>
+  <div class="rig-row"><button id="replay">REPLAY LOAD</button></div>
+  <span class="rig-meas" id="meas"></span>
+  <span>REPAIR.LOG as an instrument panel. GLANCE ORDER: 1 THE BILL (credited, billed, recovered), 2 the AUGMENT CACHE, which is the only thing here that needs a hand, 3 the masthead verdict and the client's line, 4 the trace and the dive log, ambient the client cam and the pouch. The verdict is NOT the focal element: a loss never reaches this screen, so REPAIR LOGGED is invariant and carries no information. RISK owns exactly one thing, the strain the run has left, armed at or below 35, with inverse video and motion as its further channels; try DAY 6 STRAINED. FEED swaps the client cam between ink-tinted 1-bit, untinted 1-bit and a colourised re-dither. All three viewports render the same arrangement.</span>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ================= shipped content, transcribed =================
+   * Numbers and copy come from the game modules so the study cannot drift:
+   *   run-reducer.ts  SALVAGE_PAY 25, cap rate 0.5, cleanRunBonus 15,
+   *                   the chip bill capped at 40
+   *   content/arc.ts  jobPay(tier) = 40 + 25 * tier, and DAY_CONFIGS'
+   *                   jobTiers, which decide what a day can even roll
+   *   content/kit.ts  GRIDLOCK_CHIP 6, augment names and descs verbatim
+   *   content/customers.ts  names, devices, win lines, and each client's
+   *                   own tiers, which decide what job they can take
+   *   patch-cells.ts  PATCH_POUCH_MAX 5
+   *   windows/report.tsx  DROP_LINES, SHAPE_NOUN, the chip and payout row
+   *                   labels, the footer button labels
+   * The first three scenarios carry over from ui-demos/repair-log/, which
+   * transcribed them in the round 1 cycle, with their JOB TIERS corrected
+   * (see each). Dive log lines are demo-mock flavour in the duel vocabulary,
+   * as they were there. */
+
+  var POUCH_MAX = 5;
+  var RISK_BAND = 35;   /* the LOADOUT.CFG risk band, reused so one number
+                         * means one thing across the whole desktop */
+
+  var SCENARIOS = {
+    /* Day 4's jobTiers are [2, 2, 3] and Juno's tiers are [1, 2], so ticket 1
+     * is tier 2 and pays jobPay(2) = 90. The round 1 study priced it at the
+     * tier 1 rate of 65, which day 4 cannot roll. */
+    clean: {
+      key: "clean",
+      rigLabel: "CLEAN SWEEP",
+      client: "JUNO VEX",
+      device: "Hexlight arcade handheld",
+      figure: "juno",
+      camTag: "RECORDS RECLAIMED",
+      day: "04", ticket: "1 OF 3", tier: 2, credits: "275", lastJob: false,
+      winLine: "The records are mine again. First try. Tell nobody how long that actually took me.",
+      pay: 90,
+      payRows: [],
+      chip: 0,
+      strainLeft: 62,
+      chipRows: [],
+      rounds: 8,
+      trapRounds: [],
+      parRounds: [],
+      capWobble: false,
+      piece: {
+        mask: 0xa,
+        noun: "STRAIGHT",
+        line: "Zero strain billed. Banked a random straight.",
+        status: "BANKED BY CLEAN RUN",
+        capped: false
+      },
+      pouch: [0x5, 0xf, 0x7],
+      banked: 0xa,
+      baysFull: false,
+      kit: [],
+      draft: [
+        { id: "cfgArmHalt", kind: "config", name: "HALT DRIVER", desc: "ATTACK config: plant halt traps. A sprung trap costs the intrusion its whole next turn." },
+        { id: "tapLine", kind: "boost", name: "TAP LINE", desc: "SCAN also traces the intrusion's planned route to the core, visible for 2 rounds." },
+        { id: "longArms", kind: "boost", name: "LONG ARMS", desc: "Rotate open junctions up to 4 steps from your territory instead of 2, and place patch pieces just as far. Bigger setups, bigger cascades." }
+      ],
+      log: [
+        "R01 LINK UP. HEXLIGHT BOOTS TO ATTRACT MODE",
+        "R03 ROTATE J-02 CW. UNDER PAR",
+        "R05 SIPHON TRAP DEFUSED BEFORE IT SET",
+        "R08 CORE SEALED. ZERO STRAIN BILLED"
+      ],
+      ticks: { ram: "6/T", rot: "0", trap: "0", noise: "LOW" }
+    },
+
+    /* Sable's tiers are [1, 2] and day 4's ticket 2 is tier 2:
+     * jobPay(2) = 90, which is what the round 1 study already had. */
+    rough: {
+      key: "rough",
+      rigLabel: "ROUGH WIN",
+      client: "SABLE OKONKWO",
+      device: "Kestrel courier drone",
+      figure: "sable",
+      camTag: "ON THE GOOD LIST",
+      day: "04", ticket: "2 OF 3", tier: 2, credits: "365", lastJob: false,
+      winLine: "She flies straight again. First clean run all month. You are on my good list, which is short.",
+      pay: 90,
+      payRows: [],
+      chip: 8,
+      strainLeft: 54,
+      chipRows: [
+        ["2 rotations over par", "-4"],
+        ["1 trap sprung", "-4"]
+      ],
+      rounds: 10,
+      trapRounds: [5],
+      parRounds: [4, 7],
+      capWobble: false,
+      piece: {
+        mask: 0x3,
+        noun: "ELBOW",
+        line: "An elbow pulled from the wreck. Bent, but sound.",
+        status: "BANKED",
+        capped: false
+      },
+      pouch: [0x5, 0xf, 0x7, 0xa],
+      banked: 0x3,
+      baysFull: false,
+      kit: [],
+      draft: [
+        { id: "cfgWard", kind: "config", name: "WARD DRIVER", desc: "DEFEND config: ward an area so no new traps can land in it, and REDIRECT cannot touch anything inside it either, for the full duration on both sides." },
+        { id: "echoTap", kind: "boost", name: "ECHO TAP", desc: "Whenever one of your traps fires, gain 2 RAM on your next turn." },
+        { id: "cheapShot", kind: "boost", name: "CHEAP SHOT", desc: "Your first ATTACK each dive costs 0 RAM." }
+      ],
+      log: [
+        "R01 LINK UP. KESTREL ACCEPTS THE HANDSHAKE",
+        "R04 REDIRECT PUSHES THE FEED WIDE. OVER PAR",
+        "R05 TRAP SPRUNG AT J-09. 4 STRAIN BILLED",
+        "R10 CORE SEALED. FLIGHT PLAN RESTORED"
+      ],
+      ticks: { ram: "6/T", rot: "2", trap: "1", noise: "MID" }
+    },
+
+    /* Day 4's ticket 3 is tier 3 and Aldous's tiers are [1, 2, 3], so this is
+     * tier 3, not the tier 4 the round 1 study used: day 4 tops out at 3 and
+     * Aldous cannot take a 4. jobPay(3) = 115, halved by the cap win to 57,
+     * plus SALVAGE_PAY 25 because the cache rolled dry = 82. */
+    cap: {
+      key: "cap",
+      rigLabel: "CAP AND DRY",
+      client: "ALDOUS WICK",
+      device: "Meridian ledger terminal",
+      figure: "aldous",
+      camTag: "BOOKS BALANCED",
+      day: "04", ticket: "3 OF 3", tier: 3, credits: "447", lastJob: true,
+      winLine: "The books balance. First time since spring. You do honest work, son.",
+      pay: 82,
+      payRows: [
+        ["ticket rate", "115 cr"],
+        ["reduced rate, cap", "-58 cr"],
+        ["salvage, cache dry", "+25 cr"]
+      ],
+      chip: 22,
+      strainLeft: 42,
+      chipRows: [
+        ["3 traps sprung", "-12"],
+        ["hit the turn cap", "-10"]
+      ],
+      rounds: 14,
+      trapRounds: [4, 8, 12],
+      parRounds: [],
+      capWobble: true,
+      piece: {
+        mask: 0xe,
+        noun: "TEE",
+        line: "Tee piece pulled from the wreck, but the pouch already holds the maximum of 5. Left on the bench.",
+        status: "LEFT ON THE BENCH",
+        capped: true
+      },
+      pouch: [0x5, 0xf, 0x7, 0xa, 0x3],
+      banked: null,
+      baysFull: false,
+      kit: [],
+      draft: [],
+      log: [
+        "R01 LINK UP. MERIDIAN LEDGER ANSWERS SLOW",
+        "R04 TRAP SPRUNG AT J-03. 4 STRAIN BILLED",
+        "R12 TRAP SPRUNG AT J-05. 4 STRAIN BILLED",
+        "R14 TURN CAP HIT. 10 STRAIN BILLED"
+      ],
+      ticks: { ram: "6/T", rot: "0", trap: "3", noise: "HIGH" }
+    },
+
+    /* NEW this cycle. Three states the round 1 study could not show: the
+     * strain alarm armed, the chip bill hitting its 40 cap, and the
+     * bays-full EJECT flow that report.tsx has always had and no demo has
+     * ever rendered. It also covers the fourth patch-drop branch, NO PIECE
+     * THIS TICKET, which no other scenario reaches.
+     *
+     * DAY 6, not day 8. Day 8's jobTiers are [4, 4, 4] and Bram's tiers are
+     * [2, 3], so he cannot appear there at all; day 6 rolls [3, 3, 3] and
+     * takes him. Tier 3: jobPay(3) = 115, no cap win, cache not dry. Day 6's
+     * patchDrop is 0.16, so recovering nothing is the likely roll, which is
+     * why the empty branch lives on this ticket. Bram Hollander and his
+     * verbatim shipped win line, because his figure art already exists: the
+     * art budget was NONE, so no client was invented for this. */
+    strained: {
+      key: "strained",
+      rigLabel: "DAY 6 STRAINED",
+      client: "BRAM HOLLANDER",
+      device: "Copperline register hub",
+      figure: "bram",
+      camTag: "TILL RESTORED",
+      day: "06", ticket: "2 OF 3", tier: 3, credits: "615", lastJob: false,
+      winLine: "The till opens for its rightful owner. I could kiss you. I will not.",
+      pay: 115,
+      payRows: [],
+      chip: 40,
+      strainLeft: 18,
+      /* the raw bill is 5 over par (-10) plus 8 traps (-32) = 42, which the
+       * run layer caps at 40. The capped row is the inverse-video one. */
+      chipRows: [
+        ["5 rotations over par", "-10"],
+        ["8 traps sprung", "-32"]
+      ],
+      cappedBill: true,
+      rounds: 13,
+      trapRounds: [3, 5, 6, 8, 9, 10, 11, 12],
+      parRounds: [2, 4, 7, 10, 13],
+      capWobble: false,
+      /* the fourth patch branch: the drop roll simply missed */
+      piece: {
+        mask: null,
+        noun: null,
+        line: "Nothing came off this one. The next clean run still banks.",
+        status: "POUCH 2 OF 5",
+        none: true,
+        capped: false
+      },
+      pouch: [0x3, 0x7],
+      banked: null,
+      baysFull: true,
+      kit: [
+        { id: "hotBoot", name: "HOT BOOT", desc: "Start every dive with +1 RAM on your first turn." },
+        { id: "cheapShot", name: "CHEAP SHOT", desc: "Your first ATTACK each dive costs 0 RAM." },
+        { id: "echoTap", name: "ECHO TAP", desc: "Whenever one of your traps fires, gain 2 RAM on your next turn." },
+        { id: "tapLine", name: "TAP LINE", desc: "SCAN also traces the intrusion's planned route to the core, visible for 2 rounds." }
+      ],
+      draft: [
+        { id: "cfgLock", kind: "config", name: "CLAMP DRIVER", desc: "DEFEND config: freeze junctions for 2 rounds against rotation and redirects." },
+        { id: "sweepCredit", kind: "boost", name: "SWEEP CREDIT", desc: "PURGE refunds 1 RAM per trap it defuses, up to 3 per cast." },
+        { id: "jamAnchor", kind: "boost", name: "JAM ANCHOR", desc: "Your REDIRECT also freezes the junction it twists through the reply and into your next turn. Nothing rotates or redirects it back while it holds." }
+      ],
+      log: [
+        "R01 LINK UP. COPPERLINE HUB ANSWERS COLD",
+        "R05 TRAP SPRUNG AT J-02. 4 STRAIN BILLED",
+        "R11 REDIRECT OVERSHOOTS. OVER PAR",
+        "R13 CORE SEALED. STRAIN BILL AT THE CAP"
+      ],
+      ticks: { ram: "7/T", rot: "5", trap: "8", noise: "HIGH" }
+    }
+  };
+
+  /* the advance button walks the day's tickets in order, as the shipped one does */
+  var ORDER = ["rough", "clean", "cap", "strained"];
+  var NEXT = { clean: "rough", rough: "cap", cap: "strained", strained: "clean" };
+
+  var S = null;
+  var scenId = "rough";
+  var picked = null;
+  var skipped = false;
+  var pendingSwap = null;
+
+  /* ================= helpers (copied from loadout-eva) ================= */
+
+  var REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var timers = [];
+  function later(fn, ms) {
+    if (REDUCED) { fn(); return; }
+    timers.push(setTimeout(fn, ms));
+  }
+  function clearTimers() {
+    timers.forEach(function (t) { clearTimeout(t); clearInterval(t); });
+    timers = [];
+  }
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+  function $(id) { return document.getElementById(id); }
+
+  /* the stepped counter roll, CRT odometer feel. It writes a raw TEXT NODE
+   * rather than an element's textContent, so the risk flash plate can live
+   * as a sibling inside the same numeral without being wiped every tick. */
+  function countUpNode(node, target, delay, interval) {
+    if (REDUCED) { node.nodeValue = String(target); return; }
+    node.nodeValue = "0";
+    var goal = Math.abs(target);
+    var sign = target < 0 ? -1 : 1;
+    var step = Math.max(1, Math.round(goal / 22));
+    later(function () {
+      var v = 0;
+      var iv = setInterval(function () {
+        v = Math.min(goal, v + step);
+        node.nodeValue = String(sign * v);
+        if (v >= goal) clearInterval(iv);
+      }, interval || 26);
+      timers.push(iv);
+    }, delay);
+  }
+
+  /* a typewriter scoped by a run token, so one element restarting never
+   * cancels the rest of the load sweep */
+  var runTokens = {};
+  function typeIn(node, text, delay, key, speed) {
+    var token = (runTokens[key] = (runTokens[key] || 0) + 1);
+    if (REDUCED) { node.textContent = text; return; }
+    node.textContent = "";
+    later(function () {
+      if (runTokens[key] !== token) return;
+      var i = 0;
+      var iv = setInterval(function () {
+        if (runTokens[key] !== token) { clearInterval(iv); return; }
+        i += 1;
+        node.textContent = text.slice(0, i);
+        if (i >= text.length) clearInterval(iv);
+      }, speed || 7);
+      timers.push(iv);
+    }, delay);
+  }
+
+  /* glyph.ts patchGlyph, DOM for DOM */
+  var SVGNS = "http://www.w3.org/2000/svg";
+  function patchGlyph(mask, size) {
+    var svg = document.createElementNS(SVGNS, "svg");
+    svg.setAttribute("width", String(size));
+    svg.setAttribute("height", String(size));
+    svg.setAttribute("viewBox", "-12 -12 24 24");
+    svg.setAttribute("class", "kp-patch-glyph");
+    svg.setAttribute("aria-hidden", "true");
+    var ends = [[0, -10], [10, 0], [0, 10], [-10, 0]];
+    for (var d = 0; d < 4; d++) {
+      if ((mask & (1 << d)) === 0) continue;
+      var line = document.createElementNS(SVGNS, "line");
+      line.setAttribute("x1", "0"); line.setAttribute("y1", "0");
+      line.setAttribute("x2", String(ends[d][0])); line.setAttribute("y2", String(ends[d][1]));
+      line.setAttribute("class", "kp-pp-arm");
+      line.setAttribute("stroke-width", "3.5");
+      svg.appendChild(line);
+    }
+    var hub = document.createElementNS(SVGNS, "circle");
+    hub.setAttribute("cx", "0"); hub.setAttribute("cy", "0"); hub.setAttribute("r", "3");
+    hub.setAttribute("class", "kp-pp-node");
+    svg.appendChild(hub);
+    return svg;
+  }
+
+  /* ================= sound: minimal inline WebAudio voices =================
+   * The shipped unlock / press / granted characters, approximated for a
+   * standalone page with no sound.ts build (the dadlog study's precedent). */
+
+  var AC = null;
+  var interacted = false;
+  document.addEventListener("pointerdown", function () { interacted = true; }, true);
+  document.addEventListener("keydown", function () { interacted = true; }, true);
+
+  function blip(o) {
+    if (!interacted) return;
+    try {
+      if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)();
+      if (AC.state === "suspended") AC.resume();
+      var t = AC.currentTime;
+      var src;
+      if (o.type === "noise") {
+        var len = Math.ceil(AC.sampleRate * o.dur);
+        var buf = AC.createBuffer(1, len, AC.sampleRate);
+        var d = buf.getChannelData(0);
+        for (var i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+        src = AC.createBufferSource();
+        src.buffer = buf;
+      } else {
+        src = AC.createOscillator();
+        src.type = o.type;
+        src.frequency.setValueAtTime(o.freq, t);
+        if (o.freq2) src.frequency.setValueAtTime(o.freq2, t + o.jumpAt);
+      }
+      var node = src;
+      if (o.lpf) { var lf = AC.createBiquadFilter(); lf.type = "lowpass"; lf.frequency.value = o.lpf; node.connect(lf); node = lf; }
+      if (o.hpf) { var hf = AC.createBiquadFilter(); hf.type = "highpass"; hf.frequency.value = o.hpf; node.connect(hf); node = hf; }
+      var g = AC.createGain();
+      g.gain.setValueAtTime(o.vol, t);
+      g.gain.exponentialRampToValueAtTime(0.001, t + o.dur);
+      node.connect(g);
+      g.connect(AC.destination);
+      src.start(t);
+      src.stop(t + o.dur + 0.02);
+    } catch (e) { /* sound is never load bearing */ }
+  }
+
+  var SFX = {
+    tick: function () { blip({ type: "square", freq: 660, dur: 0.05, vol: 0.16, lpf: 3200 }); },
+    press: function () { blip({ type: "square", freq: 520, dur: 0.06, vol: 0.17, lpf: 2600 }); },
+    granted: function () { blip({ type: "square", freq: 300, freq2: 450, jumpAt: 0.07, dur: 0.24, vol: 0.17, lpf: 2200 }); },
+    unlock: function () { blip({ type: "square", freq: 520, freq2: 780, jumpAt: 0.04, dur: 0.13, vol: 0.2, lpf: 3000 }); },
+    /* instrumentLock, the preset the loadout-eva cycle already proposed and
+     * that has not landed in audio.ts yet. Same character, same parameters,
+     * used the same way: one quiet voice per hero numeral as it lands, so
+     * two in a row read as a settle rather than as two dings. This surface
+     * does NOT propose a second preset for the same job. */
+    instrumentLock: function () { blip({ type: "square", freq: 392, dur: 0.075, vol: 0.11, lpf: 1800 }); }
+  };
+
+  /* ================= Z3: the bill ================= */
+
+  var billEl = $("bill");
+
+  function receipt(rows, startDelay) {
+    var ul = el("ul", "rl-receipt");
+    rows.forEach(function (r, i) {
+      var li = el("li", r[2] === "inv" ? "inv" : null);
+      li.appendChild(el("span", null, r[0]));
+      li.appendChild(el("em", null, r[1]));
+      if (!REDUCED) {
+        li.classList.add("kp-slot-anim");
+        li.style.animationDelay = (startDelay + i * 90) + "ms";
+      }
+      ul.appendChild(li);
+    });
+    return ul;
+  }
+
+  function heroCell(cfg) {
+    var cell = el("div", "rl-cell");
+    cell.appendChild(el("span", "rl-cname", cfg.name));
+
+    /* the numeral is its own TEXT NODE with the risk flash plate as a
+     * sibling, because the count-up rewrites the number 22 times and a
+     * textContent write would take the plate out with it */
+    var hero = el("div", "rl-heroline");
+    var num = el("span", "rl-num" + (cfg.clean ? " is-clean" : ""));
+    var text = document.createTextNode(cfg.clean ? "CLEAN" : "0");
+    num.appendChild(text);
+    /* the flash plate exists ONLY on the cell that owns the alarm. Putting
+     * one on every numeral meant --r-warn was present, inert and at zero
+     * opacity, in cells that have no alarm, which law 1 does not allow. */
+    if (cfg.alarm) {
+      var flash = el("i", "rl-riskflash");
+      flash.setAttribute("aria-hidden", "true");
+      num.appendChild(flash);
+    }
+    hero.appendChild(num);
+    if (cfg.unit) hero.appendChild(el("span", "rl-unit", cfg.unit));
+    cell.appendChild(hero);
+
+    /* rendered even when the branch bills nothing: the reserved rows are
+     * what keep a clean sweep the same height as a capped bill */
+    cell.appendChild(receipt(cfg.rows || [], cfg.rowDelay || 520));
+
+    var br = el("i", "rl-bracket");
+    br.appendChild(el("i"));
+    cell.appendChild(br);
+    billEl.appendChild(cell);
+    return { cell: cell, num: num, text: text };
+  }
+
+  function buildBill() {
+    billEl.textContent = "";
+
+    /* CELL 1: what the ticket credited. */
+    var credited = heroCell({
+      name: "// CREDITED",
+      unit: "CR",
+      rows: S.payRows,
+      rowDelay: 560
+    });
+    countUpNode(credited.text, S.pay, 300, 34);
+    later(function () { SFX.instrumentLock(); }, 300 + 22 * 34);
+
+    /* CELL 2: what the ticket billed in strain, and how much is left.
+     * This cell is the ONLY owner of --r-warn on this surface. */
+    var billed = heroCell({
+      name: "// BILLED",
+      unit: S.chip === 0 ? "" : "STRAIN",
+      clean: S.chip === 0,
+      alarm: true,
+      rows: S.cappedBill
+        ? S.chipRows.concat([["strain bill capped", "-40 max", "inv"]])
+        : S.chipRows,
+      rowDelay: 620
+    });
+    if (S.chip !== 0) {
+      countUpNode(billed.text, -S.chip, 360, 34);
+      later(function () { SFX.instrumentLock(); }, 360 + 22 * 34);
+    }
+
+    /* the strain-left meter and its band */
+    var bar = el("span", "rl-strainbar");
+    for (var i = 0; i < 24; i++) bar.appendChild(el("i"));
+    billed.cell.appendChild(bar);
+    var foot = el("div", "rl-cellfoot");
+    foot.appendChild(el("span", null, "STRAIN LEFT"));
+    foot.appendChild(el("em", null, String(S.strainLeft)));
+    foot.appendChild(el("span", null, S.strainLeft <= RISK_BAND ? "SEVERS AT 0" : ""));
+    billed.cell.appendChild(foot);
+
+    if (S.strainLeft > 70) billed.cell.classList.add("is-ok");
+    else if (S.strainLeft <= RISK_BAND) billed.cell.classList.add("is-risk");
+    var segsOn = Math.round(24 * S.strainLeft / 100);
+    for (var b = 0; b < 24; b++) {
+      if (b < segsOn) {
+        (function (sg, k) { later(function () { sg.classList.add("on"); }, 700 + k * 26); })(bar.children[b], b);
+      }
+    }
+
+    /* CELL 3: what the ticket recovered. The glyph does the work the numeral
+     * does in the other two cells. Its label is a CONSTANT, so the branch
+     * cannot resize the focal row; the branch is still fully stated by the
+     * glyph, the noun, the status chip and the verbatim flavour line. */
+    var pcell = el("div", "rl-cell");
+    pcell.appendChild(el("span", "rl-cname", "// RECOVERED"));
+    var prow = el("div", "rl-piece");
+    /* the empty stage keeps the filled stage's exact footprint, so a ticket
+     * that recovered nothing is the same height as one that did (law 4) */
+    var stage = el("div", "rl-piecestage" + (S.piece.capped || S.piece.none ? " void" : ""));
+    if (S.piece.mask !== null) stage.appendChild(patchGlyph(S.piece.mask, 46));
+    prow.appendChild(stage);
+    var meta = el("div", "rl-piecemeta");
+    if (S.piece.noun) meta.appendChild(el("span", "rl-noun", S.piece.noun));
+    meta.appendChild(el("span",
+      "rl-pstatus" + (S.piece.capped ? " capped" : S.piece.none ? " none" : ""), S.piece.status));
+    prow.appendChild(meta);
+    pcell.appendChild(prow);
+    var pline = el("p", "rl-pline");
+    pcell.appendChild(pline);
+    typeIn(pline, S.piece.line, 760, "pline", 8);
+    var pbr = el("i", "rl-bracket");
+    pbr.appendChild(el("i"));
+    pcell.appendChild(pbr);
+    billEl.appendChild(pcell);
+    if (!REDUCED) {
+      stage.classList.add("kp-slot-anim");
+      stage.style.animationDelay = "700ms";
+    }
+  }
+
+  /* ================= Z4: the trace ================= */
+
+  /* report.tsx seeded(), transcribed so the trace is the same shape the
+   * shipped component draws for the same dive */
+  function seeded(id) {
+    var s = 0;
+    for (var i = 0; i < id.length; i++) s = (s * 31 + id.charCodeAt(i)) >>> 0;
+    return function () {
+      s = (Math.imul(s, 1664525) + 1013904223) >>> 0;
+      return s;
+    };
+  }
+
+  function buildEcg() {
+    var svg = $("ecg");
+    svg.textContent = "";
+    var W = 640, H = 54, base = 35;
+    var next = seeded(S.key + "-ecg");
+
+    for (var x = 0; x <= W; x += 32) {
+      var vl = document.createElementNS(SVGNS, "line");
+      vl.setAttribute("x1", x); vl.setAttribute("y1", 0);
+      vl.setAttribute("x2", x); vl.setAttribute("y2", H);
+      vl.setAttribute("class", "grid");
+      svg.appendChild(vl);
+    }
+    for (var y = 0; y <= H; y += 18) {
+      var hl = document.createElementNS(SVGNS, "line");
+      hl.setAttribute("x1", 0); hl.setAttribute("y1", y);
+      hl.setAttribute("x2", W); hl.setAttribute("y2", y);
+      hl.setAttribute("class", "grid");
+      svg.appendChild(hl);
+    }
+
+    /* a hazard tick per trap round: the events are legible as events without
+     * spending the alarm colour on a readout */
+    S.trapRounds.forEach(function (r) {
+      var tx = ((r - 0.5) / S.rounds) * W;
+      var tl = document.createElementNS(SVGNS, "line");
+      tl.setAttribute("x1", tx); tl.setAttribute("y1", 0);
+      tl.setAttribute("x2", tx); tl.setAttribute("y2", H);
+      tl.setAttribute("class", "trap");
+      svg.appendChild(tl);
+    });
+
+    var events = [];
+    S.trapRounds.forEach(function (r) { events.push({ x: ((r - 0.5) / S.rounds) * W, amp: 24 }); });
+    S.parRounds.forEach(function (r) { events.push({ x: ((r - 0.5) / S.rounds) * W, amp: 10 }); });
+    var pts = [];
+    for (var px = 0; px <= W; px += 4) {
+      var py = base + ((next() % 100) / 100 - 0.5) * 5;
+      for (var e = 0; e < events.length; e++) {
+        var d = Math.abs(px - events[e].x);
+        if (d < 20) py -= events[e].amp * (1 - d / 20);
+      }
+      if (S.capWobble && px > W * 0.82) py += Math.sin(px / 9) * 6;
+      pts.push(px + "," + Math.round(Math.max(3, Math.min(H - 3, py))));
+    }
+    var poly = document.createElementNS(SVGNS, "polyline");
+    poly.setAttribute("points", pts.join(" "));
+    poly.setAttribute("shape-rendering", "crispEdges");
+    svg.appendChild(poly);
+
+    /* the trace draws itself in on a stroke-dash sweep, steps timing */
+    if (!REDUCED) {
+      var len = 0;
+      var parsed = pts.map(function (p) { return p.split(",").map(Number); });
+      for (var k = 1; k < parsed.length; k++) {
+        len += Math.hypot(parsed[k][0] - parsed[k - 1][0], parsed[k][1] - parsed[k - 1][1]);
+      }
+      len = Math.ceil(len);
+      poly.style.strokeDasharray = len + " " + len;
+      poly.style.strokeDashoffset = len;
+      later(function () {
+        poly.style.transition = "stroke-dashoffset 620ms steps(14)";
+        poly.style.strokeDashoffset = "0";
+      }, 200);
+    }
+
+    $("scoperounds").textContent = S.rounds + " ROUNDS";
+  }
+
+  function buildLog() {
+    var wrap = $("log");
+    wrap.textContent = "";
+    S.log.slice(0, 4).forEach(function (line, i) {
+      var hot = /TRAP SPRUNG|TURN CAP|AT THE CAP/.test(line);
+      var n = el("div", "rl-logline" + (hot ? " hot" : ""));
+      wrap.appendChild(n);
+      typeIn(n, line, 300 + i * 90, "log" + i, 5);
+    });
+  }
+
+  /* ================= Z2: gutter ================= */
+
+  function buildGutter() {
+    $("t-ram").textContent = S.ticks.ram;
+    $("t-rot").textContent = S.ticks.rot;
+    $("t-trap").textContent = S.ticks.trap;
+    $("t-noise").textContent = S.ticks.noise;
+
+    var row = $("pouchrow");
+    row.textContent = "";
+    $("t-pouch").textContent = S.pouch.length + " / " + POUCH_MAX;
+    var freshIndex = S.banked !== null ? S.pouch.lastIndexOf(S.banked) : -1;
+    S.pouch.forEach(function (m, i) {
+      var slot = el("span", "rl-pslot" + (i === freshIndex ? " fresh" : ""));
+      slot.appendChild(patchGlyph(m, 20));
+      if (!REDUCED) {
+        slot.classList.add("kp-slot-anim");
+        slot.style.animationDelay = (900 + i * 70) + "ms";
+      }
+      row.appendChild(slot);
+    });
+    for (var h = S.pouch.length; h < POUCH_MAX; h++) {
+      row.appendChild(el("span", "rl-pslot empty"));
+    }
+    /* The shipped strip appends the piece that did NOT fit, as a sixth slot
+     * after a "+". It is cut here for two reasons. It is duplicate: the
+     * RECOVERED cell already shows that exact piece, in a dashed void stage,
+     * under a LEFT ON THE BENCH status, with the verbatim flavour line
+     * saying why. And it was the last thing on the surface that could still
+     * change the window's height: a sixth and seventh mark wrapped the strip
+     * to a second row in the laptop's narrower gutter, which cost 30px on
+     * the one ticket where the pouch overflowed. The strip is now always
+     * exactly PATCH_POUCH_MAX slots on one row, at every tier. */
+  }
+
+  /* ================= Z5: the cache ================= */
+
+  /* The advance button rides the cache divider, never the masthead: the top
+   * right carries no buttons (review ruling 2026-08-01). It was briefly
+   * deleted outright, then restored by the follow-up ruling because CLOSE
+   * THE DAY needs somewhere to live on the last ticket. */
+  function footLabel() {
+    return S.lastJob ? "CLOSE THE DAY" : "NEXT TICKET";
+  }
+
+  /* MORE is revealed only where the clamp actually hid something, measured
+   * after the webfont settles: VT323 loads late, and measuring against the
+   * fallback reports every card as overflowing. */
+  var overflowChecks = [];
+  function revealMore() {
+    overflowChecks.forEach(function (c) {
+      c.more.classList.toggle("hidden", c.p.scrollHeight <= c.p.clientHeight + 1);
+    });
+  }
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(revealMore);
+
+  function buildCache() {
+    var body = $("cachebody");
+    var rail = $("cacherail");
+    body.textContent = "";
+    rail.textContent = "";
+    overflowChecks = [];
+    var state = $("cachestate");
+
+    /* a dry cache has nothing to decline: the rail collapses and the dry box
+     * spans, at the height a live draft reserves */
+    $("cache").classList.toggle("no-choice", S.draft.length === 0);
+
+    if (S.draft.length === 0) {
+      state.textContent = "DRY";
+      state.className = "done";
+      body.appendChild(el("div", "rl-dry", "Augment cache is dry. Salvage credited instead."));
+      $("next").textContent = footLabel();
+      return;
+    }
+
+    state.textContent = picked ? "INSTALLED" : skipped ? "SKIPPED" : "PICK ONE";
+    state.className = picked || skipped ? "done" : "";
+
+    if (pendingSwap !== null) {
+      /* the EJECT panel replaces the draft row in place: a bays-full pick is
+       * still one decision, and giving it its own row would cost the ceiling
+       * exactly where the page is fullest. Its decline, CANCEL THE SWAP,
+       * takes the rail slot the skip normally holds: one column for backing
+       * out, whatever the decision on the right currently is. */
+      var cancel = el("button", "kp-btn2 kp-btn2-ghost", "CANCEL THE SWAP");
+      cancel.type = "button";
+      cancel.addEventListener("click", function () { SFX.press(); pendingSwap = null; buildCache(); });
+      rail.appendChild(cancel);
+      var swap = el("div", "rl-swap");
+      var aug = S.draft.filter(function (d) { return d.id === pendingSwap; })[0];
+      swap.appendChild(el("h4", null, "EJECT WHICH BOOST FOR " + aug.name + "?"));
+      var srow = el("div", "rl-swaprow");
+      S.kit.forEach(function (k) {
+        var b = el("button", "rl-card");
+        b.type = "button";
+        b.appendChild(el("span", "rl-kind", "EJECT"));
+        b.appendChild(el("strong", null, k.name));
+        b.appendChild(el("p", "clamped", k.desc));
+        b.addEventListener("click", function () {
+          SFX.granted();
+          picked = pendingSwap;
+          pendingSwap = null;
+          buildCache();
+        });
+        srow.appendChild(b);
+      });
+      swap.appendChild(srow);
+      body.appendChild(swap);
+      $("next").textContent = footLabel();
+      return;
+    }
+
+    /* the decline slot: same group, same decision, subordinate treatment.
+     * Skipping is a choice, so it takes the picked idiom once made, and the
+     * whole group disarms together. */
+    var skip = el("button", "rl-skipcard" + (skipped ? " skipped" : ""), "SKIP THE DRAFT");
+    skip.type = "button";
+    if (picked !== null || skipped) skip.disabled = true;
+    skip.addEventListener("click", function () {
+      if (picked !== null || skipped) return;
+      SFX.press();
+      skipped = true;
+      buildCache();
+    });
+    rail.appendChild(skip);
+
+    var grid = el("div", "rl-draft");
+    S.draft.forEach(function (d, i) {
+      var isPicked = picked === d.id;
+      var dimmed = (picked !== null && !isPicked) || skipped;
+      var needsSwap = d.kind === "boost" && S.baysFull;
+      var b = el("button", "rl-card" + (isPicked ? " picked" : "") + (dimmed ? " dimmed" : ""));
+      b.type = "button";
+      if (picked !== null || skipped) b.disabled = true;
+      /* BAYS FULL only names the state now: the outline already says the
+       * card is clickable, and the EJECT panel says what the click means */
+      b.appendChild(el("span", "rl-kind",
+        d.kind === "config" ? "CONFIG" : needsSwap && !isPicked ? "BOOST, BAYS FULL" : "BOOST"));
+      b.appendChild(el("strong", null, d.name));
+      var p = el("p", "clamped", d.desc);
+      b.appendChild(p);
+      var morerow = el("div", "rl-morerow");
+      var more = el("button", "rl-more hidden", "MORE");
+      more.type = "button";
+      more.addEventListener("click", function (ev) {
+        ev.stopPropagation();
+        SFX.tick();
+        p.classList.remove("clamped");
+        more.classList.add("hidden");
+      });
+      morerow.appendChild(more);
+      b.appendChild(morerow);
+      overflowChecks.push({ p: p, more: more });
+      if (isPicked) b.appendChild(el("em", "rl-stamp", "INSTALLED"));
+      b.addEventListener("click", function () {
+        if (picked !== null || skipped) return;
+        if (needsSwap) { SFX.press(); pendingSwap = d.id; buildCache(); return; }
+        SFX.granted();
+        picked = d.id;
+        buildCache();
+      });
+      /* NO slot-in on the draft row, ever. The stagger held each card at a
+       * different translateY for over a second of visibly stepped frames,
+       * which the reviewer read, twice, as the row being misaligned; a row
+       * whose alignment is the point must never render transiently
+       * unaligned. The cache appears settled in one frame. */
+      grid.appendChild(b);
+    });
+    body.appendChild(grid);
+    $("next").textContent = footLabel();
+    requestAnimationFrame(revealMore);
+  }
+
+  /* ================= the load choreography =================
+   *   0ms    the client still slots in (300ms, steps(5))
+   *   200ms  the strain trace draws itself in (620ms, steps(14))
+   *   240ms  the client's win line types
+   *   300ms  CREDITED counts up, and locks with its own quiet voice
+   *   300ms+ the dive log lines type, staggered 90ms apart
+   *   360ms  BILLED counts up, and locks
+   *   520ms+ the receipts pop in, staggered 90ms
+   *   700ms  the strain meter fills, segment by segment
+   *   700ms  the recovered piece slots in, its flavour line types at 760ms
+   *   820ms+ the draft cards slot in, staggered 110ms
+   *   900ms+ the pouch fills
+   *   1500ms the verdict slab locks
+   * Ambient chrome does not move at any point. Motion means something is
+   * happening or something is wrong (law 7). */
+
+  function sweep() {
+    clearTimers();
+    picked = null;
+    skipped = false;
+    pendingSwap = null;
+
+    $("eyebrow").textContent = "REPAIR.LOG // DAY " + S.day + " TICKET " + S.ticket;
+    $("c-client").textContent = S.client;
+    $("c-device").textContent = S.device;
+    $("c-day").textContent = S.day;
+    $("c-ticket").textContent = S.ticket;
+    $("c-cred").textContent = S.credits;
+    $("camtag").textContent = S.camTag;
+
+    /* the still slots in like any other print on the page: a capture, not a
+     * feed, so no boot wipe and no roll */
+    var cam = $("cam");
+    cam.classList.remove("kp-slot-anim");
+    if (!REDUCED) {
+      void cam.offsetWidth;
+      cam.classList.add("kp-slot-anim");
+    }
+
+    typeIn($("quote"), '"' + S.winLine + '"', 240, "quote", 12);
+
+    buildBill();
+    buildEcg();
+    buildLog();
+    buildGutter();
+    buildCache();
+
+    var slab = $("slab");
+    later(function () {
+      slab.classList.remove("rl-lock");
+      void slab.offsetWidth;
+      slab.classList.add("rl-lock");
+      if (S.draft.length > 0) SFX.unlock();
+    }, 1500);
+
+    measure();
+    /* the log and the flavour line type, so the honest height is settled */
+    later(measure, 2400);
+  }
+
+  /* ================= the demo rig ================= */
+
+  function radioRow(rowId, opts, initial, onPick) {
+    var row = $(rowId);
+    row.textContent = "";
+    opts.forEach(function (o) {
+      var b = el("button", o.id === initial ? "rig-on" : "", o.label);
+      b.addEventListener("click", function () {
+        row.querySelectorAll("button").forEach(function (x) { x.className = ""; });
+        b.className = "rig-on";
+        onPick(o);
+      });
+      row.appendChild(b);
+    });
+  }
+
+  /* CRT: the six layers are added and REMOVED, never faded to zero, so OFF is
+   * a genuinely clean flat-ink print */
+  var glassLayers = Array.prototype.slice.call($("glass").children);
+  function setCrt(mode) {
+    var stage = $("stage");
+    var glass = $("glass");
+    stage.classList.toggle("crt-on", mode !== "off");
+    glass.textContent = "";
+    if (mode !== "off") glassLayers.forEach(function (l) { glass.appendChild(l); });
+  }
+
+  var feedMode = "ink";
+  function camSrc() {
+    return "art/client-" + S.figure + "-" + (feedMode === "color" ? "color" : "fine") + ".png";
+  }
+  function setFeed(id) {
+    feedMode = id;
+    var cam = $("cam");
+    cam.dataset.feed = id;
+    $("camimg").src = camSrc();
+    cam.classList.remove("kp-slot-anim");
+    if (!REDUCED) {
+      void cam.offsetWidth;
+      cam.classList.add("kp-slot-anim");
+    }
+  }
+  ["juno", "sable", "aldous", "bram"].forEach(function (n) {
+    new Image().src = "art/client-" + n + "-fine.png";
+    new Image().src = "art/client-" + n + "-color.png";
+  });
+
+  radioRow("feedrow", [
+    { id: "ink", label: "INK TINT" },
+    { id: "true", label: "TRUE 1-BIT" },
+    { id: "color", label: "FULL COLOUR" }
+  ], "ink", function (o) { setFeed(o.id); });
+
+  radioRow("crtrow", [
+    { id: "flat", label: "FLAT" },
+    { id: "off", label: "OFF" }
+  ], "flat", function (o) { setCrt(o.id); });
+
+  function setScheme(id) { document.documentElement.dataset.scheme = id; }
+  radioRow("schemerow", [
+    { id: "nerv", label: "NERV" },
+    { id: "tokyo", label: "TOKYO NIGHT" }
+  ], "nerv", function (o) { setScheme(o.id); });
+
+  var VIEWPORTS = [
+    { id: "169", label: "16:9", w: 1366, h: 768, win: 900 },
+    { id: "219", label: "21:9", w: 2560, h: 1080, win: 980 },
+    { id: "laptop", label: "LAPTOP 1280x800", w: 1280, h: 800, win: 790 }
+  ];
+  var VP = VIEWPORTS[0];
+
+  function applyViewport(v) {
+    VP = v;
+    $("stage").style.width = v.w + "px";
+    $("stage").style.height = v.h + "px";
+    $("term").style.setProperty("--lo-win", v.win + "px");
+    fit();
+    measure();
+  }
+
+  /* lay the stage out at TRUE resolution, then scale the whole thing to fit
+   * the reviewer's browser. Transform does not change layout size, so the
+   * container queries inside still resolve against the real window width. */
+  function fit() {
+    var availW = Math.max(320, window.innerWidth - 300);
+    var availH = Math.max(320, window.innerHeight - 90);
+    var k = Math.min(1, availW / VP.w, availH / VP.h);
+    $("fit").style.transform = "scale(" + k + ")";
+    $("fitwrap").style.width = Math.round(VP.w * k) + "px";
+    $("fitwrap").style.height = Math.round(VP.h * k) + "px";
+    return k;
+  }
+
+  function measure() {
+    var k = fit() || 1;
+    var h = Math.round($("term").getBoundingClientRect().height / k);
+    var free = $("free");
+    var slack = VP.w - VP.win;
+    if (slack > 220) {
+      free.style.display = "flex";
+      free.style.right = "0px";
+      free.style.width = Math.round(slack / 2 - 24) + "px";
+      $("freelabel").textContent = "FREE DESK " + Math.round(slack / 2 - 24) + "PX";
+    } else {
+      free.style.display = "none";
+    }
+    var tier = VP.win - 32 >= 700 ? "WIDE" : "NARROW";
+    var m = $("meas");
+    m.innerHTML = "";
+    m.appendChild(document.createTextNode("WINDOW " + VP.win + "px / " + tier + " tier"));
+    m.appendChild(document.createElement("br"));
+    m.appendChild(el("span", h > 820 ? "rig-over" : "", "HEIGHT " + h + "px / ceiling 820px"));
+  }
+
+  radioRow("vprow", VIEWPORTS, "169", function (o) { applyViewport(o); });
+  radioRow("scenrow", [
+    { id: "rough", label: "ROUGH WIN" },
+    { id: "clean", label: "CLEAN SWEEP" },
+    { id: "cap", label: "CAP AND DRY" },
+    { id: "strained", label: "DAY 6 STRAINED" }
+  ], "rough", function (o) {
+    scenId = o.id;
+    S = SCENARIOS[scenId];
+    $("camimg").src = camSrc();
+    sweep();
+  });
+
+  $("replay").addEventListener("click", sweep);
+
+  $("next").addEventListener("click", function () {
+    SFX.press();
+    scenId = NEXT[scenId];
+    S = SCENARIOS[scenId];
+    $("camimg").src = camSrc();
+    Array.prototype.slice.call($("scenrow").children).forEach(function (b, i) {
+      b.className = ORDER[i] === scenId ? "rig-on" : "";
+    });
+    sweep();
+  });
+
+  /* narrow-tier tabs (a tiling fallback; no supported viewport reaches it) */
+  function setTab(which) {
+    $("grid").dataset.tab = which;
+    $("tab-ticket").setAttribute("aria-selected", String(which === "ticket"));
+    $("tab-dive").setAttribute("aria-selected", String(which === "dive"));
+    if (!REDUCED) {
+      var g = $("grid");
+      g.classList.remove("kp-page-flip");
+      void g.offsetWidth;
+      g.classList.add("kp-page-flip");
+    }
+    SFX.tick();
+    measure();
+  }
+  $("tab-ticket").addEventListener("click", function () { setTab("ticket"); });
+  $("tab-dive").addEventListener("click", function () { setTab("dive"); });
+
+  var clockSec = 22 * 3600 + 41 * 60 + 7;
+  setInterval(function () {
+    clockSec = (clockSec + 1) % 86400;
+    var hh = String(Math.floor(clockSec / 3600)).padStart(2, "0");
+    var mm = String(Math.floor((clockSec % 3600) / 60)).padStart(2, "0");
+    var bar = hh + ":" + mm;
+    if ($("barclock").textContent !== bar) $("barclock").textContent = bar;
+  }, 1000);
+
+  window.addEventListener("resize", function () { fit(); measure(); });
+
+  /* ================= go ================= */
+
+  S = SCENARIOS[scenId];
+  setScheme("nerv");
+  setCrt("flat");
+  setFeed("ink");
+  $("camimg").src = camSrc();
+  applyViewport(VP);
+  sweep();
+})();
+</script>
+</body>
+</html>

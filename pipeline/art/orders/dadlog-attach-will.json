@@ -1,0 +1,17 @@
+{
+  "id": "dadlog-attach-will",
+  "from": "ux-agent",
+  "kind": "window-image",
+  "treatment": "dither-fine",
+  "target": "/assets/px/ui/dadlog-attach-will.png",
+  "size": [304, 304],
+  "invert": false,
+  "brief": "DAD.LOG per-entry attachment for WILL.SCN (dadlog-archive-reader ui-spec, section F, ROUND 3 addendum). A single sheet of paper, folded in four (canon detail: the will was found taped inside the register, folded in four), close-up flat lay or slight three-quarter angle, tape marks visible along one folded edge where it was stuck down, handwriting covering the visible face in dense but ILLEGIBLE scrawl (loose, hurried cursive rendered as texture/gesture only, never as readable letterforms - the 304px 1-bit dither must crush it to texture, not word shapes). 1990s anime OVA ink style, flat cel shading, no gradients beyond flat tonal blocks, high contrast so the fold creases and tape read clearly after 1-bit dithering. Absolutely NO readable text, NO panel borders, NO speech bubbles anywhere in the image; background a plain flat dark surface (a worn wooden counter or drawer bottom), nothing else in frame.",
+  "status": "done",
+  "result": "pipeline/art/done/dadlog-attach-will.png",
+  "generation": {
+    "tool": "Higgsfield nano_banana_pro",
+    "credits": 2,
+    "attempts": 1
+  }
+}

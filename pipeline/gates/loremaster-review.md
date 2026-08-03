@@ -1,304 +1,282 @@
-# Loremaster gate review
+# LOREMASTER GATE - cycle `ux-2026-07-31-loadout-eva`
 
-Cycle: `ui-integration-2026-07-29` (`pipeline/BRIEF.md`). This file REPLACES
-the prior `loremaster-review.md` (the `ux-2026-07-28-kpos-redesign` review)
-wholesale, per this cycle's instructions. That prior review's one REVISE
-(the shipped `boot.tsx` "OVERBY REPAIR BENCH BIOS v9.2" line) is CONFIRMED
-FIXED: re-grepped `boot.tsx`, `desk.tsx`, `report.tsx`, and the whole
-`components/os` tree for "overby" (case-insensitive) this session and found
-nothing; the line now reads `"REPAIR BENCH BIOS v9.2"`.
+Scope: this file is OVERWRITTEN per the request; the prior dadlog-cycle
+content is superseded and safe in git history. Gated artifact:
+`pipeline/proposals/ux-agent.json`, items `loadout-eva-instrument-panel`
+and `instrumentLock`. Nothing integrates this cycle; the user reviews the
+study first. Read in full: `pipeline/BRIEF.md` (this cycle), both items,
+`lore/bible.md`, `lore/ledger.md`, `ui-demos/loadout/NOTES.md`, and,
+directly, the shipped `loadout.tsx`, `solder.tsx`, `patch-cells.ts`,
+`journal.ts` sources named below rather than trusting the proposal's own
+"verbatim"/"already established" claims on their word.
 
-Gated against `lore/bible.md` and `lore/ledger.md`, both current as of this
-session's edits (below). Cross-checked copy-reuse and "unchanged"/"adopt"
-claims directly against shipped source: `content/customers.ts` (full
-12-customer roster), `content/story.ts` (Rhea's day-open voice, the sector
-reveal lines), `content/journal.ts`, `content/kit.ts`, `components/os/boot.tsx`,
-`components/game/duel-board.tsx`, `components/game/duel.tsx`,
-`components/game/screens.tsx` (`FinalePre`), `components/os/shop-os.tsx`
-(the tutorial/finale `isFinale` branch), and the two Dex Marlowe art files
-in `ui-demos/kpos-shell/art/`. No em or en dash found anywhere in
-`pipeline/proposals/narrative-director.json`, `pipeline/proposals/ux-agent.json`,
-or `ui-demos/kpos-shell/README.md`.
+## 1. Newly coined labels
 
-## Canon rulings made this gate
+- **OPERATOR RIG** (rotated gutter spine label): APPROVE. "Operator" is
+  already the tower's own diagnostic word for the diver, not a coinage:
+  journal.ts's IT IS GRADING ME entry (unlockAtRun 8) reads "OPERATOR
+  HOURS LOGGED AGAINST THIS UNIT: NINE THOUSAND PLUS," "HOURS ATTRIBUTE TO
+  OPERATOR ONLY," "OPPONENT DIFFICULTY TRACKS OPERATOR PERFORMANCE" -
+  shipped content, which the bible names as canon's source of truth
+  ("Source of truth: shipped content in
+  kernel-panic-site/app/src/game/content/ ... journal.ts"). The shipped
+  `loadout.tsx` header comment already calls this exact zone "the
+  operator's rig." The spec's label is a direct restatement of
+  established in-fiction vocabulary, not an invented word.
+- **// SUPPORT SYSTEMS** (band divider label): NOTE, not REVISE (advisory,
+  does not block - I cannot cite a bible/ledger line that reserves or
+  forbids this phrase, and the gate rule requires a citation to REVISE on
+  canon grounds). "Support systems" grouping a health meter (NEURAL
+  STRAIN) with gear mods (BOOST BAYS, PATCH POUCH) sits close to a
+  cockpit-life-support reading, which is the one register the brief's own
+  boundary asks to avoid ("no ... iconography... every glyph must read as
+  bench-terminal diagnostics"). It is not clearly a violation either:
+  "support" is ordinary bench/IT vocabulary too (peripheral support,
+  backup power). Optional tightening if the reviewer wants zero risk:
+  "// AUX SYSTEMS" or "// BENCH SUPPORT" reads unambiguously as shop
+  diagnostics with no loss of meaning. Not blocking.
+- **PROGRAMS** (narrow-tier tab name): APPROVE. This is the bible's own
+  term, verbatim: "Every diver carries the same three programs, 1 RAM
+  each, always: SCAN, ATTACK (modes: redirect, armHalt, armSiphon), DEFEND
+  (modes: purge, lock, ward)" (bible, Technology rules).
+- **RIG & STATUS** (narrow-tier tab name): APPROVE. A plain compound of
+  RIG (see OPERATOR RIG above) and STATUS (a bare description of the boost/
+  pouch/strain state it holds). No bible/ledger conflict.
+- **PLACE COST** (pouch chip label): APPROVE. Restates the shipped
+  `PLACE_COST` constant and the already-shown cost strings in `duel.tsx`
+  ("Place this piece (2 RAM)", "Placing a piece takes 2 RAM."). No new
+  fact, just a shorter label for an existing one.
+- **LOADING / READY verdict slab**: APPROVE. A one-word distillation of
+  the two sentences already on the same screen verbatim ("DIVE KIT IS
+  LOADING...", "DIVE KIT READY.", confirmed at `loadout.tsx:271-273`), so
+  it introduces no new information. A bare caps state word fits "System
+  voice: short caps declaratives" (bible, Voice).
 
-Two genuine gaps, decided and written into the lore files before gating
-against them, per the standing "decide the gap, then gate" method:
+## 2. Cut of diegetic imagery
 
-**1. Customer appearance canon (`lore/bible.md`, "The customers" section).**
-No customer in `content/customers.ts` or the bible ever had a physical
-description; this cycle's art orders are the first request for one. Ruled
-in the bible for the five customers this cycle's open orders need (Juno
-Vex, Sable Okonkwo, Aldous Wick, Wren Tallis, Bram Hollander), adopting the
-ux-agent's own proposed descriptions (they were already well-grounded in
-each customer's shipped `quotes`/`winLine`, e.g. Aldous's cardigan-and-
-glasses reading against his "forty years of accounts" line, Bram's apron
-against his "eleven years" line) rather than inventing competing ones.
-Also ratified Dex Marlowe's already-shipped card art
-(`ui-demos/kpos-shell/art/dex-portrait.png`) into the bible as the single
-written source of truth, per this brief's own instruction to treat it as
-established. The other six customers (June Aksoy, Ines Calloway, Emeric
-Snow, Vera Stanek, Casimir Bell, Noor Behzadi) still have no appearance
-canon; that is correct, since no art is on order for them this cycle, and
-the bible's new intro line says so explicitly so nobody invents one early.
+- **FIG. 01 // BENCH RIG plate, cut entirely**: APPROVE. No bible/ledger
+  line requires this specific image; its "why would the OS show this"
+  justification lives only in `ui-demos/loadout/NOTES.md` (design history,
+  not lore), and it carries no canon fact the plate alone bears - it is a
+  stock service-manual drawing, decoration with an in-fiction excuse, not
+  a fact-bearing artifact like DAD.VOL's attachments. The window loses
+  nothing canon owes it.
+- **BENCH FEED, kept but cropped to a LIVE MONITOR bezel**: APPROVE. Its
+  canon anchor is unaffected by size: bible, Rhea - "Investigates anyway,
+  by shopkeeper means: watches the feed" - and ledger's run-3 knowledge-
+  table row, "watches the feed (it waited)." Both describe a live camera
+  on the bench existing to be watched, not a display-size claim. A
+  cropped, native-pixel (dither-safe, unscaled) window onto the same live
+  feed is still "the shop camera, live" (NOTES.md's own framing); the crop
+  changes presentation, not what the image diegetically is.
 
-**2. Dive opponent identity tag, "INTRUSION" (`lore/ledger.md`, new
-Resolved ruling 11).** The narrative-director's `ui-copy-dive-intrusion-identity`
-item asked for a ruling rather than deciding it themselves; this is that
-ruling. Full reasoning under the item's own verdict below; summary: APPROVE,
-because INTRUSION is the world's own generic diagnostic classification
-("Every shop ticket is an intrusion job," bible), not a name, and it says
-no more than the already-shipped threat-banner prose and the already-shipped
-"THE MACHINE" job title said on these same pre-finale dives before this
-cycle touched anything.
+## 3. Prose cut (pouch paragraph)
 
-## Explicit questions this brief asked directly
+APPROVE. Verified directly against the shipped source rather than the
+proposal's own claim: `loadout.tsx:427-430`'s full paragraph reads "A
+piece fills one slag block with exactly the arms it shows, welded where
+it lands. 2 RAM, one per turn, single use. Pieces come off the darknet,
+drop from cleared jobs, or bank on clean wins; the pouch holds
+{PATCH_POUCH_MAX}. CRAFT AT THE BENCH: SOLDER.BAY." - and `solder.tsx`'s
+`FOOT_LINE` (lines 30-33) carries the identical sentence, including
+"Pieces come off the darknet, drop from cleared jobs, or bank on clean
+wins" (the sourcing fact underlying ledger Resolved ruling 9's darknet
+market), verbatim. The proposal's cut keeps only the pointer sentence
+"CRAFT AT THE BENCH: SOLDER.BAY." No canon fact is lost from the game:
+the darknet-sourcing fiction survives verbatim at the window this exact
+chip points the player toward.
 
-**Is the INBOX subject-line voice Rhea's, and does she route orders to the
-bench in canon?** Yes to both. Voice: the bible's Rhea entry is exact -
-"Voice: dry, protective, deflects feeling into logistics" - and all twelve
-subjects read that register: dry factual relay ("RE: Copperline register.
-His own till locked him out after eleven years."), the protective instinct
-surfacing as urgency ("RE: Ferrox lifter suit... Before somebody gets
-hurt."), and dry deadpan humor ("RE: Nocta cram deck... Convenient.").
-Several are near-verbatim reuses of the customer's own shipped `quotes` or
-the bible's own flavor line (Emeric's "Fifty years I have played that
-cabinet" from `customers.ts`; Casimir's "the vault grew a lock nobody
-bought" from the bible itself), which is exactly the "reads as Rhea
-relaying what she was told" register the brief asked for, not the
-customer's own first-person voice. Routing: the will is explicit about the
-shop's division of labor - "You take the bench. You are bad with people and
-she is bad with computers. Between the two of you there is exactly one
-whole shopkeeper" (bible, The player - the son) - and Rhea already narrates
-incoming jobs to the player in shipped `story.ts` day-open scenes ("The
-Kestrel courier drone is back. Same customer, new complaint.",
-`story.ts:808`). An inbox of Rhea's subject lines routing tickets to the
-bench is a UI-native version of a behavior the game already ships, not an
-invention.
+## 4. New hue: `data-hue="amber"`
 
-**Diegetic claims: BENCH FEED and the DIVE.EXE device cell.** Both APPROVE,
-same reasoning, different strength. BENCH FEED (carried into this cycle
-from LOADOUT.CFG, already approved last gate) rests on an inference from
-"watches the feed" (bible, Rhea). The DIVE.EXE/INBOX device cell ("ON THE
-BENCH // {DEVICE}", "the OS shows what the bench is tapped into") needs no
-inference at all: "the bench (the player's)" is named shop furniture
-(bible, The shop) and "a dive is a duel on a shared grid" happens because a
-tech physically connects to the customer's device to work it (bible,
-Technology rules; "repair techs dive customer machines for pay," The
-world). A terminal readout naming whatever is wired in at the player's own
-station is the more mundane of the two claims, not a new one.
+APPROVE. Hue is OS cosmetic theming (a phosphor-color choice for the
+terminal), not narrative content; no bible/ledger line reserves or
+restricts KP/OS's accent color to lavender/magenta/phosphor specifically.
+If anything, an amber phosphor scheme is MORE in period with "Presentation
+frame: the player experiences everything through KP/OS, the shop
+terminal's retro pixel desktop" (bible, The world) than a departure from
+it - amber monitors are a real historical CRT phosphor alongside green and
+white. Recorded here as a cleared UX/cosmetic call, not elevated to a
+ledger ruling, because it decides no narrative fact. Flag for later, not
+blocking now: if a future proposal ever ties STORY meaning to a specific
+hue (gates amber behind the finale, or attaches it to Patch or Dad), that
+would need its own explicit ruling; this proposal offers amber as a
+general-purpose fourth scheme and does not do that.
 
-## `narrative-director.json`
+## 5. Design direction (Evangelion-inspired maximalism)
 
-Inbox subjects (all twelve; voice and routing question answered above,
-each also checked individually against its customer's `tiers`/`dominant`/
-`quotes` in `content/customers.ts` and the bible's flavor line for drift -
-none found):
+APPROVE, stays inside the brief's own stated boundary. Swept every zone
+and panel description in the spec: no NERV/Evangelion branding string, no
+Japanese-language chrome, no religious or angel iconography appears
+anywhere. Two elements are the closest calls, and both clear on
+inspection:
+- The active mode chip's corner-tick "targeting reticle": this reads as
+  native to the shop's OWN fiction, not an import, since ATTACK is already
+  a combat verb in the bible ("Every diver carries... ATTACK (modes:
+  redirect, armHalt, armSiphon)") inside a duel already described as a
+  fight ("Both signals race to the core," Technology rules). A lock-on
+  indicator on a combat program's active mode is this game's own
+  vocabulary, not borrowed mecha dressing.
+- "Instrument bay" / "instrument panel" framing: generic bench/technical
+  vocabulary (multimeters, oscilloscopes, test rigs), not exclusive to
+  Evangelion or any single source.
+The CRT layer (scanlines/mask/bloom/roll/vignette) and the hazard-stripe/
+rotated-spine grammar are wordless visual furniture; they raise no canon
+question beyond the labels already covered in section 1.
 
-- subject-juno-vex: APPROVE
-- subject-sable-okonkwo: APPROVE
-- subject-aldous-wick: APPROVE
-- subject-wren-tallis: APPROVE
-- subject-bram-hollander: APPROVE
-- subject-dex-marlowe: APPROVE
-- subject-june-aksoy: APPROVE
-- subject-ines-calloway: APPROVE
-- subject-emeric-snow: APPROVE
-- subject-vera-stanek: APPROVE
-- subject-casimir-bell: APPROVE
-- subject-noor-behzadi: APPROVE
+## Em/en dash and contradiction sweep
 
-UI copy:
+Checked every string the proposal calls "verbatim shipped copy" directly
+against source: `loadout.tsx` confirms "DIVE KIT READY." / "DIVE KIT IS
+LOADING..." / "FIG. 01 // BENCH RIG" / "BENCH FEED" / "SEVERS AT ZERO." /
+">> TUNE IT WHENEVER. IT HOLDS UNTIL YOU CHANGE IT." all render exactly as
+quoted (lines 271-273, 295, 307, 448, 451). Grepped `kit.ts` and
+`loadout.tsx` for em/en dash characters directly: zero matches in either
+file. No quoted line contradicts `lore/bible.md` or `lore/ledger.md`.
 
-- ui-copy-loadout-status: APPROVE. All eight lines adopt verbatim from an
-  already-approved window (`kpos-loadout`, prior gate). "BENCH FEED"
-  photo-tag re-confirmed under this cycle's diegetic-claims ruling above.
-- ui-copy-solder-dialogue: APPROVE. Adopts verbatim from the already-
-  approved SOLDER.BAY window; consistent with the established soldering
-  register (bible: "the soldering lesson: 'it only sticks where you have
-  cleaned'"; journal's SOLDER SMOKE entry).
-- ui-copy-dive-console: APPROVE. Pure engine-notice/targeting prose, no
-  story claim, terminal voice, no dashes.
-- ui-copy-dive-routes: APPROVE. Qualitative route states only (OPEN /
-  SEVERED / CLOSING / CUT / AT THE CORE); correctly notes it says YOUR/ITS
-  only, never an opponent identity noun, so it does not touch the
-  INTRUSION ruling either way.
-- ui-copy-dive-threat-banner: APPROVE. `closingBanner` replaces a countdown
-  number with qualitative urgency; already used "INTRUSION" as a common
-  noun in this exact banner before this cycle touched it (verified,
-  `duel.tsx:631`, current shipped text), so this is continuity, not a new
-  claim.
-- ui-copy-dive-intrusion-identity: APPROVE, per new ledger Resolved ruling
-  11 above. One more sub-question this item itself raised, now closed:
-  no relabeling is needed if the finale dive is won, since the identity
-  reveal (the name Patch) is sequenced into the `finaleWinScene` that plays
-  after the dive ends, not into the dive's own UI (ledger: "A finale win on
-  any run unlocks the full truth and the PATCH entry immediately"). DIVE.EXE
-  may read INTRUSION straight through the winning finale dive itself.
-- ui-copy-dive-buslog: APPROVE. All 26 lines are mechanical bus-event
-  prose (`twist {addr}`, `cascade x{n}`), no character voice, no reveal-
-  schedule content, no dashes. The item's own open question (whether
-  REPAIR.LOG's dive-log rail should inherit this lowercase register or a
-  distinct ALL CAPS "closed case" register) is a presentation call for
-  ux-agent, not a canon one; noting it here only to confirm it does not
-  block this item.
-- ui-copy-dive-device-tag: APPROVE, per the diegetic-claims ruling above.
-- ui-copy-dive-result-overlay: APPROVE. Hero verdicts and VIEW BOARD are
-  already-shipped strings (confirmed, `screens.tsx`). Checked the new
-  `billNeuralStrainLossValue` ("ZEROED. THE RUN IS OVER.") against two
-  distinct existing strings to make sure it collides with neither: it is a
-  caps-compressed version of the RESULT screen's own existing sentence
-  ("Neural Strain zeroes. The run is over.", `duel.tsx:907`), not the
-  separate run-death blackout line the bible quotes verbatim ("NEURAL
-  STRAIN: ZERO. CONNECTION SEVERED.", `story.ts:36`) - the two surfaces
-  stay distinct strings, nothing here overwrites the bible's quoted line.
-- ui-copy-repairlog-connect-lines: APPROVE. All twelve checked individually
-  against `customers.ts`; each names the correct device brand and reflects
-  that customer's actual complaint (e.g. Bram's "CHECKS ITS OWN ID FIRST"
-  against his `dominant: "lock"` and his own register-walls-off-the-till
-  line; Vera's "HUMS ON BACKUP POWER" against her power-rationing quote).
-  No new fiction, just device-boot flavor.
-- ui-copy-inbox-footer: APPROVE. Matches the shop's established paperwork
-  vocabulary (bible, The shop: "the ticket spike, the ledger").
+## ux-agent.json
 
-## `ux-agent.json`
+- loadout-eva-instrument-panel: APPROVE (carries one advisory NOTE, non-
+  blocking, on "// SUPPORT SYSTEMS" - see section 1)
+- instrumentLock: APPROVE (settle-chime sfx, no fiction content; params
+  carry no phaser plus downward-freqSlide, so it does not borrow the
+  intrusion's exclusive sonic fingerprint)
 
-- kpos-v2-tokens-system: APPROVE. Tokens, footprint table, chrome
-  housekeeping; no player-facing prose beyond bare labels.
-- kpos-inbox-window: APPROVE. The device-macro/portrait fallback rule
-  ("never blank... shows either its ordered macro art or a second copy of
-  the customer's existing portrait") is sound regardless of the appearance-
-  canon ruling above. Dropping the card study's own TICKET RATE / LAST
-  CLEAN BOOT / POUCH DROPS rows (no reducer backing, flavor-only) in favor
-  of the real READOUT field set is the correct call: those three would have
-  been invented facts with no source, and the item correctly keeps
-  `MODE_TELL`'s honest tell line (bible, Technology rules: "The Analyze
-  diagnostic's tell is always honest").
-- kpos-repairlog-window: APPROVE. The new "NO PIECE THIS TICKET" patch-
-  poster state ("Nothing came off this one. The next clean run still
-  banks.") is consistent with the shipped drop rule (pieces "come off the
-  darknet, drop from cleared jobs, or bank on clean wins," `screens.tsx`
-  `PouchCard`). All itemized bill rows are stated as reading existing
-  `lastResult` fields, no new claims.
-- kpos-dive-exe: APPROVE. Conditional SIG-0/INTRUSION swap now clears per
-  ledger ruling 11 above; proceed with the rename. The no-countdown-number
-  banner change is a legibility choice, not a fiction claim.
-- kpos-dive-tutorial-finale-dressing: APPROVE. Verified the two lines this
-  item leans on hardest are genuinely unchanged, not just claimed so:
-  `jobTitle`/`jobSub`/tell-line branch confirmed at `shop-os.tsx:229-246`
-  ("THE MACHINE", "Everything it has. Everything you have.", "It runs
-  every config you have ever seen, at full width." - all pre-existing).
-  Worth noting for the record: this same source confirms the tutorial dive
-  shares the "THE MACHINE" job title with the finale (`isTutorial ||
-  isFinale`), which is the fact that makes the INTRUSION ruling's coverage
-  of pre-finale tutorial dives a real case, not a hypothetical one - and
-  "THE MACHINE" is already at least as identity-bearing as "INTRUSION"
-  would be, so nothing here is a bigger reveal than what already ships.
-- kpos-night-sys: APPROVE. BUY BLIND becoming a redirect to DARKNET.LNK
-  instead of a direct purchase is a UI-flow change, not a fiction change;
-  the darknet purchase fiction itself is unmodified (ledger Resolved
-  ruling 9).
-- kpos-morning-log: APPROVE. No copy or scene content changes; chip
-  styling only.
-- kpos-backroom-lck: APPROVE. Verified "OPEN THE BACK ROOM" and "CONFIGURE
-  KIT" are already-shipped labels (`screens.tsx:106-108`), not new copy;
-  the danger-styling change for Day 10's one-way door is presentation, and
-  matches the bible's own framing of the seal as the thing that "does not
-  open so much as let go."
-- kpos-desktop-idle: APPROVE. Byte-identical copy claim confirmed against
-  `screens.tsx`'s existing DesktopIdle text; only frame chrome changes.
-- kpos-abandon-dialog: APPROVE. Confirmation chrome only; dispatch and
-  copy unchanged.
-- kpos-teach-callout-v2: APPROVE. Pure geometry/re-anchoring; no copy.
-- kpos-utility-window-deltas: APPROVE. LEDGER.LOG/DAD.LOG/MANUAL.TXT stay
-  byte-identical per the item's own claim; the new MANUAL.TXT diagram cell
-  is covered by its own art order below.
-- solderPickup, solderHoverLegal, solderHoverIllegal, solderArc,
-  solderReject: APPROVE (all five, by reference to the prior gate-cleared
-  craft-station cycle; carried forward unchanged). Pure sound design, no
-  player-facing prose.
-- pageFlip: APPROVE. Pure sound design.
-- winFocus: APPROVE. Pure sound design.
+No canon gap was exposed this cycle; no new bible/ledger ruling was
+needed. The hue question (section 4) is recorded above as a cleared
+cosmetic call, not a ruling, since it settles no narrative fact.
 
-## Art orders (`pipeline/art/orders/*.json`, status open)
+Tally: 2 items seen, 2 approved, 0 revised.
 
-Device macros need no appearance ruling (they visualize already-named
-shop hardware, not a person):
+---
 
-- cust-card-juno-device: APPROVE. Matches "Hexlight arcade handheld" and
-  Juno's own quote about the menu loading before she touches it.
-- cust-card-sable-device: APPROVE. Matches "Kestrel courier drone" and her
-  route-hijack complaint.
-- cust-card-aldous-device: APPROVE. Matches "Meridian ledger terminal" and
-  his own "forty years of accounts in that terminal" line exactly.
+## ROUND 2 — 2026-07-31, cycle `ux-2026-07-31-loadout-eva`
 
-Portrait and figure orders, now cleared by this session's new bible
-appearance canon (see Canon rulings above):
+Scope: the user reviewed `ui-demos/loadout-eva/` and sent it back with
+layout notes (ux-agent's lane, not gated here) plus a directive to break
+from the KP/OS v2 single-ink-accent law for this surface, using an
+Evangelion-style state-coded palette. This addendum records that
+directive as canon, states its integration obligations, and gates the
+resulting fiction. Nothing new integrates from this addendum; round 1's
+per-item verdicts above stand unchanged.
 
-- cust-card-juno-portrait: APPROVE, per bible "The customers" (Juno Vex
-  appearance line added this session).
-- cust-card-sable-portrait: APPROVE, per bible (Sable Okonkwo appearance
-  line added this session).
-- cust-card-aldous-portrait: APPROVE, per bible (Aldous Wick appearance
-  line added this session). Confirmed the brief's own read of his winLine
-  is accurate ("You do honest work, son," `customers.ts:62`) and is a term
-  of address, not a name; the bible's new line says so explicitly so this
-  never gets misread as a naming-law violation later.
-- repairlog-figure-wren: APPROVE, per bible (Wren Tallis appearance line
-  added this session).
-- repairlog-figure-bram: APPROVE, per bible (Bram Hollander appearance
-  line added this session).
+### 1. The ruling
 
-Reuse order:
+User's own words, said twice and not up for re-litigation here: "I'm
+wanting to see if we can break away from the single color design. I even
+said use Evangelion colors." Palette named in the request: amber
+`#ffab3d` (structural chrome, neutral readouts), green `#7bff5a`
+(nominal: READY verdict, active mode), red `#ff3b30` (risk: NEURAL
+STRAIN when low), cyan `#35d6ff` (BENCH FEED camera tint only), ivory
+`#fff2d9` (hot highlight, hero numerals).
 
-- manual-patch-bench-diagram: APPROVE. Zero new generation; the same
-  diegetic reasoning already established for LOADOUT.CFG's service-manual
-  plate applies directly to a MANUAL.TXT equipment diagram (a manual
-  showing a picture of the tool it documents is the paradigm case of
-  "why would the OS show this," not an edge case of it).
+Written into `lore/ledger.md` as Resolved ruling 14 (full text there).
+Scope, as the ledger states it: the NARROW reading governs by default -
+LOADOUT.CFG's own surface only (this study and, at integration, the
+shipped window it replaces). It does not reopen any other KP/OS window
+to multi-hue on its own, and it is a different design from the earlier-
+rejected per-window channel-livery scheme (magenta darknet / phosphor
+ledger / indigo dadlog, killed by the `ux-2026-07-28-kpos-redesign`
+round-2 ruling in `RULINGS.md`'s "Pipeline notes" section - that was one
+flat hue per whole window, not one window internally coding several
+hues by meaning). The WIDE question - should color-as-diagnostic-state
+replace the single-ink law everywhere - is left OPEN for the user to
+settle; this gate does not pre-empt it.
 
-## `ui-demos/kpos-shell/README.md` standing demo-mock inventory
+Verdict: RECORDED.
 
-Per this cycle's instruction, one ruling where the narrative-director
-already adopted a line:
+### 2. What this obligates at integration time
 
-- LOADOUT.CFG labels (DIVE KIT, load/ready lines, photo tags, SEVERS AT
-  ZERO): covered by `ui-copy-loadout-status` above. Same verdict: APPROVE.
-- SOLDER.BAY dialogue-box status lines: covered by `ui-copy-solder-dialogue`
-  above. Same verdict: APPROVE.
-- INBOX footer hint: covered by `ui-copy-inbox-footer` above. Same verdict:
-  APPROVE.
-- REPAIR.LOG furniture, "KP/OS REPAIR BENCH v9.2": no narrative-director
-  item covers this one; it is desktop/window chrome, not a copy-pass item.
-  Verified directly: it already ships, name-free, in three places
-  (`boot.tsx:13` as "REPAIR BENCH BIOS v9.2", `desk.tsx:27` as "KP/OS v9.2
-  // REPAIR BENCH", `report.tsx:614` as "KP/OS REPAIR BENCH v9.2"),
-  consistent with the anonymized register ledger Resolved ruling 8 requires
-  ("Overby leaves canon... Forbids any bill, document, gravestone, or line
-  ever spelling out a first or last name for the son, Dad, or a surname for
-  Rhea"). APPROVE, confirmed clean, nothing further needed.
+Two documents currently assert the single-ink law as unqualified fact.
+If this direction is approved for integration, both go stale unless
+they carry a carve-out (or, if the user later takes the wide reading, a
+full rewrite). Naming the exact lines for the Orchestrator's integration
+pass:
 
-## Voice check (em/en dashes)
+- `CLAUDE.md`, DESIGN STANDARD paragraph: "One ink accent per
+  `data-hue` (lavender default), inverse-video danger, solid-ink title
+  bars with a pixel X only, boxed `// LABEL _` data rows, no internal
+  scrollbars ever, 1-bit ink-tinted diegetic imagery." Goes stale the
+  moment LOADOUT.CFG ships red-as-hue for risk instead of inverse
+  video, and green/cyan/ivory alongside amber instead of one accent.
+  Needs at minimum a trailing clause scoping the single-ink clause to
+  "except LOADOUT.CFG's state-coded palette (ledger ruling 14)."
+- `ui-demos/RULINGS.md`, the two lines stating the law itself: "ONE
+  unified scheme across the whole OS: near-black void plus a single ink
+  accent that does everything (text, borders, fills, meters, imagery),
+  a support tone, one hot highlight. No greys anywhere; danger is
+  inverse video (ink block, void text), never a second hue." and "Hue
+  set switchable in the demo rig: LAVENDER (default...), MAGENTA/violet
+  (ref-1), PHOSPHOR green (ref-2). One `data-hue` attribute swaps the
+  entire OS." Both need an explicit LOADOUT.CFG exception noted
+  alongside them - `RULINGS.md`'s own line "Per-demo design history
+  lives in each demo folder's `NOTES.md`" already names the right home
+  for the exception's detail (`ui-demos/loadout-eva/NOTES.md`), with
+  `RULINGS.md` itself carrying a one-line pointer to it.
+- I do not edit either file; both belong to the Orchestrator
+  (`RULINGS.md` and `CLAUDE.md`) per the standing "only the Orchestrator
+  touches..." rule and this session's own instruction not to touch them.
 
-Grepped `pipeline/proposals/narrative-director.json`, `pipeline/proposals/ux-agent.json`,
-and `ui-demos/kpos-shell/README.md` for `—` and `–`: no matches in any of
-the three (bible, Voice - hard laws: "NEVER em dashes or en dashes in
-player-facing copy. Periods, commas, or '...' only."). Two incidental
-hits for the word "virus" were checked and are both non-player-facing: one
-in the narrative-director's own analysis notes quoting the ledger's phrase
-"Rhea's virus theory... was always a reasonable in-world inference"
-verbatim (rationale field, never shown to a player), one a CSS class name
-(`dv-virus`) in a ux-agent spec field describing DOM structure. Also
-re-confirmed the whole `components/os` tree and `boot.tsx` grep clean for
-both "overby" and em/en dashes.
+Verdict: RECORDED.
 
-## Tally
+### 3. Fiction gate on the palette
 
-Items seen: 52 (23 narrative-director.json + 19 ux-agent.json + 9 open art
-orders + 1 standalone README item; 3 further README items cross-reference
-already-counted narrative-director items per this cycle's own instruction
-and are not double-counted). Approved: 52. Revised: 0. No NOTE issued.
-Two canon gaps closed this pass, both written into the lore files before
-gating against them: `lore/bible.md` gained appearance canon for five
-customers plus Dex Marlowe's ratified established look; `lore/ledger.md`
-gained Resolved ruling 11 (the INTRUSION dive-opponent identity tag).
+**a. Does color-as-state-code fit KP/OS?** APPROVE. The bible's own
+frame is "the player experiences everything through KP/OS, the shop
+terminal's retro pixel desktop" (bible, The world, Presentation frame) -
+a repair-bench terminal, and green-nominal/red-fault/amber-neutral is
+ordinary diagnostic-equipment convention (POST checkers, multimeters,
+rack gear), not an import from any one fiction. It reads as bench-native
+in exactly the place the single-phosphor scheme was thinnest: a real
+bench instrument that reports both routine chrome and "this reading is
+bad" typically does use a second hue for the fault state, which is
+exactly what this palette does for NEURAL STRAIN.
+
+**b. Cyan BENCH FEED tint, collision check.** APPROVE, no collision.
+Grepped `lore/bible.md`, `lore/ledger.md`, and `ui-demos/RULINGS.md` for
+an existing color claim on any established entity: none exists.
+DARKNET.LNK, the one surface `RULINGS.md` singles out as "the odd one
+out," is explicit that it earns that status "via its stepped-notch title
+bar, chevron mark, and heavier dither, not via color" (`RULINGS.md`,
+Pipeline notes) - so no other surface's identity is color-coded in any
+way cyan could collide with. The intrusion's own established signature
+is sonic, not chromatic (phaser plus downward freqSlide, ux-agent's own
+sound-palette rule, see agent memory `visual_identity_echo_check`). A
+cool cyan tint scoped ONLY to the one bezel that is diegetically a
+different device (a live camera feed, not the terminal's own rendered
+chrome; bible, Rhea - "watches the feed") is good fiction on its own
+terms: it makes the feed read as a genuinely separate signal path from
+the instrument panel around it, the same logic that justified BENCH
+FEED's existence at round 1.
+
+**c. Imported-fiction sweep, per color.** APPROVE, none of the five
+reads as imported branding rather than bench hardware. Amber-as-chrome
+and ivory-as-hot-highlight are unchanged from the already-approved
+round-1 amber block (`--ch: #ffab3d`, `--ch-hot: #fff2d9`), already
+cleared. Green-for-nominal and red-for-risk are the universal two-color
+safe/fault convention (traffic lights, breaker panels, server rack
+LEDs), not exclusive to any one show. None of the five names, labels, or
+reserves a NERV/Eva-specific term (no "MAGI," no plugsuit color code, no
+named sync-ratio readout) - the brief's own boundary ("NO NERV/
+Evangelion branding, no Japanese-language chrome, no religious or angel
+iconography," `pipeline/BRIEF.md`) is about branding and iconography,
+and a bare hex value used for an ordinary diagnostic purpose does not
+brand anything. Nothing here needs a ruling to forbid; flagged forward
+only as a watch item, not a REVISE: if a future round adds a label that
+names the association out loud (e.g. a control captioned "EVA COLORS" or
+a stat called "SYNC RATE"), that crosses from structural-grammar
+borrowing into branding and would need its own look.
+
+### Layout complaints (not gated here)
+
+The deck feed underlapping SCAN.EXE and ATTACK.EXE's vertical
+misalignment are UX/build defects, not canon questions; no bible/ledger
+line is at stake either way. Noted here only so the record shows they
+were read, not overlooked: they are ux-agent's fix to make in the next
+round, not mine.
+
+### Tally
+
+Round 2: 1 ruling recorded, 1 integration-obligations note recorded, 3
+fiction items seen, 3 approved, 0 revised. Cumulative for cycle
+`ux-2026-07-31-loadout-eva`: round 1, 2 items seen / 2 approved / 0
+revised; round 2 as above.

@@ -1,0 +1,1763 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>KP demo: SOLDER.BAY (instrument panel)</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=VT323&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" />
+<link rel="stylesheet" href="../_shared/kp.css" />
+<link rel="stylesheet" href="../_shared/system.css" />
+<style>
+/* SOLDER.BAY rebuilt to the KP/OS v3 instrument-panel system
+ * (cycle ux-2026-07-31-solder-v3, spec item solder-v3-instrument-panel).
+ * Laws: ../RULINGS.md. Reference implementation: ../loadout-eva/.
+ *
+ * The central move: the round-1 bench had no focal element, because it put
+ * a mid-weight SCHEMATIC, a mid-weight RACK and a hero-weight floating JOIN
+ * wordmark on one plane, and the JOIN wordmark existed in only 1 of the 4
+ * interaction states. So the surface never had a stable first read at all.
+ *
+ * v3 deletes the floating JOIN hero outright and promotes the shipped minor
+ * WORKPIECE datarow into the surface's ONE focal element at extreme scale.
+ * The hero answers the same question in every state ("what shape is the
+ * reading in front of you"), which is what keeps it focal rather than merely
+ * big. The rack stays mid-weight: it is where the hands go, but it is the
+ * INPUT surface, not the summary, and extreme-scaling one of five equal tap
+ * targets would break law 2 the instant a second slot wanted the treatment.
+ *
+ * The machine underneath is the shipped craft system, unchanged:
+ * patch-cells.ts legality (armUnionCraft: the union must be strictly bigger
+ * than BOTH inputs), shapeClassOf nouns, PATCH_POUCH_MAX 5, and solder.tsx's
+ * own status lines and FOOT_LINE verbatim. No new state fields anywhere; the
+ * hero is a pure presentation of values solder.tsx already computes.
+ */
+
+/* ---------- ROLE TOKENS: colour as state (RULINGS law 1) ----------
+ * Copied verbatim from loadout-eva/index.html. Every role collapses onto the
+ * single v2 accent at :root, so a surface with no data-scheme renders exactly
+ * as v2 did; only data-scheme pulls them apart. That reversibility is the
+ * point of the system and is not to be optimised away.
+ *
+ * This surface's four contested assignments, ruled in the spec:
+ *   warn    the ACTIVE REJECTION EVENT ONLY: the live hover-illegal border,
+ *           the one-shot deny flash, and the status line while it is
+ *           refusing something you just tried. NOT the passive DEAD slot,
+ *           which can occupy 4 of 5 slots at once and would habituate the
+ *           eye to red exactly the way loadout-eva's round-3 gate warned.
+ *   aux     the SCHEMATIC plate: grid, idle hole, and the base arms. A
+ *           genuinely different signal class from the rack's interaction
+ *           colours, the same argument loadout-eva makes for its camera.
+ *   data    the hero glyph, the schematic's GAIN arms and hub, chip values,
+ *           and the weld-moment spark. r-aux means "the steady read",
+ *           r-data means "what is hot or about to change".
+ *   hazard  window edge, Z1 brackets, // PLACEMENT stripe. Nothing else.
+ */
+:root {
+  --r-struct: var(--ch-dim);
+  --r-line: var(--ch);
+  --r-data: var(--ch-hot);
+  --r-ok: var(--ch);
+  --r-warn: var(--ch);
+  --r-aux: var(--ch);
+  --r-hazard: var(--ch);
+  --r-note: var(--ch-dim);
+  --r-ok-glow: var(--px-glow);
+  --r-warn-glow: var(--px-glow);
+}
+
+:root[data-scheme="nerv"] {
+  --px-void: #0a0603;
+  --ch: #ff9a1f;
+  --ch2: #c2431a;
+  --ch-hot: #ffe9c4;
+  --r-struct: #a86a22;
+  --r-line: #ff9a1f;
+  --r-data: #ffe9c4;
+  --r-ok: #8dff3a;
+  --r-warn: #ff2a17;
+  --r-aux: #23d3ff;
+  --r-hazard: #d1381a;
+  --r-note: #6ea8ff;
+  --r-ok-glow: color-mix(in srgb, #8dff3a 45%, transparent);
+  --r-warn-glow: color-mix(in srgb, #ff2a17 60%, transparent);
+}
+
+:root[data-scheme="tokyo"] {
+  --px-void: #16161e;
+  --ch: #7aa2f7;
+  --ch2: #414868;
+  --ch-hot: #c0caf5;
+  --r-struct: #414868;
+  --r-line: #7aa2f7;
+  --r-data: #c0caf5;
+  --r-ok: #9ece6a;
+  --r-warn: #f7768e;
+  --r-aux: #7dcfff;
+  --r-hazard: #ff9e64;
+  --r-note: #bb9af7;
+  --r-ok-glow: color-mix(in srgb, #9ece6a 45%, transparent);
+  --r-warn-glow: color-mix(in srgb, #f7768e 55%, transparent);
+}
+
+/* the faint tone the DEAD slot uses, derived off the ROLE token the same way
+ * kp.css derives --ch-faint off --ch. Deliberately colour-absent. */
+:root { --sv-faint: color-mix(in srgb, var(--r-struct) 46%, var(--px-void)); }
+
+body {
+  overflow: auto;
+  display: block;
+  height: auto;
+  min-height: 100%;
+  padding: 26px 16px 40px;
+}
+
+/* ---------- the viewport rig: a real-resolution stage, scaled to fit ----------
+ * Copied from loadout-eva. The stage is laid out at its TRUE pixel size and
+ * then transform-scaled to fit the reviewer's browser. Transforms do not
+ * change layout size, so every container query inside still resolves against
+ * the real window width: what you see at 47% is what a 2560x1080 desk renders. */
+
+.sv-fit { transform-origin: top left; }
+.sv-fitwrap { margin: 0 auto; }
+
+.sv-stage {
+  position: relative;
+  overflow: hidden;
+  background: var(--px-void);
+  border: 1px solid var(--ch-faint);
+}
+.sv-warp { position: absolute; inset: 0; display: flex; flex-direction: column; }
+
+.sv-desk {
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-conic-gradient(color-mix(in srgb, var(--ch) 4%, transparent) 0% 25%, transparent 0% 50%),
+    radial-gradient(120% 90% at 50% 0%, color-mix(in srgb, var(--ch) 5%, transparent), transparent 70%);
+  background-size: 8px 8px, auto;
+}
+
+.sv-deskwrap {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 22px 0 0;
+  min-height: 0;
+}
+
+/* the leftover desk, drawn: the footprint fix made literal */
+.sv-free {
+  position: absolute;
+  top: 30px;
+  bottom: 14px;
+  border: 2px dashed var(--ch-faint);
+  opacity: 0.5;
+  display: flex;
+  align-items: flex-end;
+  padding: 6px 8px;
+  pointer-events: none;
+}
+.sv-free span {
+  font-family: var(--kp-display);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: var(--ch-faint);
+}
+.sv-free span::before { content: "// "; }
+
+.sv-stage-bar {
+  height: 44px;
+  flex: none;
+  position: relative;
+  background: var(--ch);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+}
+.sv-stage-bar span {
+  font-family: var(--kp-display);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: var(--px-void);
+}
+.sv-stage-bar i { display: block; width: 10px; height: 10px; background: var(--px-void); opacity: 0.55; }
+.sv-stage-bar .sv-bar-sp { flex: 1; background: none; opacity: 1; }
+
+/* ---------- the tube (RULINGS law 6) ----------
+ * Six glass layers over the stage, copied verbatim from loadout-eva. FLAT and
+ * OFF only; CURVED was built, measured and cut there and is not rebuilt here.
+ *
+ * Worth stating for this panel specifically: nothing on SOLDER.BAY repaints
+ * on an ambient cadence inside the glass (no camera feed, no live clock, and
+ * the taskbar clock is deliberately static). Every repaint under the glass is
+ * caused by the player's own hands, which is what the frame-timing check in
+ * NOTES.md is actually measuring. */
+.sv-stage.crt-on { border-radius: 18px; }
+.sv-stage.crt-on .sv-glass {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 40;
+  border-radius: 16px / 20px;
+  overflow: hidden;
+}
+.sv-glass > i { position: absolute; inset: 0; display: block; }
+
+.sv-glass .g-scan {
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.55) 0 1px,
+    rgba(0, 0, 0, 0.12) 1px 2px,
+    rgba(255, 255, 255, 0.03) 2px 3px);
+  mix-blend-mode: multiply;
+  opacity: 0.85;
+}
+.sv-glass .g-mask {
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(255, 0, 0, 0.05) 0 1px,
+    rgba(0, 255, 0, 0.05) 1px 2px,
+    rgba(0, 0, 255, 0.05) 2px 3px);
+  mix-blend-mode: screen;
+  opacity: 0.7;
+}
+.sv-glass .g-bloom {
+  background: radial-gradient(130% 95% at 50% 42%, var(--px-glow) 0%, transparent 62%);
+  opacity: 0.14;
+  mix-blend-mode: screen;
+}
+.sv-glass .g-spec {
+  background:
+    radial-gradient(58% 42% at 26% 14%, rgba(255, 255, 255, 0.11) 0%, transparent 70%),
+    linear-gradient(163deg, rgba(255, 255, 255, 0.055) 0%, transparent 34%);
+  mix-blend-mode: screen;
+}
+.sv-glass .g-vig {
+  background:
+    radial-gradient(102% 86% at 50% 48%, transparent 52%, rgba(0, 0, 0, 0.55) 82%, rgba(0, 0, 0, 0.92) 100%);
+  box-shadow:
+    inset 0 0 46px 12px rgba(0, 0, 0, 0.75),
+    inset 0 0 130px 40px rgba(0, 0, 0, 0.45);
+}
+.sv-glass .g-bezel {
+  border-radius: 16px / 20px;
+  box-shadow:
+    inset 0 0 0 3px rgba(0, 0, 0, 0.9),
+    inset 0 2px 2px 3px rgba(255, 255, 255, 0.07),
+    inset 0 -3px 3px 3px rgba(0, 0, 0, 0.6);
+}
+
+/* ---------- the window frame ---------- */
+
+.term {
+  width: var(--sv-win, 860px);
+  flex: none;
+  border: 3px solid var(--r-hazard);
+  background: var(--px-void);
+  position: relative;
+  z-index: 5;
+  filter:
+    drop-shadow(9px 9px 0 rgba(0, 0, 0, 0.8))
+    drop-shadow(0 0 26px color-mix(in srgb, var(--ch) 25%, transparent));
+}
+
+.term-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--ch);
+  padding: 7px 12px 7px 14px;
+}
+.term-bar h1 {
+  font-family: var(--kp-display);
+  font-size: 13px;
+  letter-spacing: 0.16em;
+  color: var(--px-void);
+  font-weight: 400;
+}
+.term-glyphs { display: flex; gap: 7px; align-items: center; }
+.term-glyphs i { display: block; background: var(--px-void); }
+.term-glyphs i:nth-child(1) { width: 11px; height: 3px; margin-top: 9px; }
+.term-glyphs i:nth-child(2) { width: 11px; height: 11px; background: transparent; border: 3px solid var(--px-void); }
+.term-glyphs i:nth-child(3) { width: 11px; height: 11px; }
+
+.term-body { position: relative; padding: 12px 14px; }
+.term-body::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: repeating-conic-gradient(color-mix(in srgb, var(--ch) 5%, transparent) 0% 25%, transparent 0% 50%);
+  background-size: 4px 4px;
+}
+.term-body > * { position: relative; }
+
+/* ---------- the container that drives everything (RULINGS law 3) ----------
+ * cqi, never vw. One binary breakpoint at 700px of the window's own content
+ * inline-size, so all three supported viewports render the SAME arrangement
+ * and the narrow tier survives only as a tiling fallback. */
+
+.sv-panel { container-type: inline-size; container-name: sv; }
+
+.sv-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 1fr;
+  grid-template-areas: "read" "deck" "status" "caption";
+
+  --sv-fs-body: clamp(19px, calc(1cqi + 17px), 21px);
+  --sv-fs-label: clamp(9px, calc(0.6cqi + 8px), 11px);
+  --sv-fs-pill: clamp(9px, calc(0.5cqi + 8.5px), 10.5px);
+  --sv-fs-armcount: clamp(13px, calc(0.9cqi + 10px), 19px);
+  --sv-fs-tickv: clamp(12px, calc(0.8cqi + 10px), 14px);
+}
+
+/* ================= Z1 THE READ: the surface's focal zone =================
+ * Glance order 1. The hero glyph is the biggest text on the page by a wide
+ * margin in EVERY interaction state, including idle, where the dashed
+ * placeholder occupies the hero's own footprint rather than a smaller idle
+ * treatment (law 4's equal-footprint rule applied at the hero, not just at
+ * the rack).
+ *
+ * DEPARTURE FROM THE SPEC, recorded in NOTES.md: the spec put this zone in a
+ * ~240-300px left column. The longest noun (STRAIGHT, 8 glyphs of Silkscreen)
+ * cannot render at hero scale in 300px; it would have had to drop to ~45px,
+ * which is 2.3x body and only barely clears the system's own hierarchy bar.
+ * Z1 is therefore a FULL-WIDTH band and the status line moves down beside the
+ * deck, where its short zone sits next to a tall one for free (law 8). The
+ * hero gains roughly 2x the type size and the window loses no height, because
+ * the row Z2 vacated is a row it was sharing anyway. */
+
+.sv-read {
+  grid-area: read;
+  position: relative;
+  border: 1px solid var(--r-struct);
+  background: color-mix(in srgb, var(--ch) 3%, var(--px-void));
+  padding: 12px 14px 13px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  min-width: 0;
+}
+
+/* the heavy corner brackets, scoped to the FOCAL panel only (law 4).
+ * Applying them everywhere destroys the emphasis they exist to create. */
+.sv-bracket, .sv-bracket > i { position: absolute; pointer-events: none; }
+.sv-bracket { inset: -1px; }
+.sv-bracket > i { inset: 0; }
+.sv-bracket::before, .sv-bracket::after,
+.sv-bracket > i::before, .sv-bracket > i::after {
+  content: "";
+  position: absolute;
+  width: 24px;
+  height: 24px;
+}
+.sv-bracket::before { top: 0; left: 0; border-top: 4px solid var(--r-hazard); border-left: 4px solid var(--r-hazard); }
+.sv-bracket::after { top: 0; right: 0; border-top: 4px solid var(--r-hazard); border-right: 4px solid var(--r-hazard); }
+.sv-bracket > i::before { bottom: 0; left: 0; border-bottom: 4px solid var(--r-hazard); border-left: 4px solid var(--r-hazard); }
+.sv-bracket > i::after { bottom: 0; right: 0; border-bottom: 4px solid var(--r-hazard); border-right: 4px solid var(--r-hazard); }
+
+/* the hero column. flex:1 with a fixed min-height, so its bounding box is
+ * IDENTICAL in all four interaction states and the idle placeholder cannot
+ * shrink the band. */
+.sv-heroline {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+}
+
+.sv-eyebrow {
+  font-family: var(--kp-display);
+  font-size: var(--sv-fs-label);
+  letter-spacing: 0.18em;
+  color: var(--r-note);
+  white-space: nowrap;
+}
+
+.sv-hero {
+  font-family: var(--kp-display);
+  /* pinned after measuring Silkscreen's real advance width against the
+   * 8-glyph worst case (STRAIGHT) at the narrowest supported window */
+  font-size: var(--sv-fs-hero);
+  line-height: 0.92;
+  letter-spacing: 0.01em;
+  color: var(--r-data);
+  text-shadow: 0 0 22px var(--px-glow);
+  white-space: nowrap;
+  display: block;
+}
+/* IDLE: a dashed placeholder at the hero's own footprint, never a smaller
+ * idle treatment. The glyph is the shipped "----" read, at hero scale. */
+.sv-hero.is-idle { color: var(--sv-faint); text-shadow: none; }
+
+/* The empty reservation has to be the FILLED line box, not a guess under it.
+ * At 1.1em against Silkscreen's ~1.52em normal, this row grew 8px the instant
+ * a piece was picked up, which walked the whole window down at 21:9. Pinning
+ * line-height makes empty and filled the same box by construction. */
+.sv-armcount {
+  font-family: var(--kp-display);
+  font-size: var(--sv-fs-armcount);
+  letter-spacing: 0.16em;
+  color: var(--r-note);
+  line-height: 1.52;
+  min-height: 1.52em;
+}
+
+/* the SCHEMATIC, demoted from a full column to a satellite plate.
+ * It is live SVG, not a 1-bit dither raster, so law 5's crop-never-downscale
+ * rule does not govern it; it resizes in its own viewBox coordinate space
+ * exactly the way the patch glyphs already do at 16/20/34/44px. */
+/* The tag gets a band of its own rather than overlaying the drawing. Review
+ * round 1 caught it sitting on the top arm of a vertical STRAIGHT: the arm is
+ * 13 viewBox units of stroke plus a square linecap, which a bounding-rect test
+ * on an SVG <line> reports as zero width, so it read as clear and was not.
+ * The band is padding, not a shorter SVG, because the plate is deliberately
+ * 304:228 in both sizes and the grid cells go oblong the moment that slips. */
+.sv-schem {
+  position: relative;
+  flex: none;
+  width: 168px;
+  height: 146px;
+  padding-top: 20px;
+  border: 1px solid var(--r-struct);
+  background: color-mix(in srgb, var(--r-aux) 4%, var(--px-void));
+}
+.sv-schem svg { display: block; width: 100%; height: 100%; }
+.sv-schem line.grid { stroke: color-mix(in srgb, var(--r-aux) 26%, var(--px-void)); stroke-width: 1; }
+.sv-schem .arm { stroke: var(--r-aux); stroke-width: 13; stroke-linecap: square; shape-rendering: crispEdges; }
+/* the GAIN arms carve out of r-aux into r-data: they are what the partner
+ * ADDS, which is the thing about to change, and r-data owns that everywhere
+ * else on the surface too. Blink cadence unchanged from shipped. */
+.sv-schem .arm-gain { stroke: var(--r-data); animation: kp-cursor-blink 0.9s steps(2) infinite; }
+.sv-schem .hub { fill: var(--r-data); }
+.sv-schem .hole { fill: none; stroke: color-mix(in srgb, var(--r-aux) 45%, var(--px-void)); stroke-width: 3; stroke-dasharray: 8 6; }
+.sv-schem-tag {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  font-family: var(--kp-display);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  color: var(--px-void);
+  background: var(--r-aux);
+  padding: 3px 7px;
+}
+
+/* ================= Z2 STATUS + Z4 FOOT: the bench-state column =================
+ * The status box alone left the column reading as dead space beside a tall
+ * deck, so the bookkeeping chips came down here to anchor it. That also
+ * shortens the deck by a row it was paying for in full, and the split is
+ * honest: the left column is what the bench IS, the right column is what
+ * your hands are doing. */
+
+.sv-side {
+  grid-area: status;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.sv-status {
+  flex: 1;
+  position: relative;
+  border: 3px solid var(--r-struct);
+  background: var(--px-void);
+  padding: 10px 12px 12px;
+  font-family: var(--kp-term);
+  font-size: var(--sv-fs-body);
+  line-height: 1.16;
+  color: var(--r-line);
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.sv-status-label {
+  font-family: var(--kp-display);
+  font-size: var(--sv-fs-label);
+  letter-spacing: 0.18em;
+  color: var(--r-note);
+  flex: none;
+}
+/* NOMINAL: the weld is ready to commit */
+.sv-status.is-ready { color: var(--r-ok); }
+/* RISK: the line is refusing something you JUST TRIED. Never the passive
+ * "this piece has no partners anywhere" case, which stays r-line. */
+.sv-status.is-reject { color: var(--r-warn); }
+
+/* ================= Z3 THE RACK: where the hands go ================= */
+
+.sv-deck {
+  grid-area: deck;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  border: 2px solid var(--r-struct);
+  background: repeating-conic-gradient(color-mix(in srgb, var(--ch2) 12%, transparent) 0% 25%, transparent 0% 50%);
+  background-size: 8px 8px;
+  padding: 11px 13px 12px;
+  min-width: 0;
+}
+
+.sv-deckhead { display: flex; align-items: baseline; gap: 10px; }
+.sv-deckhead strong {
+  font-family: var(--kp-display);
+  font-size: var(--sv-fs-label);
+  letter-spacing: 0.16em;
+  color: var(--r-note);
+  font-weight: 400;
+}
+/* five equal columns, so a 5-piece pouch and an EMPTY pouch occupy exactly
+ * the same footprint (law 4). Nothing about the rack's box changes with
+ * content, ever. */
+.sv-rack { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+
+.sv-slot {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 0;
+  /* the height budget came in ~107px under target, and on a drag-to-craft
+   * surface the best thing to spend that on is the tap target itself */
+  min-height: 104px;
+  padding: 10px 4px 9px;
+  border: 3px solid var(--r-struct);
+  background: color-mix(in srgb, var(--ch) 5%, var(--px-void));
+}
+.sv-slot:is(button) { cursor: grab; }
+.sv-slot:is(button):hover:not(:disabled) { border-color: var(--r-line); }
+.sv-slot:is(button):disabled { cursor: default; }
+.sv-slot > span {
+  font-family: var(--kp-display);
+  font-size: var(--sv-fs-pill);
+  letter-spacing: 0.04em;
+  color: var(--r-note);
+  white-space: nowrap;
+}
+.sv-slot .kp-pp-arm { stroke: var(--r-line); }
+.sv-slot .kp-pp-node { fill: var(--r-data); }
+
+/* the compositor plate every flash and pulse animates, so nothing on this
+ * surface ever animates a paint property (law 7). One promoted layer per
+ * slot, opacity only. */
+.sv-fx {
+  position: absolute;
+  inset: -1px;
+  display: block;
+  opacity: 0;
+  pointer-events: none;
+  will-change: opacity;
+}
+
+/* DEAD: cannot join the held piece. Deliberately colour-ABSENT, not red.
+ * A held piece can leave 4 of 5 slots dead at once, and putting r-warn on a
+ * state that common is exactly the habituation failure loadout-eva's round-3
+ * gate had to fix from the other direction. The slash carries it instead. */
+.sv-slot-dead { border-color: var(--sv-faint); background: color-mix(in srgb, var(--ch) 2%, var(--px-void)); }
+.sv-slot-dead > svg, .sv-slot-dead > span { opacity: 0.3; }
+.sv-slot-dead::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to top right,
+    transparent calc(50% - 2px), var(--sv-faint) calc(50% - 2px),
+    var(--sv-faint) calc(50% + 2px), transparent calc(50% + 2px));
+}
+
+/* NOMINAL: this is your current selection. Reticle is the second, colour
+ * independent channel, the same device .lo-mode.mode-on uses. */
+.sv-slot-carry {
+  border-color: var(--r-ok);
+  background: color-mix(in srgb, var(--r-ok) 12%, var(--px-void));
+  box-shadow: 0 0 14px var(--r-ok-glow);
+}
+.sv-slot-carry::before, .sv-slot-carry::after {
+  content: "";
+  position: absolute;
+  width: 8px;
+  height: 8px;
+}
+.sv-slot-carry::before { top: -6px; left: -6px; border-top: 2px solid var(--r-ok); border-left: 2px solid var(--r-ok); }
+.sv-slot-carry::after { bottom: -6px; right: -6px; border-bottom: 2px solid var(--r-ok); border-right: 2px solid var(--r-ok); }
+
+/* hover-legal: dashed border is a one-time static paint; the PULSE is an
+ * opacity animation on the promoted plate, converted from round 1's
+ * background keyframe (which repaints inside the glass on every frame). */
+.sv-slot-legal { border: 3px dashed var(--r-ok); }
+.sv-slot-legal .sv-fx { background: var(--r-ok); animation: sv-pulse 1s steps(2) infinite; }
+@keyframes sv-pulse { 0%, 100% { opacity: 0; } 50% { opacity: 0.22; } }
+
+/* hover-illegal: RISK, and static by design. It exists only while a pointer
+ * is physically over that slot mid-drag, so it can never habituate the eye
+ * the way an ambient red would; law 1's motion requirement is carried by the
+ * deny flash, which is the branch that survives the pointer leaving. */
+.sv-slot-illegal { border-color: var(--r-warn); }
+
+/* deny flash: a difference-blend plate fading on a promoted layer, the same
+ * technique loadout-eva measured at 9.3ms p95 against 50ms for the painted
+ * equivalent. Same 140ms steps(2) as round 1. */
+.sv-slot-deny .sv-fx {
+  background: var(--r-warn);
+  mix-blend-mode: difference;
+  animation: sv-deny 140ms steps(2) both;
+}
+@keyframes sv-deny { from { opacity: 1; } to { opacity: 0; } }
+
+.sv-slot-empty { cursor: default; }
+.sv-slot-empty .kp-piece-hole { border-color: var(--sv-faint); }
+
+/* the drag ghost. Positioned by TRANSFORM off a fixed origin, never left/top:
+ * a layout property animating at pointer rate is the single most expensive
+ * thing this surface could do inside the glass. */
+.sv-ghost {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 300;
+  pointer-events: none;
+  width: var(--sv-ghost-w, 96px);
+  transition: transform 40ms steps(2);
+  will-change: transform;
+}
+body.sv-dragging, body.sv-dragging .sv-slot:is(button) { cursor: grabbing; }
+
+/* the join preview, demoted: the two INPUTS and an arrow. The result noun is
+ * cut, because Z1's hero already states it at 5x this size. */
+.sv-join {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 30px;
+  font-family: var(--kp-term);
+  font-size: var(--sv-fs-body);
+  line-height: 1;
+  color: var(--r-note);
+}
+.sv-join svg { flex: none; }
+.sv-join .kp-pp-arm { stroke: var(--r-line); }
+.sv-join .kp-pp-node { fill: var(--r-line); }
+
+.sv-actions { display: flex; gap: 10px; min-height: 36px; }
+.sv-btn {
+  font-family: var(--kp-display);
+  font-size: var(--sv-fs-pill);
+  letter-spacing: 0.14em;
+  padding: 9px 16px;
+  background: transparent;
+  border: 2px solid var(--r-struct);
+  color: var(--r-line);
+}
+.sv-btn:hover { border-color: var(--r-line); }
+/* NOMINAL: CRAFT only ever exists while a legal candidate exists */
+.sv-btn-craft { background: var(--r-ok); border-color: var(--r-ok); color: var(--px-void); }
+.sv-btn-craft:hover { border-color: var(--r-ok); }
+
+/* ---------- Z4 the bookkeeping foot, at the base of the side column ----------
+ * A shared row costs nothing; an unshared one costs its full height. */
+.sv-footchips { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; flex: none; }
+.kp-chip-pct span { color: var(--r-note); }
+.kp-chip-pct em { color: var(--r-data); }
+.sv-weldbox { display: flex; align-items: center; gap: 9px; }
+.sv-weldcell {
+  width: 44px;
+  height: 44px;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--r-data);
+}
+.sv-weldcell .kp-pp-arm { stroke: var(--px-void); }
+.sv-weldcell .kp-pp-node { fill: var(--px-void); }
+.sv-weldcell-empty { background: transparent; border: 3px dashed var(--sv-faint); }
+
+/* ---------- Z5 the caption: full text, lowest box weight ----------
+ * Law 8 rule 2 does NOT apply to this paragraph. LOADOUT.CFG was allowed to
+ * cut its copy of the placement explanation precisely because SOLDER.BAY and
+ * DIVE.EXE keep it in full at first contact. Cutting it here would leave the
+ * explanation nowhere. What changes is the box weight only. */
+.sv-caption { grid-area: caption; display: flex; flex-direction: column; gap: 7px; }
+.sv-div { display: flex; align-items: center; gap: 9px; }
+.sv-div i { flex: 1; height: 8px; background: repeating-linear-gradient(45deg, var(--r-hazard) 0 3px, transparent 3px 7px); }
+.sv-div span {
+  font-family: var(--kp-display);
+  font-size: var(--sv-fs-label);
+  letter-spacing: 0.2em;
+  color: var(--r-note);
+  flex: none;
+}
+.sv-foot {
+  border: 2px solid var(--r-struct);
+  padding: 4px 10px 6px;
+  font-family: var(--kp-term);
+  font-size: var(--sv-fs-body);
+  line-height: 1.14;
+  color: var(--r-note);
+}
+
+/* the spark and weld dot: the commit moment, r-data. Electrical, but not a
+ * risk state, so r-warn and r-hazard both stay away from it. */
+.sv-spark { position: fixed; left: 0; top: 0; z-index: 310; pointer-events: none; animation: sv-spark 140ms steps(3) both; }
+@keyframes sv-spark {
+  from { opacity: 1; }
+  to { opacity: 0.7; }
+}
+.sv-weldwrap { position: fixed; left: 0; top: 0; z-index: 305; pointer-events: none; animation: sv-weld 180ms steps(4) both; }
+@keyframes sv-weld {
+  from { opacity: 0; }
+  to { opacity: 0.9; }
+}
+.sv-weldwrap .kp-dweld { fill: var(--r-data); }
+
+/* ================= WIDE TIER (RULINGS law 3) =================
+ * One binary breakpoint at 700px of content inline-size, so 16:9 (826),
+ * 21:9 (906) and the 1280x800 laptop (726) all render the SAME arrangement.
+ * Z1 spans both columns; Z2's short box sits beside the tall deck for free. */
+
+@container sv (min-width: 700px) {
+  .sv-grid {
+    grid-template-columns: minmax(230px, 30cqi) minmax(0, 1fr);
+    grid-template-areas:
+      "read   read"
+      "status deck"
+      "caption caption";
+    gap: 12px 14px;
+    /* pinned by measuring Silkscreen's real advance against the 8-glyph
+     * worst case (STRAIGHT) in the band's actual width at each viewport:
+     * 546/610 at 16:9, 600/690 at 21:9, 480/542 at the laptop. */
+    --sv-fs-hero: clamp(56px, 12.1cqi, 112px);
+  }
+  .sv-read { min-height: 166px; }
+  .sv-heroline { min-height: 132px; }
+}
+
+/* the tight end of WIDE (the 726px laptop content box): the schematic steps
+ * down one size so the hero keeps its share of the band. Same arrangement. */
+@container sv (min-width: 700px) and (max-width: 780px) {
+  .sv-schem { width: 140px; height: 125px; }
+  .sv-read { gap: 14px; }
+  /* 84px, not 80: a populated slot settles at 82.3 here, and an empty rack
+   * has to occupy exactly the room a full one does (law 4) */
+  .sv-slot { min-height: 96px; padding: 8px 3px 8px; }
+}
+
+/* ================= NARROW TIER: a tiling fallback, not a reviewed viewport */
+
+@container sv (max-width: 699.98px) {
+  .sv-grid { --sv-fs-hero: clamp(38px, 13cqi, 62px); }
+  .sv-read { flex-wrap: wrap; }
+  .sv-heroline { min-height: 70px; }
+  .sv-schem { width: 140px; height: 125px; }
+}
+
+/* ---------- the demo rig's own readouts ---------- */
+
+.rig { top: auto; right: auto; bottom: 12px; left: 12px; max-width: 250px; }
+.rig .rig-meas { font-family: var(--kp-mono); font-size: 10px; color: #999; }
+.rig .rig-over { color: #ff6b6b; }
+.rig button:disabled { opacity: 0.35; cursor: not-allowed; }
+
+@media (prefers-reduced-motion: reduce) {
+  .sv-schem .arm-gain, .sv-slot-legal .sv-fx, .sv-slot-deny .sv-fx,
+  .sv-spark, .sv-weldwrap, .kp-boot-cursor { animation: none; }
+  .sv-ghost { transition: none; }
+  .sv-slot-deny .sv-fx { opacity: 0; }
+  .sv-weldwrap { opacity: 0.9; }
+}
+</style>
+</head>
+<body>
+
+<div class="sv-fitwrap" id="fitwrap">
+  <div class="sv-fit" id="fit">
+    <div class="sv-stage crt-on" id="stage">
+      <div class="sv-warp">
+        <div class="sv-desk" aria-hidden="true"></div>
+        <div class="sv-deskwrap">
+          <div class="sv-free" id="free" aria-hidden="true"><span id="freelabel">FREE DESK</span></div>
+
+          <div class="term" id="term">
+            <header class="term-bar">
+              <h1>SOLDER.BAY</h1>
+              <span class="term-glyphs"><i></i><i></i><i></i></span>
+            </header>
+            <div class="term-body">
+              <div class="sv-panel">
+                <div class="sv-grid" id="grid">
+
+                  <!-- Z1 THE READ: the one focal element -->
+                  <section class="sv-read" id="read">
+                    <span class="sv-bracket" aria-hidden="true"><i></i></span>
+                    <div class="sv-heroline">
+                      <span class="sv-eyebrow" id="eyebrow">// WORKPIECE _</span>
+                      <span class="sv-hero is-idle" id="hero">----</span>
+                      <span class="sv-armcount" id="armcount"></span>
+                    </div>
+                    <div class="sv-schem">
+                      <span class="sv-schem-tag">SCHEMATIC</span>
+                      <svg id="schemsvg" viewBox="0 0 304 228" preserveAspectRatio="none" aria-hidden="true"></svg>
+                    </div>
+                  </section>
+
+                  <!-- Z2 STATUS + Z4 the bookkeeping foot -->
+                  <div class="sv-side">
+                    <div class="sv-status" id="status">
+                      <span class="sv-status-label">// BENCH _</span>
+                      <span id="statustext"></span>
+                    </div>
+                    <div class="sv-footchips">
+                      <span class="kp-chip-pct"><span>POUCH</span><em id="pouchchip">0/5</em></span>
+                      <span class="sv-weldbox">
+                        <span class="kp-chip-pct"><span>LAST WELD</span></span>
+                        <span class="sv-weldcell sv-weldcell-empty" id="weldcell"></span>
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Z3 THE RACK -->
+                  <section class="sv-deck" id="deck">
+                    <div class="sv-deckhead"><strong>PATCH POUCH</strong></div>
+                    <div class="sv-rack" id="rack"></div>
+                    <div class="sv-join" id="joinrow"></div>
+                    <div class="sv-actions" id="actions"></div>
+                  </section>
+
+                  <!-- Z5 CAPTION -->
+                  <div class="sv-caption">
+                    <div class="sv-div"><span>// PLACEMENT</span><i></i></div>
+                    <p class="sv-foot" id="caption"></p>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sv-stage-bar">
+          <span>KP/OS</span>
+          <i></i>
+          <span>SOLDER.BAY</span>
+          <span class="sv-bar-sp"></span>
+          <span>23:04</span>
+        </div>
+      </div>
+
+      <div class="sv-glass" id="glass" aria-hidden="true">
+        <i class="g-scan"></i>
+        <i class="g-mask"></i>
+        <i class="g-bloom"></i>
+        <i class="g-spec"></i>
+        <i class="g-vig"></i>
+        <i class="g-bezel"></i>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="rig">
+  <strong>DEMO RIG</strong>
+  <span>Scheme</span>
+  <div class="rig-row" id="schemerow"></div>
+  <span>CRT</span>
+  <div class="rig-row" id="crtrow"></div>
+  <span>Viewport</span>
+  <div class="rig-row" id="vprow"></div>
+  <span>Pouch state</span>
+  <div class="rig-row" id="pouchrow"></div>
+  <span>Interaction state</span>
+  <div class="rig-row" id="interrow"></div>
+  <div class="rig-row"><button id="replay">REPLAY LOAD</button></div>
+  <span class="rig-meas" id="meas"></span>
+  <span>SOLDER.BAY as an instrument panel. The bench is live: tap a piece then a partner, or drag one onto another. A weld is legal only when the union outgrows BOTH inputs. The hero readout is the surface's one focal element and answers the same question in every state. The interaction row drives the real machine, so the bench stays playable from wherever it lands.</span>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ================= shipped semantics, transcribed =================
+   * patch-cells.ts (PATCH_POUCH_MAX, armUnionCraft, shapeClassOf, armCount)
+   * and windows/solder.tsx's own line constants, so the study's rules and
+   * copy can never drift from the game. */
+
+  var POUCH_MAX = 5;
+  var NOUN = { I: "Straight", L: "Elbow", T: "Tee", X: "Cross" };
+
+  var NO_JOIN_LINE = "No legal join for that piece. The result must be strictly bigger than both.";
+  var FOOT_LINE =
+    "A piece fills one slag block with exactly the arms it shows, welded where it lands. " +
+    "2 RAM, one per turn, single use. Pieces come off the darknet, drop from cleared jobs, " +
+    "or bank on clean wins; the pouch holds " + POUCH_MAX + ".";
+
+  var LINE_IDLE = "PICK A PIECE.";
+  var LINE_HELD = "PICK A PARTNER. THE WELD MUST OUTGROW BOTH.";
+  var LINE_READY = "READY. HIT CRAFT TO WELD.";
+  function lineDone(noun) { return "WELD DONE. ONE " + noun.toUpperCase() + " IN THE POUCH."; }
+
+  function armCount(mask) {
+    var n = 0;
+    for (var d = 0; d < 4; d++) if (mask & (1 << d)) n++;
+    return n;
+  }
+  function shapeClass(mask) {
+    var n = armCount(mask);
+    if (n >= 4) return "X";
+    if (n === 3) return "T";
+    return mask === 0x5 || mask === 0xa ? "I" : "L";
+  }
+  /* the union must be strictly bigger than BOTH inputs */
+  function unionCraft(a, b) {
+    var u = (a | b) & 0xf;
+    if (armCount(u) <= Math.max(armCount(a), armCount(b))) return null;
+    return u;
+  }
+
+  /* POUCH STATE: DAY 4 is the shipped data.ts mock, SCRAP HAUL the round-1
+   * demo mock rich in legal joins, plus the two sparse cases the
+   * equal-footprint law is checked against. */
+  var POUCHES = {
+    scrap: [0x3, 0x6, 0xc, 0x9, 0x5],
+    day4: [0x5, 0x3, 0xf, 0x7],
+    sparse: [0x3],
+    empty: []
+  };
+
+  var GLYPH = 48;
+  var REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var SVGNS = "http://www.w3.org/2000/svg";
+
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+  function $(id) { return document.getElementById(id); }
+
+  var timers = [];
+  function stage(fn, ms) {
+    if (REDUCED) { fn(); return; }
+    timers.push(setTimeout(fn, ms));
+  }
+  function clearTimers() {
+    timers.forEach(function (t) { clearTimeout(t); clearInterval(t); });
+    timers = [];
+  }
+
+  /* ---------- sound: the six shipped SOLDER.BAY voices, approximated ----------
+   * audio.ts:136,139-143. A standalone page has no sound.ts build, so these
+   * are minimal WebAudio stand-ins with the same characters (the dadlog and
+   * loadout-eva studies' precedent). NO new preset is proposed: the shipped
+   * six already cover every visual event on this surface 1:1. */
+  var AC = null;
+  var interacted = false;
+  document.addEventListener("pointerdown", function () { interacted = true; }, true);
+  document.addEventListener("keydown", function () { interacted = true; }, true);
+
+  function blip(o) {
+    if (!interacted) return;
+    try {
+      if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)();
+      if (AC.state === "suspended") AC.resume();
+      var t = AC.currentTime;
+      var src;
+      if (o.type === "noise") {
+        var len = Math.ceil(AC.sampleRate * o.dur);
+        var buf = AC.createBuffer(1, len, AC.sampleRate);
+        var d = buf.getChannelData(0);
+        for (var i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+        src = AC.createBufferSource();
+        src.buffer = buf;
+      } else {
+        src = AC.createOscillator();
+        src.type = o.type;
+        src.frequency.setValueAtTime(o.freq, t);
+        if (o.freq2) src.frequency.linearRampToValueAtTime(o.freq2, t + o.dur);
+      }
+      var node = src;
+      if (o.lpf) { var lf = AC.createBiquadFilter(); lf.type = "lowpass"; lf.frequency.value = o.lpf; node.connect(lf); node = lf; }
+      if (o.hpf) { var hf = AC.createBiquadFilter(); hf.type = "highpass"; hf.frequency.value = o.hpf; node.connect(hf); node = hf; }
+      var g = AC.createGain();
+      g.gain.setValueAtTime(o.vol, t);
+      g.gain.exponentialRampToValueAtTime(0.001, t + o.dur);
+      node.connect(g);
+      g.connect(AC.destination);
+      src.start(t);
+      src.stop(t + o.dur + 0.02);
+    } catch (e) { /* sound is never load bearing */ }
+  }
+
+  var SFX = {
+    solderPickup: function () { blip({ type: "square", freq: 470, dur: 0.075, vol: 0.3, lpf: 3000 }); },
+    solderHoverLegal: function () { blip({ type: "sine", freq: 660, freq2: 880, dur: 0.06, vol: 0.26 }); },
+    solderHoverIllegal: function () { blip({ type: "sawtooth", freq: 190, freq2: 160, dur: 0.055, vol: 0.2, lpf: 900 }); },
+    solderReject: function () { blip({ type: "sawtooth", freq: 170, freq2: 110, dur: 0.13, vol: 0.3, hpf: 120 }); },
+    solderArc: function () { blip({ type: "noise", dur: 0.055, vol: 0.32, hpf: 2200 }); },
+    pieceFuse: function () { blip({ type: "sine", freq: 290, freq2: 620, dur: 0.34, vol: 0.34, lpf: 2400 }); }
+  };
+
+  /* ---------- glyph.ts patchGlyph, DOM for DOM ---------- */
+
+  function patchGlyph(mask, size) {
+    var svg = document.createElementNS(SVGNS, "svg");
+    svg.setAttribute("width", String(size));
+    svg.setAttribute("height", String(size));
+    svg.setAttribute("viewBox", "-12 -12 24 24");
+    svg.setAttribute("class", "kp-patch-glyph");
+    svg.setAttribute("aria-hidden", "true");
+    var ends = [[0, -10], [10, 0], [0, 10], [-10, 0]];
+    for (var d = 0; d < 4; d++) {
+      if ((mask & (1 << d)) === 0) continue;
+      var line = document.createElementNS(SVGNS, "line");
+      line.setAttribute("x1", "0"); line.setAttribute("y1", "0");
+      line.setAttribute("x2", String(ends[d][0])); line.setAttribute("y2", String(ends[d][1]));
+      line.setAttribute("class", "kp-pp-arm");
+      line.setAttribute("stroke-width", "3.5");
+      svg.appendChild(line);
+    }
+    var hub = document.createElementNS(SVGNS, "circle");
+    hub.setAttribute("cx", "0"); hub.setAttribute("cy", "0"); hub.setAttribute("r", "3");
+    hub.setAttribute("class", "kp-pp-node");
+    svg.appendChild(hub);
+    return svg;
+  }
+
+  /* ---------- the SCHEMATIC plate ---------- */
+
+  var schemSvg = $("schemsvg");
+
+  function svgLine(x1, y1, x2, y2, cls) {
+    var line = document.createElementNS(SVGNS, "line");
+    line.setAttribute("x1", String(x1)); line.setAttribute("y1", String(y1));
+    line.setAttribute("x2", String(x2)); line.setAttribute("y2", String(y2));
+    line.setAttribute("class", cls);
+    return line;
+  }
+
+  function renderSchem(base, gain) {
+    schemSvg.textContent = "";
+    var x;
+    for (x = 0; x <= 304; x += 19) schemSvg.appendChild(svgLine(x, 0, x, 228, "grid"));
+    for (x = 0; x <= 228; x += 19) schemSvg.appendChild(svgLine(0, x, 304, x, "grid"));
+    var cx = 152;
+    var cy = 114;
+    if (!base && !gain) {
+      var hole = document.createElementNS(SVGNS, "rect");
+      hole.setAttribute("x", String(cx - 17));
+      hole.setAttribute("y", String(cy - 17));
+      hole.setAttribute("width", "34");
+      hole.setAttribute("height", "34");
+      hole.setAttribute("class", "hole");
+      schemSvg.appendChild(hole);
+      return;
+    }
+    var ends = [[0, -84], [84, 0], [0, 84], [-84, 0]];
+    for (var d = 0; d < 4; d++) {
+      var bit = 1 << d;
+      if (base & bit) schemSvg.appendChild(svgLine(cx, cy, cx + ends[d][0], cy + ends[d][1], "arm"));
+      else if (gain & bit) schemSvg.appendChild(svgLine(cx, cy, cx + ends[d][0], cy + ends[d][1], "arm arm-gain"));
+    }
+    var hub = document.createElementNS(SVGNS, "circle");
+    hub.setAttribute("cx", String(cx)); hub.setAttribute("cy", String(cy));
+    hub.setAttribute("r", "11");
+    hub.setAttribute("class", "hub");
+    schemSvg.appendChild(hub);
+  }
+
+  /* ================= state (the shipped fields, nothing new) ================= */
+
+  var pouch = POUCHES.day4.slice();
+  var pouchId = "day4";
+  var sel = null;
+  var pair = null;
+  var drag = null;
+  var fusing = false;
+  var lastWeld = null;
+  var typeTimers = [];
+
+  var rack = $("rack");
+  var joinRow = $("joinrow");
+  var actions = $("actions");
+  var statusBox = $("status");
+  var statusText = $("statustext");
+  var weldCell = $("weldcell");
+  var hero = $("hero");
+  var eyebrow = $("eyebrow");
+  var armcountEl = $("armcount");
+  var deck = $("deck");
+
+  $("caption").textContent = FOOT_LINE;
+
+  /* the typed dialogue line, one character at a time, 18ms/char (shipped) */
+  function setStatus(text, tone) {
+    typeTimers.forEach(function (t) { clearInterval(t); clearTimeout(t); });
+    typeTimers = [];
+    statusBox.classList.toggle("is-ready", tone === "ok");
+    statusBox.classList.toggle("is-reject", tone === "reject");
+    statusText.textContent = "";
+    if (REDUCED) { statusText.textContent = text; return; }
+    var caret = el("span", "kp-boot-cursor", "_");
+    statusText.appendChild(caret);
+    var i = 0;
+    var iv = setInterval(function () {
+      i++;
+      statusText.textContent = text.slice(0, i);
+      if (i < text.length) statusText.appendChild(caret);
+      else clearInterval(iv);
+    }, 18);
+    typeTimers.push(iv);
+  }
+
+  /* ---------- the rack ---------- */
+
+  function legalPartners(a) {
+    var out = {};
+    for (var i = 0; i < pouch.length; i++) {
+      if (i !== a && unionCraft(pouch[a], pouch[i]) !== null) out[i] = true;
+    }
+    return out;
+  }
+
+  function targetEls() { return Array.prototype.slice.call(rack.querySelectorAll("[data-slot-index]")); }
+  function slotAt(i) {
+    return targetEls().filter(function (s) { return Number(s.dataset.slotIndex) === i; })[0];
+  }
+
+  function makeSlot(i, reveal) {
+    var slot;
+    if (i < pouch.length) {
+      slot = el("button", "sv-slot");
+      slot.type = "button";
+      slot.dataset.slotIndex = String(i);
+      slot.appendChild(patchGlyph(pouch[i], GLYPH));
+      slot.appendChild(el("span", "", NOUN[shapeClass(pouch[i])]));
+      wireSlot(slot, i);
+    } else {
+      slot = el("span", "sv-slot sv-slot-empty");
+      slot.dataset.slotIndex = String(i);
+      slot.appendChild(el("span", "kp-piece-hole"));
+    }
+    slot.appendChild(el("i", "sv-fx"));
+    if (reveal && !REDUCED) {
+      slot.classList.add("kp-slot-anim");
+      slot.style.animationDelay = (i * 40) + "ms";
+      /* drop the reveal once it has played. animation-fill-mode: both would
+       * otherwise leave a finished animation named on every slot forever,
+       * which makes the element lie about its own state under inspection. */
+      slot.addEventListener("animationend", function () {
+        slot.classList.remove("kp-slot-anim");
+        slot.style.animationDelay = "";
+      }, { once: true });
+    }
+    return slot;
+  }
+
+  function render(reveal) {
+    rack.textContent = "";
+    for (var i = 0; i < POUCH_MAX; i++) rack.appendChild(makeSlot(i, reveal));
+    $("pouchchip").textContent = pouch.length + "/" + POUCH_MAX;
+    weldCell.textContent = "";
+    weldCell.classList.toggle("sv-weldcell-empty", lastWeld === null);
+    if (lastWeld !== null) weldCell.appendChild(patchGlyph(lastWeld, 30));
+    paintTapState();
+    paintDeck();
+  }
+
+  function heldIndex() { return drag ? drag.index : sel; }
+
+  function joinCandidate() {
+    if (drag) {
+      var h = drag.hoverIndex;
+      if (h !== null && h < pouch.length && h !== drag.index && unionCraft(pouch[drag.index], pouch[h]) !== null) {
+        return { a: drag.index, b: h };
+      }
+      return null;
+    }
+    if (sel !== null && pair !== null) return { a: sel, b: pair };
+    return null;
+  }
+
+  /* ---------- Z1: the one focal element ----------
+   * The hero answers the SAME question in all four states, which is what
+   * keeps it focal instead of merely big: "what shape is the reading in
+   * front of you". It is a pure presentation of held/candidate, the values
+   * solder.tsx already computes every render. No new state, ever. */
+  function paintHero() {
+    var cand = joinCandidate();
+    if (cand) {
+      var a = pouch[cand.a];
+      var b = pouch[cand.b];
+      var u = (a | b) & 0xf;
+      eyebrow.textContent = "// JOIN RESULT _";
+      hero.textContent = NOUN[shapeClass(u)].toUpperCase();
+      hero.classList.remove("is-idle");
+      armcountEl.textContent = armCount(u) + " ARMS";
+      renderSchem(a, b & ~a & 0xf);
+      return;
+    }
+    var held = heldIndex();
+    eyebrow.textContent = "// WORKPIECE _";
+    if (held !== null && held < pouch.length) {
+      hero.textContent = NOUN[shapeClass(pouch[held])].toUpperCase();
+      hero.classList.remove("is-idle");
+      armcountEl.textContent = armCount(pouch[held]) + " ARMS";
+      renderSchem(pouch[held], 0);
+      return;
+    }
+    /* IDLE: the placeholder sits at the hero's own footprint */
+    hero.textContent = "----";
+    hero.classList.add("is-idle");
+    armcountEl.textContent = "";
+    renderSchem(0, 0);
+  }
+
+  function paintDeck() {
+    joinRow.textContent = "";
+    actions.textContent = "";
+    paintHero();
+    var held = heldIndex();
+    if (held === null || fusing) {
+      if (!fusing) setStatus(LINE_IDLE, null);
+      return;
+    }
+    var cand = joinCandidate();
+    if (cand) {
+      var union = unionCraft(pouch[cand.a], pouch[cand.b]);
+      /* the result noun is CUT here: Z1 already states it at 5x this size */
+      joinRow.append(patchGlyph(pouch[cand.a], 18), "+", patchGlyph(pouch[cand.b], 18), "->", patchGlyph(union, 22));
+      if (!drag) {
+        var craft = el("button", "sv-btn sv-btn-craft", "CRAFT");
+        craft.type = "button";
+        craft.addEventListener("click", function () { fuseAt(sel, pair, null); });
+        var cancel = el("button", "sv-btn", "CANCEL");
+        cancel.type = "button";
+        cancel.addEventListener("click", function () { rejectCancel(null); });
+        actions.append(craft, cancel);
+      }
+      setStatus(LINE_READY, "ok");
+      return;
+    }
+    /* NO_JOIN_LINE has two causes and only ONE of them is an alarm: an
+     * ACTIVE rejection (you are hovering an illegal target right now) takes
+     * r-warn; the passive "this piece has no partner anywhere" case does
+     * not, because it is a resting condition, not something you just did. */
+    var partners = legalPartners(held);
+    var hoveringIllegal = drag !== null && drag.hoverIndex !== null;
+    if (hoveringIllegal) setStatus(NO_JOIN_LINE, "reject");
+    else if (Object.keys(partners).length === 0) setStatus(NO_JOIN_LINE, null);
+    else setStatus(LINE_HELD, null);
+  }
+
+  function paintTapState() {
+    var partners = sel !== null && sel < pouch.length ? legalPartners(sel) : {};
+    var dragPartners = drag ? legalPartners(drag.index) : null;
+    targetEls().forEach(function (s) {
+      var i = Number(s.dataset.slotIndex);
+      s.classList.remove("sv-slot-carry", "sv-slot-dead", "sv-slot-legal", "sv-slot-illegal");
+      if (s.tagName === "BUTTON") s.disabled = false;
+      if (drag) {
+        if (i === drag.index) {
+          var keep = s.querySelector(".sv-fx");
+          s.textContent = "";
+          s.appendChild(el("span", "kp-piece-hole"));
+          s.appendChild(keep || el("i", "sv-fx"));
+        } else if (i < pouch.length && !dragPartners[i]) {
+          s.classList.add("sv-slot-dead");
+        }
+        return;
+      }
+      if (i === sel || i === pair) {
+        s.classList.add("sv-slot-carry");
+      } else if (sel !== null && i < pouch.length && (pair !== null || !partners[i])) {
+        s.classList.add("sv-slot-dead");
+        if (s.tagName === "BUTTON") s.disabled = true;
+      }
+    });
+  }
+
+  /* ---------- tap + drag (the shipped pointer plumbing, unchanged) ---------- */
+
+  function wireSlot(slot, index) {
+    var start = null;
+    var dragged = false;
+
+    slot.addEventListener("pointerdown", function (e) {
+      if (fusing) return;
+      start = { x: e.clientX, y: e.clientY };
+      dragged = false;
+      slot.setPointerCapture(e.pointerId);
+    });
+
+    slot.addEventListener("pointermove", function (e) {
+      if (drag && dragged) { moveDrag(e); return; }
+      if (fusing || !start) return;
+      var dist = Math.hypot(e.clientX - start.x, e.clientY - start.y);
+      if (!drag && (e.pointerType === "mouse" || e.pointerType === "pen") && dist > 6) {
+        dragged = true;
+        beginDrag(slot, index, e);
+        moveDrag(e);
+      }
+    });
+
+    slot.addEventListener("pointerup", function (e) {
+      start = null;
+      if (drag && dragged) endDrag(e);
+    });
+
+    slot.addEventListener("click", function () {
+      if (fusing) return;
+      if (dragged) { dragged = false; return; }
+      tapActivate(index);
+    });
+  }
+
+  function tapActivate(i) {
+    if (sel === null) {
+      SFX.solderPickup();
+      sel = i;
+    } else if (i === sel) {
+      sel = null;
+      pair = null;
+    } else if (pair === null) {
+      if (legalPartners(sel)[i]) {
+        SFX.solderHoverLegal();
+        pair = i;
+      } else {
+        rejectCancel(i);
+        return;
+      }
+    } else if (i === pair) {
+      pair = null;
+    }
+    paintTapState();
+    paintDeck();
+  }
+
+  /* the ghost rides on TRANSFORM off a fixed origin, never left/top */
+  function moveGhost(x, y) {
+    drag.chip.style.transform = "translate(" + Math.round(x) + "px," + Math.round(y) + "px)";
+  }
+
+  function beginDrag(slot, index, e) {
+    sel = null;
+    pair = null;
+    SFX.solderPickup();
+    var rect = slot.getBoundingClientRect();
+    var chip = el("div", "sv-slot sv-slot-carry sv-ghost");
+    chip.style.setProperty("--sv-ghost-w", rect.width + "px");
+    chip.style.minHeight = rect.height + "px";
+    chip.appendChild(patchGlyph(pouch[index], GLYPH));
+    chip.appendChild(el("span", "", NOUN[shapeClass(pouch[index])]));
+    chip.style.transition = "none";
+    document.body.appendChild(chip);
+    drag = {
+      index: index, chip: chip,
+      offsetX: e.clientX - rect.left, offsetY: e.clientY - rect.top,
+      hoverIndex: null
+    };
+    moveGhost(rect.left, rect.top);
+    /* one frame at rest before the follow transition is armed, so the chip
+     * does not slide in from the origin */
+    requestAnimationFrame(function () { if (drag) drag.chip.style.transition = ""; });
+    document.body.classList.add("sv-dragging");
+    paintTapState();
+    paintDeck();
+  }
+
+  function moveDrag(e) {
+    if (!drag) return;
+    moveGhost(e.clientX - drag.offsetX, e.clientY - drag.offsetY);
+
+    var under = document.elementFromPoint(e.clientX, e.clientY);
+    var slotEl = under && under.closest ? under.closest("[data-slot-index]") : null;
+    var idx = slotEl && rack.contains(slotEl) ? Number(slotEl.dataset.slotIndex) : null;
+    if (idx === drag.hoverIndex) return;
+
+    targetEls().forEach(function (s) { s.classList.remove("sv-slot-legal", "sv-slot-illegal"); });
+    drag.hoverIndex = idx;
+    if (idx !== null) {
+      var target = slotAt(idx);
+      var legal = idx !== drag.index && idx < pouch.length &&
+        unionCraft(pouch[drag.index], pouch[idx]) !== null;
+      if (idx !== drag.index) SFX[legal ? "solderHoverLegal" : "solderHoverIllegal"]();
+      if (target && legal) target.classList.add("sv-slot-legal");
+      else if (target && idx !== drag.index) target.classList.add("sv-slot-illegal");
+    }
+    paintDeck();
+  }
+
+  function endDrag() {
+    if (!drag) return;
+    var index = drag.index;
+    var hoverIndex = drag.hoverIndex;
+    var legal = hoverIndex !== null && hoverIndex !== index && hoverIndex < pouch.length &&
+      unionCraft(pouch[index], pouch[hoverIndex]) !== null;
+    if (legal) {
+      document.body.classList.remove("sv-dragging");
+      fuseAt(index, hoverIndex, drag);
+      drag = null;
+    } else {
+      rejectCancel(hoverIndex !== null && hoverIndex !== index ? hoverIndex : null);
+    }
+  }
+
+  /* BUG FIX carried over from round 1: the flash used to be applied to the
+   * slot element BEFORE render() rebuilt the rack, which threw the flashed
+   * node away in the same frame, so the drag-reject deny animation never
+   * actually played. The flash now lands on the freshly built element.
+   *
+   * Note also that the TAP path to this function is unreachable by design:
+   * a slot that cannot join the held piece is disabled, not a tappable
+   * mistake, so it fires no click. The deny flash is a drag-drop affordance,
+   * and the tap branch stays as the defensive guard it is in solder.tsx. */
+  function rejectCancel(flashIndex) {
+    var heldNow = drag ? drag.index : sel;
+    var doFlash = flashIndex !== null && flashIndex !== heldNow;
+    if (doFlash) SFX.solderReject();
+
+    if (drag) {
+      document.body.classList.remove("sv-dragging");
+      drag.chip.remove();
+      drag = null;
+      render(false);
+    } else {
+      sel = null;
+      pair = null;
+      paintTapState();
+      paintDeck();
+    }
+
+    if (doFlash) {
+      var target = slotAt(flashIndex);
+      if (target) {
+        target.classList.add("sv-slot-deny");
+        setTimeout(function () { target.classList.remove("sv-slot-deny"); }, 200);
+      }
+      setStatus(NO_JOIN_LINE, "reject");
+    }
+  }
+
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && (drag || sel !== null) && !fusing) rejectCancel(null);
+  });
+
+  /* ---------- the weld timeline: spark, travel, weld dot, commit ----------
+   * Same beats and same t=0/40/80/260 waypoints as round 1. What changed is
+   * that the travel is a TRANSFORM reassignment rather than left/top, so the
+   * whole timeline animates on the compositor. */
+
+  function slotCenter(i) {
+    var s = slotAt(i);
+    if (!s) return null;
+    var r = s.getBoundingClientRect();
+    return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+  }
+
+  function sparkOverlay(x, y) {
+    var wrap = el("div", "sv-spark");
+    var svg = document.createElementNS(SVGNS, "svg");
+    svg.setAttribute("width", "48");
+    svg.setAttribute("height", "48");
+    svg.setAttribute("viewBox", "-12 -12 24 24");
+    for (var i = 0; i < 4; i++) {
+      var a = (Math.PI * 2 * i) / 4 + Math.PI / 4;
+      var line = document.createElementNS(SVGNS, "line");
+      line.setAttribute("x1", String(Math.cos(a) * 3));
+      line.setAttribute("y1", String(Math.sin(a) * 3));
+      line.setAttribute("x2", String(Math.cos(a) * 10));
+      line.setAttribute("y2", String(Math.sin(a) * 10));
+      line.setAttribute("stroke", "var(--r-data)");
+      line.setAttribute("stroke-width", "2");
+      svg.appendChild(line);
+    }
+    wrap.appendChild(svg);
+    wrap.style.transform = "translate(" + (x - 24) + "px," + (y - 24) + "px)";
+    document.body.appendChild(wrap);
+    return wrap;
+  }
+
+  function commitWeld(a, b, union) {
+    pouch = pouch.filter(function (_, i) { return i !== a && i !== b; });
+    pouch.push(union);
+    sel = null;
+    pair = null;
+    fusing = false;
+    lastWeld = union;
+    SFX.pieceFuse();
+    render(true);
+    setStatus(lineDone(NOUN[shapeClass(union)]), null);
+  }
+
+  function fuseAt(a, b, liveDrag) {
+    if (a === null || b === null) return;
+    var union = unionCraft(pouch[a], pouch[b]);
+    if (union === null) return;
+    fusing = true;
+    SFX.solderArc();
+    if (REDUCED) {
+      if (liveDrag) liveDrag.chip.remove();
+      commitWeld(a, b, union);
+      return;
+    }
+    var target = slotCenter(b);
+    if (!target) { commitWeld(a, b, union); return; }
+
+    /* t=0: contact */
+    var spark = sparkOverlay(target.x, target.y);
+    setTimeout(function () { spark.remove(); }, 200);
+
+    var chip;
+    var from;
+    if (liveDrag) {
+      chip = liveDrag.chip;
+      from = chip.getBoundingClientRect();
+    } else {
+      var srcRect = slotAt(a).getBoundingClientRect();
+      chip = el("div", "sv-slot sv-slot-carry sv-ghost");
+      chip.style.setProperty("--sv-ghost-w", srcRect.width + "px");
+      chip.style.minHeight = srcRect.height + "px";
+      chip.appendChild(patchGlyph(pouch[a], GLYPH));
+      chip.style.transform = "translate(" + srcRect.left + "px," + srcRect.top + "px)";
+      document.body.appendChild(chip);
+      from = srcRect;
+    }
+    var dest = { x: target.x - from.width / 2, y: target.y - from.height / 2 };
+    var mid = { x: (from.left + dest.x) / 2, y: (from.top + dest.y) / 2 };
+    stage(function () { chip.style.transform = "translate(" + mid.x + "px," + mid.y + "px)"; }, 40);
+    stage(function () { chip.style.transform = "translate(" + dest.x + "px," + dest.y + "px)"; }, 80);
+
+    /* t=80: weld. The shake is scoped to the DECK, never the window. */
+    stage(function () {
+      deck.classList.add("kp-shake-1");
+      var weld = el("div", "sv-weldwrap");
+      var svg = document.createElementNS(SVGNS, "svg");
+      svg.setAttribute("width", "16");
+      svg.setAttribute("height", "16");
+      svg.setAttribute("viewBox", "-8 -8 16 16");
+      var dot = document.createElementNS(SVGNS, "circle");
+      dot.setAttribute("r", "3.5");
+      dot.setAttribute("class", "kp-dweld");
+      svg.appendChild(dot);
+      weld.appendChild(svg);
+      weld.style.transform = "translate(" + (target.x - 8) + "px," + (target.y - 8) + "px)";
+      document.body.appendChild(weld);
+      setTimeout(function () { weld.remove(); }, 1200);
+    }, 80);
+
+    /* t=260: commit + reveal */
+    stage(function () {
+      deck.classList.remove("kp-shake-1");
+      chip.remove();
+      commitWeld(a, b, union);
+    }, 260);
+  }
+
+  /* ================= the demo rig ================= */
+
+  function radioRow(rowId, opts, initial, onPick) {
+    var row = $(rowId);
+    row.textContent = "";
+    opts.forEach(function (o) {
+      var b = el("button", o.id === initial ? "rig-on" : "", o.label);
+      b.dataset.opt = o.id;
+      b.addEventListener("click", function () {
+        if (b.disabled) return;
+        row.querySelectorAll("button").forEach(function (x) { x.className = ""; });
+        b.className = "rig-on";
+        onPick(o);
+      });
+      row.appendChild(b);
+    });
+  }
+
+  var glassLayers = Array.prototype.slice.call($("glass").children);
+  function setCrt(mode) {
+    var st = $("stage");
+    var glass = $("glass");
+    st.classList.toggle("crt-on", mode !== "off");
+    glass.textContent = "";
+    if (mode !== "off") glassLayers.forEach(function (l) { glass.appendChild(l); });
+  }
+
+  function setScheme(id) { document.documentElement.dataset.scheme = id; }
+
+  radioRow("schemerow", [
+    { id: "nerv", label: "NERV" },
+    { id: "tokyo", label: "TOKYO NIGHT" }
+  ], "nerv", function (o) { setScheme(o.id); });
+
+  radioRow("crtrow", [
+    { id: "flat", label: "FLAT" },
+    { id: "off", label: "OFF" }
+  ], "flat", function (o) { setCrt(o.id); });
+
+  var VIEWPORTS = [
+    { id: "169", label: "16:9", w: 1366, h: 768, win: 860 },
+    { id: "219", label: "21:9", w: 2560, h: 1080, win: 940 },
+    { id: "laptop", label: "LAPTOP 1280x800", w: 1280, h: 800, win: 760 }
+  ];
+  var VP = VIEWPORTS[0];
+
+  function applyViewport(v) {
+    VP = v;
+    var st = $("stage");
+    st.style.width = v.w + "px";
+    st.style.height = v.h + "px";
+    $("term").style.setProperty("--sv-win", v.win + "px");
+    fit();
+    measure();
+  }
+
+  function fit() {
+    var availW = Math.max(320, window.innerWidth - 300);
+    var availH = Math.max(320, window.innerHeight - 90);
+    var k = Math.min(1, availW / VP.w, availH / VP.h);
+    $("fit").style.transform = "scale(" + k + ")";
+    $("fitwrap").style.width = Math.round(VP.w * k) + "px";
+    $("fitwrap").style.height = Math.round(VP.h * k) + "px";
+    return k;
+  }
+
+  function measure() {
+    var k = fit() || 1;
+    var h = Math.round($("term").getBoundingClientRect().height / k);
+    var free = $("free");
+    var slack = VP.w - VP.win;
+    if (slack > 220) {
+      free.style.display = "flex";
+      free.style.right = "0px";
+      free.style.width = Math.round(slack / 2 - 24) + "px";
+      $("freelabel").textContent = "FREE DESK " + Math.round(slack / 2 - 24) + "PX";
+    } else {
+      free.style.display = "none";
+    }
+    var tier = VP.win - 34 >= 700 ? "WIDE" : "NARROW";
+    var m = $("meas");
+    m.innerHTML = "";
+    m.appendChild(document.createTextNode("WINDOW " + VP.win + "px / " + tier + " tier"));
+    m.appendChild(document.createElement("br"));
+    m.appendChild(el("span", h > 820 ? "rig-over" : "", "HEIGHT " + h + "px / ceiling 820px"));
+  }
+
+  radioRow("vprow", VIEWPORTS, "169", function (o) { applyViewport(o); });
+
+  /* ---------- POUCH STATE ---------- */
+
+  function resetMachine() {
+    clearTimers();
+    if (drag) { drag.chip.remove(); drag = null; document.body.classList.remove("sv-dragging"); }
+    Array.prototype.slice.call(document.querySelectorAll(".sv-ghost, .sv-spark, .sv-weldwrap"))
+      .forEach(function (n) { n.remove(); });
+    deck.classList.remove("kp-shake-1");
+    sel = null;
+    pair = null;
+    fusing = false;
+  }
+
+  function loadPouch(id, keepWeld) {
+    pouchId = id;
+    resetMachine();
+    if (!keepWeld) lastWeld = null;
+    pouch = POUCHES[id].slice();
+    render(true);
+    syncInteractionRow();
+  }
+
+  radioRow("pouchrow", [
+    { id: "scrap", label: "SCRAP HAUL" },
+    { id: "day4", label: "DAY 4" },
+    { id: "sparse", label: "SPARSE" },
+    { id: "empty", label: "EMPTY" }
+  ], "day4", function (o) { loadPouch(o.id, false); });
+
+  /* ---------- INTERACTION STATE ----------
+   * These drive the REAL machine, not a painted mock, so the bench is still
+   * fully playable from wherever a jump lands it. Options a pouch cannot
+   * support are disabled rather than faked. */
+
+  function firstLegalPair() {
+    for (var a = 0; a < pouch.length; a++) {
+      var p = legalPartners(a);
+      var keys = Object.keys(p);
+      if (keys.length) return { a: a, b: Number(keys[0]) };
+    }
+    return null;
+  }
+
+  function setInteraction(id) {
+    resetMachine();
+    if (id === "idle") { paintTapState(); paintDeck(); return; }
+    if (id === "holding") {
+      if (!pouch.length) { paintTapState(); paintDeck(); return; }
+      sel = 0;
+      SFX.solderPickup();
+      paintTapState();
+      paintDeck();
+      return;
+    }
+    var lp = firstLegalPair();
+    if (!lp) { paintTapState(); paintDeck(); return; }
+    sel = lp.a;
+    pair = lp.b;
+    paintTapState();
+    paintDeck();
+    if (id === "weld") stage(function () { fuseAt(sel, pair, null); }, 260);
+  }
+
+  radioRow("interrow", [
+    { id: "idle", label: "IDLE" },
+    { id: "holding", label: "HOLDING" },
+    { id: "cand", label: "CANDIDATE" },
+    { id: "weld", label: "POST-WELD" }
+  ], "idle", function (o) { setInteraction(o.id); });
+
+  function syncInteractionRow() {
+    var canHold = pouch.length > 0;
+    var canPair = firstLegalPair() !== null;
+    Array.prototype.slice.call($("interrow").children).forEach(function (b) {
+      var id = b.dataset.opt;
+      var ok = id === "idle" ? true : id === "holding" ? canHold : canPair;
+      b.disabled = !ok;
+      if (!ok && b.className === "rig-on") {
+        b.className = "";
+        $("interrow").children[0].className = "rig-on";
+      }
+    });
+  }
+
+  $("replay").addEventListener("click", function () {
+    clearTimers();
+    render(true);
+    setStatus(statusText.textContent || LINE_IDLE, null);
+  });
+
+  window.addEventListener("resize", function () { fit(); measure(); });
+
+  /* ================= go ================= */
+
+  setScheme("nerv");
+  setCrt("flat");
+  applyViewport(VP);
+  render(true);
+  setStatus(LINE_IDLE, null);
+  syncInteractionRow();
+  stage(measure, 400);
+})();
+</script>
+</body>
+</html>

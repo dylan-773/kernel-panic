@@ -1,0 +1,17 @@
+{
+  "id": "dadlog-attach-notice",
+  "from": "ux-agent",
+  "kind": "window-image",
+  "treatment": "dither-fine",
+  "target": "/assets/px/ui/dadlog-attach-notice.png",
+  "size": [304, 304],
+  "invert": false,
+  "brief": "DAD.LOG per-entry attachment for NOTICE_07.SCN (dadlog-archive-reader ui-spec, section F, ROUND 3 addendum). A single clinical FINAL NOTICE letterhead form, flat-on view like a scanned document: a formal printed form with a boxed header block, several boxed data fields down the sheet (account/balance/status style rows implied by shape only), an official-looking stamp or seal mark in one corner, and a signature-style scrawl near the bottom. Every field's contents rendered as ILLEGIBLE printed-line texture (short flat rules and blocky marks standing in for text, never actual readable characters or numerals - the dither must crush it to texture). 1990s anime OVA ink style, flat cel shading, crisp high-contrast linework so the form's boxes and stamp read clearly after 1-bit dithering. Absolutely NO readable text, NO panel borders (beyond the form's own diegetic boxed fields, which are not comic-panel borders), NO speech bubbles anywhere; background a plain flat dark surface, nothing else in frame.",
+  "status": "done",
+  "result": "pipeline/art/done/dadlog-attach-notice.png",
+  "generation": {
+    "tool": "Higgsfield nano_banana_pro",
+    "credits": 2,
+    "attempts": 1
+  }
+}

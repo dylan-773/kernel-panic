@@ -1,0 +1,163 @@
+/* The review deck: out-of-world chrome injected into every demo page when it
+ * is served through the review site. Deliberately NOT in the KP/OS idiom
+ * beyond the typeface, so it never reads as part of the design under review.
+ *
+ * The demo's own legacy .rig is hidden while the deck is present: anything
+ * worth switching is re-declared as a manifest variation, which the deck
+ * renders uniformly. Hiding is CSS only, so the desktop host can still drive
+ * those buttons programmatically through the same hooks it always used. */
+
+html.kp-deck-on .rig { display: none !important; }
+
+.kp-deck {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 9000;
+  width: 260px;
+  background: #0c0c0f;
+  border: 1px solid #3a3a44;
+  box-shadow: 0 6px 26px rgba(0, 0, 0, 0.65);
+  font-family: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  font-size: 11px;
+  color: #9a9aa6;
+  color-scheme: dark;
+}
+
+.kp-deck * { box-sizing: border-box; }
+
+.kp-deck-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 7px 9px;
+  background: #17171d;
+  border-bottom: 1px solid #3a3a44;
+  cursor: pointer;
+  user-select: none;
+}
+
+.kp-deck-bar b {
+  font-family: "Silkscreen", monospace;
+  font-size: 8px;
+  letter-spacing: 0.12em;
+  color: #d5d5e0;
+}
+
+.kp-deck-bar .kp-deck-mini {
+  font-size: 10px;
+  color: #6f6f7d;
+  margin-left: auto;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 130px;
+}
+
+.kp-deck-bar i {
+  font-style: normal;
+  font-size: 10px;
+  color: #9a9aa6;
+  width: 12px;
+  text-align: center;
+}
+
+.kp-deck-body { padding: 9px; display: flex; flex-direction: column; gap: 10px; }
+.kp-deck.collapsed .kp-deck-body { display: none; }
+
+.kp-deck a.kp-deck-back {
+  color: #9a9aa6;
+  text-decoration: none;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+}
+.kp-deck a.kp-deck-back:hover { color: #fff; }
+
+.kp-deck-title {
+  font-family: "Silkscreen", monospace;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: #e6e6f0;
+  line-height: 1.5;
+}
+
+.kp-deck-meta { font-size: 10px; color: #6f6f7d; word-break: break-all; }
+
+.kp-deck-sect { border-top: 1px solid #26262e; padding-top: 8px; }
+
+.kp-deck-sect > label {
+  display: block;
+  font-family: "Silkscreen", monospace;
+  font-size: 7px;
+  letter-spacing: 0.14em;
+  color: #6f6f7d;
+  margin-bottom: 5px;
+}
+
+.kp-deck-row { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 6px; }
+
+.kp-deck button {
+  font-family: "Silkscreen", monospace;
+  font-size: 7px;
+  letter-spacing: 0.08em;
+  padding: 5px 7px;
+  background: transparent;
+  border: 1px solid #3a3a44;
+  color: #9a9aa6;
+  cursor: pointer;
+}
+
+.kp-deck button:hover { border-color: #7a7a8a; color: #e6e6f0; }
+.kp-deck button.on { background: #d5d5e0; border-color: #d5d5e0; color: #0c0c0f; }
+
+.kp-deck button.go { border-color: #5a7f5a; color: #9ccf9c; width: 100%; }
+.kp-deck button.go:hover { background: #9ccf9c; color: #0c0c0f; }
+.kp-deck button.back { border-color: #7f6a4a; color: #d8b57a; width: 100%; }
+.kp-deck button.back:hover { background: #d8b57a; color: #0c0c0f; }
+
+.kp-deck textarea {
+  width: 100%;
+  min-height: 46px;
+  resize: vertical;
+  background: #08080b;
+  border: 1px solid #3a3a44;
+  color: #c8c8d4;
+  font-family: inherit;
+  font-size: 11px;
+  padding: 5px 6px;
+  margin-bottom: 6px;
+}
+
+.kp-deck-chip {
+  display: inline-block;
+  font-family: "Silkscreen", monospace;
+  font-size: 7px;
+  letter-spacing: 0.1em;
+  padding: 3px 6px;
+  border: 1px solid #3a3a44;
+  color: #9a9aa6;
+}
+
+.kp-deck-chip.s-awaiting { border-color: #7f6a4a; color: #d8b57a; }
+.kp-deck-chip.s-approved { border-color: #5a7f5a; color: #9ccf9c; }
+.kp-deck-chip.s-complete { border-color: #3a5a7f; color: #8ab0d8; }
+.kp-deck-chip.s-archived { border-color: #3a3a44; color: #6f6f7d; }
+
+.kp-deck-mount {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 0;
+  cursor: pointer;
+  font-size: 11px;
+}
+
+.kp-deck-mount input { accent-color: #9ccf9c; margin: 0; }
+.kp-deck-mount .tag { font-size: 8px; color: #6f6f7d; margin-left: auto; }
+
+.kp-deck-say { font-size: 10px; color: #6f6f7d; line-height: 1.5; }
+.kp-deck-say.ok { color: #9ccf9c; }
+.kp-deck-say.err { color: #d88a8a; }
+
+@media print { .kp-deck { display: none; } }

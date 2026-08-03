@@ -1,0 +1,1509 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>KP demo: INBOX + CUSTOMER.REC (instrument panel)</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=VT323&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" />
+<link rel="stylesheet" href="../_shared/kp.css" />
+<link rel="stylesheet" href="../_shared/system.css" />
+<style>
+/* INBOX + CUSTOMER.REC rebuilt as a KP/OS v3 instrument panel
+ * (cycle ux-2026-07-31-inbox-v3, spec item inbox-v3-customer-rec).
+ *
+ * The system is ui-demos/RULINGS.md; the reference implementation is
+ * ui-demos/loadout-eva/index.html. The role tokens, the six glass layers,
+ * the true-resolution stage rig and the load-choreography helpers below are
+ * COPIED from it rather than re-derived, per law 9.
+ *
+ * What this page decides, in one line each:
+ *  1. GLANCE ORDER. The shipped window has two focal candidates (the DAY
+ *     numeral and the dossier). They are resolved by STATE, not by fighting:
+ *     with no ticket open the DAY numeral is the hero; the moment a ticket
+ *     opens it demotes to a masthead chip and DOMINANT ROUTINE + THREAT TIER
+ *     take the focal slot. This is a decision surface, and the decision is
+ *     "what am I walking into", not "who is this".
+ *  2. FOOTPRINT. Four decorative blocks are cut outright (see CUTS), which
+ *     pays for everything else staying visible.
+ *  3. TWO STATES. The shipped grow/wide/genie choreography survives,
+ *     re-timed against much lighter content. The idle window is a compact
+ *     460px list; only an open ticket earns the full width.
+ */
+
+/* ---------- ROLE TOKENS: copied verbatim from loadout-eva ---------- */
+:root {
+  --r-struct: var(--ch-dim);
+  --r-line: var(--ch);
+  --r-data: var(--ch-hot);
+  --r-ok: var(--ch);
+  --r-warn: var(--ch);
+  --r-aux: var(--ch);
+  --r-hazard: var(--ch);
+  --r-note: var(--ch-dim);
+  --r-ok-glow: var(--px-glow);
+  --r-warn-glow: var(--px-glow);
+}
+:root[data-scheme="nerv"] {
+  --px-void: #0a0603;
+  --ch: #ff9a1f;
+  --ch2: #c2431a;
+  --ch-hot: #ffe9c4;
+  --r-struct: #a86a22;
+  --r-line: #ff9a1f;
+  --r-data: #ffe9c4;
+  --r-ok: #8dff3a;
+  --r-warn: #ff2a17;
+  --r-aux: #23d3ff;
+  --r-hazard: #d1381a;
+  --r-note: #6ea8ff;
+  --r-ok-glow: color-mix(in srgb, #8dff3a 45%, transparent);
+  --r-warn-glow: color-mix(in srgb, #ff2a17 60%, transparent);
+}
+:root[data-scheme="tokyo"] {
+  --px-void: #16161e;
+  --ch: #7aa2f7;
+  --ch2: #414868;
+  --ch-hot: #c0caf5;
+  --r-struct: #414868;
+  --r-line: #7aa2f7;
+  --r-data: #c0caf5;
+  --r-ok: #9ece6a;
+  --r-warn: #f7768e;
+  --r-aux: #7dcfff;
+  --r-hazard: #ff9e64;
+  --r-note: #bb9af7;
+  --r-ok-glow: color-mix(in srgb, #9ece6a 45%, transparent);
+  --r-warn-glow: color-mix(in srgb, #f7768e 55%, transparent);
+}
+
+body { overflow: auto; display: block; height: auto; min-height: 100%; padding: 26px 16px 40px; }
+
+/* ---------- the stage rig, copied from loadout-eva ---------- */
+
+/* will-change promotes the scaled stage onto its own compositor layer, so
+ * animations inside it sample a stable texture instead of re-rasterizing
+ * tiles every frame; without it the fractional scale left ghost edges
+ * behind the window during the open/close choreography */
+.lo-fit { transform-origin: top left; will-change: transform; }
+.lo-fitwrap { margin: 0 auto; }
+
+.lo-stage {
+  position: relative;
+  overflow: hidden;
+  background: var(--px-void);
+  border: 1px solid var(--ch-faint);
+}
+.lo-warp { position: absolute; inset: 0; display: flex; flex-direction: column; }
+
+.lo-desk {
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-conic-gradient(color-mix(in srgb, var(--ch) 4%, transparent) 0% 25%, transparent 0% 50%),
+    radial-gradient(120% 90% at 50% 0%, color-mix(in srgb, var(--ch) 5%, transparent), transparent 70%);
+  background-size: 8px 8px, auto;
+}
+.lo-deskwrap {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 22px 0 0;
+  min-height: 0;
+}
+.lo-free {
+  position: absolute;
+  top: 30px;
+  bottom: 14px;
+  border: 2px dashed var(--ch-faint);
+  opacity: 0.5;
+  display: flex;
+  align-items: flex-end;
+  padding: 6px 8px;
+  pointer-events: none;
+}
+.lo-free span { font-family: var(--kp-display); font-size: 9px; letter-spacing: 0.12em; color: var(--ch-faint); }
+.lo-free span::before { content: "// "; }
+
+.lo-stage-bar {
+  height: 44px;
+  flex: none;
+  position: relative;
+  background: var(--ch);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+}
+.lo-stage-bar span { font-family: var(--kp-display); font-size: 10px; letter-spacing: 0.14em; color: var(--px-void); }
+.lo-stage-bar i { display: block; width: 10px; height: 10px; background: var(--px-void); opacity: 0.55; }
+.lo-stage-bar .lo-bar-sp { flex: 1; background: none; opacity: 1; }
+
+/* the tube: FLAT and OFF only. CURVED was built, measured and cut by the
+ * reference cycle; RULINGS law 6 says do not rebuild it. */
+.lo-stage.crt-on { border-radius: 18px; }
+.lo-stage.crt-on .lo-glass {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 40;
+  border-radius: 16px / 20px;
+  overflow: hidden;
+}
+.lo-glass > i { position: absolute; inset: 0; display: block; }
+.lo-glass .g-scan {
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.55) 0 1px,
+    rgba(0, 0, 0, 0.12) 1px 2px,
+    rgba(255, 255, 255, 0.03) 2px 3px);
+  mix-blend-mode: multiply;
+  opacity: 0.85;
+}
+.lo-glass .g-mask {
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(255, 0, 0, 0.05) 0 1px,
+    rgba(0, 255, 0, 0.05) 1px 2px,
+    rgba(0, 0, 255, 0.05) 2px 3px);
+  mix-blend-mode: screen;
+  opacity: 0.7;
+}
+.lo-glass .g-bloom {
+  background: radial-gradient(130% 95% at 50% 42%, var(--px-glow) 0%, transparent 62%);
+  opacity: 0.14;
+  mix-blend-mode: screen;
+}
+.lo-glass .g-spec {
+  background:
+    radial-gradient(58% 42% at 26% 14%, rgba(255, 255, 255, 0.11) 0%, transparent 70%),
+    linear-gradient(163deg, rgba(255, 255, 255, 0.055) 0%, transparent 34%);
+  mix-blend-mode: screen;
+}
+.lo-glass .g-vig {
+  background:
+    radial-gradient(102% 86% at 50% 48%, transparent 52%, rgba(0, 0, 0, 0.55) 82%, rgba(0, 0, 0, 0.92) 100%);
+  box-shadow:
+    inset 0 0 46px 12px rgba(0, 0, 0, 0.75),
+    inset 0 0 130px 40px rgba(0, 0, 0, 0.45);
+}
+.lo-glass .g-bezel {
+  border-radius: 16px / 20px;
+  box-shadow:
+    inset 0 0 0 3px rgba(0, 0, 0, 0.9),
+    inset 0 2px 2px 3px rgba(255, 255, 255, 0.07),
+    inset 0 -3px 3px 3px rgba(0, 0, 0, 0.6);
+}
+
+/* ---------- the window frame ---------- */
+
+.term {
+  width: var(--ib-win, 940px);
+  flex: none;
+  border: 3px solid var(--r-hazard);
+  background: var(--px-void);
+  position: relative;
+  z-index: 5;
+  /* box-shadow, NOT filter drop-shadow: the window is an opaque rect so the
+   * two render identically, but the filter forced the whole subtree onto a
+   * rasterized layer that re-blurred on every width step, which is where
+   * the edge ghosting during the open/close choreography came from */
+  box-shadow:
+    9px 9px 0 rgba(0, 0, 0, 0.8),
+    0 0 26px color-mix(in srgb, var(--ch) 25%, transparent);
+  /* the content inside is laid out at its FINAL width the moment the state
+   * flips (see setWin), so while the frame's width is still stepping it
+   * simply clips over already-settled content: no mid-flight rewrap */
+  overflow: hidden;
+  /* the width axis of the open/close choreography. steps(4), one shot. */
+  transition: width 200ms steps(4);
+}
+.term-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--ch);
+  padding: 7px 12px 7px 14px;
+}
+.term-bar h1 { font-family: var(--kp-display); font-size: 13px; letter-spacing: 0.16em; color: var(--px-void); font-weight: 400; }
+.term-glyphs { display: flex; gap: 7px; align-items: center; }
+.term-glyphs i { display: block; background: var(--px-void); }
+.term-glyphs i:nth-child(1) { width: 11px; height: 3px; margin-top: 9px; }
+.term-glyphs i:nth-child(2) { width: 11px; height: 11px; background: transparent; border: 3px solid var(--px-void); }
+.term-glyphs i:nth-child(3) { width: 11px; height: 11px; }
+
+.term-body { position: relative; padding: 12px 14px; }
+.term-body::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: repeating-conic-gradient(color-mix(in srgb, var(--ch) 5%, transparent) 0% 25%, transparent 0% 50%);
+  background-size: 4px 4px;
+}
+.term-body > * { position: relative; }
+
+/* ---------- the container that drives every size ---------- */
+
+.ib-eva { container-type: inline-size; container-name: ib; }
+
+.ib-grid {
+  display: grid;
+  gap: 10px 12px;
+  grid-template-columns: 1fr;
+  grid-template-areas: "mast" "list" "foot";
+  /* cqi, never vw: a tiled window scales to ITS tile. cqi inside a custom
+   * property resolves at the USE SITE, so a token used inside .ib-pane
+   * (its own container) lands on the pane's width, not the window's. */
+  --ib-fs-body: clamp(19px, calc(1cqi + 17px), 21px);
+  --ib-fs-label: clamp(9px, calc(0.6cqi + 8px), 11px);
+  --ib-fs-pill: clamp(9px, calc(0.5cqi + 8.5px), 10.5px);
+  --ib-fs-tickl: clamp(8px, calc(0.4cqi + 7.5px), 9px);
+  --ib-fs-tickv: clamp(12px, calc(0.8cqi + 10px), 14px);
+  --ib-fs-day: clamp(40px, 11cqi, 72px);
+  --ib-fs-dominant: clamp(46px, 16cqi, 72px);
+}
+
+/* ---------- Z1 masthead ---------- */
+
+.ib-mast {
+  grid-area: mast;
+  border: 3px solid var(--r-struct);
+  background: color-mix(in srgb, var(--ch) 4%, var(--px-void));
+  padding: 5px 10px 6px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 8px 14px;
+}
+.ib-mast-l { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.ib-eyebrow { font-family: var(--kp-display); font-size: var(--ib-fs-label); letter-spacing: 0.18em; color: var(--r-note); }
+.ib-dayline { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+
+/* the LIST state's focal element. Demotes to a chip the moment a ticket
+ * opens: a handoff, not a shrink-everything move. */
+.ib-day {
+  font-family: var(--kp-display);
+  font-size: var(--ib-fs-day);
+  line-height: 0.84;
+  color: var(--r-data);
+  text-shadow: 0 0 20px var(--px-glow);
+  font-variant-numeric: tabular-nums;
+}
+.ib-dayunit { font-family: var(--kp-display); font-size: var(--ib-fs-label); letter-spacing: 0.16em; color: var(--r-note); }
+.ib-line { font-family: var(--kp-term); font-size: var(--ib-fs-body); line-height: 1.15; color: var(--ch); }
+.kp-chip-pct span { color: var(--r-note); }
+
+.ib-pouch { display: inline-flex; align-items: center; gap: 4px; }
+.ib-pouch { gap: 3px; }
+.ib-pouch > span { font-family: var(--kp-display); font-size: 8px; letter-spacing: 0.08em; color: var(--r-note); }
+
+/* CARD state: the day numeral becomes an ordinary chip */
+.ib-grid[data-state="card"] .ib-day { font-family: var(--kp-mono); font-size: var(--ib-fs-tickv); font-weight: 600; line-height: 1.2; color: var(--ch-hot); text-shadow: none; }
+.ib-grid[data-state="card"] .ib-daywrap { border: 2px solid var(--ch-faint); padding: 2px 7px 3px; }
+
+/* ---------- Z2 the ticket list ---------- */
+
+.ib-tickets { grid-area: list; align-self: start; display: flex; flex-direction: column; gap: 7px; min-width: 0; }
+
+.ib-div { display: flex; align-items: center; gap: 9px; }
+.ib-div i { flex: 1; height: 8px; background: repeating-linear-gradient(45deg, var(--r-hazard) 0 3px, transparent 3px 7px); }
+.ib-div span { font-family: var(--kp-display); font-size: var(--ib-fs-label); letter-spacing: 0.2em; color: var(--r-note); flex: none; }
+
+/* grid, not flex, so grid-auto-rows sizes EVERY row to the tallest: a
+ * CLEARED ticket and a three-line subject occupy exactly the same room,
+ * which is the equal-footprint law measured rather than asserted */
+.ib-list { display: grid; grid-auto-rows: 1fr; gap: 6px; }
+
+.ib-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+  width: 100%;
+  min-height: 68px;
+  padding: 8px 10px;
+  background: color-mix(in srgb, var(--ch) 3%, var(--px-void));
+  border: 2px solid var(--r-struct);
+  color: var(--ch);
+}
+.ib-item:hover:not(:disabled) { border-color: var(--ch); }
+/* solid, not dashed: a dashed faint edge read as a visibly narrower box
+ * than its solid siblings (the DAY 7 cleared ticket sits at the TOP of the
+ * list), and the equal-footprint law is about the RENDERED bounds, not just
+ * the box model. Done-ness keeps its other channels: faint ink, the
+ * strike-through, and the CLEARED tag. */
+.ib-item:disabled { cursor: not-allowed; border-color: var(--ch-faint); }
+.ib-subj { font-family: var(--kp-term); font-size: var(--ib-fs-body); line-height: 1.06; color: var(--ch); }
+.ib-item:disabled .ib-subj { color: var(--ch-faint); text-decoration: line-through; }
+.ib-meta { display: flex; align-items: center; gap: 9px; margin-top: auto; }
+.ib-pay { margin-left: auto; font-family: var(--kp-mono); font-size: var(--ib-fs-tickv); font-weight: 600; color: var(--r-data); }
+/* NOMINAL: a resolved ticket, not an alarm */
+.ib-cleared { margin-left: auto; font-family: var(--kp-display); font-size: var(--ib-fs-pill); letter-spacing: 0.12em; color: var(--r-ok); }
+
+/* the open ticket: inverse-video fill AND a corner-tick reticle, the same
+ * two-channel treatment the reference gives its live mode */
+.ib-item.sel { background: color-mix(in srgb, var(--r-ok) 14%, var(--px-void)); border-color: var(--r-ok); }
+/* the reticles sit flush with the border's outer edge, never outside it:
+ * at -4px they widened the open row's rendered bounds by 4px a side, which
+ * made every OTHER row (the top one, in both default casts) read narrower */
+.ib-item.sel::before, .ib-item.sel::after { content: ""; position: absolute; width: 9px; height: 9px; }
+.ib-item.sel::before { top: -2px; left: -2px; border-top: 3px solid var(--r-ok); border-left: 3px solid var(--r-ok); }
+.ib-item.sel::after { bottom: -2px; right: -2px; border-bottom: 3px solid var(--r-ok); border-right: 3px solid var(--r-ok); }
+
+.kp-pip-diamond { background: var(--ch-faint); }
+.kp-pip-diamond.kp-pip-on { background: var(--r-line); box-shadow: 0 0 6px var(--px-glow); }
+.ib-tierlabel { font-family: var(--kp-display); font-size: var(--ib-fs-tickl); letter-spacing: 0.12em; color: var(--r-note); }
+
+/* ---------- Z3 the record pane: the CARD state's focal column ---------- */
+
+.ib-pane {
+  grid-area: pane;
+  container-type: inline-size;
+  container-name: pane;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+.ib-grid[data-state="list"] .ib-pane { display: none; }
+
+.ib-focal {
+  position: relative;
+  border: 1px solid var(--ch-faint);
+  background: color-mix(in srgb, var(--ch) 3%, var(--px-void));
+  padding: 8px 12px 9px;
+}
+/* heavy corner brackets, scoped to the FOCAL panel only: applying them
+ * everywhere destroys the emphasis they exist to create (law 4) */
+.ib-bracket, .ib-bracket > i { position: absolute; pointer-events: none; }
+.ib-bracket { inset: -1px; }
+.ib-bracket > i { inset: 0; }
+.ib-bracket::before, .ib-bracket::after,
+.ib-bracket > i::before, .ib-bracket > i::after { content: ""; position: absolute; width: 24px; height: 24px; }
+.ib-bracket::before { top: 0; left: 0; border-top: 4px solid var(--r-hazard); border-left: 4px solid var(--r-hazard); }
+.ib-bracket::after { top: 0; right: 0; border-top: 4px solid var(--r-hazard); border-right: 4px solid var(--r-hazard); }
+.ib-bracket > i::before { bottom: 0; left: 0; border-bottom: 4px solid var(--r-hazard); border-left: 4px solid var(--r-hazard); }
+.ib-bracket > i::after { bottom: 0; right: 0; border-bottom: 4px solid var(--r-hazard); border-right: 4px solid var(--r-hazard); }
+
+/* THE FOCAL ELEMENT. Its ramp is capped by a fit rule as well, because
+ * "ARM: SIPHON" is 11 characters and the ramp alone would overflow the
+ * pane; --len is written by JS. The floor still clears law 2's 2.2x. */
+.ib-dominant {
+  display: block;
+  font-family: var(--kp-display);
+  font-size: min(var(--ib-fs-dominant), calc((100cqi - 30px) / (var(--len, 8) * 0.82)));
+  line-height: 0.9;
+  letter-spacing: 0.02em;
+  color: var(--r-data);
+  text-shadow: 0 0 22px var(--px-glow);
+  margin: 2px 0 1px;
+  white-space: nowrap;
+}
+.ib-domlabel { font-family: var(--kp-display); font-size: var(--ib-fs-label); letter-spacing: 0.16em; color: var(--r-note); }
+.ib-tierrow { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+.ib-tierval { font-family: var(--kp-mono); font-size: var(--ib-fs-tickv); font-weight: 600; color: var(--ch); }
+/* the tactical hint the glance order exists to serve, so it stays visible */
+.ib-tell { font-family: var(--kp-term); font-size: var(--ib-fs-body); line-height: 1.08; color: var(--ch); margin-top: 7px; min-height: 2.16em; }
+
+/* ---------- the verdict band ---------- */
+
+.ib-verdict { display: flex; flex-direction: column; align-items: stretch; gap: 6px; min-width: 0; height: 164px; }
+/* the action stack shares the prints' row, so its buttons have to fit the
+ * 136px this column gets at the narrowest supported window (860px). At the
+ * shared .kp-btn2 padding they wrapped to two lines and stretched the row
+ * to 208px, which is where the laptop blew its desk. */
+.ib-verdict .kp-btn2 { flex: none; text-align: center; font-size: 10px; padding: 9px 10px; white-space: nowrap; }
+.ib-rate { display: flex; align-items: baseline; justify-content: space-between; gap: 6px; margin-top: auto; }
+.ib-rate span { font-family: var(--kp-display); font-size: var(--ib-fs-tickl); letter-spacing: 0.14em; color: var(--r-note); }
+.ib-rate em { font-style: normal; font-family: var(--kp-display); font-size: clamp(18px, 3.4cqi, 26px); color: var(--r-data); text-shadow: 0 0 14px var(--px-glow); }
+
+/* ---------- the support band ---------- */
+
+/* USER REVIEW 2026-08-01: "I'm not a fan of the image layout, the device
+ * image gets very cut off. Maybe they are placed side by side at the bottom
+ * of the entry? Just make sure there's enough vertical room for the images
+ * to not get cropped." Both prints are now full 160x160 squares side by
+ * side on the pane's bottom row, and the device band that was cropping them
+ * to 64px is gone.
+ *
+ * The row they sit on is SHARED with the action stack, which is what pays
+ * for the extra height: DIVE / CONFIGURE KIT / BACK / TICKET RATE moved out
+ * of a row of their own and into the space beside the prints, so the taller
+ * images cost 15px rather than 50. A row you do not share is a row you pay
+ * for in full. */
+.ib-support { display: flex; flex-direction: column; gap: 7px; }
+.ib-bottom { display: grid; grid-template-columns: 336px minmax(0, 1fr); gap: 10px; align-items: start; }
+.ib-cells { display: flex; gap: 8px; }
+
+/* 1:1, cropped never downscaled. The PNGs are re-dithered from the shipped
+ * roster raws at exactly 160x160 by pipeline/tools/dither.py, so the cell
+ * needs no CSS scaling at all and one dither dot is one CSS pixel. */
+.ib-cell {
+  position: relative;
+  width: 164px;
+  height: 164px;
+  flex: none;
+  overflow: hidden;
+  /* USER REVIEW 2026-08-01: the prints must not be the ONLY bright blue on
+   * the surface, so the frame carries the same --r-aux signal class as the
+   * imagery it holds. Camera chrome wears the camera's colour. */
+  border: 2px solid var(--r-aux);
+  background: var(--px-void);
+}
+.ib-cell img { position: absolute; top: 0; left: 0; display: block; image-rendering: pixelated; }
+.ib-cell .tint {
+  position: absolute;
+  inset: 2px;
+  background:
+    repeating-conic-gradient(rgba(0, 0, 0, 0.22) 0% 25%, transparent 0% 50%),
+    var(--r-aux);
+  background-size: 2px 2px, auto;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+.ib-cell[data-treat="true"] .tint, .ib-cell[data-treat="color"] .tint { display: none; }
+.ib-celltag {
+  position: absolute;
+  bottom: 3px;
+  left: 3px;
+  font-family: var(--kp-display);
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  padding: 2px 4px;
+  background: var(--px-void);
+  color: var(--r-note);
+}
+/* equal footprint again: a roster gap renders a plate of exactly the same
+ * size, so the row never reflows on art coverage */
+.ib-cell.ib-nofile {
+  border-style: dashed;
+  border-color: var(--ch-faint);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-image: repeating-conic-gradient(color-mix(in srgb, var(--ch) 8%, transparent) 0% 25%, transparent 0% 50%);
+  background-size: 6px 6px;
+}
+.ib-cell.ib-nofile b { font-family: var(--kp-display); font-size: 9px; letter-spacing: 0.14em; color: var(--r-note); font-weight: 400; text-align: center; line-height: 1.6; }
+
+.ib-ticks { display: grid; grid-template-columns: 1fr 1.8fr 1fr 1.2fr; gap: 4px 14px; }
+.ib-tick { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.ib-tick span { font-family: var(--kp-display); font-size: var(--ib-fs-tickl); letter-spacing: 0.12em; color: var(--r-note); }
+.ib-tick em { font-style: normal; font-family: var(--kp-term); font-size: var(--ib-fs-body); line-height: 1.02; color: var(--ch); }
+@container pane (max-width: 470px) { .ib-ticks { grid-template-columns: 1fr 1.8fr; } }
+
+/* THE ONE ALARM ON THIS SURFACE. --r-warn is used here and nowhere else.
+ * Two non-colour channels: the row floods inverse video permanently (the
+ * shipped danger idiom, which survives a colourblind reader and the CRT
+ * layer alike), and it MOVES on reveal.
+ *
+ * Deviation from the spec, recorded in NOTES.md: the spec asked for a
+ * continuous blink. DAY_CONFIGS gives headStart >= 1 on seven of the ten
+ * days, so a permanent strobe here is ambient motion, which is exactly the
+ * habituation the reference cycle's gate warned about. The blink is
+ * therefore a 3-cycle BURST on reveal and then the row rests on its static
+ * inverse flood. Motion still means "something just happened". */
+.ib-warn {
+  position: relative;
+  align-self: start;
+  max-width: 100%;
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+  padding: 5px 9px 6px;
+  background: var(--r-warn);
+}
+.ib-warn span { font-family: var(--kp-display); font-size: var(--ib-fs-label); letter-spacing: 0.16em; color: var(--px-void); flex: none; }
+.ib-warn em { font-style: normal; font-family: var(--kp-term); font-size: var(--ib-fs-body); line-height: 1.05; color: var(--px-void); }
+.ib-riskflash {
+  position: absolute;
+  inset: -2px;
+  background: var(--r-warn);
+  mix-blend-mode: difference;
+  opacity: 0;
+  pointer-events: none;
+  will-change: opacity;
+}
+/* compositor-only: opacity on a promoted layer, never background/box-shadow */
+.ib-warn.reveal .ib-riskflash { animation: ib-risk-blink 1.2s steps(2) 3; }
+@keyframes ib-risk-blink { 0%, 100% { opacity: 0; } 50% { opacity: 1; } }
+
+.ib-quote {
+  font-family: var(--kp-term);
+  font-size: var(--ib-fs-body);
+  line-height: 1.08;
+  color: var(--ch-hot);
+  padding: 6px 9px 7px;
+  border: 1px solid var(--ch-faint);
+  background: color-mix(in srgb, var(--ch) 3%, var(--px-void));
+}
+.ib-grid[data-state="list"] .ib-quote { display: none; }
+.ib-quote b { font-family: var(--kp-display); font-size: var(--ib-fs-tickl); letter-spacing: 0.16em; color: var(--r-note); font-weight: 400; display: block; margin-bottom: 2px; }
+
+/* ---------- Z5 footline ---------- */
+
+/* the run chips live on the footline, not the masthead: in the masthead
+ * they wrapped onto their own row at the laptop width and cost 42px, and
+ * they are ambient in both states anyway */
+.ib-foot {
+  grid-area: foot;
+  border: 2px solid var(--ch-faint);
+  padding: 3px 8px 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px 8px;
+  flex-wrap: wrap;
+}
+.ib-foot .kp-chip-pct { padding: 3px 7px; gap: 6px; }
+.ib-foot .kp-chip-pct em { font-size: 12px; }
+.ib-hint {
+  margin-left: auto;
+  font-family: var(--kp-display);
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  line-height: 1.1;
+  color: var(--ch-dim);
+}
+
+/* ================= WIDE TIER =================
+ * One binary breakpoint at 700px of content inline-size, so all three
+ * supported viewports render the SAME arrangement (law 3). The list column
+ * SHARES the pane's row rather than taking one of its own: a row you do not
+ * share is a row you pay for in full. */
+
+@container ib (min-width: 700px) {
+  .ib-grid[data-state="card"] {
+    grid-template-columns: 340px 1fr;
+    grid-template-areas:
+      "mast mast"
+      "list pane"
+      "foot foot";
+  }
+}
+
+/* ================= NARROW TIER: a tiling fallback ================= */
+
+@container ib (max-width: 699.98px) {
+  .ib-grid[data-state="card"] { grid-template-areas: "mast" "pane" "list" "foot"; }
+  .ib-bottom { grid-template-columns: 1fr; }
+  .ib-cells { justify-content: center; }
+}
+
+/* ---------- open / close choreography ---------- */
+
+.ib-pane.grow { animation: ib-genie 210ms steps(6); }
+@keyframes ib-genie {
+  from { transform: scaleY(0.2); opacity: 0.2; }
+  to { transform: scaleY(1); opacity: 1; }
+}
+.ib-pane.shrink { animation: ib-shrink 180ms steps(5) forwards; }
+@keyframes ib-shrink {
+  from { transform: scaleY(1); opacity: 1; }
+  to { transform: scaleY(0.2); opacity: 0; }
+}
+
+/* ---------- the demo rig's own readouts ---------- */
+
+.rig { top: auto; right: auto; bottom: 12px; left: 12px; }
+.rig em { font-style: normal; color: #ffd75e; }
+.rig .rig-meas { font-family: var(--kp-mono); font-size: 10px; color: #999; }
+.rig .rig-over { color: #ff6b6b; }
+
+@media (prefers-reduced-motion: reduce) {
+  .term { transition: none; }
+  .ib-pane.grow, .ib-pane.shrink { animation: none; }
+  .ib-warn.reveal .ib-riskflash { animation: none; opacity: 0; }
+}
+</style>
+</head>
+<body>
+
+<div class="lo-fitwrap" id="fitwrap">
+  <div class="lo-fit" id="fit">
+    <div class="lo-stage crt-on" id="stage">
+      <div class="lo-warp">
+        <div class="lo-desk" aria-hidden="true"></div>
+        <div class="lo-deskwrap">
+          <div class="lo-free" id="free" aria-hidden="true"><span id="freelabel">FREE DESK</span></div>
+
+          <div class="term" id="term">
+            <header class="term-bar">
+              <h1>INBOX.SYS</h1>
+              <span class="term-glyphs"><i></i><i></i><i></i></span>
+            </header>
+            <div class="term-body">
+              <div class="ib-eva" id="eva">
+                <div class="ib-grid" id="grid" data-state="card">
+
+                  <!-- Z1 MASTHEAD -->
+                  <div class="ib-mast">
+                    <div class="ib-mast-l">
+                      <span class="ib-eyebrow" id="eyebrow">INBOX.SYS // DAY LOOP</span>
+                      <div class="ib-dayline">
+                        <span class="ib-dayunit">DAY</span>
+                        <span class="ib-daywrap"><span class="ib-day" id="dayval">0</span></span>
+                        <span class="ib-dayunit" id="dayunit">OF 10</span>
+                        <span class="ib-line" id="mastline"></span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Z2 THE TICKET LIST -->
+                  <aside class="ib-tickets">
+                    <div class="ib-div"><span>// INBOX</span><i></i></div>
+                    <div class="ib-list" id="list"></div>
+                    <div class="ib-quote" id="quoteblock"><b>INTAKE</b><span id="quote"></span></div>
+                  </aside>
+
+                  <!-- Z3 THE RECORD PANE -->
+                  <section class="ib-pane" id="pane">
+                    <div class="ib-focal">
+                      <i class="ib-bracket"><i></i></i>
+                      <span class="ib-eyebrow" id="recline">// CUSTOMER.REC</span>
+                      <span class="ib-dominant" id="dominant">REDIRECT</span>
+                      <span class="ib-domlabel">DOMINANT ROUTINE</span>
+                      <div class="ib-tierrow">
+                        <span class="ib-tierlabel">THREAT TIER</span>
+                        <span class="kp-pip-row" id="tierpips"></span>
+                        <span class="ib-tierval" id="tierval">T0 OF 5</span>
+                      </div>
+                      <p class="ib-tell" id="tell"></p>
+                    </div>
+
+                    <div class="ib-support">
+                      <div class="ib-ticks">
+                        <div class="ib-tick"><span>NAME</span><em id="t-name"></em></div>
+                        <div class="ib-tick ib-tick-wide"><span>DEVICE</span><em id="t-device"></em></div>
+                        <div class="ib-tick"><span>GRID</span><em id="t-grid"></em></div>
+                        <div class="ib-tick"><span>INTRUSION RAM</span><em id="t-ram"></em></div>
+                      </div>
+                      <div class="ib-warn" id="warn" hidden>
+                        <span>WARNING</span><em id="warntext"></em>
+                        <i class="ib-riskflash" aria-hidden="true"></i>
+                      </div>
+                      <div class="ib-bottom">
+                        <div class="ib-cells" id="cells"></div>
+                        <div class="ib-verdict">
+                          <button type="button" class="kp-btn2 kp-btn2-signal" id="dive">DIVE</button>
+                          <button type="button" class="kp-btn2" id="cfg">CONFIGURE KIT</button>
+                          <button type="button" class="kp-btn2" id="back">BACK</button>
+                          <span class="ib-rate"><span>TICKET RATE</span><em id="rate">0 CR</em></span>
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+
+                  <!-- Z5 FOOTLINE: the run's ambient state -->
+                  <div class="ib-foot" id="foot">
+                    <span class="kp-chip-pct"><span>STRAIN</span><em id="c-strain">0</em></span>
+                    <span class="kp-chip-pct"><span>CR</span><em id="c-cred">0</em></span>
+                    <span class="kp-chip-pct"><span>RAM</span><em id="c-ram">0</em></span>
+                    <span class="kp-chip-pct"><span>KIT</span><em id="c-kit">S1/A1/D1</em></span>
+                    <span class="ib-pouch" id="pouch"></span>
+                    <span class="ib-hint">UP, DOWN: SELECT | CLICK AGAIN: FILE AWAY</span>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="lo-stage-bar">
+          <span>KP/OS</span>
+          <i></i>
+          <span>INBOX.SYS</span>
+          <span class="lo-bar-sp"></span>
+          <span id="barclock">22:41</span>
+        </div>
+      </div>
+
+      <div class="lo-glass" id="glass" aria-hidden="true">
+        <i class="g-scan"></i>
+        <i class="g-mask"></i>
+        <i class="g-bloom"></i>
+        <i class="g-spec"></i>
+        <i class="g-vig"></i>
+        <i class="g-bezel"></i>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="rig">
+  <strong>DEMO RIG</strong>
+  <span>Scheme</span>
+  <div class="rig-row" id="schemerow"></div>
+  <span>CRT</span>
+  <div class="rig-row" id="crtrow"></div>
+  <span>Image</span>
+  <div class="rig-row" id="treatrow"></div>
+  <span>Viewport</span>
+  <div class="rig-row" id="vprow"></div>
+  <span>Run state</span>
+  <div class="rig-row" id="staterow"></div>
+  <span>Window state</span>
+  <div class="rig-row" id="winrow"></div>
+  <div class="rig-row"><button id="replay">REPLAY LOAD</button></div>
+  <span class="rig-meas" id="meas"></span>
+  <span>INBOX and the CUSTOMER.REC card as one instrument panel. The glance order is resolved by STATE: with no ticket open the DAY numeral is the hero; opening one demotes it to a chip and hands the focal slot to DOMINANT ROUTINE plus THREAT TIER, because the decision this surface exists for is what you are walking into. RISK is the head-start WARNING and nothing else: it floods inverse video permanently and blinks a three cycle burst on reveal. Every image is a 1:1 re-dither of the shipped roster art at the cell's exact size, never a downscale.</span>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ================= shipped data, transcribed =================
+   * customers.ts / arc.ts / kit.ts / inbox.tsx, copied so the study's
+   * numbers and copy can never drift from the game. */
+
+  var FINAL_DAY = 10;
+
+  /* arc.ts DAY_CONFIGS, the fields this surface reads */
+  var DAY_CONFIGS = {
+    1: { grid: [9, 7], oppRam: 6, headStart: 0 },
+    4: { grid: [9, 9], oppRam: 6, headStart: 2 },
+    7: { grid: [11, 11], oppRam: 7, headStart: 3 }
+  };
+
+  /* arc.ts jobPay */
+  function jobPay(tier) { return 40 + 25 * tier; }
+
+  /* kit.ts MODE_LABEL */
+  var MODE_LABEL = {
+    redirect: "REDIRECT", armHalt: "ARM: HALT", armSiphon: "ARM: SIPHON",
+    purge: "PURGE", lock: "LOCK", ward: "WARD"
+  };
+
+  /* kit.ts MODE_TELL */
+  var MODE_TELL = {
+    redirect: "Diagnostic flags rerouting activity. Your junctions will get twisted off true.",
+    armHalt: "Diagnostic flags halt traps. One wrong claim and you lose a whole turn. Scan early.",
+    armSiphon: "Diagnostic flags siphon traps. It wants your RAM more than your route. Scan early.",
+    purge: "Diagnostic flags self-cleaning routines. Traps you plant will not stick around.",
+    lock: "Diagnostic flags clamp routines. Junctions you need will freeze solid.",
+    ward: "Diagnostic flags warding fields. Whole approaches will refuse your traps and shrug off your redirects."
+  };
+
+  /* inbox.tsx SUBJECTS, Rhea's gate-cleared subject lines */
+  var SUBJECTS = {
+    "juno-vex": "RE: Hexlight handheld. Juno swears a ghost is beating her high score.",
+    "sable-okonkwo": "RE: Kestrel courier drone. Her routes keep rewriting themselves mid flight.",
+    "aldous-wick": "RE: Meridian ledger terminal. Aldous again. The books are biting back.",
+    "dex-marlowe": "RE: Nocta cram deck. His homework keeps rerouting to the arcade. Convenient.",
+    "bram-hollander": "RE: Copperline register. His own till locked him out after eleven years.",
+    "june-aksoy": "RE: Halcyon clinic gateway. Wards keep locking at shift change. Keep it quiet."
+  };
+
+  /* customers.ts, the six this study shows. art:null is a roster gap and
+   * renders the NO PRINT ON FILE plate at the identical footprint. */
+  var CUSTOMERS = {
+    "juno-vex": {
+      name: "Juno Vex", device: "Hexlight arcade handheld", art: "juno",
+      quotes: [
+        "There is a second player in there. No cart, no link, and it keeps setting records I cannot touch.",
+        "It runs faster every boot. Yesterday the menu loaded before I pressed anything. That is not a feature."
+      ]
+    },
+    "sable-okonkwo": {
+      name: "Sable Okonkwo", device: "Kestrel courier drone", art: "sable",
+      quotes: [
+        "Something in her nav keeps rewriting my routes. She flew a package to the wrong district twice and looked proud of it.",
+        "I lock the flight plan, it unlocks it. I set a waypoint, it moves it. Get it out of my drone."
+      ]
+    },
+    "aldous-wick": {
+      name: "Aldous Wick", device: "Meridian ledger terminal", art: "aldous",
+      quotes: [
+        "Every entry I touch costs me twice. It leaves little surprises in my books and waits for me to step on them.",
+        "Forty years of accounts in that terminal, and now the machine bites the hand that files."
+      ]
+    },
+    "dex-marlowe": {
+      name: "Dex Marlowe", device: "Nocta cram deck", art: "dex",
+      quotes: [
+        "It undoes my homework. I finish a page, it reroutes the file somewhere I cannot follow.",
+        "My study plan keeps pointing at the arcade. I did not set that. I would have, but I did not."
+      ]
+    },
+    "bram-hollander": {
+      name: "Bram Hollander", device: "Copperline register hub", art: null,
+      quotes: [
+        "My own register shields the till from me. Me. I have owned that machine for eleven years.",
+        "It walls off a different drawer every day. Today it is the receipts. Tomorrow, who knows, the front door."
+      ]
+    },
+    "june-aksoy": {
+      name: "June Aksoy", device: "Halcyon clinic gateway", art: null,
+      quotes: [
+        "The gateway walls off a ward at a time. Last night it was pediatrics. Please be fast, and please be quiet about it.",
+        "It locks the charts the second a shift changes. Like it knows when we are fewest."
+      ]
+    }
+  };
+
+  /* the shipped day line, verbatim from inbox.tsx's day strip */
+  var DAY_LINE = "Three tickets. Strain is shared across all of them. Pick your order.";
+
+  /* ================= the three run states =================
+   * Every customer/tier pair is checked against customers.ts `tiers` and
+   * arc.ts jobTiers for its day. */
+
+  var STATES = {
+    day4: {
+      label: "DAY 4 FULL SLATE",
+      day: 4, credits: 185, strain: 78, ram: 6,
+      kit: "S2/A1/D2", pouch: [0x5, 0x3, 0xf],
+      open: 2,
+      jobs: [
+        { id: "juno-vex", tier: 2, dominant: "armSiphon", quote: 0, done: false },
+        { id: "aldous-wick", tier: 2, dominant: "armHalt", quote: 1, done: false },
+        { id: "dex-marlowe", tier: 3, dominant: "redirect", quote: 0, done: false }
+      ]
+    },
+    day1: {
+      label: "DAY 1 OPENER",
+      day: 1, credits: 0, strain: 100, ram: 5,
+      kit: "S1/A1/D1", pouch: [],
+      open: 0,
+      jobs: [
+        { id: "juno-vex", tier: 1, dominant: "armSiphon", quote: 0, done: false },
+        { id: "sable-okonkwo", tier: 1, dominant: "redirect", quote: 0, done: false },
+        { id: "aldous-wick", tier: 1, dominant: "armHalt", quote: 0, done: false }
+      ]
+    },
+    /* the late case: a WARNING is live, one ticket is already filed, and the
+     * open record is a customer with no print on file, so the alarm, the
+     * equal-footprint cleared row and the art fallback are all reviewable
+     * rather than described */
+    day7: {
+      label: "DAY 7 LATE",
+      day: 7, credits: 340, strain: 52, ram: 7,
+      kit: "S3/A2/D2", pouch: [0x3, 0x7],
+      open: 2,
+      jobs: [
+        { id: "bram-hollander", tier: 3, dominant: "lock", quote: 1, done: true },
+        { id: "aldous-wick", tier: 3, dominant: "armHalt", quote: 1, done: false },
+        { id: "june-aksoy", tier: 4, dominant: "ward", quote: 0, done: false }
+      ]
+    }
+  };
+
+  var S = STATES.day4;
+  var stateId = "day4";
+  var openIndex = 0;
+  var winState = "card";
+
+  /* ================= helpers, copied from loadout-eva ================= */
+
+  var REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var timers = [];
+  function later(fn, ms) {
+    if (REDUCED) { fn(); return; }
+    timers.push(setTimeout(fn, ms));
+  }
+  function clearTimers() {
+    timers.forEach(function (t) { clearTimeout(t); clearInterval(t); });
+    timers = [];
+  }
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+  function $(id) { return document.getElementById(id); }
+
+  function countUp(node, target, delay, interval) {
+    if (REDUCED) { node.textContent = String(target); return; }
+    node.textContent = "0";
+    var step = Math.max(1, Math.round(target / 22));
+    later(function () {
+      var v = 0;
+      var iv = setInterval(function () {
+        v = Math.min(target, v + step);
+        node.textContent = String(v);
+        if (v >= target) clearInterval(iv);
+      }, interval || 26);
+      timers.push(iv);
+    }, delay);
+  }
+
+  /* a typewriter scoped by a run token, so opening one ticket restarts only
+   * its own fields and never cancels the rest of the sweep */
+  var runTokens = {};
+  function typeIn(node, text, delay, key) {
+    var token = (runTokens[key] = (runTokens[key] || 0) + 1);
+    if (REDUCED) { node.textContent = text; return; }
+    node.textContent = "";
+    later(function () {
+      if (runTokens[key] !== token) return;
+      var i = 0;
+      var iv = setInterval(function () {
+        if (runTokens[key] !== token) { clearInterval(iv); return; }
+        i += 1;
+        node.textContent = text.slice(0, i);
+        if (i >= text.length) clearInterval(iv);
+      }, 6);
+      timers.push(iv);
+    }, delay);
+  }
+
+  /* glyph.ts patchGlyph, DOM for DOM */
+  var SVGNS = "http://www.w3.org/2000/svg";
+  function patchGlyph(mask, size) {
+    var svg = document.createElementNS(SVGNS, "svg");
+    svg.setAttribute("width", String(size));
+    svg.setAttribute("height", String(size));
+    svg.setAttribute("viewBox", "-12 -12 24 24");
+    svg.setAttribute("class", "kp-patch-glyph");
+    svg.setAttribute("aria-hidden", "true");
+    var ends = [[0, -10], [10, 0], [0, 10], [-10, 0]];
+    for (var d = 0; d < 4; d++) {
+      if ((mask & (1 << d)) === 0) continue;
+      var line = document.createElementNS(SVGNS, "line");
+      line.setAttribute("x1", "0"); line.setAttribute("y1", "0");
+      line.setAttribute("x2", String(ends[d][0])); line.setAttribute("y2", String(ends[d][1]));
+      line.setAttribute("class", "kp-pp-arm");
+      line.setAttribute("stroke-width", "3.5");
+      svg.appendChild(line);
+    }
+    var hub = document.createElementNS(SVGNS, "circle");
+    hub.setAttribute("cx", "0"); hub.setAttribute("cy", "0"); hub.setAttribute("r", "3");
+    hub.setAttribute("class", "kp-pp-node");
+    svg.appendChild(hub);
+    return svg;
+  }
+
+  /* ================= sound: minimal WebAudio voices =================
+   * The shipped press / claimTick / inboxGrow / inboxWide / inboxGenie /
+   * inboxFile characters plus the proposal's new ibWarnReveal, approximated
+   * for a standalone page with no sound.ts build. */
+
+  var AC = null;
+  var interacted = false;
+  document.addEventListener("pointerdown", function () { interacted = true; }, true);
+  document.addEventListener("keydown", function () { interacted = true; }, true);
+
+  function blip(o) {
+    if (!interacted) return;
+    try {
+      if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)();
+      if (AC.state === "suspended") AC.resume();
+      var t = AC.currentTime;
+      var src;
+      if (o.type === "noise") {
+        var len = Math.ceil(AC.sampleRate * o.dur);
+        var buf = AC.createBuffer(1, len, AC.sampleRate);
+        var d = buf.getChannelData(0);
+        for (var i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+        src = AC.createBufferSource();
+        src.buffer = buf;
+      } else {
+        src = AC.createOscillator();
+        src.type = o.type;
+        src.frequency.setValueAtTime(o.freq, t);
+        if (o.freq2) src.frequency.setValueAtTime(o.freq2, t + o.jumpAt);
+      }
+      var node = src;
+      if (o.lpf) { var lf = AC.createBiquadFilter(); lf.type = "lowpass"; lf.frequency.value = o.lpf; node.connect(lf); node = lf; }
+      if (o.hpf) { var hf = AC.createBiquadFilter(); hf.type = "highpass"; hf.frequency.value = o.hpf; node.connect(hf); node = hf; }
+      var g = AC.createGain();
+      g.gain.setValueAtTime(o.vol, t);
+      g.gain.exponentialRampToValueAtTime(0.001, t + o.dur);
+      node.connect(g);
+      g.connect(AC.destination);
+      src.start(t);
+      src.stop(t + o.dur + 0.02);
+    } catch (e) { /* sound is never load bearing */ }
+  }
+
+  var SFX = {
+    press: function () { blip({ type: "square", freq: 660, dur: 0.05, vol: 0.16, lpf: 3200 }); },
+    claimTick: function () { blip({ type: "square", freq: 520, freq2: 780, jumpAt: 0.04, dur: 0.13, vol: 0.2, lpf: 3000 }); },
+    inboxGrow: function () { blip({ type: "square", freq: 300, freq2: 420, jumpAt: 0.05, dur: 0.14, vol: 0.13, lpf: 2000 }); },
+    inboxWide: function () { blip({ type: "square", freq: 420, freq2: 540, jumpAt: 0.05, dur: 0.12, vol: 0.12, lpf: 2400 }); },
+    inboxGenie: function () { blip({ type: "noise", dur: 0.1, vol: 0.16, hpf: 1200 }); },
+    inboxFile: function () { blip({ type: "square", freq: 420, freq2: 260, jumpAt: 0.05, dur: 0.14, vol: 0.13, lpf: 1800 }); },
+    /* the new ibWarnReveal: low and tense, layered under the genie only when
+     * this ticket's intrusion is already partway in */
+    ibWarnReveal: function () { blip({ type: "sawtooth", freq: 148, freq2: 104, jumpAt: 0.06, dur: 0.26, vol: 0.2, lpf: 900 }); }
+  };
+
+  /* ================= Z2: the ticket list ================= */
+
+  /* USER REVIEW 2026-08-01: "The animation on initial open, and switching
+   * between items, seems to play twice very awkwardly." Two causes, both
+   * fixed here. First, every open rebuilt the whole list, which replayed all
+   * three rows' staggered slot-in behind the card's own genie. The rows now
+   * animate ONLY on a load sweep, and a selection change just moves a class. */
+  function buildList(animate) {
+    var list = $("list");
+    list.textContent = "";
+    S.jobs.forEach(function (job, i) {
+      var c = CUSTOMERS[job.id];
+      var b = el("button", "ib-item");
+      b.type = "button";
+      if (job.done) b.disabled = true;
+      if (!job.done && winState === "card" && i === openIndex) b.classList.add("sel");
+
+      b.appendChild(el("span", "ib-subj", SUBJECTS[job.id]));
+
+      var meta = el("div", "ib-meta");
+      meta.appendChild(el("span", "ib-tierlabel", "TIER"));
+      var pips = el("span", "kp-pip-row");
+      for (var t = 0; t < 5; t++) {
+        pips.appendChild(el("i", t < job.tier ? "kp-pip-diamond kp-pip-on" : "kp-pip-diamond"));
+      }
+      meta.appendChild(pips);
+      if (job.done) meta.appendChild(el("span", "ib-cleared", "CLEARED"));
+      else meta.appendChild(el("span", "ib-pay", jobPay(job.tier) + " CR"));
+      b.appendChild(meta);
+
+      b.addEventListener("click", function () { toggle(i); });
+
+      if (animate && !REDUCED) {
+        b.classList.add("kp-slot-anim");
+        b.style.animationDelay = (150 + i * 90) + "ms";
+      }
+      list.appendChild(b);
+    });
+  }
+
+  /* selection is a class move, never a rebuild */
+  function markSelection() {
+    var kids = $("list").children;
+    for (var i = 0; i < kids.length; i++) {
+      kids[i].classList.toggle("sel", winState === "card" && i === openIndex && !S.jobs[i].done);
+    }
+  }
+
+  /* ================= Z3: the record pane ================= */
+
+  function buildCells(c) {
+    var cells = $("cells");
+    cells.textContent = "";
+    /* both prints are 160x160, re-dithered from the shipped roster raws at
+     * exactly that size by pipeline/tools/dither.py, so the cell renders
+     * them 1:1 with nothing cropped away by the layout */
+    var SPEC = [["portrait", "SUBJECT"], ["device", "DEVICE"]];
+    SPEC.forEach(function (pair) {
+      var cell = el("div", "ib-cell");
+      if (!c.art) {
+        /* the roster gap. Identical footprint, so the column never reflows
+         * on art coverage; diegetically the file has no photo on record. */
+        cell.classList.add("ib-nofile");
+        var b = el("b");
+        b.appendChild(document.createTextNode("NO " + pair[1]));
+        b.appendChild(document.createElement("br"));
+        b.appendChild(document.createTextNode("ON FILE"));
+        cell.appendChild(b);
+        cells.appendChild(cell);
+        return;
+      }
+      cell.dataset.treat = treatment;
+      var img = document.createElement("img");
+      img.src = "art/rec-" + c.art + "-" + pair[0] + (treatment === "color" ? "-color" : "") + ".png";
+      img.width = 160;
+      img.height = 160;
+      img.alt = "";
+      cell.appendChild(img);
+      cell.appendChild(el("i", "tint"));
+      cell.appendChild(el("span", "ib-celltag", pair[1]));
+      cells.appendChild(cell);
+    });
+  }
+
+  function buildRecord(withReveal) {
+    var job = S.jobs[openIndex];
+    var c = CUSTOMERS[job.id];
+    var day = DAY_CONFIGS[S.day];
+
+    $("recline").textContent = "// CUSTOMER.REC // TICKET " + (openIndex + 1) + " OF " + S.jobs.length;
+
+    var dom = $("dominant");
+    var label = MODE_LABEL[job.dominant];
+    dom.textContent = label;
+    dom.style.setProperty("--len", String(label.length));
+
+    var pips = $("tierpips");
+    pips.textContent = "";
+    for (var t = 0; t < 5; t++) {
+      pips.appendChild(el("i", t < job.tier ? "kp-pip-diamond kp-pip-on" : "kp-pip-diamond"));
+    }
+    $("tierval").textContent = "T" + job.tier + " OF 5";
+
+    typeIn($("tell"), MODE_TELL[job.dominant], 120, "tell");
+    $("rate").textContent = jobPay(job.tier) + " CR";
+
+    buildCells(c);
+    $("t-name").textContent = c.name.toUpperCase();
+    $("t-device").textContent = c.device;
+    $("t-grid").textContent = day.grid[0] + "x" + day.grid[1];
+    $("t-ram").textContent = day.oppRam + " PER TURN";
+
+    var warn = $("warn");
+    if (day.headStart > 0) {
+      warn.hidden = false;
+      $("warntext").textContent = "Intrusion already " + day.headStart + " nodes deep";
+      warn.classList.remove("reveal");
+      void warn.offsetWidth;
+      if (withReveal) {
+        warn.classList.add("reveal");
+        SFX.ibWarnReveal();
+      }
+    } else {
+      warn.hidden = true;
+      warn.classList.remove("reveal");
+    }
+
+    typeIn($("quote"), '"' + c.quotes[job.quote] + '"', 220, "quote");
+  }
+
+  /* ================= the masthead ================= */
+
+  function buildMast(animate) {
+    var grid = $("grid");
+    grid.dataset.state = winState;
+    $("eyebrow").textContent = winState === "list"
+      ? "INBOX.SYS // DAY LOOP"
+      : "INBOX.SYS // RECORD PULLED";
+    $("dayunit").textContent = "OF " + FINAL_DAY;
+    /* the day line is true in both states, and an empty masthead in CARD
+     * state read as unfinished rather than as ambient */
+    $("mastline").textContent = DAY_LINE;
+
+    if (animate) countUp($("dayval"), S.day, 0, 30);
+    else $("dayval").textContent = String(S.day);
+
+    /* the run chips count up on a LOAD SWEEP only. countUp always animates,
+     * so calling it with a zero delay here still replayed a half second
+     * count from 0 on every open and close: ambient chrome moving on every
+     * click, which motion law 7 reserves for things that are happening. */
+    if (animate) {
+      countUp($("c-strain"), S.strain, 650, 26);
+      countUp($("c-cred"), S.credits, 690, 26);
+    } else {
+      $("c-strain").textContent = String(S.strain);
+      $("c-cred").textContent = String(S.credits);
+    }
+    $("c-ram").textContent = S.ram + "/TURN";
+    $("c-kit").textContent = S.kit;
+
+    var pouch = $("pouch");
+    pouch.textContent = "";
+    if (S.pouch.length) {
+      pouch.appendChild(el("span", null, "POUCH"));
+      S.pouch.forEach(function (mask, n) {
+        var g = patchGlyph(mask, 13);
+        if (!REDUCED && animate) {
+          g.classList.add("kp-slot-anim");
+          g.style.animationDelay = (770 + n * 80) + "ms";
+        }
+        pouch.appendChild(g);
+      });
+    }
+  }
+
+  /* ================= the load sweep ================= */
+
+  /* the open/close latch: declared here because sweep() clears it */
+  var busy = false;
+
+  function sweep() {
+    /* clearTimers() kills any in-flight open/close stage, including the one
+     * that would have released this latch, so the sweep owns resetting it.
+     * It also owns scrubbing the pane's animation residue: a cleared timer
+     * would otherwise leave .shrink (fill: forwards) or the opacity hold on
+     * the pane forever, and row/pane sizing must derive from layout alone. */
+    clearTimers();
+    busy = false;
+    var pane = $("pane");
+    pane.classList.remove("grow", "shrink");
+    pane.style.opacity = "";
+    buildMast(true);
+    buildList(true);
+    if (winState === "card") buildRecord(true);
+    measure();
+    later(measure, 1400);
+  }
+
+  /* ================= open / close: one axis at a time ================= */
+
+  function setWin(state) {
+    winState = state;
+    var w = state === "list" ? LIST_W : VP.win;
+    $("term").style.setProperty("--ib-win", w + "px");
+    /* USER REVIEW 2026-08-01: "Vertical scale on inbox buttons breaks."
+     * The state used to flip instantly while the frame width was still
+     * stepping over 200ms, so for a few held frames the container queries
+     * saw widths that belonged to NEITHER state: the rows leapt to 900px
+     * wide and 70px tall on close, and on open the invisible pane stacked
+     * into the transient narrow tier and blew the window out to an empty
+     * 730px shell. The content container now takes its FINAL width the
+     * moment the state flips (34 = the frame border plus body padding), so
+     * every row lays out at its settled size exactly once and the frame's
+     * width animation just clips over already-correct content. */
+    $("eva").style.width = (w - 34) + "px";
+    /* the width steps over 200ms; re-measure once the transition lands */
+    later(measure, 320);
+  }
+
+  /* The second cause of the doubled animation: the record used to be built
+   * twice per open, once immediately and once again at the genie, so both
+   * typewriters restarted mid-flight. It is built ONCE now, at the moment
+   * the pane becomes visible, and the pane is held invisible until then so
+   * the outgoing record never shows through. */
+  function openTicket(i) {
+    if (busy) return;
+    busy = true;
+    var wasCard = winState === "card";
+    openIndex = i;
+    var pane = $("pane");
+
+    function reveal() {
+      buildRecord(true);
+      pane.style.opacity = "";
+      var item = $("list").children[i];
+      if (item && !REDUCED) {
+        /* offset math, not getBoundingClientRect: client rects are scaled
+         * by the stage's fit transform, and feeding a scaled distance to
+         * transform-origin (which is unscaled local px) put the genie's
+         * origin anywhere but the clicked row's midpoint. offsetTop is
+         * layout-space and both nodes share .ib-eva as offsetParent. */
+        var oy = item.offsetTop + item.offsetHeight / 2 - pane.offsetTop;
+        pane.style.transformOrigin = "0px " + Math.round(oy) + "px";
+      }
+      pane.classList.remove("grow", "shrink");
+      void pane.offsetWidth;
+      pane.classList.add("grow");
+      SFX.inboxGenie();
+      measure();
+      later(function () { pane.classList.remove("grow"); measure(); }, 220);
+      busy = false;
+    }
+
+    if (wasCard) {
+      /* SWITCH: the open record shrinks away, the new one grows out of the
+       * row that was just clicked. One movement, not two. */
+      markSelection();
+      SFX.inboxFile();
+      pane.classList.remove("grow", "shrink");
+      void pane.offsetWidth;
+      pane.classList.add("shrink");
+      later(reveal, REDUCED ? 0 : 190);
+      return;
+    }
+
+    /* OPEN FROM LIST: the width axis steps first (a steps(4) transition on
+     * .term), then the record genies out of the clicked row's midpoint */
+    SFX.inboxGrow();
+    setWin("card");
+    buildMast(false);
+    markSelection();
+    if (!REDUCED) pane.style.opacity = "0";
+    later(function () { SFX.inboxWide(); }, 200);
+    later(reveal, REDUCED ? 0 : 210);
+  }
+
+  function fileAway() {
+    if (busy) return;
+    busy = true;
+    SFX.inboxFile();
+    var pane = $("pane");
+    pane.classList.remove("shrink");
+    void pane.offsetWidth;
+    pane.classList.add("shrink");
+    later(function () {
+      pane.classList.remove("shrink");
+      setWin("list");
+      buildMast(false);
+      markSelection();
+      measure();
+      busy = false;
+    }, REDUCED ? 0 : 190);
+    if (REDUCED) busy = false;
+  }
+
+  function toggle(i) {
+    if (S.jobs[i].done) return;
+    SFX.press();
+    if (winState === "card" && openIndex === i) { fileAway(); return; }
+    openTicket(i);
+  }
+
+  /* UP/DOWN select a ticket, the shipped keyboard contract */
+  window.addEventListener("keydown", function (e) {
+    if (e.key !== "ArrowUp" && e.key !== "ArrowDown") return;
+    e.preventDefault();
+    var n = S.jobs.length;
+    var next = winState === "list"
+      ? (e.key === "ArrowDown" ? 0 : n - 1)
+      : (e.key === "ArrowDown" ? (openIndex + 1) % n : (openIndex - 1 + n) % n);
+    var guard = 0;
+    while (S.jobs[next].done && guard < n) { next = (next + 1) % n; guard += 1; }
+    if (!S.jobs[next].done) openTicket(next);
+  });
+
+  $("dive").addEventListener("click", function () { SFX.claimTick(); });
+  $("cfg").addEventListener("click", function () { SFX.press(); });
+  $("back").addEventListener("click", function () { SFX.press(); fileAway(); });
+
+  /* ================= the demo rig ================= */
+
+  function radioRow(rowId, opts, initial, onPick) {
+    var row = $(rowId);
+    row.textContent = "";
+    opts.forEach(function (o) {
+      var b = el("button", o.id === initial ? "rig-on" : "", o.label);
+      b.addEventListener("click", function () {
+        row.querySelectorAll("button").forEach(function (x) { x.className = ""; });
+        b.className = "rig-on";
+        onPick(o);
+      });
+      row.appendChild(b);
+    });
+  }
+
+  var glassLayers = Array.prototype.slice.call($("glass").children);
+  function setCrt(mode) {
+    var stage = $("stage");
+    var glass = $("glass");
+    stage.classList.toggle("crt-on", mode !== "off");
+    glass.textContent = "";
+    if (mode !== "off") glassLayers.forEach(function (l) { glass.appendChild(l); });
+  }
+  radioRow("crtrow", [{ id: "flat", label: "FLAT" }, { id: "off", label: "OFF" }], "flat", function (o) { setCrt(o.id); });
+
+  function setScheme(id) { document.documentElement.dataset.scheme = id; }
+  radioRow("schemerow", [{ id: "nerv", label: "NERV" }, { id: "tokyo", label: "TOKYO NIGHT" }], "nerv", function (o) { setScheme(o.id); });
+
+  /* IMAGE TREATMENT. INK is the house rule (1-bit multiplied to --r-aux, so
+   * the print recolours with the scheme). TRUE drops the tint and shows the
+   * dither as it actually is, which is black and white. COLOR swaps in a
+   * colourised re-dither: the same crop gradient-mapped through a lit
+   * interior palette and Floyd-Steinberg dithered to 16 colours. All three
+   * render at 160x160 native, never resampled. */
+  var treatment = "ink";
+  radioRow("treatrow", [
+    { id: "ink", label: "INK TINT" },
+    { id: "true", label: "TRUE 1-BIT" },
+    { id: "color", label: "FULL COLOUR" }
+  ], "ink", function (o) {
+    treatment = o.id;
+    if (winState === "card") buildCells(CUSTOMERS[S.jobs[openIndex].id]);
+  });
+
+  var VIEWPORTS = [
+    { id: "169", label: "16:9", w: 1366, h: 768, win: 940 },
+    { id: "219", label: "21:9", w: 2560, h: 1080, win: 1000 },
+    { id: "laptop", label: "LAPTOP 1280x800", w: 1280, h: 800, win: 860 }
+  ];
+  var VP = VIEWPORTS[0];
+  /* the idle window. 460 was the spec's number and it wrapped every subject
+   * line to three lines and the chip row to three rows, which cost more
+   * desk than the width saved; 560 lands every subject on two lines. */
+  var LIST_W = 560;
+
+  function applyViewport(v) {
+    VP = v;
+    var stage = $("stage");
+    stage.style.width = v.w + "px";
+    stage.style.height = v.h + "px";
+    setWin(winState);
+    fit();
+    measure();
+  }
+
+  /* lay the stage out at TRUE resolution, then scale the whole thing to fit
+   * the reviewer's browser. Transform does not change layout size, so the
+   * container queries inside still resolve against the real window width. */
+  function fit() {
+    var availW = Math.max(320, window.innerWidth - 300);
+    var availH = Math.max(320, window.innerHeight - 90);
+    var k = Math.min(1, availW / VP.w, availH / VP.h);
+    /* snap the scale so the stage's width lands on whole DEVICE pixels: an
+     * arbitrary float leaves the stage edge (and the window border riding
+     * near it) straddling a pixel boundary, which renders as a doubled
+     * ghost line. Fractional scaling cannot make every interior hairline
+     * crisp, but the edges of the raster stop swimming. */
+    var dpr = window.devicePixelRatio || 1;
+    k = Math.max(0.2, Math.floor(VP.w * k * dpr) / dpr / VP.w);
+    $("fit").style.transform = "scale(" + k + ")";
+    $("fitwrap").style.width = Math.floor(VP.w * k) + "px";
+    $("fitwrap").style.height = Math.floor(VP.h * k) + "px";
+    return k;
+  }
+
+  function measure() {
+    var k = fit() || 1;
+    var term = $("term");
+    var h = Math.round(term.getBoundingClientRect().height / k);
+    var w = winState === "list" ? LIST_W : VP.win;
+    var free = $("free");
+    var slack = VP.w - w;
+    if (slack > 220) {
+      free.style.display = "flex";
+      free.style.right = "0px";
+      free.style.width = Math.round(slack / 2 - 24) + "px";
+      $("freelabel").textContent = "FREE DESK " + Math.round(slack / 2 - 24) + "PX";
+    } else {
+      free.style.display = "none";
+    }
+    var tier = w - 34 >= 700 ? "WIDE" : "COMPACT";
+    var m = $("meas");
+    m.innerHTML = "";
+    m.appendChild(document.createTextNode("WINDOW " + w + "px / " + tier + " / " + winState.toUpperCase()));
+    m.appendChild(document.createElement("br"));
+    m.appendChild(el("span", h > 820 ? "rig-over" : "", "HEIGHT " + h + "px / target 700 / ceiling 820"));
+  }
+
+  radioRow("vprow", VIEWPORTS, "169", function (o) { applyViewport(o); });
+  radioRow("staterow", [
+    { id: "day4", label: "DAY 4 FULL SLATE" },
+    { id: "day1", label: "DAY 1 OPENER" },
+    { id: "day7", label: "DAY 7 LATE" }
+  ], "day4", function (o) {
+    if (stateId === o.id) return;
+    stateId = o.id;
+    S = STATES[stateId];
+    openIndex = S.open;
+    sweep();
+  });
+  radioRow("winrow", [
+    { id: "card", label: "CARD" },
+    { id: "list", label: "LIST" }
+  ], "card", function (o) {
+    if (o.id === winState) return;
+    if (o.id === "list") fileAway(); else openTicket(S.open);
+  });
+
+  $("replay").addEventListener("click", sweep);
+
+  var clockSec = 22 * 3600 + 41 * 60;
+  setInterval(function () {
+    clockSec = (clockSec + 1) % 86400;
+    var h = String(Math.floor(clockSec / 3600)).padStart(2, "0");
+    var m = String(Math.floor((clockSec % 3600) / 60)).padStart(2, "0");
+    var bar = h + ":" + m;
+    if ($("barclock").textContent !== bar) $("barclock").textContent = bar;
+  }, 1000);
+
+  window.addEventListener("resize", function () { fit(); measure(); });
+
+  /* ================= go ================= */
+
+  openIndex = S.open;
+  setScheme("nerv");
+  setCrt("flat");
+  applyViewport(VP);
+  setWin("card");
+  sweep();
+})();
+</script>
+</body>
+</html>

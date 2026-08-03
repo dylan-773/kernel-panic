@@ -151,15 +151,53 @@ Param keys: wave (0 square, 1 saw, 2 sine, 3 noise), baseFreq, duty, sustain, de
   "type": "ui-spec", "id": "kebab-case",
   "area": "duel | desktop | login | windows | screens",
   "spec": "what to build or change, precise enough to implement without asking",
-  "acceptance": ["observable check", "observable check"]
+  "acceptance": ["observable check", "observable check"],
+  "variations": [
+    { "label": "DITHER", "default": "FINE", "options": ["HEAVY", "FINE", "BAYER"] }
+  ]
 }
 ```
+
+`variations` is optional and is how a spec asks to be SHOWN a choice. Every
+ui-spec is built as a demo page under `ui-demos/` and reviewed by the user
+before any app code changes (see "The review loop" below); each group you name
+becomes a row of switches on that page. Name the hue families, treatments,
+scenarios, or states that make the decision a real decision. A variation you
+do not name is one the user never gets to compare.
 
 The tutorial-agent files these in two cases: a **tier 0 fix**, where a
 clearer label retires the need for teaching entirely, and **new teaching UI**
 (a spotlight, a pointer, a highlighted target), where it states the need and
 the ux-agent designs the form. Position and motion are always the ux-agent's
 call, never the tutorial-agent's.
+
+## The review loop
+
+UI never goes straight into the game. The Orchestrator builds each approved
+ui-spec as a standalone demo under `ui-demos/<id>/index.html` and registers it
+in `ui-demos/manifest.json`, which is the durable record of every submission:
+
+```json
+{
+  "id": "kebab-case", "title": "WINDOW.NAME", "dir": "<id>", "entry": "index.html",
+  "cycle": "<the pipeline/BRIEF.md id that produced it>",
+  "summary": "one line for the index card",
+  "notes": "NOTES.md",
+  "spec": { "file": "pipeline/proposals/ux-agent.json", "item": "<ui-spec id>" },
+  "status": "awaiting | approved | complete | archived",
+  "note": "the reviewer's last words, e.g. what must change",
+  "history": [{ "status": "...", "date": "YYYY-MM-DD", "note": "..." }],
+  "variations": ["hue", { "id": "...", "label": "...", "default": "...", "options": [] }],
+  "desktop": { "mountable": true, "default": false, "frameW": 1040, "x": 100, "y": -30 }
+}
+```
+
+Unlike `pipeline/`, this file is NEVER cleared between cycles: a demo's review
+status has to outlive the working state that produced it. The user reviews at
+`http://localhost:4180/kernel-panic-ui` (`bun ui-demos/_review/serve.ts`), where
+a demo starts `awaiting`, becomes `approved` or goes back with a note, and only
+an `approved` demo is eligible for integration. `ui-demos/RULINGS.md` carries
+the system laws; each demo's `NOTES.md` carries its own design history.
 
 ### type: "music-brief"  (ux-agent)
 
@@ -309,7 +347,7 @@ Art-lead updates `status` to `done` and sets `result` to the finished PNG path u
 
 ## Palette and asset conventions
 
-The KP/OS v2 look (source of truth `ui-demos/kpos-shell/`, its README.md carries the rulings): near-black void plus ONE ink accent channel that does text, borders, fills, meters, and imagery, a support tone, one hot highlight, switched wholesale by a `data-hue` attribute (lavender default). Danger is inverse video, never a second hue. Window imagery is DIEGETIC-ONLY (the OS needs an in-fiction reason to show a picture), strict 1-bit dithered monochrome, ink-tinted live by the app - so dither-treatment art is generated as pure black-and-white (1990s anime OVA ink style, flat cel shading, no text/bubbles/frames) and dithered by `pipeline/tools/dither.py` at the exact cell size.
+The KP/OS v3 look (**spec: `ui-demos/RULINGS.md`, read it before specifying any surface**; reference build `ui-demos/loadout-eva/`): a void base plus EIGHT ROLE TOKENS that carry state rather than one accent that carries everything - `--r-struct` chrome, `--r-note` annotation, `--r-line` live data, `--r-data` hot values, `--r-ok` nominal, `--r-warn` risk, `--r-aux` camera imagery, `--r-hazard` structural red - remapped wholesale by a `data-scheme` attribute (NERV, TOKYO NIGHT) and collapsing back onto the v2 single accent by default. Risk never shares its colour, and is never signalled by colour alone: it also floods inverse video and moves, while ambient chrome never moves. Window imagery is DIEGETIC-ONLY (the OS needs an in-fiction reason to show a picture), strict 1-bit dithered monochrome, ink-tinted live by the app - so dither-treatment art is generated as pure black-and-white (1990s anime OVA ink style, flat cel shading, no text/bubbles/frames) and dithered by `pipeline/tools/dither.py` at the exact cell size.
 
 `treatment: "pixel"` prompts still pin the legacy hexes (the `--kp-*` tokens): bg0 `#101218`, bg1 `#14171e`, panel `#1a1e27`, line `#2b313d`, text `#e8ebf2`, dim `#8f97a8`, rose `#e94f6d`, rose-hot `#ff6d88`, signal `#ffe9c4`, crimson `#cf4b45`, gold `#d9a53f`, steel `#9fb2cc`; `pipeline/tools/pxpost.py` snaps them to a real pixel grid and palette. Asset paths are absolute from the public root: `/assets/px/portraits/...`, `/assets/px/stills/...`, `/assets/px/ui/...`, `/assets/sfx/music/...`.
 

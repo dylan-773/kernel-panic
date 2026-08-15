@@ -3,6 +3,8 @@ name: waiver-vs-new-input-paradigm
 description: How to tell an established-affordance-reuse waiver apart from a genuinely new input modality that still needs a coachmark, even when both use the same "always-on ambient hover language" argument
 metadata:
   type: feedback
+aliases: [waiver-vs-new-input-paradigm]
+
 ---
 
 A proposing agent (ux-agent, in the solder-bay-window / ux-2026-07-28-craft-

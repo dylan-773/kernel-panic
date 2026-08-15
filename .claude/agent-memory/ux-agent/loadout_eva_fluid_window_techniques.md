@@ -3,6 +3,8 @@ name: loadout-eva-fluid-window-techniques
 description: Reusable techniques from the ux-2026-07-31-loadout-eva cycle for making a KP/OS window genuinely fluid/resizable rather than fixed-pixel, and for shrinking dithered raster art without mushing it.
 metadata:
   type: feedback
+aliases: [loadout-eva-fluid-window-techniques]
+
 ---
 
 - **Crop, don't scale, a 1-bit dithered raster that needs to display smaller than its native size.** The house rule (loadout/NOTES.md) is "one dither dot = one CSS pixel"; even a half-scale display (152px of a 304px asset) documented dissolving into checker noise. When a layout wants a small thumbnail/monitor-inset version of an existing dithered PNG, keep the `<img>` at its full native intrinsic width/height (zero resampling) and put it inside a SMALLER `overflow:hidden` container, positioning the image with a negative offset to select a crop window. This reads naturally as "a security monitor showing a fixed zoomed framing" rather than "a shrunk wide shot," so the diegetic justification is often stronger, not weaker. If a genuinely small footprint needs a WIDE field of view (not just a crop), that requires a real new art order at the target size, since no CSS technique substitutes for a fresh dither pass; don't try to fake it by scaling an existing asset down.

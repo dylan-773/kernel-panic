@@ -3,6 +3,8 @@ name: repair-log-v3-audit-lessons
 description: Lessons from the ux-2026-07-31-repair-log-v3 cycle, where the coordinator built the demo ahead of this agent and redirected it to AUDIT the build rather than author fresh, plus a reusable technique for verifying a clamp(px, Ncqi, px) type-scale ratio claim.
 metadata:
   type: feedback
+aliases: [repair-log-v3-audit-lessons]
+
 ---
 
 - **Concurrent `/kp-ui` cycles can race `pipeline/proposals/ux-agent.json` and `pipeline/BRIEF.md`; when that happens the coordinator redirects to a per-demo `ui-demos/<id>/SPEC.json`.** This happened on repair-log-v3: another session's DARKNET.LNK cycle overwrote `pipeline/BRIEF.md` mid-run, and a third session's writes clobbered `pipeline/proposals/ux-agent.json` between this agent's read and its write, losing the item entirely. The fix was NOT "write earlier" (see [[ux-agent-proposal-house-style]], which already covers that failure mode) but a different mechanism: the coordinator asked for output at an uncontended path (`ui-demos/<id>/SPEC.json`, envelope `{"agent","cycle","items"}`, no `brief` field) that it merges into the shared file itself in one pass at the end of the cycle. **Why:** multiple agent sessions can genuinely run in parallel against this repo now (evidenced by `inbox-v3`/`dadlog-v3` directories appearing mid-cycle); a single shared JSON file is not safe under that condition. **How to apply:** if a coordinator message says the shared proposals file doesn't hold this agent's prior work despite it having been written, do not assume authorship failure -- check for a redirect to a demo-scoped path before re-deriving anything, and re-emit already-completed reasoning verbatim into the new location rather than re-thinking it.

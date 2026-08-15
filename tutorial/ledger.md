@@ -870,3 +870,18 @@ standing lesson in Loop history below.
   retired two coachmarks duplicating permanent headers. Standing lesson: a
   tier can be right on the day it is written and wrong a cycle later once
   the screen around it gets its own permanent copy.
+
+
+---
+
+## Where the durable half lives
+
+**This file stays operational.** It carries the coverage table, the waiver log
+and the dated cycle retrospectives, and `pipeline/gates/tutorial-review.md`
+cites it BY LINE NUMBER, so it must not be reflowed. This pointer is appended
+at the end for exactly that reason.
+
+The durable half is mirrored and expanded in the Obsidian vault at
+`vault/70-teaching/`: the charter, the placement bias order, the coverage
+model, the waiver rationales, and the standing lessons extracted out of the
+loop history. Read the vault to understand the system; edit here to record work.

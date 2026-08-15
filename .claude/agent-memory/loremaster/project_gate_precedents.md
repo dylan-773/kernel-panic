@@ -3,6 +3,8 @@ name: project-gate-precedents
 description: Durable judgment calls from past gates worth re-applying, not tied to any one closed cycle's status (see project-canon-status for current status instead).
 metadata:
   type: project
+aliases: [project-gate-precedents]
+
 ---
 
 Accumulated rulings-about-rulings, distinct from the actual canon (which

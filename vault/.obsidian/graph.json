@@ -1,0 +1,65 @@
+{
+  "collapse-filter": false,
+  "search": "",
+  "showTags": true,
+  "showAttachments": false,
+  "hideUnresolved": false,
+  "showOrphans": true,
+  "collapse-color-groups": false,
+  "colorGroups": [
+    {
+      "query": "path:20-mechanics",
+      "color": {
+        "a": 1,
+        "rgb": 5025616
+      }
+    },
+    {
+      "query": "path:60-story",
+      "color": {
+        "a": 1,
+        "rgb": 10510941
+      }
+    },
+    {
+      "query": "path:40-presentation",
+      "color": {
+        "a": 1,
+        "rgb": 14393917
+      }
+    },
+    {
+      "query": "path:70-teaching",
+      "color": {
+        "a": 1,
+        "rgb": 15844367
+      }
+    },
+    {
+      "query": "path:80-crew",
+      "color": {
+        "a": 1,
+        "rgb": 7570604
+      }
+    },
+    {
+      "query": "[\"status\":\"unwritten\"]",
+      "color": {
+        "a": 1,
+        "rgb": 11674146
+      }
+    }
+  ],
+  "collapse-display": false,
+  "showArrow": true,
+  "textFadeMultiplier": 0,
+  "nodeSizeMultiplier": 1.1,
+  "lineSizeMultiplier": 1,
+  "collapse-forces": false,
+  "centerStrength": 0.5,
+  "repelStrength": 10,
+  "linkStrength": 1,
+  "linkDistance": 250,
+  "scale": 1.1498476104074173,
+  "close": true
+}

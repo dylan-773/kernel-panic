@@ -3,6 +3,8 @@ name: user-ruling-can-override-v2-design-law
 description: how to record a user directive that overrides the KP/OS v2 single-ink-accent law for one named surface (loadout-eva multi-hue), rather than treating it as a canon-gap ruling
 metadata:
   type: feedback
+aliases: [user-ruling-can-override-v2-design-law]
+
 ---
 
 `ux-2026-07-31-loadout-eva` round 2: the user directed a five-channel

@@ -3,6 +3,8 @@ name: canon-gap-gate-pattern
 description: How to handle a proposal that exposes a canon question the bible/ledger never decided, during gate duty.
 metadata:
   type: project
+aliases: [canon-gap-gate-pattern]
+
 ---
 
 When a gated proposal rests on a world fact the bible/ledger never ruled

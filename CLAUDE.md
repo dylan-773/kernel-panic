@@ -1,16 +1,18 @@
 # Kernel Panic dev crew charter
 
-This repo is the home of Kernel Panic: the game (nested repo `kernel-panic-site/`, app under `app/`, live at kernel-panic.higgsfield.app), the design docs (`Kernel_Panic_GDD_v2.pdf`, source `gdd/`), the canon (`lore/`), the teaching ledger (`tutorial/`), and the AI dev crew that produces content for it.
+This repo is the home of Kernel Panic: the game (nested repo `kernel-panic-site/`, app under `app/`, live at kernel-panic.higgsfield.app), the DESIGN VAULT (`vault/`), the teaching ledger (`tutorial/`), and the AI dev crew that produces content for it.
+
+THE DESIGN DOCUMENT IS `vault/`, an Obsidian vault. **Open `vault/` in Obsidian; start at `vault/00-index/home.md`.** 214 notes, one idea each, wikilinked. It is the source of truth for design, mechanics, story, canon, teaching, presentation, tech and crew. Every note declares `status` in frontmatter: `canon` (matches shipped code or settled canon), `derived` (read out of code, never previously written down), `draft` (a proposal, needs review), `unwritten` (no decision exists; the note holds the open questions). Conventions in `vault/00-index/vault-conventions.md`; full index in `vault/00-index/table-of-contents.md`. The old `gdd/` HTML and PDFs are archived OUTSIDE the repo at `~/Documents/Kernel Panic/GDD renders/` and are frozen. `lore/bible.md` and `lore/ledger.md` are now pointer stubs: canon lives at `vault/60-story/`, with the fourteen numbered rulings under `vault/60-story/rulings/` (cited by number; append, never renumber).
 
 DESIGN STANDARD: the KP/OS v3 "instrument panel" system. **`ui-demos/RULINGS.md` is the spec; read it before building any surface.** Reference implementation: `ui-demos/loadout-eva/` (LOADOUT.CFG), still awaiting final approval, but the system is settled. In short: colour is EIGHT ROLE TOKENS carrying state (`--r-struct` `--r-note` `--r-line` `--r-data` `--r-ok` `--r-warn` `--r-aux` `--r-hazard`), remapped by `data-scheme` (NERV, TOKYO NIGHT) and collapsing back onto the single v2 accent by default; risk never shares its colour and is never signalled by colour alone; one focal element per surface at extreme scale with a stated glance order; every size a `clamp()` on CONTAINER units (`cqi`, never `vw`) with one breakpoint at 700px; a hard height ceiling of ~700px so windows tile; no internal scrollbars ever; 1-bit diegetic imagery at 1:1, cropped never downscaled, in ink-tint/true/full-colour treatments; flat CRT glass over the stage (no curved); `steps()` motion reserved for alarms, animated on compositor properties only. v2's single-phosphor law survives as the default, not as the only option. Window map: INBOX fronts day+analyze (the CUSTOMER.REC card with the DIVE button), REPAIR.LOG fronts result, SOLDER.BAY owns crafting, DIVE.EXE is the full-screen duel, the flow window keeps story/NIGHT.SYS/BACKROOM.LCK; `src/components/os/windows/` holds the window components, `kp-ui.tsx` the primitives.
 
 ## The crew
 
-The MAIN SESSION is the ORCHESTRATOR: the only agent that ever edits `kernel-panic-site/` (code, content modules, assets). Nine specialists live in `.claude/agents/` and write only to `pipeline/`, `lore/`, and `tutorial/`:
+The MAIN SESSION is the ORCHESTRATOR: the only agent that ever edits `kernel-panic-site/` (code, content modules, assets). Nine specialists live in `.claude/agents/` and write only to `pipeline/`, `vault/60-story/`, and `tutorial/`:
 
 | agent | owns | writes |
 |---|---|---|
-| loremaster | canon: setting bible + story ledger; approve/revise gate | `lore/*`, `pipeline/gates/` |
+| loremaster | canon: setting bible + story ledger; approve/revise gate | `vault/60-story/*`, `pipeline/gates/` |
 | tutorial-agent | teaching coverage; covered/needs-teaching gate | `tutorial/ledger.md`, `pipeline/gates/`, `pipeline/proposals/tutorial-agent.json`, copy orders |
 | narrative-director | reveal pacing, journal/scenes/day lines, story art briefs, teaching copy | `pipeline/proposals/narrative-director.json`, art orders, copy-order fulfillment |
 | encounter-generator | customer profiles ("One Wow" per job) | `pipeline/proposals/encounter-generator.json` |
@@ -20,7 +22,7 @@ The MAIN SESSION is the ORCHESTRATOR: the only agent that ever edits `kernel-pan
 | ux-agent | KP/OS layout, feel, animation, SOUND | `pipeline/proposals/ux-agent.json`, art orders |
 | art-lead | fulfills art orders (Higgsfield primary, palette-pinned + pxpost) | `pipeline/art/done/`, order statuses |
 
-Two gates, asked of the same artifacts before anything integrates. The Loremaster asks "is it true?" and cites `lore/`. The Tutorial Agent asks "does the player know?" and cites `tutorial/ledger.md`. Either can hold an item back.
+Two gates, asked of the same artifacts before anything integrates. The Loremaster asks "is it true?" and cites `vault/60-story/` (by QUOTED LINE, never by line number, which is why the vault migration invalidated no verdicts). The Tutorial Agent asks "does the player know?" and cites `tutorial/ledger.md`. Either can hold an item back.
 
 Plays (user-invoked): `/kp-produce` (full cycle), `/kp-balance` (curve+catalog), `/kp-story`, `/kp-tutorial` (teaching audit + repair), `/kp-ui` (UX pass, ends at a reviewable demo; `/kp-ui integrate the approved UI demos` lands them), `/kp-art`, `/kp-canonize`. Workflow: `/kp-balance-loop` (validate then propose, no integration). Contracts every agent is preloaded with: `.claude/skills/kp-contracts/`.
 
@@ -40,15 +42,35 @@ Always `cd /Users/lyd0n/Development/kernel-panic/kernel-panic-site/app` first (c
 
 ```
 bun run typecheck
-bun run src/game/dev/sim.ts        # tutorial MUST print 0/200; curve ~82/77/74/56/58/56/49/42/39, finale ~25
+bun run src/game/dev/sim.ts        # tutorial MUST print 0/200; see the curve below
 bun run src/game/dev/run-sim.ts    # run-layer invariants
 bun run src/game/dev/teach-sim.ts  # every mechanic taught or waived; exit 1 names the gap
 ```
 
+Gate the KITTED curve, not the kit-less one: `~84/93/67/75/56/72/63/52/52, finale ~35`.
+The kit-less proxy never locks, wards or purges, and on split boards defence is
+half the game, so it is now a floor and nothing more (`94/67/60/46/53/41/32/18/13`,
+finale 0 by construction under `oppOpens`). Also watch, per day: measured `pd`
+within 2.0 of `pdTarget`, median rounds 3-4, and `<=2r` under ~40%.
+
 `bun run dev` SSR is broken in this template; verify builds with `bun run build` + a fetch against `dist/server/server.js`.
+
+## The design vault
+
+`vault/` is the whole design document, and it is where documentation work goes.
+
+- **Start at** `vault/00-index/home.md`. Full list: `vault/00-index/table-of-contents.md`.
+- **Areas**: `10-design` (pitch, pillars, loop, flowchart) · `20-mechanics` (duel, kit, 18 augments, economy) · `30-content` (ten days, twelve customers, DAD.LOG) · `40-presentation` (KP/OS, twelve windows, eleven UI laws) · `50-tech` (stack, saves, harnesses) · `60-story` (ground truth, characters, fourteen rulings) · `70-teaching` · `80-crew` (ten agents) · `90-business`.
+- **Rules** (`vault/00-index/vault-conventions.md`): one idea per note; kebab-case filenames; wikilinks only; **never retype a number, cite the symbol that holds it** (`PLACE_COST = 4`, `patch-cells.ts`); no em or en dashes anywhere.
+- `vault/80-crew/memory` symlinks `.claude/agent-memory/`, and `vault/_attachments/art` symlinks `pipeline/art/done/`. Do not copy binaries into the vault.
+- **`pipeline/` is deliberately NOT in the vault**: it is per-cycle scratch that gets cleared. Lift durable findings into notes; leave the dated verdicts.
+- Open questions carry `status: unwritten`. Currently: `monetization`, `meta-progression`, `palette-generalization-conflict`.
 
 ## Traps
 
+- SPLIT BOARDS (branch `split-boards`): each side owns a grid, `DuelState.boards[side]`. There is no territory and no claiming. Two layers instead: `built` (ever lit, permanent, what reach walks from) and `power` (live now, cuttable). Which grid a verb touches is fixed by the verb, never by the payload: rotate/place -> your own, ATTACK -> theirs, DEFEND -> your own.
+- Rotation is unidirectional (`(rot + 1) % 4`, `rotCostFor` searches forward only), so one enemy REDIRECT costs 3 RAM to undo on an elbow or T and 1 on a straight. That exchange rate is what makes reaching across worth the RAM; do not "fix" it into a shortest-way-round.
+- Difficulty scales through `horizon` (0-3, what the machine understands) and `focus` (per-turn, does not compound with duel length). `greed` is per-rotation movement texture only.
 - Two tier vocabularies: program tiers 1-3 vs job/customer/day difficulty tiers 1-5 (`oppKitFor` maps between them).
 - Exactly one teaching callout renders at a time, chosen by `order` across every mounted `<Teach>`. A moment that "never appears" is usually losing the tie to a lower order on the same screen, not broken. `notBeforeDay` gates day 0, so the opening dive takes no coachmarks by construction.
 - sfxr envelope values are plain seconds, never normalized knobs.

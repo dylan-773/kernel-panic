@@ -3,6 +3,8 @@ name: ground-truth-over-proposal-text
 description: Always read the actual shipped React components before gating, never trust a ux-agent/narrative-director proposal's own account of what is or isn't integrated yet
 metadata:
   type: feedback
+aliases: [ground-truth-over-proposal-text]
+
 ---
 
 Before writing any gate verdict, read the real current components under

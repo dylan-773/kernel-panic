@@ -3,6 +3,8 @@ name: patch-piece-crafting-fiction
 description: Where patch-piece/crafting canon grounding already lives, for fast gating of any future crafting-station, pouch, or darknet-sourcing proposal.
 metadata:
   type: project
+aliases: [patch-piece-crafting-fiction]
+
 ---
 
 Patch-piece crafting already has solid canon grounding spread across three

@@ -3,6 +3,8 @@ name: visual-identity-echo-check
 description: how to judge whether a new surface reusing an established sonic/visual "identity" token (e.g. --ch2 as "the intrusion's tone") implies a forbidden causal tie
 metadata:
   type: feedback
+aliases: [visual-identity-echo-check]
+
 ---
 
 When a ux-agent/art proposal gives some new entity (a vendor, a screen, an

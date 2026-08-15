@@ -3,6 +3,8 @@ name: kpos-dither-asset-conventions
 description: Recurring conventions for ordering and re-treating KP/OS window imagery (the 304px dither-cell house size, and checking existing art before ordering a re-treatment), established across the kpos-shell demo cycles and the ui-integration-2026-07-29 cycle.
 metadata:
   type: reference
+aliases: [kpos-dither-asset-conventions]
+
 ---
 
 - **304x304 is the house size for a square 1-bit dither cell.** It has now been used three separate times for unrelated art (the SOLDER.BAY bench illustration banked in `ui-demos/kpos-shell/art/solder-bench-*.png`, LOADOUT.CFG's FIG.01/BENCH FEED cells, and the ui-integration-2026-07-29 cycle's CUSTOMER.REC portrait + device-macro pair). Default new square dither-cell art orders to this size unless a specific window's layout math genuinely demands something else, and say so explicitly if it does. Non-square cells (the REPAIR.LOG figure card, 162x234) are the destination cell's own exact inner CSS size, not a variant of the house square — always confirm the actual rendered cell size rather than assuming 304 applies to a non-square frame.

@@ -13,7 +13,7 @@ You are part of the Kernel Panic dev crew. Your output is only "game-ready" when
 1. You never write into `kernel-panic-site/` (the game repo). The Orchestrator is the sole code owner. You write proposals and reports to the `pipeline/` paths assigned to your role.
 2. Structured artifacts only. Prose goes in `notes`/`rationale` fields, never as a free-form handoff.
 3. Player-facing copy NEVER contains em dashes or en dashes. Use periods, commas, or "..." instead. This is a hard style law of the game's voice.
-4. Canon lives in `lore/bible.md` and `lore/ledger.md`. If your output contradicts them, it will be rejected at the Loremaster gate. Read them before writing anything a player will see.
+4. Canon lives in the design vault at `vault/60-story/` (ground truth, characters, the reveal schedule, and fourteen numbered rulings under `rulings/`). If your output contradicts it, it will be rejected at the Loremaster gate. Read it before writing anything a player will see. The wider design document is `vault/`, indexed at `vault/00-index/home.md`.
 5. Teaching coverage lives in `tutorial/ledger.md`. Anything you add that the player must understand, a mechanic, a stat, a screen, a resource, a purchase, passes the Tutorial gate as well as the Loremaster gate. Say so in `notes` when you know your item introduces something new to learn.
 
 ## Proposal envelope

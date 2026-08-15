@@ -3,6 +3,8 @@ name: vague-to-specific-copy-raises-stakes
 description: A fiction reframe that replaces a vague placeholder line with specific diegetic voice creates a NEW accuracy obligation that did not exist before, even when nobody touched the underlying mechanic
 metadata:
   type: feedback
+aliases: [vague-to-specific-copy-raises-stakes]
+
 ---
 
 Found in `ux-2026-07-29-dadlog`: DAD.LOG's old locked-teaser text ("keep

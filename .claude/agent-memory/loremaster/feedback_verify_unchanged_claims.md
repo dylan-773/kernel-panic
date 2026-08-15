@@ -3,6 +3,8 @@ name: feedback-verify-unchanged-claims
 description: Always verify a proposal's "byte-identical" / "unchanged" copy claims against the actual shipped source file, never take the claim on faith.
 metadata:
   type: feedback
+aliases: [feedback-verify-unchanged-claims]
+
 ---
 
 When a ux-agent or narrative-director proposal claims a string is

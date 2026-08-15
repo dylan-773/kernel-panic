@@ -3,6 +3,8 @@ name: post-integration-verification-pattern
 description: how to handle an Orchestrator follow-up reporting that a gated item landed, before updating the ledger
 metadata:
   type: feedback
+aliases: [feedback-post-integration-verification-pattern]
+
 ---
 
 A distinct case from [[ground_truth_over_proposal_text]]: that memory is

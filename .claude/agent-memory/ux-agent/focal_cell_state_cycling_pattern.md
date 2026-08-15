@@ -3,6 +3,8 @@ name: focal-cell-state-cycling-pattern
 description: A reusable answer to "what is the ONE focal element on a surface with no natural hero" — a single fixed-footprint cell whose CONTENT (not just its value) swaps across a small state machine, built for DARKNET.LNK's v3 redesign and worth reaching for again on any flat/list/CLI-like surface.
 metadata:
   type: feedback
+aliases: [focal-cell-state-cycling-pattern]
+
 ---
 
 **Pattern:** when a surface is a flat stream with nothing that's obviously "the biggest thing" (a CLI log, a ticker, a status board), don't force one fixed value to extreme scale. Instead build ONE cell at extreme scale whose CONTENT changes across the surface's own real states, and give every state the IDENTICAL fixed footprint (a `min-height` sized to the tallest state's real content, RULINGS law 4's equal-footprint rule generalized from empty/filled slots to empty/filled STATES of one panel). For DARKNET.LNK v3 (`pipeline/proposals/ux-agent.json`, item `darknet-v3-instrument-panel`): PENDING (dial in progress) → OFFER (tonight's price, a hero numeral) → REVEAL (the landed piece, a hero glyph) → DEAD (the alarm, hero text), one cell, same box every time.

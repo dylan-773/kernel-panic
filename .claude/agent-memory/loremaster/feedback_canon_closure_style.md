@@ -3,6 +3,8 @@ name: feedback-canon-closure-style
 description: When adjudicating open canon questions, the user tends to prefer hard excision/closure over the softer "leave it open" or "reconcile the tension" rulings I propose as defaults.
 metadata:
   type: feedback
+aliases: [feedback-canon-closure-style]
+
 ---
 
 When I proposed rulings for the 8 open canon questions (2026-07-25

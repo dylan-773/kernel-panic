@@ -3,6 +3,8 @@ name: feel-decisions-craft-station
 description: Animation/audio/scoping decisions made for the SOLDER.BAY drag-to-craft window (ux-2026-07-28-craft-station) and the reasoning behind them, reusable for future drag/direct-manipulation or payoff-beat specs.
 metadata:
   type: feedback
+aliases: [feel-decisions-craft-station]
+
 ---
 
 Decisions made while speccing `solder-bay-window` (`pipeline/proposals/ux-agent.json`), kept here because the reasoning generalizes past this one window.

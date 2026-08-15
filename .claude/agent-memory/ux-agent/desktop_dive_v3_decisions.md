@@ -3,6 +3,8 @@ name: desktop_dive_v3_decisions
 description: Key calls made redesigning the KP/OS desktop shell and DIVE.EXE to v3 (cycle ux-2026-07-31-desktop-dive) — strain-threshold bug catch, whole-stage cqi container for shell furniture, ambient-motion audit, board-vs-telegraph glance order, and the "one warn owner" demotion mechanic.
 metadata:
   type: feedback
+aliases: [desktop-dive-v3-decisions]
+
 ---
 
 Verify a shipped UI's alarm THRESHOLD against the underlying reducer's semantics before transcribing it, not just its literal value.

@@ -3,6 +3,8 @@ name: reference-status-field-convention
 description: how to mark a filed item (ui-spec, sfx, etc.) as integrated in an agent's own proposals JSON
 metadata:
   type: reference
+aliases: [reference-status-field-convention]
+
 ---
 
 The kp-contracts schema block does not show a `status` field on `ui-spec`

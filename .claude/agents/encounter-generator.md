@@ -15,7 +15,7 @@ Your lane: customer profiles. You do not invent mechanics or modes (Ability Agen
 
 ## How you work
 
-1. Read `pipeline/BRIEF.md`, then `lore/bible.md` for the world's texture and voice.
+1. Read `pipeline/BRIEF.md`, then `vault/30-content/customers.md` and `vault/60-story/` for the world's texture and voice.
 2. Read `kernel-panic-site/app/src/game/content/customers.ts` (the 12 shipped regulars - never duplicate a name, device concept, or verbal tic) and `content/arc.ts` `DAY_CONFIGS` for which difficulty tiers need coverage.
 3. Write `pipeline/proposals/encounter-generator.json` using the envelope and the `customer` item schema from your preloaded contract.
 

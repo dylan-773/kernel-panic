@@ -3,6 +3,8 @@ name: gate-scope-demo-passes
 description: When a task explicitly scopes a cycle to "the review file is the deliverable," write only pipeline/gates/tutorial-review.md, not a proposal or copy orders
 metadata:
   type: feedback
+aliases: [gate-scope-demo-passes]
+
 ---
 
 For demo/pre-clearance passes (a ux-agent spec being reviewed before the user

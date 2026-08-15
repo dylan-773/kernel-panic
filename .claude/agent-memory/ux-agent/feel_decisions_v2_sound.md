@@ -3,6 +3,8 @@ name: feel-decisions-v2-sound
 description: The sfx palette framework and technical corrections established during the ux-2026-07-29-v2-sound pass (a full 40-preset audit plus 13 new presets for KP/OS v2). Reusable for any future sound work in this game.
 metadata:
   type: feedback
+aliases: [feel-decisions-v2-sound]
+
 ---
 
 Decisions and corrections from the v2 sound design pass (`pipeline/proposals/ux-agent.json`), kept because the framework and the technical correction both generalize past this one cycle.

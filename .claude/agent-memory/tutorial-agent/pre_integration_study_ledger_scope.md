@@ -3,6 +3,8 @@ name: pre-integration-study-ledger-scope
 description: A study review with no explicit "gate file only" instruction still gets a ledger loop-history entry and Open Work bullets, just no proposal/copy-order JSON
 metadata:
   type: feedback
+aliases: [pre-integration-study-ledger-scope]
+
 ---
 
 Distinct from [[gate_scope_demo_passes]] (which covers the rarer case where

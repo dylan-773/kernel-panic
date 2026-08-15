@@ -1,5 +1,14 @@
 # KP/OS v3 rulings (instrument panel)
 
+> **This file stays operational.** It is served over HTTP by the demo review
+> site (`ui-demos/_review/serve.ts`) and is cited BY LAW NUMBER from the agent
+> memories and proposals.
+>
+> The same eleven laws are expanded one-per-note in the Obsidian vault at
+> `vault/40-presentation/rulings/`, cross-linked to the windows they govern.
+> Law numbers match. Read the vault for context; this file remains the spec the
+> `/kp-ui` cycle builds against.
+
 The design laws every Kernel Panic surface obeys. **v3 supersedes v2 where
 they conflict**; everything v2 said that is not contradicted below still
 stands. Established by the `ux-2026-07-31-loadout-eva` cycle

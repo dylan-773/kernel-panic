@@ -3,6 +3,8 @@ name: gate-darknet-cli-2026-07-29
 description: DARKNET.LNK CLI study (darknet.html) gated clean against ledger ruling 9; no new ruling needed
 metadata:
   type: project
+aliases: [gate-darknet-cli-2026-07-29]
+
 ---
 
 Cycle `ux-2026-07-29-darknet-cli` gated the standalone

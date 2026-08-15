@@ -3,6 +3,8 @@ name: ux-agent-proposal-house-style
 description: The documentation density and citation style expected in pipeline/proposals/ux-agent.json ui-spec items, inferred from the prior (deep-balance-2026-07-28) cycle's file before it was overwritten.
 metadata:
   type: reference
+aliases: [ux-agent-proposal-house-style]
+
 ---
 
 Before this agent's first turn on the craft-station brief, `pipeline/proposals/ux-agent.json` still held the prior cycle's items (patch-pouch-strip, patch-ghost-preview, patch-craft-flow, darknet-window, result-drop-reveal, boost-bays). That file was the clearest available example of the expected density for this role, so its conventions were carried forward:

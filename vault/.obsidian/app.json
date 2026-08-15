@@ -1,0 +1,15 @@
+{
+  "useMarkdownLinks": false,
+  "newLinkFormat": "shortest",
+  "alwaysUpdateLinks": true,
+  "attachmentFolderPath": "_attachments",
+  "newFileLocation": "folder",
+  "newFileFolderPath": "00-index",
+  "showFrontmatter": true,
+  "readableLineLength": true,
+  "strictLineBreaks": false,
+  "showUnsupportedFiles": false,
+  "userIgnoreFilters": [
+    "_templates/"
+  ]
+}

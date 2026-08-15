@@ -3,6 +3,8 @@ name: feedback-gate-named-cycle-must-be-in-file
 description: Before gating a cycle by name, confirm the target proposal file's own brief/items are actually that cycle - single-current-cycle-file house style means a later cycle can silently erase an earlier, ungated one.
 metadata:
   type: feedback
+aliases: [feedback-gate-named-cycle-must-be-in-file]
+
 ---
 
 Asked to gate `ux-2026-07-29-v2-sound` (13 sfx presets, 1 retire, 3 wiring

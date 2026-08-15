@@ -3,6 +3,8 @@ name: project-canon-status
 description: Current open/closed canon rulings and housekeeping status, updated as gates close items. Check this before assuming something is still open, but verify against the actual lore files before relying on it - this is a snapshot, not the source of truth.
 metadata:
   type: project
+aliases: [project-canon-status]
+
 ---
 
 **Resolved and stable in `lore/ledger.md`, no need to re-litigate:**

@@ -3,6 +3,8 @@ name: icon-fiction-native-vs-darknet
 description: The two-tier desktop icon fiction (native KP/OS chrome vs the darknet's deliberate-wrongness style) and how to judge which a new icon should use.
 metadata:
   type: project
+aliases: [icon-fiction-native-vs-darknet]
+
 ---
 
 KP/OS desktop icons split into two visual registers, both canon-load-bearing,

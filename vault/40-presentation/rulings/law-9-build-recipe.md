@@ -3,11 +3,14 @@ title: Law 9 - Build recipe for a panel
 status: canon
 source: rulings
 owner: ux-agent
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[ui-rulings]]", "[[the-plays]]", "[[ux-agent]]"]
 ---
 
 # Law 9 - Build recipe for a panel
+
+> [!info] Scope
+> **KP/OS only.** This recipe produces a standalone vanilla-JS page under `ui-demos/`, which cannot express a 2.5D scene study. The scene layer needs a parallel recipe before `/kp-ui` can be pointed at the biggest new surface in the game. What transfers: build two states, one sparse and one full, which for the shop means unrepaired and fully repaired.
 
 Panels are independent and can be built in parallel. For one panel:
 

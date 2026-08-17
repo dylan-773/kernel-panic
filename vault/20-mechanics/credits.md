@@ -1,9 +1,9 @@
 ---
 title: Credits
-status: canon
+status: draft
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[job-pay-and-billing]]", "[[the-night-shop]]", "[[economy]]"]
 ---
 
@@ -12,7 +12,7 @@ related: ["[[job-pay-and-billing]]", "[[the-night-shop]]", "[[economy]]"]
 > [!info] Source
 > `content/arc.ts:jobPay`; `run-reducer.ts:jobPayFor`, `SALVAGE_PAY`.
 
-The run currency. Earned by clearing tickets, spent at night.
+The shop's money. Earned by clearing jobs, banked by closing the day, spent in the evening.
 
 ## Earning
 
@@ -39,18 +39,24 @@ Total credited per ticket is `ticketPay + salvage + cleanRunBonus`.
 
 | Purchase | Cost |
 |---|---|
-| Night patch, +12 [[neural-strain|strain]] | `45 + 5 * day` |
-| [[boost-bays|Boost bay]] 4 then 5 | 150, then 300 |
-| [[the-darknet|Dark pull]] | `25 + 5 * (day - 1)`, less 15% with [[darknet-rate]] |
+| [[repairs-and-unlocks|A repair]] | open |
+| Night patch, +12 [[neural-strain|strain]] | day-indexed, needs re-deriving |
+| [[the-darknet|Dark pull]] | day-indexed, less 15% with [[darknet-rate]] |
 | [[patch-pieces|Craft a weld]] | free (`CRAFT_COST = 0`) |
+
+Deck upgrades are **not** on this list. They cost salvage, not money. See [[the-neural-deck]].
 
 ## The shape of the decision
 
-Credits convert into exactly three things: survival now (patches), power that compounds (bays), or board material (pulls). There is no saving for later, because credits do not survive the run. See [[meta-progression]].
+Credits convert into survival now (patches), board material (pulls), or the shop itself (repairs). Only the last one compounds, and only the last one carries story.
+
+**Saving for later is now a real option**, which it never was when credits died with the run. A player can bank a thin day and spend nothing, holding for the repair they actually want. See [[meta-progression]].
+
+Credits earned today are held, not banked, until the day closes. A big day carried too far pays nothing at all. See [[day-close-and-banking]].
 
 ## Fiction
 
-Credits are also the debt story. The shop is behind, the bills are real, and the [[entry-bills|drawer of Meridian final notices]] is what the money is actually for. The economy screen and the story are the same subject. See [[the-shop]].
+Credits are also the bills. The shop is behind, and the [[entry-bills|drawer of Meridian final notices]] is the reason the money always matters. There is no debt mechanic and nothing to pay down; the notices are texture, and what they explain is why [[dad]] kept diving. See [[the-shop]].
 
 ## See also
 

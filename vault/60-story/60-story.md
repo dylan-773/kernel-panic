@@ -3,7 +3,7 @@ title: Story
 status: canon
 source: lore
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[ground-truth]]", "[[reveal-schedule]]", "[[canon-rulings]]"]
 ---
 
@@ -18,24 +18,25 @@ Migrated from `lore/bible.md` and `lore/ledger.md` on 2026-08-05, atomized and c
 
 1. [[story-overview]] - the premise, spoiler-free.
 2. [[ground-truth]] - what actually happened. Total spoilers.
-3. [[reveal-schedule]] - what the player may know, run by run. The spoiler-control machinery.
+3. [[reveal-schedule]] - the one ceiling every artifact sits under, and the prohibitions that come with it.
 
 ## Characters
 
-[[the-player]] · [[rhea]] · [[dad]] · [[patch]] · [[the-machine]]
+[[the-player]] · [[dad]] · [[patch]] · [[the-machine]]
 
 ## Canon law
 
-- [[canon-rulings]] - fourteen numbered decisions, cited by number from four other files.
+- [[canon-rulings]] - fifteen numbered decisions, cited by number from four other files.
 - [[voice-and-copy-laws]] - how everything is allowed to sound.
 - [[brands-and-glossary]] - proper nouns and terminology.
 - [[palette-generalization-conflict]] - an open question ruling 14 reserved for the user.
 
 ## The one-line version
 
-Every run: you dive the machine, you are not ready, it seals itself. Then you go to work. And **losing is how you learn who your father was**.
+You dive the machine, you are not ready, it shuts the door. Then you go to work. And **putting his shop back together is how you learn who your father was**.
 
 ## See also
 
-- [[30-content]] - the days, customers and journal entries this is delivered through
+- [[30-content]] - the customers, artifacts and scenes this is delivered through
+- [[repairs-and-unlocks]] - which repair turns up which piece of him
 - [[cutscenes-and-scenes]] - the scene functions

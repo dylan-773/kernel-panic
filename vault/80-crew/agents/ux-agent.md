@@ -3,13 +3,16 @@ title: UX Agent
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[ui-rulings]]", "[[music-and-sound]]", "[[art-lead]]"]
 ---
 
 # UX Agent
 
 KP/OS layout, feel, animation and **sound**. Sonnet, `maxTurns` 25, `memory: project`. Loads `kp-contracts` and `frontend-design`.
+
+> [!warning] Who owns the scene layer is undecided
+> A walkable 2.5D shop is layout, feel and animation, which is this seat, and it is also environment art, a camera and a character, which is not. It also has no output format: `/kp-ui` ends at a standalone vanilla-JS page under `ui-demos/`, and that cannot express a scene study. See [[law-9-build-recipe]] and [[the-shop-floor]].
 
 ## Owns
 

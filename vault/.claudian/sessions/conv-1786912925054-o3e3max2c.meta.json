@@ -1,0 +1,11 @@
+{
+  "id": "conv-1786912925054-o3e3max2c",
+  "providerId": "claude",
+  "title": "Hello",
+  "titleGenerationStatus": "failed",
+  "createdAt": 1786912925060,
+  "lastActivityAt": 1786912925060,
+  "sessionId": null,
+  "selectedModel": "opus",
+  "currentNote": "10-design/elevator-pitch.md"
+}

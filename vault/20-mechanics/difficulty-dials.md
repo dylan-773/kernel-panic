@@ -3,8 +3,8 @@ title: Difficulty dials
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
-related: ["[[opponent-ai]]", "[[the-ten-day-arc]]", "[[arc-composer]]"]
+updated: 2026-08-16
+related: ["[[opponent-ai]]", "[[difficulty-ramp]]", "[[arc-composer]]"]
 ---
 
 # Difficulty dials
@@ -44,7 +44,7 @@ Chance per **rotation** that the opponent does not fumble.
 > [!warning] Finished as a difficulty dial. Kept only for movement texture, and pinned high.
 > It compounds with duel length. `greed^oppRam` means the same 0.94 that reads as "occasionally sloppy" over a two-round duel is a 2% chance of a clean turn over a nine-round one. The difficulty it expressed depended on how long the fight ran, which is not a property you can tune against.
 
-Shipped values sit between 0.70 and 0.99 and reach 1.0 in the finale. Treat it as flavour.
+Shipped values sit between 0.70 and 0.99, topping out against the back room. Treat it as flavour.
 
 ## The rest of DayConfig
 
@@ -68,13 +68,13 @@ interface DayConfig {
 
 `minPd` exists because the old guarantee was only "more than one turn of RAM", and boosts, [[cascades-and-surge|cascade banking]] and a [[patch-pieces|patch]] shortcut can beat that. It is the floor that stops an opening burst closing a board outright.
 
-Values per day in [[the-ten-day-arc]].
+`DayConfig` was indexed by day and cannot be. What indexes these values now is the job tier, modified by how deep into the day the job arrives. See [[difficulty-ramp]].
 
 ## Two tier vocabularies
 
 > [!warning] These are different numbers that look the same
 > **Program tiers** run 1 to 3 (`Tier`). They govern width and range. See [[program-tiers]].
-> **Job, customer and day difficulty tiers** run 1 to 5. They govern pay and opponent kit.
+> **Job and customer difficulty tiers** run 1 to 5. They govern pay, opponent kit and now the whole difficulty configuration.
 >
 > `oppKitFor(tier, dominant, seed)` is the mapping between them.
 
@@ -96,7 +96,7 @@ So a tier 5 job is not simply "more damage". It is an opponent with the full voc
 
 ## Who owns these
 
-The [[arc-composer]] proposes DayConfig deltas against win-rate targets, and only with before and after sim numbers. Iron rule 4: curve changes enter through the balance loop. See [[the-plays]].
+The [[arc-composer]] proposes config deltas against win-rate targets, and only with before and after sim numbers. The table it moves is being redefined; see [[difficulty-ramp]]. Iron rule 4: curve changes enter through the balance loop. See [[the-plays]].
 
 ## See also
 

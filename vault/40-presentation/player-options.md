@@ -3,7 +3,7 @@ title: Player options
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[music-and-sound]]", "[[kp-os]]", "[[save-and-load]]"]
 ---
 
@@ -34,13 +34,15 @@ Hues are the v2 single-phosphor system, restored to the picker on 2026-08-01 aft
 
 **CRT OFF removes every glass layer outright** rather than fading them, and the surface must still read as a finished flat-ink print. None of a surface's richness may live in the CRT layer. See [[law-6-the-tube]].
 
+If the glass belongs to the terminal rather than to the game, as [[the-bench-transition]] proposes, this option gets cheaper: it turns off a screen effect without flattening the shop.
+
 ## Accessibility
 
 **Reduced motion** is honoured from the OS setting rather than an in-game toggle: choreography collapses to the settled state in one frame, with sound unaffected.
 
 ## What is not offered
 
-No difficulty setting. The arc is the difficulty curve, and every balance claim is measured against it. See [[the-ten-day-arc]].
+No difficulty setting, and now there is a better reason than there used to be. The player sets the difficulty themselves, every day, by deciding how many customers to take and when to stop. A slider would be a worse version of a choice the game already asks. See [[difficulty-ramp]] and [[day-close-and-banking]].
 
 No text size control, because type floors are already fixed at the readable minimum and there is no room to grow inside the height ceiling. That is a real limitation of [[law-3-fluid-and-the-height-ceiling]].
 

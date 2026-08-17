@@ -3,7 +3,7 @@ title: Ruling 12 - DAD.LOG REFRAME
 status: canon
 source: lore
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[canon-rulings]]", "[[dad-log-archive]]", "[[dad-log-window]]"]
 ---
 
@@ -15,11 +15,13 @@ related: ["[[canon-rulings]]", "[[dad-log-archive]]", "[[dad-log-window]]"]
 
 ## What changed
 
-DAD.LOG stops being **a diary the player keeps** and becomes **an archive reader**: DAD.VOL, [[dad]]'s own read-only recovered volume, mounted and read file by file, one more file pieced back with every dive attempt.
+DAD.LOG stops being **a diary the player keeps** and becomes **an archive reader**: DAD.VOL, [[dad]]'s own read-only recovered volume, mounted and read file by file, one more file pieced back with every repair the player makes to the shop.
 
 ## What is fixed and unchanged
 
-Every entry's `id`, its `unlockAtRun` key, and the exact knowledge ceiling [[reveal-schedule]] allows it to carry.
+Every entry's `id` and the exact knowledge ceiling [[reveal-schedule]] allows it to carry.
+
+*Amended 2026-08-16: this clause also protected each entry's `unlockAtRun` key. That key is deleted, and entries are keyed to repairs instead. The reframe itself is unaffected and the redesign vindicates it: artifacts that already existed are exactly what a repair turns up. See [[ruling-16-reveals-are-upgrade-keyed]].*
 
 ## What changed in presentation
 

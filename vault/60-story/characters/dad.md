@@ -3,7 +3,7 @@ title: Dad
 status: canon
 source: lore
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[ground-truth]]", "[[patch]]", "[[neural-strain]]"]
 ---
 
@@ -15,7 +15,7 @@ Dead before the game begins. He is present only as artifacts, recordings, and th
 
 ## Who he was
 
-Ran the shop and raised the two kids alone. The family's shape is never explained and never will be ([[ruling-01-the-mother]]). A messy genius: the shop is buried in his clutter.
+Ran the shop and raised his son alone. The family's shape is never explained and never will be ([[ruling-01-the-mother]]). A messy genius: the shop is buried in his clutter.
 
 **Secretly a diver of enormous hours.** 9,000+ logged, nightly after close, for years, on his own tower. No client, no ticket, no pay. He was building [[patch]] for his son.
 
@@ -32,11 +32,11 @@ Last suppressant receipt: **four days before he died.**
 
 ## Why he kept going
 
-Once the diagnosis landed, finishing Patch stopped being a project and became **the inheritance**. He would not leave his kids with nothing, and he had faith they would be smart enough to reach what he built.
+Once the diagnosis landed, finishing Patch stopped being a project and became **the inheritance**. He would not leave his son with nothing, and he had faith the boy would be smart enough to reach what he built.
 
 ## The seal
 
-He sealed the back room himself, with one condition: **not until the boy can beat Patch square. No shortcuts.**
+He locked the machine himself, with one condition: **not until the boy can beat Patch square. No shortcuts.** He did it the way he did everything, in software, because a padlock would have been an insult to both of them. See [[ruling-15-the-seal-is-software]].
 
 > Not until he can beat you square. Promise me.
 

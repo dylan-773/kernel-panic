@@ -1,10 +1,10 @@
 ---
 title: Augment drafts
-status: canon
+status: draft
 source: code
 owner: orchestrator
-updated: 2026-08-05
-related: ["[[augments]]", "[[boost-bays]]", "[[credits]]"]
+updated: 2026-08-16
+related: ["[[augments]]", "[[the-neural-deck]]", "[[credits]]"]
 ---
 
 # Augment drafts
@@ -12,11 +12,11 @@ related: ["[[augments]]", "[[boost-bays]]", "[[credits]]"]
 > [!info] Source
 > `run-reducer.ts:rollDraft`, `pickAugment`; `SALVAGE_PAY = 25`.
 
-One draft per **cleared ticket**. Three tickets a day, so a clean day banks three picks.
+One draft per **cleared job**. How many a day yields is up to the player, and a draft only becomes theirs when the day closes. See [[day-close-and-banking]].
 
 ## The roll
 
-`rollDraft(run)` offers **three** cards, deterministic per `(runSeed, day, activeJob)`.
+`rollDraft(run)` offers **three** cards, deterministic per seed, day and job index.
 
 - Weighted: config 3, boost 1 (`AugmentDef.weight` defaults).
 - `requires` gates honoured.
@@ -30,18 +30,21 @@ That last rule is the progression guarantee. Modes are the interesting axis, so 
 
 ## Picking
 
-- A **config** is simply added. It unlocks a mode without switching to it.
-- A **boost** occupies a [[boost-bays|bay]]. At full bays the pick becomes a **swap**: you name the installed boost to eject.
+- A **config** is added, unlocking a mode without switching to it.
+- A **boost** is added to the owned pool. It is not installed by picking it: installing is a separate act in [[loadout-cfg]], against a limited number of [[the-neural-deck|deck slots]].
+
+> [!warning] Picking no longer ejects anything
+> Under the old model a pick at full bays was a swap, and the ejected augment was gone for good. Augments are now permanent once banked, so a pick is only ever an addition. Swapping is what the loadout screen is for, and it is reversible.
 
 ## When the pool runs dry
 
-`SALVAGE_PAY = 25` credits instead of a card.
+Salvage instead of a card.
 
-The pool is 18 augments against roughly 27 cleared tickets, so this starts happening around day 6 and is the normal state for days 7 to 9. See the cadence problem in [[augments]].
+With eighteen augments and permanent unlocks, the pool empties for good rather than per run, and it empties sooner than it used to. That is survivable only because acquisition is no longer where the interest lives. See the cadence problem in [[augments]].
 
 ## Teaching
 
-Three coachmarks cover this surface: `augment-draft` (order 61) teaches the draft and the cadence, `boost-swap` (62) teaches ejection. Both fire on the [[repair-log]] surface. See [[coachmarks]].
+`augment-draft` (order 61) teaches the draft and the cadence on the [[repair-log]] surface. `boost-swap` (62) taught ejection and now has to teach something else: that owning is not installing. See [[coachmarks]].
 
 ## See also
 

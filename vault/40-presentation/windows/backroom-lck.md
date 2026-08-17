@@ -1,39 +1,39 @@
 ---
 title: BACKROOM.LCK
-status: canon
+status: draft
 source: code
 owner: orchestrator
-updated: 2026-08-05
-related: ["[[day-10-the-finale]]", "[[the-machine]]", "[[shopfront-exe]]"]
+updated: 2026-08-16
+related: ["[[the-finale-encounter]]", "[[the-machine]]", "[[sunday]]"]
 ---
 
 # BACKROOM.LCK
 
-The `finalePre` screen of [[shopfront-exe]]
+The back room attempt screen of [[day-sys]]
 
-The back room door. Day 10 replaces the job board with this.
+What the tower's lock looks like from the terminal, on the [[sunday]] the player decides to spend on it.
 
 ## What it is
 
-One screen, one button. No tickets, no shop, no choice about what to do next.
+One screen, one button. No customers, no shop, no choice about what to do next. Every other day in the game is about how many things to take on; this one offers exactly one action, and the interface says the day is different before any copy does.
 
-After nine days of a three-ticket board where order and selection are the whole strategic layer, the finale offers exactly one action. The interface says the day is different before any copy does.
+## The filename is the fiction, and now it is literal
 
-## The filename is the fiction
+`.LCK` is a lock file. There is no padlock on the back room and there never was: the door opens, the drive does not. A window named after a lock file is the most accurate thing in the game, and it was accidentally right before the redesign made it deliberately right. See [[ruling-15-the-seal-is-software]].
 
-`.LCK` is a lock file. The window is named after the thing standing between the player and the room, and it has been named that since run 1, when the player could already see day 10 on the taskbar clock and had no idea what it meant.
+The player can see this window from the first week and cannot do anything with it until Sunday, which is a better tease than a countdown ever was.
 
 ## What follows
 
-The finale dive, with `oppOpens: true`. The machine moves first because it was already inside. See [[day-10-the-finale]] and [[the-finale-encounter]].
+The dive, with `oppOpens: true`. The machine moves first because it was already inside. See [[the-finale-encounter]].
 
 ## On a win
 
 The seal opens on **"A FAIR WIN, NO ASSISTS"**.
 
-> The padlock does not open so much as let go.
+> It does not open so much as let go.
 
-`finaleWinScene()` plays in [[shopfront-exe]], the still moves from `still-locked` to `still-open`, and [[entry-patch|PATCH.SYS]] becomes readable.
+The win scene plays, [[entry-patch|PATCH.SYS]] becomes readable, and in the morning the shop opens as usual. The window stays on the desktop afterwards, which is an open question worth answering: a lock file for a lock that has released either becomes something else or should stop existing.
 
 ## See also
 

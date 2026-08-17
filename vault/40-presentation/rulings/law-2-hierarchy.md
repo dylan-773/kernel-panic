@@ -3,11 +3,14 @@ title: Law 2 - Hierarchy
 status: canon
 source: rulings
 owner: ux-agent
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[ui-rulings]]", "[[hud-and-ui-design]]"]
 ---
 
 # Law 2 - Hierarchy
+
+> [!info] Scope
+> **KP/OS for the type scale, both domains for the principle.** A room has no 2.2x ratio and, by design, many interactable objects, so "one focal element per surface" would forbid the shop outright. What transfers is the declaration: state what the eye finds 1st, 2nd, 3rd on entering the room, and enforce it with composition and light instead of px.
 
 **State the glance order, then build the type scale to enforce it.**
 

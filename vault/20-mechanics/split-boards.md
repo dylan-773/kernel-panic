@@ -3,8 +3,8 @@ title: Split boards
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
-related: ["[[built-and-power]]", "[[territory-and-claiming]]", "[[the-duel]]"]
+updated: 2026-08-16
+related: ["[[built-and-power]]", "[[design-change-log]]", "[[the-duel]]"]
 ---
 
 # Split boards
@@ -20,7 +20,7 @@ Each side owns a grid. `DuelState.boards` is a `Record<Side, Board>` where `Side
 
 The old model had one grid that both sides flooded and claimed, and claimed ground was impassable to the other signal. That made defence mean occupation: hold territory, deny approaches. It did not play well. Holding ground is not an interesting decision, and it turned the back half of a duel into a stalemate about position rather than a race.
 
-Splitting the boards keeps the race and rebuilds defence around interference. Full record in [[territory-and-claiming]].
+Splitting the boards keeps the race and rebuilds defence around interference. Full record in [[design-change-log]] entry 10.
 
 ## Board geometry
 

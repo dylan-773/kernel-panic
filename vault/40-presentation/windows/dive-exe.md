@@ -3,7 +3,7 @@ title: DIVE.EXE
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[the-duel]]", "[[traps-and-telegraphs]]", "[[ruling-11-opponent-identity-tag]]"]
 ---
 
@@ -11,7 +11,7 @@ related: ["[[the-duel]]", "[[traps-and-telegraphs]]", "[[ruling-11-opponent-iden
 
 Full-screen · `components/game/duel.tsx`
 
-The duel. The only surface in the game that is not a window.
+The duel. The only KP/OS surface that is not a window. The shop floor is not a window either, but it is not KP/OS.
 
 ## What it shows
 
@@ -41,7 +41,7 @@ That is a deliberate canon decision, not an oversight. See [[ruling-11-opponent-
 
 ## Legibility set the finale board size
 
-The finale is 15x11 and not 17x13 because 17x13 was measured as the worst legibility moment in the game, at 42px per cell. The board is as large as the surface can carry. See [[day-10-the-finale]].
+The finale is 15x11 and not 17x13 because 17x13 was measured as the worst legibility moment in the game, at 42px per cell. The board is as large as the surface can carry. See [[the-finale-encounter]].
 
 ## Teaching
 

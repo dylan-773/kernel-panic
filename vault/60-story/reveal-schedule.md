@@ -1,77 +1,60 @@
 ---
 title: Reveal schedule
-status: canon
-source: lore
-owner: orchestrator
-updated: 2026-08-05
-related: ["[[ground-truth]]", "[[cutscenes-and-scenes]]", "[[dad-log-archive]]"]
+status: draft
+source: none
+owner: loremaster
+updated: 2026-08-16
+related: ["[[ground-truth]]", "[[repairs-and-unlocks]]", "[[ruling-16-reveals-are-upgrade-keyed]]"]
 ---
 
 # Reveal schedule
 
-> [!info] Source
-> `lore/ledger.md` run-by-run knowledge table, wired to `content/story.ts` and `content/journal.ts`.
+> [!warning] status: draft
+> This note used to be a run-by-run knowledge ladder driven by `runCount`. The redesign deleted the key and the ladder with it. What is left is smaller and stricter.
 
-The spoiler-control machinery. **The Narrative Director's pacing must never outrun this table.**
+The spoiler-control machinery. **The Narrative Director's pacing must never outrun what is here**, and what is here is one ceiling and a short list of prohibitions.
 
-## The three channels
+## The ceiling
 
-| Channel | Function | Bespoke through |
+**Nothing before a win against [[the-machine]] may state what is inside it.**
+
+That is the entire ordering guarantee, and it is enough. Every other fact, the debt, the illness, the nights, the hours, the recordings, the standing order, may land in any order and at any time, because none of them names the occupant or confirms it is a someone.
+
+## Why there is no ladder any more
+
+Reveals are keyed to shop repairs and the player chooses which to make. Any schedule assuming a sequence would break the first time someone fixed the drive rig before the drawer. So the writing carries the constraint instead of the schedule: **every artifact stands alone.** See [[ruling-16-reveals-are-upgrade-keyed]].
+
+This is easier than it sounds. Each artifact is a thing that already existed, left by someone who did not know anyone was coming. A bill does not know what the player has read.
+
+## The two channels
+
+| Channel | Keyed to | Carries |
 |---|---|---|
-| Openers | `runOpenerScene(run)` | runs 1 to 6, then a 3-scene fallback cycle |
-| Enders | `runEndScene(run)` | runs 1 to 8; sectors 1 to 7 play on runs 2 to 8 |
-| [[dad-log-archive|DAD.LOG]] | `unlockAtRun`, visible once `runCount >= N` | see below |
+| **Artifacts** | a specific [[repairs-and-unlocks|repair]] | the evidence: notes, bills, receipts, logs, lessons |
+| **Scenes** | [[sunday]] | the beats that need a moment rather than a document, including the player renouncing his own virus theory |
 
-Runs 9+ alternate two ender fallbacks: "SECTOR SCAN: NO NEW DATA", echoing sector 1 on odd runs and sector 4 on even runs.
+Scenes are the only place pacing can still be controlled, and they should carry as little exposition as possible. If a scene has to explain something an artifact could show, it is the wrong channel.
 
-The **finale sits on day 10 of every run**. A finale win on any run unlocks the full truth and the PATCH entry immediately, regardless of table row.
+## The prohibitions
 
-## Journal unlocks
+Enforceable at the [[the-gates|Loremaster gate]], and all of them order-independent:
 
-| Run | Entry |
-|---|---|
-| 0 | [[entry-will|THE WILL]], [[entry-backroom|THE BACK ROOM]] |
-| 1 | [[entry-failed1|ANOTHER FAILED RUN]] |
-| 2 | [[entry-bills|FINAL NOTICE]] |
-| 3 | [[entry-solder|SOLDER SMOKE]] |
-| 4 | [[entry-receipts|RECEIPTS]] |
-| 5 | [[entry-diagnosis|THE DIAGNOSIS]] |
-| 6 | [[entry-notickets|NO TICKETS]] |
-| 8 | [[entry-grading|IT IS GRADING ME]] |
-| finale win | [[entry-patch|PATCH]] (`requiresOpened`) |
+1. Nothing may **name Patch** before a win.
+2. Nothing may **confirm the occupant speaks**, or give it a personality or a pronoun beyond the player's "it", before a win.
+3. Nothing may state the **seal condition** outright before a win. The player may infer it; an artifact may not spell it out.
+4. **No mother**, no absent parent, no explanation of the family's shape. [[ruling-01-the-mother]].
+5. **No sibling.** Rhea is not offscreen, she does not exist, and no line may imply a second inheritor. [[ruling-17-the-players-own-assumption]].
+6. **No padlock**, chain, key or physical seal, anywhere, ever. [[ruling-15-the-seal-is-software]].
+7. **Sectors 8 and 9 never appear as findable fragments.** [[ruling-03-sectors-8-and-9]].
+8. **No artifact may reference another**, count the player's progress, or describe itself as arriving early or late.
 
-## The knowledge ladder
+Plus the standing name law: no given name or surname for the son or for Dad, in any content including official-document copy. [[ruling-08-names]].
 
-"After run N" means run N has ended: openers and enders 1 to N seen, journal entries with `unlockAtRun <= N` readable. Knowledge is cumulative.
+## Open questions
 
-| Run | What becomes knowable |
-|---|---|
-| 1 | Shop inherited with debt. Rhea's virus story. The lock opened "like it was expecting me". The machine did not fight; it graded him and shut the door. |
-| 2 | Stage-three NF-3 and secret medical debt bigger than a year of income. The machine emits Dad-memories on a loss. Rhea's certainty cracks. |
-| 3 | It **waited** at the core: not virus behaviour. Dad started spending nights building something. |
-| 4 | The machine **paces** its opponent. Dad deliberately recorded messages to be heard in his voice. Suppressants weekly for six years, last filled four days before he died. |
-| 5 | The machine **learns, and is kind first**. "Not until he can beat you square." 9,000+ hours; CEASE ALL DIVE ACTIVITY; he kept going. Inferable: Dad built the test, and diving killed him. |
-| 6 | The occupant is a **someone**. Dad apologized to it and would not call it a tool. No client ever existed. |
-| 7 | The power bills. He fed it for years, out of pocket. "You do not do that for a virus." |
-| 8 | Its name is **Patch**. Rhea drops the theory. "Dad did not seal something in. He left something waiting." Knowledge is complete except direct confirmation, Patch's voice, and the final message. |
-| 9 to 12 | Nothing new. Knowledge plateaus at the run-8 state. |
-| finale win | Full truth. |
-
-## The eight prohibitions
-
-Derived from the table, and enforceable at the [[the-gates|Loremaster gate]]:
-
-1. Nothing may **name Patch** before the run-8 ender.
-2. Nothing may state the **seal condition** before the run-5 ender. Run 8 may restate it as the player's inference.
-3. **Dad's own diving and the 9,000 hours**: not before run 5. From run 2 his illness may surface as mystery only.
-4. **Rhea's arc is fixed**: first crack run 2, first evidence-based doubt run 3, renunciation run 8. Nothing earlier, nothing later.
-5. Before the finale, **no content may confirm the occupant speaks**, or give it a personality or pronoun beyond the player's "it".
-6. **No mother**, no absent parent, no explanation of the family's shape. [[ruling-01-the-mother]].
-7. **No shipped line may show Dad telling Rhea the quarantine story.** [[ruling-02-cover-story]].
-8. **Sectors 8 and 9 never appear as numbered fragments.** [[ruling-03-sectors-8-and-9]].
-
-Plus the standing name law: no given name or surname for the son, Dad, or Rhea's family line, in any content including official-document copy. [[ruling-08-names]].
+- [ ] Is there a lower bound on how much the player must have found before the machine can be beaten? The user's answer is no: winning early is legitimate and the shop keeps going afterwards. That means the finale scene has to work for a player who knows almost nothing, which is a real authoring constraint and is not yet solved.
+- [ ] How are Sunday scenes scheduled: by artifacts found, by Sundays elapsed, or pinned to specific repairs?
 
 ## See also
 
-- [[canon-rulings]] · [[the-gates]]
+- [[canon-rulings]] · [[the-gates]] · [[dad-log-archive]]

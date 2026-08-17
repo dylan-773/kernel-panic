@@ -3,7 +3,7 @@ title: Teaching tips
 status: canon
 source: code
 owner: tutorial-agent
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[coachmarks]]", "[[placement-bias-order]]", "[[manual-txt]]"]
 ---
 
@@ -17,11 +17,11 @@ Persistent hover explainers. **A tip is reference you want again.**
 | id | Explains |
 |---|---|
 | `par` | the rotation budget |
-| `strain` | the run's health bar |
+| `strain` | the day's health bar, and what zero costs |
 | `ram` | the per-turn budget |
 | `manualRef` | that [[manual-txt]] exists |
 | `threatTier` | job tier 1 to 5 |
-| `boostSlots` | [[boost-bays]] |
+| `boostSlots` | [[the-neural-deck]] |
 | `modeLocked` | why a mode button is unavailable |
 
 ## The split rule

@@ -3,7 +3,7 @@ title: Teaching waivers
 status: canon
 source: code
 owner: tutorial-agent
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[mechanic-coverage]]", "[[placement-bias-order]]"]
 ---
 
@@ -32,6 +32,11 @@ This is [[placement-bias-order|tier 0]] as a waiver. Reach is not explained beca
 ## Others
 
 `turnCap` · `credits` · `jobBoard` · `programTiers` · `saveSlots` · `runReset` · `finaleGate` · `finaleOppOpens` · `patchDrop` · `gridlockChip` · `patchCraft`
+
+> [!warning] Three of these waivers do not survive
+> `runReset` waives a mechanic that no longer exists and goes with it. **`finaleGate` is the highest-risk waiver in the list**: it was written for a once-per-run terminal event the player met at the end of an arc, and it now covers a repeatable Sunday choice a player can make in their first week. `jobBoard` was waived on the assumption of a three-ticket spike, and the board is now a queue the player fills themselves.
+>
+> The premise-backed pattern is what catches this: a waiver cannot outlive the reason for it.
 
 `patchCraft` is the interesting one: it was **taught**, then the interface improved, then the coachmark was retired and the mechanic became waived. See [[coachmarks]].
 

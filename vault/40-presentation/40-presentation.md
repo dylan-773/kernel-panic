@@ -3,13 +3,21 @@ title: Presentation
 status: canon
 source: rulings
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[kp-os]]", "[[ui-rulings]]", "[[art-direction]]"]
 ---
 
 # Presentation
 
-The largest gap in the old GDD, which gave the entire interface 108 words for a game whose thesis is that the interface **is** the game.
+The largest gap in the old GDD, which gave the entire interface 108 words for a game whose thesis is that the interface is the **core** of the game.
+
+Two domains now, and every law here says which one it governs. See the scope section of [[ui-rulings]].
+
+## The world
+
+[[the-shop-floor]] - the walkable 2.5D shop, and what is physically in it
+[[the-bedroom]] - upstairs
+[[the-bench-transition]] - sitting down into KP/OS, and standing up out of it
 
 ## The system
 
@@ -21,15 +29,13 @@ The largest gap in the old GDD, which gave the entire interface 108 words for a 
 
 ## The windows
 
-[[shopfront-exe]] · [[inbox]] · [[repair-log]] · [[loadout-cfg]] · [[solder-bay]] · [[manual-txt]] · [[dad-log-window]] · [[ledger-log]] · [[darknet-lnk]]
-
-Screens inside the flow window: [[night-sys]] · [[backroom-lck]]
+[[day-sys]] · [[inbox]] · [[repair-log]] · [[loadout-cfg]] · [[solder-bay]] · [[manual-txt]] · [[dad-log-window]] · [[ledger-log]] · [[darknet-lnk]] · [[night-sys]] · [[backroom-lck]]
 
 Full screen: [[dive-exe]]
 
 ## The laws
 
-[[ui-rulings]] - the eleven KP/OS v3 laws, index and status
+[[ui-rulings]] - the eleven KP/OS v3 laws, index, scope and status
 
 ## Look and sound
 

@@ -3,7 +3,7 @@ title: Design
 status: canon
 source: none
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[elevator-pitch]]", "[[design-pillars]]", "[[core-loop]]"]
 ---
 
@@ -16,7 +16,7 @@ The top of the document. What the game is, who it is for, and how a session goes
 - [[design-pillars]] - the four commitments everything else answers to
 - [[core-loop]] - the loop, at three scales
 - [[game-flowchart]] - the state machine
-- [[game-progression]] - what changes between day 1 and day 10
+- [[game-progression]] - what changes between the first week and the tenth
 
 ## See also
 

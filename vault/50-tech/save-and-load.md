@@ -3,8 +3,8 @@ title: Save and load
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
-related: ["[[death-and-run-end]]", "[[title-and-start-screen]]", "[[meta-progression]]"]
+updated: 2026-08-16
+related: ["[[day-close-and-banking]]", "[[title-and-start-screen]]", "[[meta-progression]]"]
 ---
 
 # Save and load
@@ -16,27 +16,37 @@ related: ["[[death-and-run-end]]", "[[title-and-start-screen]]", "[[meta-progres
 
 Keys `kernel-panic-s<N>-meta-v2` and `kernel-panic-s<N>-run-v3`.
 
-Each slot is a separate player. `MetaState` including `runCount`, `machineOpened` and `taught` is per slot, so a second slot is genuinely fresh and will be taught everything again.
+Each slot is a separate player. Progress is per slot, so a second slot is genuinely fresh and will be taught everything again.
 
 Slots are **deletable from the login screen**. See [[title-and-start-screen]].
 
-## Two objects
+## The persistence contract is what the redesign changes most
+
+> [!warning] status: this section is draft, the rest of the note is canon
+> The shipped schema is two objects on two lifetimes. The design now has three lifetimes, and the middle one is the game.
 
 | Object | Holds | Lifetime |
 |---|---|---|
-| `MetaState` | `runCount`, `machineOpened`, `sound`, `music`, `taught`, `stats` | forever |
-| `RunState` | credits, augments, tiers, RAM, pieces, bays, strain, day, screen | one run |
+| `MetaState` | `machineOpened`, `sound`, `music`, `taught`, `stats` | forever |
+| Permanent progress | credits, owned augments, tiers, RAM, deck slots, repairs completed, day number | forever |
+| The day | held pay and salvage, pieces and augments earned today, strain, jobs taken, screen | until close, then it merges upward, or until strain 0, then it is discarded |
 
-See [[meta-progression]], which is unwritten and should not be.
+Two ways to build it: promote nearly everything out of `RunState` into a grown `MetaState`, or add a third object so the day stays a discardable envelope. **The second is safer**, because discarding a failed day becomes a delete rather than a diff, and the thing most likely to go wrong here is a failed day quietly keeping something.
+
+`runCount` no longer exists. Nothing keys off it, and the schema version bumps when it goes. See [[meta-progression]].
 
 ## There are no checkpoints
 
-No mid-run save-scumming, no restore point, no continue. A run either finishes or ends. See [[death-and-run-end]].
+No save-scumming a day, no restore point, no continue. A day either closes or it does not. See [[day-close-and-banking]].
+
+The day being the persistence envelope makes this cheap to enforce: there is exactly one commit point, and it is going to bed.
 
 ## Refresh is a safe abort
 
 > [!info] Transient screens are never resumed into
-> Reloading mid-dive puts the player back at the day, not into a half-serialized duel. So closing the tab during a losing dive costs the ticket, never the run, and never corrupts the save.
+> Reloading mid-dive puts the player back at the shop, not into a half-serialized duel. So closing the tab during a losing dive costs the job, never the day's haul, and never corrupts the save.
+>
+> That affordance is worth re-examining now. When the day is the run, refreshing out of a dive the player is about to lose protects the whole day's haul, which is exactly the wager the design is built on. Either the abort has to cost the day, or the day has to be committed at the moment a dive starts.
 >
 > This is also the only "abandon" affordance in the game, and the ABANDON dialog copy exists to make it explicit rather than a discovered trick.
 
@@ -49,7 +59,7 @@ Real, and load-bearing, because saves survive across builds:
 - Unknown augment ids are **dropped**, so removing an augment from the catalog does not brick an old save.
 - Transient screens are never resumed into.
 
-`run-sim.ts` exercises meta hydration across 40 full runs.
+`run-sim.ts` exercises meta hydration across 40 full runs. What it should exercise instead is a long sequence of days, including failed ones, checking that a failed day leaves the permanent object bit-identical. See [[simulation-harnesses]].
 
 ## Two things worth knowing
 

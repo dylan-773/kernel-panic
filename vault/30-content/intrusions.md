@@ -3,7 +3,7 @@ title: Intrusions
 status: canon
 source: lore
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[ruling-05-nature-of-intrusions]]", "[[opponent-ai]]", "[[customers]]"]
 ---
 
@@ -33,7 +33,7 @@ Labelled **INTRUSION** in [[dive-exe]], always, on every dive including the fina
 
 [[patch]] is a living AI in a machine, the same kind of thing. It was **built and raised, not caught**. "Not a virus" is hard law regardless.
 
-This is the fact [[rhea]] does not have, and the reason her guess was reasonable. See [[ruling-02-cover-story]].
+This is the fact the player does not have at the start, and the reason his own guess about the back room is reasonable rather than stupid. See [[ruling-17-the-players-own-assumption]].
 
 ## See also
 

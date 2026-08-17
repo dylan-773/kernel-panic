@@ -3,7 +3,7 @@ title: Player character
 status: canon
 source: lore
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[the-player]]", "[[player-skills]]", "[[player-metrics]]"]
 ---
 
@@ -22,7 +22,7 @@ Full character sheet in [[the-player]]. This note is the mechanical side of the 
 | Skills | [[player-skills]] - three programs, tiers, modes |
 | Inventory | [[player-inventory]] - pieces, pouch, bays |
 | Money | [[credits]] |
-| Progress | the day, 1 to 10 |
+| Progress | the day number, unbounded |
 
 There is no level, no XP, no class and no stat block. Every axis of power is either a program tier, an augment, or a resource.
 

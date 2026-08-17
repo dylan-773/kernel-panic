@@ -3,7 +3,7 @@ title: Ability Agent
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[augments]]", "[[the-kit]]", "[[validation]]"]
 ---
 
@@ -27,10 +27,12 @@ Ability changes enter **only through the balance loop, with before and after sim
 
 ## Its open item
 
-> [!warning] The augment pool exhausts on day 6
-> 18 augments against up to 27 cleared tickets, so the hardest third of the run has no build progression. Self-flagged in the v2 GDD and still true.
+> [!warning] The augment pool exhausts, and now it never refills
+> 18 augments against one draft per cleared job. Under the old arc the pool emptied around day 6 and the hardest third of the run had no build progression. Under permanent unlocks it empties sooner and stays empty, because nothing resets.
 >
-> This is the strongest outstanding item for this seat. See [[augments]] and [[game-progression]].
+> The limited-slot [[the-neural-deck|deck]] is the partial answer, and it is a good one: the choice moves from what you acquire to what you carry, and that choice never runs out. What is still missing is something for a cleared job to pay once the catalog is complete, and a catalog large enough for a game with no last day.
+>
+> Strongest outstanding item for this seat. See [[augments]] and [[game-progression]].
 
 ## See also
 

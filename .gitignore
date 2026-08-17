@@ -1,3 +1,8 @@
 gdd-review-kit
 .claude/agent-memory-local/
 .DS_Store
+
+# Syncthing artifacts (the vault syncs to other devices over the tailnet)
+.stfolder/
+.stversions/
+*.sync-conflict-*

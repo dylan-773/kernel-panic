@@ -3,11 +3,16 @@ title: Law 7 - Motion
 status: canon
 source: rulings
 owner: ux-agent
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[ui-rulings]]", "[[law-1-colour-is-roles]]", "[[law-6-the-tube]]"]
 ---
 
 # Law 7 - Motion, and the performance law that governs it
+
+> [!warning] Scope: this law inverts in the scene layer
+> **KP/OS only.** `steps()` cannot govern a walking character, and "ambient chrome never animates" would produce a dead room: a fan, a sign, a person breathing are all correct in a shop and all forbidden here. The alarm-legibility mechanism this law protects only works inside the terminal.
+>
+> What transfers: the compositor-properties table, and **measure, do not assume**.
 
 - **`steps()` timing only.** No eased curves.
 - **Reduced motion collapses to the final state in one frame**, with sound unaffected.

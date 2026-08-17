@@ -3,13 +3,16 @@ title: HUD and UI design
 status: canon
 source: rulings
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[kp-os]]", "[[law-2-hierarchy]]", "[[dive-exe]]"]
 ---
 
 # HUD and UI design
 
-There is no HUD in the usual sense. There is a desktop of windows, and one full-screen surface with instrumentation around the board.
+Inside KP/OS there is no HUD in the usual sense. There is a desktop of windows, and one full-screen surface with instrumentation around the board.
+
+> [!warning] The shop floor probably needs a real one
+> A walkable room needs an interaction prompt, and the player needs to see [[neural-strain|strain]], the time, whether someone is waiting at the counter, and what today's haul is worth while they decide whether to take one more job. That is a HUD, in a note that currently says the game does not have one. It should be as small as those four facts allow. See [[the-shop-floor]] and [[day-close-and-banking]].
 
 ## The method: glance order first
 

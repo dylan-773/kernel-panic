@@ -1,50 +1,52 @@
 ---
 title: Game progression
-status: canon
+status: draft
 source: code
 owner: orchestrator
-updated: 2026-08-05
-related: ["[[the-ten-day-arc]]", "[[player-skills]]", "[[meta-progression]]"]
+updated: 2026-08-16
+related: ["[[difficulty-ramp]]", "[[player-skills]]", "[[meta-progression]]"]
 ---
 
 # Game progression
 
-What changes between day 1 and day 10, on both sides.
+What changes between the first week and the tenth, on both sides.
 
 ## What the player gains
 
-| Axis | Day 1 | Day 9 | Source |
+| Axis | At the start | Eventually | Source |
 |---|---|---|---|
-| [[ram]] per turn | 5 | up to 9 | one night pick each |
-| Program [[program-tiers|tiers]] | 1/1/1 | up to 3/3/3 | night picks, capped at 3 |
+| [[ram]] per turn | 5 | up to 9 | [[the-neural-deck\|deck]] upgrades, salvage |
+| [[program-tiers\|Program tiers]] | 1/1/1 | up to 3/3/3 | deck upgrades, capped at 3 |
 | Modes | 2 of 6 | up to 6 of 6 | config [[augments]] |
-| Boosts installed | 0 | 3 to 5 | [[boost-bays]] |
-| [[patch-pieces|Pieces]] | 0 | 0 to 5 | drops, pulls, welds |
+| Augments owned | 0 | the whole catalog | drafts, permanent once banked |
+| Deck slots | few | more | deck upgrades |
+| Systems | bench only | crafting, darknet, deeper diagnosis | [[repairs-and-unlocks\|repairs]], credits |
+| [[patch-pieces]] | 0 | up to 5 | drops, pulls, welds |
 
-Nine night picks total, spread across RAM and three programs. A player cannot max everything: 9 picks against a theoretical 4 RAM plus 6 tiers.
+Unlike the old arc there is no cap on total progression and no schedule handing it out. Everything costs, in two currencies that do not convert: **credits build the shop, salvage builds the deck.**
 
 ## What the machine gains
 
-See [[the-ten-day-arc]] for the table. In summary: grid, RAM, **intelligence** (horizon 0 to 3), focus, head start, and job tier, while the player's par margin and patch supply shrink.
+See [[difficulty-ramp]]. In summary: grid, RAM, **intelligence** (horizon 0 to 3), focus, head start, and job tier all climb with the work, while the player's par margin and patch supply shrink. What indexes that climb is the job tier and how deep into a day it arrives, not the calendar.
 
 ## The two progressions are not symmetrical
 
 The machine gains **understanding**. The player gains **options**.
 
-That asymmetry is why the finale is winnable at all: a horizon 3 opponent with the full vocabulary beats a player who is simply bigger, but not one who has a counter for each of its six modes.
+That asymmetry is why the back room is winnable at all: a horizon 3 opponent with the full vocabulary beats a player who is simply bigger, but not one who has a counter for each of its six modes. It is also why the deck's slots matter more than its size.
 
 ## The gap in the curve
 
-> [!warning] Progression stops on day 6
-> The [[augments|augment pool]] is 18 against up to 27 cleared tickets. From roughly day 6 the draft returns 25 credits of salvage instead of a card.
+> [!warning] The augment pool still empties, and now it stays empty
+> Eighteen augments against one draft per cleared job. It used to run dry around day 6 and leave the hardest third of the arc with no build progression; with permanent unlocks it runs dry sooner and never refills.
 >
-> So the last third of the arc, which is the hardest third, has **no build progression at all**. Only night picks continue. This is a known, self-flagged structural problem.
+> The limited-slot deck is why that is survivable: the choice becomes what to carry rather than what to get, and that never runs out. What is still missing is something for a cleared job to pay after the catalog is complete. See [[augments]].
 
-## Between runs
+## What carries
 
-Almost nothing carries. See [[meta-progression]], which is unwritten and should not be.
+Everything the player closes the day with. See [[meta-progression]].
 
-The real between-run progression is **the player's own knowledge**, plus the story. See [[reveal-schedule]].
+The one thing that can be lost is a single day's work, which is what makes taking one more customer a decision at all. See [[day-close-and-banking]].
 
 ## See also
 

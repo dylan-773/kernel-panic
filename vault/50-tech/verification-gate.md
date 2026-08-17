@@ -3,8 +3,8 @@ title: Verification gate
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
-related: ["[[simulation-harnesses]]", "[[the-ten-day-arc]]", "[[the-plays]]"]
+updated: 2026-08-16
+related: ["[[simulation-harnesses]]", "[[difficulty-ramp]]", "[[the-plays]]"]
 ---
 
 # Verification gate
@@ -12,7 +12,7 @@ related: ["[[simulation-harnesses]]", "[[the-ten-day-arc]]", "[[the-plays]]"]
 **Nothing deploys unless all four are green.** Iron rule 5.
 
 ```bash
-cd /Users/lyd0n/Development/kernel-panic/kernel-panic-site/app
+cd /home/lyd0n/Development/kernel-panic/kernel-panic-site/app
 
 bun run typecheck
 bun run src/game/dev/sim.ts        # tutorial MUST print 0/200
@@ -34,15 +34,14 @@ bun run src/game/dev/teach-sim.ts  # every mechanic taught or waived
 
 ## The curve to gate
 
-Gate the **KITTED** curve:
+> [!warning] The shipped curve is nine days plus a finale, and there are no longer nine days
+> Gate the **KITTED** curve `~84 / 93 / 67 / 75 / 56 / 72 / 63 / 52 / 52, finale ~35`, with the kit-less proxy as a floor and nothing more (`94/67/60/46/53/41/32/18/13`, finale 0 by construction under `oppOpens`). Both are indexed on a day number that no longer bounds anything.
+>
+> What replaces it has to be **a win rate per job tier** plus a distribution over day lengths, because the player now chooses the difficulty by choosing how far to push. See [[difficulty-ramp]]. Until that exists, the gate has a hole in it and this note says so rather than pretending otherwise.
 
-```
-~84 / 93 / 67 / 75 / 56 / 72 / 63 / 52 / 52, finale ~35
-```
+Still valid regardless of index: measured `pd` within 2.0 of `pdTarget`, median rounds 3 to 4, `<=2r` under about 40%.
 
-The kit-less proxy is a **floor and nothing more** (`94/67/60/46/53/41/32/18/13`, finale 0 by construction under `oppOpens`). It never locks, wards or purges, and on [[split-boards]] defence is half the game.
-
-Also per day: measured `pd` within 2.0 of `pdTarget`, median rounds 3 to 4, `<=2r` under about 40%.
+A second gate the new design needs and does not have: **a failed day must leave permanent state unchanged.** That is a property test, not a balance number, and it is the one bug class the redesign invents. See [[save-and-load]].
 
 ## The absolute
 

@@ -3,7 +3,7 @@ title: LOADOUT.CFG
 status: canon
 source: code
 owner: ux-agent
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[the-kit]]", "[[ui-rulings]]", "[[ruling-14-loadout-palette]]"]
 ---
 
@@ -17,7 +17,7 @@ The kit. **The v3 reference implementation**, and the panel every other surface 
 
 - **Program tiers** with live RANGE and WIDTH numbers.
 - **Attack and defend mode buttons**, locked until the matching config [[augments|augment]] is drafted.
-- **[[boost-bays|Boost bays]]**.
+- **[[the-neural-deck|Deck slots]]**, holding a chosen subset of a permanently owned pool. This is where the build now happens: the catalog fills up over time and the slots never do.
 - **The [[the-pouch|pouch]]**.
 
 See [[the-kit]] and [[player-skills]].
@@ -29,7 +29,7 @@ See [[the-kit]] and [[player-skills]].
 
 ## Why this window is the reference
 
-It is the densest surface in the game that is not the dive: three programs, six modes, five bays, five pouch slots and their live numbers, all at once, in both a sparse day-1 state and a full day-9 state.
+It is the densest surface in the game that is not the dive: three programs, six modes, the deck slots, five pouch slots and their live numbers, all at once, in both a sparse opening state and a full late state. Law 4's equal-footprint rule is what keeps those two from being different layouts.
 
 It landed at **638 to 727px** across every viewport and run state, down from about **1316px**. Meeting the ceiling here proved the ceiling was meetable anywhere. See [[law-3-fluid-and-the-height-ceiling]].
 

@@ -3,7 +3,7 @@ title: The kit
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[program-tiers]]", "[[augments]]", "[[player-skills]]"]
 ---
 
@@ -25,7 +25,7 @@ Rules that never change:
 - **Always three.** Programs never unlock and are never consumed.
 - **1 RAM each.**
 - **Once per turn each**, tracked by `econ.used`. A full turn can cast all three.
-- They **upgrade** (tier, at day close) and **reconfigure** (mode, from [[augments]]).
+- They **upgrade** (tier, permanently, with salvage) and **reconfigure** (mode, from [[augments]], before any dive).
 - Program twists do not count against [[route-cost-and-par|par]].
 
 > [!danger] REVISED IN PROTOTYPE

@@ -3,7 +3,7 @@ title: Ines Calloway
 status: canon
 source: lore
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[customers]]", "[[arm-halt]]"]
 ---
 
@@ -25,7 +25,7 @@ High-tier halt traps. A forfeited turn at tier 4, against an opponent casting tw
 
 The complaint is three words from the truth. An intrusion that interrupts at precisely the worst moment, repeatedly, **as if evaluating**, is exactly what [[the-machine]] in the back room does.
 
-Placed at tiers 3 and 4, this line lands around the same runs where the player is learning that the tower paces its opponent. The customer roster is quietly rehearsing the reveal. See [[reveal-schedule]].
+The roster is quietly rehearsing the reveal. It cannot be timed against the player's knowledge any more, since they may meet Ines before or after they have read anything about pacing, so the line has to work as a coincidence first and a rhyme second. It does. See [[reveal-schedule]].
 
 ## See also
 

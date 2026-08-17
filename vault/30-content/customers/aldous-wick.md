@@ -3,7 +3,7 @@ title: Aldous Wick
 status: canon
 source: lore
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[customers]]", "[[arm-halt]]", "[[ruling-06-meridian]]"]
 ---
 
@@ -23,7 +23,7 @@ related: ["[[customers]]", "[[arm-halt]]", "[[ruling-06-meridian]]"]
 
 ## The dive
 
-The only customer spanning three tiers, so he recurs across the arc at rising difficulty. A halt-trap job: the heaviest tempo punishment in the game, and the strongest argument for [[scan]] first.
+The only customer spanning three tiers, so he can come back at rising difficulty as the shop grows into harder work. He is the roster's clearest case for regulars who return, which an open calendar needs more of than a ten-day arc did. A halt-trap job: the heaviest tempo punishment in the game, and the strongest argument for [[scan]] first.
 
 ## The quiet irony
 

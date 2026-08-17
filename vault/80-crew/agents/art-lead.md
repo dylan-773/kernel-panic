@@ -3,7 +3,7 @@ title: Art Lead
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[art-direction]]", "[[law-5-imagery]]", "[[ux-agent]]"]
 ---
 
@@ -40,6 +40,9 @@ See [[art-direction]] and [[law-5-imagery]].
 ## Output
 
 19 finished images in `pipeline/art/done/`, symlinked into this vault at `_attachments/art`.
+
+> [!warning] No pipeline exists for the shop
+> The toolchain makes single dithered stills. It does not make environment tiles, props, a character sprite, animation frames, or anything a camera moves through, and generation credits are capped. The scene layer is an order of magnitude more art than exists today. See [[the-shop-floor]] and [[art-direction]].
 
 ## See also
 

@@ -3,8 +3,8 @@ title: Augments
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
-related: ["[[augment-drafts]]", "[[boost-bays]]", "[[the-kit]]"]
+updated: 2026-08-16
+related: ["[[augment-drafts]]", "[[the-neural-deck]]", "[[the-kit]]"]
 ---
 
 # Augments
@@ -25,7 +25,7 @@ interface AugmentDef {
 
 ## Configs (4)
 
-Each unlocks one mode. Configs are exempt from the [[boost-bays|bay]] cap.
+Each unlocks one mode. Whether configs are exempt from the [[the-neural-deck|deck slot]] cap is now open: they were exempt from the bay cap, and making modes slotted would turn the counter triangle into a loadout decision.
 
 | Augment | Unlocks |
 |---|---|
@@ -69,11 +69,15 @@ Three augments are gated. This is what stops the draft offering DEEP SIPHON to a
 
 The GDD's augment table lists **BULWARK**, **TAP LINE**, **CARRY CACHE**, **SURGE CACHE** and **SLAG WARD**. Of those only TAP LINE is in the shipped catalog. The shipped set instead includes SPLICE REFUND, FIRST FAULT, OVERTIME CLAUSE and DARKNET RATE, which arrived with the 2026-07-28 deep balance pass.
 
-## The known cadence problem
+## The known cadence problem, and what changed about it
 
-The pool exhausts. One draft per cleared ticket, three tickets a day, eighteen augments: the pool is empty around **day 6**, so days 7 to 9 offer [[credits|salvage]] instead of progression. The GDD flagged this itself. It is still true and is the strongest open item for the [[ability-agent]].
+The pool exhausts. Eighteen augments against one draft per cleared job means a player sees the whole catalog and then keeps taking salvage forever. Under the old ten-day run this happened around day 6 and killed progression for the hardest third of the arc. Under permanent unlocks it happens sooner and never reverses.
+
+That is only survivable because **acquisition is no longer the interesting decision**. A full catalog against a small number of [[the-neural-deck|deck slots]] means the choice moves from what you get to what you carry, and it stays live forever. The pool running dry stops being the end of progression and becomes the start of the real game.
+
+What it does still need: something for a cleared job to pay once the catalog is complete, and eighteen is probably too few for a game with no last day. Strongest open item for the [[ability-agent]].
 
 ## See also
 
 - [[augment-drafts]] - how they are offered
-- [[boost-bays]] - how many you can carry
+- [[the-neural-deck]] - how many you can carry at once

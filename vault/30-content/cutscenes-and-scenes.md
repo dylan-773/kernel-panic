@@ -1,10 +1,10 @@
 ---
 title: Cutscenes and scenes
-status: canon
+status: draft
 source: code
 owner: orchestrator
-updated: 2026-08-05
-related: ["[[reveal-schedule]]", "[[shopfront-exe]]", "[[narrative-director]]"]
+updated: 2026-08-16
+related: ["[[reveal-schedule]]", "[[day-sys]]", "[[narrative-director]]"]
 ---
 
 # Cutscenes and scenes
@@ -13,48 +13,47 @@ related: ["[[reveal-schedule]]", "[[shopfront-exe]]", "[[narrative-director]]"]
 > `content/story.ts`, 924 lines. Scenes are **functions**, not a table.
 
 ```ts
-StoryBeat { speaker: "sister"|"father"|"system"|"companion",
+StoryBeat { speaker: "father"|"system"|"companion",
             name?, portrait?, still?, lines: string[] }
 Scene     { id, beats }
 ```
 
-## The scene functions
+> [!warning] status: this note is draft below the type declaration
+> The run-keyed scene functions are gone with the runs, and nothing has replaced them in code.
 
-| Function | Scene id | When |
-|---|---|---|
-| `runOpenerScene(runCount)` | `run-open-<n>` | start of every run |
-| `runEndScene(runCount)` | `run-end-<n>` | when a run ends |
-| `dayOpenScene(day)` | per day | each morning |
-| `tutorialIntroScene()` | `tutorial-intro` | run 1 only |
-| `tutorialOutroScene()` | `tutorial-outro` | run 1 only |
-| `finaleWinScene()` | `finale-win` | on opening the machine |
+## What the scene set becomes
 
-Plus `DAY_LINES`, nine morning one-liners. See the individual day notes, [[day-1]] onward.
+| Scene | When |
+|---|---|
+| the opening | once, before the first customer, ending in the failed attempt at the tower |
+| the tutorial intro and outro | once, around that attempt |
+| a day line | each morning, one line, not a scene |
+| Sunday scenes | the story beats, hand-placed. See [[sunday]] |
+| an artifact scene | optional, when a repair turns up something that wants a moment rather than a document |
+| the win | on opening the machine, and then the shop opens again on Monday |
 
-## Four speakers
+The two that carried the whole story, `runOpenerScene(runCount)` and `runEndScene(runCount)`, have no successor by design. Story is not paid out for failing any more. See [[ruling-16-reveals-are-upgrade-keyed]].
 
-- **sister** - [[rhea]], `sister.png`
+## Three speakers
+
 - **father** - [[dad]], `father.png`, fragments only
 - **system** - the terminal voice, short caps declaratives
-- **companion** - [[patch]], **finale only**
+- **companion** - [[patch]], **after a win only**
 
-> [!warning] The companion speaker may not appear before the finale
-> Before it, no content may confirm the occupant speaks at all. See [[reveal-schedule]], prohibition 5.
+The **sister** speaker is deleted along with `sister.png`. Nothing replaces it, and the absence is the design: there is no second voice in the shop to react, doubt, or soften anything.
+
+> [!warning] The companion speaker may not appear before a win
+> Before it, no content may confirm the occupant speaks at all. See [[reveal-schedule]], prohibition 2.
 
 ## Stills
 
-`still-locked.png`, `still-bench.png`, `still-counter.png`, `still-open.png`. Four states of the same shop, and the sequence locked to open is the whole arc in four images.
+`still-locked.png`, `still-bench.png`, `still-counter.png`, `still-open.png` were four states of the same shop, standing in for a place the game did not have. The game has the place now, so most of what stills were for is better done by [[the-shop-floor]]. `still-counter` in particular was the sister's post.
 
-## Bespoke, then fallback
-
-- Openers: bespoke runs 1 to 6, then a three-scene cycle (coffee, "so does my theory", the dream).
-- Enders: bespoke runs 1 to 8, carrying sectors 1 to 7 on runs 2 to 8. Runs 9+ alternate "SECTOR SCAN: NO NEW DATA" echoing sector 1 on odd runs and sector 4 on even runs.
-
-`run-sim.ts` asserts openers and enders exist for run numbers **1 through 12**, so the fallbacks are covered by test rather than by hope.
+Worth keeping only where a scene needs a framing the walkable camera cannot give.
 
 ## Where they play
 
-All of them in the flow window, [[shopfront-exe]], which changes its own title per screen. There is no separate cutscene mode and no full-screen takeover: a scene is a window with text in it, on the same desktop as everything else.
+Day lines and short system beats stay in the flow window, [[day-sys]]. **Sunday scenes play in the shop**, because they are about being in a room rather than reading a screen, and because the old "no full-screen takeover" rule was a virtue made of a limitation. See [[the-shop-floor]].
 
 ## Owned by
 

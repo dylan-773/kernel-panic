@@ -3,8 +3,8 @@ title: Win conditions
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
-related: ["[[the-round-cap]]", "[[split-boards]]", "[[territory-and-claiming]]"]
+updated: 2026-08-16
+related: ["[[the-round-cap]]", "[[split-boards]]", "[[design-change-log]]"]
 ---
 
 # Win conditions
@@ -53,9 +53,9 @@ It exists because the result overlay has to explain a loss the machine won witho
 
 ## The strain bill
 
-Only a win is billed. A loss chips 0, because the run is ending anyway. Formula in [[route-cost-and-par]].
+Only a win is billed. A loss chips 0, because losing the job is already the price. Formula in [[route-cost-and-par]].
 
 ## See also
 
-- [[death-and-run-end]] - what happens when strain reaches zero
+- [[day-close-and-banking]] - what happens when strain reaches zero
 - [[job-pay-and-billing]] - what each outcome pays

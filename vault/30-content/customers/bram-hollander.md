@@ -3,7 +3,7 @@ title: Bram Hollander
 status: canon
 source: lore
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[customers]]", "[[lock]]"]
 ---
 
@@ -27,7 +27,7 @@ The answer is a SURGE: light six or more nodes at once and every enemy lock on t
 
 ## The echo
 
-A shopkeeper locked out of his own register, by his own register. The player is a shopkeeper locked out of his own back room, by his own father. The game does not comment.
+A shopkeeper locked out of his own register, by his own register. The player is a shopkeeper locked out of his own machine, by his own father. Both locks are software and neither has a key. The game does not comment.
 
 ## See also
 

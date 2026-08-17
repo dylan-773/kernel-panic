@@ -3,7 +3,7 @@ title: RAM
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[turn-structure]]", "[[cascades-and-surge]]", "[[player-metrics]]"]
 ---
 
@@ -15,8 +15,8 @@ related: ["[[turn-structure]]", "[[cascades-and-surge]]", "[[player-metrics]]"]
 The per-turn action budget. RAM is what makes the duel a game of choices rather than a puzzle with one answer.
 
 ```
-BASE_RAM = 5      run start
-MAX_RAM  = 9      cap, bought one per night
+BASE_RAM = 5      the deck as inherited
+MAX_RAM  = 9      cap, bought with salvage
 carryCap = 2      both sides, flat
 ```
 
@@ -52,11 +52,14 @@ drainNext = 0
 - [[arm-halt]] with [[tripwire]] - 3 off the next active turn, on top of the forfeit.
 - [[arm-siphon]] - the mirror of the gain above.
 
-## Growth across a run
+## Growth
 
-`ramPerTurn` starts at 5 and rises by 1 per night pick, capped at 9. The sim's canonical build takes RAM on nights 1, 3, 5 and 8 (`NIGHT_SCHEDULE`), reaching 9 by day 8.
+`ramPerTurn` starts at 5 and rises by 1 per [[the-neural-deck|deck]] upgrade, capped at 9. It is permanent once banked, so unlike everything else about a day it only ever goes up.
 
-The opponent's `oppRam` runs 6 to 11 across the arc and 11 in the finale, so the machine is always ahead on raw budget. The player's edge is [[cascades-and-surge|cascades]] and the [[rotation|repair-cost]] exchange rate, not throughput.
+The opponent's `oppRam` runs from 6 at the bottom of the tier band to 11 at the top, so the machine is nearly always ahead on raw budget. The player's edge is [[cascades-and-surge|cascades]] and the [[rotation|repair-cost]] exchange rate, not throughput.
+
+> [!warning] `NIGHT_SCHEDULE` has no meaning now
+> The sim's canonical build took RAM on nights 1, 3, 5 and 8. There are no scheduled nights and no free picks, so the harnesses need a new model of how a player's budget grows. See [[simulation-harnesses]].
 
 ## See also
 

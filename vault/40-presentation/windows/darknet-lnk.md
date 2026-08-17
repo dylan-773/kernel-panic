@@ -3,7 +3,7 @@ title: DARKNET.LNK
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[the-darknet]]", "[[ruling-09-darknet]]", "[[law-4-chrome-vocabulary]]"]
 ---
 
@@ -11,7 +11,9 @@ related: ["[[the-darknet]]", "[[ruling-09-darknet]]", "[[law-4-chrome-vocabulary
 
 `darknet` · `windows/darknet.tsx`
 
-The gray-market CLI. Night phase only. `notched: true` chrome.
+The gray-market CLI. Evening only, and only once dad's onion router is repaired. `notched: true` chrome.
+
+Before that repair the window should exist and be visibly dead, the way the solder bay renders illegal partners dead rather than hiding them. A dead window the player cannot use yet is a tier 0 teaching surface for an unlock they have not bought. See [[repairs-and-unlocks]].
 
 ## The sequence
 

@@ -3,7 +3,7 @@ title: Voice and copy laws
 status: canon
 source: lore
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[60-story]]", "[[the-gates]]", "[[narrative-director]]"]
 ---
 
@@ -25,23 +25,21 @@ Retro terminal. **Clipped, diegetic, concrete. Short sentences.**
 ## Capitalization
 
 - Journal titles and augment names are **ALL CAPS**.
-- Day lines open **"DAY N."**
+- Day lines open **"DAY N."** Sundays open **"SUNDAY."** and never carry a number, because the point of the day is that it is not one of the working ones. See [[sunday]].
 - System voice is short caps declaratives: "RECOVERED SECTOR 1 OF 9.", "PLAYBACK FOLLOWS."
 
 ## Names
 
-- The sister is **Rhea**.
 - The companion is **Patch**.
 - The father is only ever **"Dad"**.
-- No given name or surname for the son, Dad, or Rhea's family line, ever, in any copy including official documents. [[ruling-08-names]].
+- No given name or surname for the son or for Dad, ever, in any copy including official documents. [[ruling-08-names]].
 
 ## Per character
 
 | Character | Rule |
 |---|---|
 | [[dad]] | Workbench wisdom, never exposition dumps. Patient, wry, no self-pity. |
-| [[patch]] | Warm precision, light competitiveness. **Only after the finale.** |
-| [[rhea]] | Says "the virus" until her run-8 ender renounces it. After that, ironic reference only ("Some virus."). |
+| [[patch]] | Warm precision, light competitiveness. **Only after a win.** |
 | [[the-player]] | Wry, grieving, methodical. Calls Patch "it", always. |
 
 ## Customers

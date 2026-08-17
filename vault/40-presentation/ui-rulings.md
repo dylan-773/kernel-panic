@@ -3,18 +3,35 @@ title: UI rulings
 status: canon
 source: rulings
 owner: ux-agent
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[kp-os]]", "[[law-1-colour-is-roles]]", "[[ux-agent]]"]
 ---
 
 # UI rulings
 
-The KP/OS **v3 instrument panel** laws. Every surface obeys them.
+The KP/OS **v3 instrument panel** laws. Every KP/OS surface obeys them.
 
 > [!info] Status
 > Established by the `ux-2026-07-31-loadout-eva` cycle over five review rounds. [[loadout-cfg]] is the reference implementation and is **still `awaiting` final approval**; the system itself is settled and is what other panels build to.
 >
 > Cited elsewhere **by law number**, so the numbering is a stable public key.
+
+## Scope: two domains
+
+> [!warning] Read this before applying any law to the shop
+> Every law below says "every surface", and until 2026-08-16 that silently meant "every window". The game now has a second visual domain and the laws do not automatically reach it.
+
+| Domain | What it is | Governed by |
+|---|---|---|
+| **KP/OS surfaces** | the desktop, every window, and [[dive-exe]] | all eleven laws, unchanged |
+| **The scene layer** | the walkable 2.5D shop and bedroom | laws 1, 2, 4 and 6 in principle; laws 3, 5, 7, 8, 9 and 10 **do not apply as written** |
+
+Where a law does not reach, the underlying principle usually still does, and each law note now says which half survives. The two hardest cases:
+
+- **Law 5** requires 1:1 pixel mapping and forbids downscaling. A sprite at depth under a moving camera **is** a downscale, so either the scene locks to integer scales with no free zoom, or law 5 is KP/OS-only and the scene needs its own art law.
+- **Law 7** reserves motion for alarms and forbids ambient animation. In a room that inverts: a shop with no fan turning and no sign flickering reads dead, and the alarm-legibility mechanism the law protects only works inside KP/OS.
+
+Numbering is a stable public key, so **a scene-layer law is law 12 or later**. Never insert, never renumber. If the annotations below prove insufficient, [[law-12-the-scene-layer]] is where it goes.
 
 ## The eleven laws
 
@@ -46,8 +63,10 @@ Unchanged from v2: the no-scrollbar law, paging over scrolling, [[darknet-lnk]]'
 
 ## Process
 
-> [!info] A `/kp-ui` cycle that redesigns an existing window is **pure UI**
+> [!info] A `/kp-ui` cycle that relays an existing KP/OS window, with its content unchanged, is **pure UI**
 > No loremaster gate, no tutorial gate, no detours into game code. Those gates are for surfaces introducing new fiction or new things a player must understand. A gate-shaped concern that appears anyway goes in the panel's `NOTES.md` and is mentioned once.
+>
+> **The exemption does not reach the scene layer.** An object in the shop carries fiction and a mechanic at the same time, so scene work is gated on both questions by default. See [[the-gates]].
 
 ## See also
 

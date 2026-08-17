@@ -3,8 +3,8 @@ title: Arc Composer
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
-related: ["[[the-ten-day-arc]]", "[[difficulty-dials]]", "[[validation]]"]
+updated: 2026-08-16
+related: ["[[difficulty-ramp]]", "[[difficulty-dials]]", "[[validation]]"]
 ---
 
 # Arc Composer
@@ -13,13 +13,16 @@ The difficulty curve. Sonnet, `maxTurns` 15.
 
 ## Owns
 
-`pipeline/proposals/arc-composer.json`. Proposes `DayConfig` deltas against win-rate targets.
+`pipeline/proposals/arc-composer.json`. Proposes difficulty config deltas against win-rate targets.
 
 Never touches `kernel-panic-site/`.
 
 ## The table it moves
 
-`DAY_CONFIGS` in `content/arc.ts`. See [[the-ten-day-arc]] for values and [[difficulty-dials]] for what each field means.
+`DAY_CONFIGS` in `content/arc.ts`.
+
+> [!warning] This seat's entire owned artifact is being redefined
+> A ten-row table indexed by day cannot exist on an open calendar. What replaces it is a config per **job tier**, modified by how deep into the day a job arrives, with the available tier band opening as the shop grows. Until that table exists this seat has nothing to move. See [[difficulty-ramp]] and [[difficulty-dials]].
 
 ## The rule
 
@@ -35,4 +38,4 @@ Deltas against targets, with before and after sim numbers from the latest [[vali
 
 ## See also
 
-- [[the-ten-day-arc]] · [[simulation-harnesses]]
+- [[difficulty-ramp]] · [[simulation-harnesses]]

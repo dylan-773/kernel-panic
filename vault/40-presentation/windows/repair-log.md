@@ -3,7 +3,7 @@ title: REPAIR.LOG
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[job-pay-and-billing]]", "[[neural-strain]]", "[[augment-drafts]]"]
 ---
 
@@ -24,7 +24,7 @@ That framing is the window's whole idea. A repair shop produces an invoice, not 
 - The **verdict slab**, the obvious focal element.
 - The **client line**: `winLine` or `lossLine` from the customer profile.
 - The **strain trace** with sparklines, plus the dive log.
-- The **3-card [[augment-drafts|augment draft]]**.
+- The **3-card [[augment-drafts|augment draft]]**. A pick is now an addition to a permanent pool rather than a swap into a limited rack, so the card copy has to stop implying anything is being given up.
 
 ## `endReason`
 

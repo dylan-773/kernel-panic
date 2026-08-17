@@ -3,8 +3,8 @@ title: Simulation harnesses
 status: canon
 source: code
 owner: validation
-updated: 2026-08-05
-related: ["[[verification-gate]]", "[[determinism-and-seeds]]", "[[the-ten-day-arc]]"]
+updated: 2026-08-16
+related: ["[[verification-gate]]", "[[determinism-and-seeds]]", "[[difficulty-ramp]]"]
 ---
 
 # Simulation harnesses
@@ -41,11 +41,18 @@ Per-day output: win%, cap%, rounds mean and range, chip per win, par, rotations,
 
 It **throws at import** if a scheduled augment id no longer exists, so deleting an augment cannot silently degrade the profile into something weaker.
 
+> [!warning] Every profile above is arc-shaped and cannot survive the redesign
+> `NIGHT_SCHEDULE` assumes nine free picks. `BOOST_SCHEDULE` and `cellsAtDay` are nine-element arrays indexed by day. The kit-less pass walks days 1 to 9 plus a finale. None of those indices exist on an open calendar, and there are no free picks at all.
+>
+> What the harnesses have to model instead: **a day of variable length**, a player who banks or busts, and a kit that grows by spending rather than on a schedule. The paired kitted and kit-less design stays; what changes is what the pass is indexed on. See [[difficulty-ramp]] and [[verification-gate]].
+
 ## run-sim.ts - does the run layer hold?
 
 **40 full runs** driving the **real reducers** exactly as the UI does, asserting at every dispatch. `must()` names the dispatch count on failure.
 
 Covers: meta hydration, the opener, the tutorial (asserts unwinnable), 10 days of pick-analyze-dive, drafts (no repeats, never offers owned, `requires` honoured, swap ejects the named boost, bays never exceeded), **pouch conservation** (a dive never mints pieces), night rest, darknet buy, bay buy, craft, the two-step night, the finale, and story scenes.
+
+The invariant this layer will need and does not have: **a failed day leaves permanent state bit-identical**, checked by snapshotting before the day opens and comparing after strain hits 0. Pouch conservation is the model to copy. The swap and bay assertions retire with the bays.
 
 Also asserts the [[split-boards]] invariants: a `"goal"` verdict means the winner's goal is lit and the loser's is not, and **every live node is built**.
 

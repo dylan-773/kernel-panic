@@ -3,7 +3,7 @@ title: Player skills
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[the-kit]]", "[[program-tiers]]", "[[augments]]"]
 ---
 
@@ -19,7 +19,7 @@ Three, always: [[scan]], [[attack]], [[defend]]. They never unlock and are never
 
 ## 2. Tiers
 
-Each program independently 1 to 3, one bought per night. Tiers buy **width and range**: targets per cast, scan radius, ward radius, siphon steal. See [[program-tiers]].
+Each program independently 1 to 3, bought as permanent [[the-neural-deck|deck]] upgrades. Tiers buy **width and range**: targets per cast, scan radius, ward radius, siphon steal. See [[program-tiers]].
 
 ## 3. Modes
 
@@ -39,7 +39,7 @@ The result is a build space that is wide but never wide **in front of you**: at 
 
 ## Skill in the other sense
 
-The player's real skill is routing: reading [[route-cost-and-par|route cost]], holding a chain for a [[cascades-and-surge|cascade]], and knowing which junction costs the machine most to repair. None of that is a stat. It is the same on day 1 and day 9.
+The player's real skill is routing: reading [[route-cost-and-par|route cost]], holding a chain for a [[cascades-and-surge|cascade]], and knowing which junction costs the machine most to repair. None of that is a stat. It is the same on the first day and the hundredth.
 
 ## See also
 

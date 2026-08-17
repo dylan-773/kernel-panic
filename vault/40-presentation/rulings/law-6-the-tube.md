@@ -3,11 +3,14 @@ title: Law 6 - The tube
 status: canon
 source: rulings
 owner: ux-agent
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[ui-rulings]]", "[[player-options]]", "[[law-7-motion]]"]
 ---
 
 # Law 6 - The tube
+
+> [!info] Scope
+> **KP/OS only, and that is the interesting answer.** The glass is the physical surface of this terminal, so it should not exist in the room and should arrive as the player sits down. That makes the transition diegetic and makes CRT OFF an option that does not flatten the shop. See [[the-bench-transition]].
 
 The CRT is **a set of glass layers over the stage**, not a filter on the UI.
 

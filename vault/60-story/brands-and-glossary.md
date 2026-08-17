@@ -3,7 +3,7 @@ title: Brands and glossary
 status: canon
 source: lore
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[world-overview]]", "[[customers]]", "[[voice-and-copy-laws]]"]
 ---
 
@@ -39,7 +39,7 @@ Meridian is **one conglomerate** covering both hardware and the clinic. See [[ru
 | **KP/OS** | the shop terminal's retro pixel desktop. See [[kp-os]]. |
 | **DAD.LOG** | the reader. **DAD.VOL** is the volume: Dad's own read-only recovered drive. Not a diary the player keeps. See [[ruling-12-dad-log-reframe]]. |
 | **Night Patch** | the strain restore bought at day close. |
-| **sectors** | numbered recovered cargo, 1 to 9. Seven surface before the finale. |
+| **sectors** | numbered recovered cargo, 1 to 9. Seven are findable; 8 and 9 are not. |
 | **the tower** | the back-room machine. See [[the-machine]]. |
 
 > [!warning] Night Patch price drift
@@ -47,11 +47,11 @@ Meridian is **one conglomerate** covering both hardware and the clinic. See [[ru
 
 ## The lowercase coincidence
 
-"patch" appears as an ordinary noun (Night Patch, patch pieces, patching a board) long before [[patch]] is named. **The coincidence is allowed to sit there unremarked before the finale.** It is not a clue and must never be pointed at.
+"patch" appears as an ordinary noun (Night Patch, patch pieces, patching a board) long before [[patch]] is named. **The coincidence is allowed to sit there unremarked until the machine opens.** It is not a clue and must never be pointed at.
 
 ## Places and props
 
-The pharmacy on 9th, four blocks away. The register with the will taped inside. The ticket spike. The ledger. The bottom drawer of eleven Meridian FINAL NOTICEs filed under W "for whatever". The shoebox of pharmacy receipts. The back door Rhea oiled. See [[the-shop]].
+The pharmacy on 9th, four blocks away. The register with the will taped inside. The ticket spike. The ledger. The bottom drawer of eleven Meridian FINAL NOTICEs filed under W "for whatever". The shoebox of pharmacy receipts. The solder bay. The onion router. See [[the-shop]].
 
 ## See also
 

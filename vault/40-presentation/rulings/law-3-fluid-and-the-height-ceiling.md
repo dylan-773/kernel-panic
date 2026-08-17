@@ -3,11 +3,14 @@ title: Law 3 - Fluid and the height ceiling
 status: canon
 source: rulings
 owner: ux-agent
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[ui-rulings]]", "[[technical-requirements]]", "[[law-8-the-cuts-discipline]]"]
 ---
 
 # Law 3 - Fluid: container units, one breakpoint, a hard height ceiling
+
+> [!info] Scope
+> **KP/OS only.** The ceiling exists so windows tile on a short desk, and the scene layer does not tile. The supported viewport list still applies to the whole game; the 700px ceiling and the container-unit rule do not reach the shop, which needs its own framing policy instead.
 
 ## `cqi`, never `vw`
 

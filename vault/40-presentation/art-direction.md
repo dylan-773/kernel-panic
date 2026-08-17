@@ -3,7 +3,7 @@ title: Art direction
 status: canon
 source: rulings
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[law-5-imagery]]", "[[art-lead]]", "[[kp-os]]"]
 ---
 
@@ -11,7 +11,7 @@ related: ["[[law-5-imagery]]", "[[art-lead]]", "[[kp-os]]"]
 
 ## The rule
 
-**1-bit dithered imagery, at 1:1 pixel mapping, never downscaled.**
+**1-bit dithered imagery, at 1:1 pixel mapping, never downscaled.** This is a KP/OS rule and cannot survive a camera unchanged. See the scope box on [[law-5-imagery]].
 
 Browser downscaling mushes the dots into grey noise. To show less, **crop**; to show more, crop wider. Integer upscaling is acceptable; downscaling never is.
 
@@ -19,7 +19,7 @@ Frame the crop on the **subject**. A centre crop of a busy illustration is usual
 
 ## Imagery must be diegetic
 
-There must be an in-fiction reason for the OS to show it. A portrait exists because the ticket carries a client photo; a device macro exists because the intake scanned it. Decoration with no diegetic warrant does not ship.
+There must be an in-fiction reason for it to be shown. A portrait exists because the ticket carries a client photo; a device macro exists because the intake scanned it. Decoration with no diegetic warrant does not ship.
 
 ## Three treatments
 
@@ -47,6 +47,9 @@ Palette hexes are pinned in every prompt, which is what keeps a generative pipel
 ## The finished set
 
 19 images in `pipeline/art/done/`, symlinked into this vault at `_attachments/art`. Customer portraits, device macros, client figures, story stills, and window furniture.
+
+> [!warning] There is no pipeline for the shop
+> `dither.py`, `pxpost.py` and `colourise.py` produce single dithered stills. Nothing in the toolchain makes environment tiles, props, a character sprite, animation frames or anything a camera can move through, and generation credits are capped. A walkable 2.5D shop is an order of magnitude more art than exists today and it is the largest production risk the redesign creates. See [[art-lead]] and [[the-shop-floor]].
 
 Examples in [[juno-vex]], [[aldous-wick]], [[sable-okonkwo]], [[wren-tallis]], [[bram-hollander]].
 

@@ -3,8 +3,8 @@ title: The player - the son
 status: canon
 source: lore
 owner: orchestrator
-updated: 2026-08-05
-related: ["[[dad]]", "[[rhea]]", "[[player-character]]"]
+updated: 2026-08-16
+related: ["[[dad]]", "[[patch]]", "[[player-character]]"]
 ---
 
 # The player - the son
@@ -13,11 +13,13 @@ related: ["[[dad]]", "[[rhea]]", "[[player-character]]"]
 
 ## The will
 
-> You take the bench. You are bad with people and she is bad with computers. Between the two of you there is exactly one whole shopkeeper.
+> The whole thing is yours. I am sorry about the counter.
 
 ## Who he is
 
-A natural diver. Learned patience at Dad's bench as a child, in the soldering lesson:
+A natural diver, and a reluctant shopkeeper. He got the bench half of the job by temperament and the counter half by default, and being bad with people is now something he has to do anyway, twice a day, to strangers holding broken machines. That is characterization the old draft handed to a sibling and the new one makes him carry.
+
+Learned patience at Dad's bench as a child, in the soldering lesson:
 
 > it only sticks where you have cleaned
 
@@ -27,7 +29,9 @@ Reads [[dad-log-archive|DAD.LOG]], the recovered archive of Dad's own files, mou
 
 Wry, grieving, methodical.
 
-Refers to [[patch]] as **"it"** in his own bench notes, even after the finale. [[rhea]] says "he". That difference is characterization, not inconsistency: he is the one who spent nine days being graded by it.
+Refers to [[patch]] as **"it"** in his own bench notes, before and after. He is the one who was graded by it, and he does not hand it a pronoun for that.
+
+He also believes, at the start, that the thing in the back room is a virus. Nobody told him. See [[ruling-17-the-players-own-assumption]].
 
 ## Constraints
 

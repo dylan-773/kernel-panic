@@ -3,7 +3,7 @@ title: Route cost and par
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[rotation]]", "[[neural-strain]]", "[[opponent-ai]]"]
 ---
 
@@ -46,7 +46,7 @@ PAR_FLAT = 2
 PAR_STRAIN_PER = 2
 ```
 
-Rotations past par chip [[neural-strain]] at 2 per rotation on a win. `cfg.parFlat` is overridden per day and tightens across the arc from 6 on day 1 down to 1 on day 9. See [[the-ten-day-arc]].
+Rotations past par chip [[neural-strain]] at 2 per rotation on a win. `cfg.parFlat` is set per job and tightens as the work gets harder, from a forgiving 6 at the bottom of the tier band down to 1 at the top. The same untidy dive that costs nothing on an easy job bills real strain on a hard one. See [[difficulty-ramp]].
 
 ### What counts against par
 
@@ -75,7 +75,7 @@ chip  = 2  * over                                    PAR_STRAIN_PER
 chip  = min(45, chip)
 ```
 
-A loss bills 0. The run is ending anyway.
+A loss bills 0. Losing the job is already the price.
 
 **Every term is avoidable in principle.** Play a clean dive and the bill is exactly zero. That is what keeps strain an efficiency bill rather than attrition you cannot play out of.
 

@@ -3,7 +3,7 @@ title: Teaching system
 status: canon
 source: code
 owner: tutorial-agent
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[placement-bias-order]]", "[[coachmarks]]", "[[mechanic-coverage]]"]
 ---
 
@@ -23,7 +23,7 @@ related: ["[[placement-bias-order]]", "[[coachmarks]]", "[[mechanic-coverage]]"]
 interface TeachingMoment {
   id; teaches: string[];      // MECHANIC_INVENTORY ids
   surface: TeachSurface;      // tutorial|duel|day|analyze|loadout|solder|
-                              // result|upgrade|finalePre|runEnd|desktop
+                              // result|upgrade|desktop|shop|bedroom|sunday|dayClose
   when: TeachWhen;            // firstSight|overPar|holdingCells|cascadeBanked|
                               // draftOffered|craftReady|swapOffered
   anchor;                     // -> CSS class kp-teach-<anchor>
@@ -49,15 +49,18 @@ interface TeachingMoment {
 !taught.includes(id)  &&  day >= m.notBeforeDay  &&  teachFires(m, signals)
 ```
 
-`notBeforeDay` gates day 0, so **the opening dive takes no coachmarks by construction**. Every shipped coachmark carries `notBeforeDay: 1`.
+`notBeforeDay` gates day 0, so **the opening dive takes no coachmarks by construction**. Every shipped coachmark carries `notBeforeDay: 1`. That still works: the opening attempt at the tower is day 0 and happens once.
 
 ## Anchoring is DOM-based
 
 `<Teach id signals?>` is placed **inline next to the thing it explains**, rendering `.kp-teach.kp-teach-<anchor>`. Nothing is measured or positioned by coordinates, so a callout cannot drift from its subject when a layout changes.
 
-## Taught is meta, not run
+## Taught is permanent
 
-GOT IT dispatches `{type: "taught", id}` into `MetaState.taught`. **A mechanic explained in attempt 3 stays explained in attempt 4.** Per save slot, so a fresh slot is a fresh player.
+GOT IT dispatches `{type: "taught", id}` into `MetaState.taught`. A mechanic explained once stays explained, including across a failed day: **a blown day never re-teaches anything**, because the player did not forget it. Per save slot, so a fresh slot is a fresh player.
+
+> [!warning] Two surfaces are dead and four are missing
+> `runEnd` and `finalePre` describe screens that no longer exist. The new design needs `shop` (the walkable room), `bedroom`, `sunday` and `dayClose`, and the shop surface is the one that changes this system most: an object in a room can teach by being visibly broken, which is tier 0 and needs no callout at all. See [[placement-bias-order]].
 
 ## The limits teach-sim enforces
 

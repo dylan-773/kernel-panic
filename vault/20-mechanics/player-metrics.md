@@ -1,9 +1,9 @@
 ---
 title: Player metrics
-status: canon
+status: draft
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[ram]]", "[[neural-strain]]", "[[route-cost-and-par]]"]
 ---
 
@@ -31,20 +31,27 @@ Every number attached to the player, and where it lives.
 | `attacksCast`, `scansCast`, `defendsCast` | cast counters; only `attacksCast` drives a rule |
 | `strainChip` | the bill, computed at finish |
 
-## Per run
+## Per day
 
 | Metric | Range |
 |---|---|
 | [[neural-strain]] | 100 to 0 |
-| [[credits]] | unbounded |
-| day | 1 to 10 |
-| program tiers | 1 to 3 each |
-| [[boost-bays]] | 3 to 5 |
+| jobs taken | 0 upward, the player's choice |
+| held credits and salvage | unbanked until close |
 | pouch | 0 to 5 [[patch-pieces|pieces]] |
 
-## Lifetime
+## Permanent
 
-`runCount`, `machineOpened`, `taught`, `stats`. See [[scoring-and-lifetime-stats]].
+| Metric | Range |
+|---|---|
+| [[credits]] | unbounded |
+| program tiers | 1 to 3 each |
+| [[the-neural-deck]] slots | open |
+| augments owned | up to the catalog |
+| repairs completed | up to the shop |
+| day number, and day of week | unbounded, cycling |
+
+`machineOpened`, `taught` and `stats` persist alongside them. `runCount` does not exist any more. See [[scoring-and-lifetime-stats]] and [[meta-progression]].
 
 ## Which are shown, and where
 

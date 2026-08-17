@@ -3,7 +3,7 @@ title: Coachmarks
 status: canon
 source: code
 owner: tutorial-agent
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[teaching-system]]", "[[teaching-tips]]", "[[placement-bias-order]]"]
 ---
 
@@ -27,6 +27,11 @@ One-time callouts. **A coachmark is a rule you need once.**
 | 80 | `patch-cell-use` | duel | **holdingCells** | patch placement |
 
 All carry `notBeforeDay: 1`, so none can fire in the opening dive.
+
+> [!warning] Six moments have no coachmark and need one
+> Walking the shop and interacting with an object; **closing the day**; **banking**, which is what closing means; [[the-neural-deck|deck slots]], now that owning and carrying are different things; [[sunday]] arriving; and the back room being attemptable. Closing and banking are the most important teaching problem in the game, because a player who does not understand them loses a day to it.
+>
+> Two existing rows also move. `day-upgrade` and `night-shop` both fired on one upgrade screen, and the evening is now a phase across two places. And the reading order the table encodes, bill before progression before shop, was built on the day-1-to-day-10 funnel; the order still reads well but the reason it was chosen is gone.
 
 ## Order is precedence, and it is total
 

@@ -1,9 +1,9 @@
 ---
 title: LEDGER.LOG
-status: canon
+status: draft
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[scoring-and-lifetime-stats]]", "[[customers]]", "[[the-shop]]"]
 ---
 
@@ -15,7 +15,7 @@ The accounting terminal. There is no score; there are books.
 
 ## What it shows
 
-- **THIS RUN** against **LIFETIME**
+- **TODAY** against **LIFETIME**, with today's column marked as unbanked until the player closes. This window is the natural home for that distinction, and possibly for the act of closing itself. See [[day-close-and-banking]]
 - **CREDITS** as the hero number
 - **MOST LETHAL**: a customer dossier
 - Print furniture: the window is styled as a ledger printout

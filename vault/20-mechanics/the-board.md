@@ -3,7 +3,7 @@ title: The board
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[split-boards]]", "[[route-cost-and-par]]", "[[determinism-and-seeds]]"]
 ---
 
@@ -41,7 +41,7 @@ Elbows dominate, which is what makes [[rotation|unidirectional rotation]] bite: 
 
 ## Slag density
 
-`cfg.slag`, defaulting to 0.18 and 0.12 in the tutorial. It climbs across the arc from 0.18 on day 1 to 0.27 in the finale. See [[the-ten-day-arc]].
+`cfg.slag`, defaulting to 0.18 and 0.12 in the tutorial. It climbs with the job tier, and is at its highest against the back room. See [[difficulty-ramp]].
 
 Slag does two jobs: it constrains routes, and it is the only surface [[patch-pieces]] can be spent on. Rising slag is simultaneously rising difficulty and rising patch value.
 
@@ -84,9 +84,9 @@ See [[route-cost-and-par]].
 
 ## `oppOpens`
 
-Finale only. `startOppTurn` runs before the player's first input, because the machine was already inside. See [[day-10-the-finale]].
+The back room only. `startOppTurn` runs before the player's first input, because the machine was already inside. See [[the-finale-encounter]].
 
 ## See also
 
-- [[difficulty-dials]] - what changes per day
+- [[difficulty-dials]] - what changes, and what changes it
 - [[determinism-and-seeds]] - why the same seed gives the same board

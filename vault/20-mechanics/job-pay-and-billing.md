@@ -3,7 +3,7 @@ title: Job pay and billing
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[credits]]", "[[the-round-cap]]", "[[overtime-clause]]"]
 ---
 
@@ -25,7 +25,7 @@ jobPayFor(run, capWin) = jobPay * (capWin ? (overtimeClause ? 0.75 : 0.5) : 1)
 | 4 | 140 | 70 | 105 |
 | 5 | 165 | 82 | 123 |
 
-Plus, where they apply: 25 salvage when the draft pool is dry, and 15 from [[clean-run]] on a trap-free cap win.
+Plus, where they apply: salvage when the draft pool is dry, and 15 from [[clean-run]] on a trap-free cap win.
 
 ## Why a cap win pays half
 
@@ -37,6 +37,8 @@ The job took longer than the deadline. The client does not pay for the overrun. 
 
 [[repair-log]] reads the result as a **transaction**: CREDITED, BILLED, RECOVERED. Money in, strain out, pieces recovered. The window is an accounting document, which is what a repair shop would actually produce.
 
+CREDITED now means **provisional**. Pay is held until the day closes, so the invoice is real and the money is not yet. See [[day-close-and-banking]].
+
 ## See also
 
-- [[economy]] · [[the-ten-day-arc]]
+- [[economy]] · [[difficulty-ramp]]

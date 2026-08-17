@@ -3,7 +3,7 @@ title: The duel
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[split-boards]]", "[[the-kit]]", "[[win-conditions]]"]
 ---
 
@@ -53,11 +53,11 @@ Winning is not free: rotations past [[route-cost-and-par]], sprung traps, redire
 ## Design intent
 
 - **Touch-move.** Every rotation settles the board immediately. There is one take-back per turn and a cast spends it. The texture is commitment, not exploration.
-- **Defence is not occupation.** With split boards, defending means anti-trap and anti-redirect. It is never holding ground, which is what the old model made it and which did not play well. See [[territory-and-claiming]].
+- **Defence is not occupation.** With split boards, defending means anti-trap and anti-redirect. It is never holding ground, which is what the old model made it and which did not play well. See [[design-change-log]] entry 10.
 - **The signature moment is the cascade.** [[reach-and-placement]] and the banked payoff both exist to serve it: hold a long chain behind one unturned junction, then flip it.
 
 ## See also
 
-- [[difficulty-dials]] - how the same rules get harder across the arc
-- [[the-ten-day-arc]] - what the player faces, day by day
+- [[difficulty-dials]] - how the same rules get harder
+- [[difficulty-ramp]] - what the player faces, day by day
 - [[the-tutorial]] - how the four core verbs are taught

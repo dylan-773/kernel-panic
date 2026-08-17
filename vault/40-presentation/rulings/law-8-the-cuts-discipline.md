@@ -3,11 +3,14 @@ title: Law 8 - The cuts discipline
 status: canon
 source: rulings
 owner: ux-agent
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[ui-rulings]]", "[[law-3-fluid-and-the-height-ceiling]]"]
 ---
 
 # Law 8 - The cuts discipline
+
+> [!info] Scope
+> **KP/OS only**, by inheritance from law 3. It is a height-budget law and the scene layer has no height budget.
 
 When a surface exceeds its height budget, cut **in this order**, and record what was cut and why in its `NOTES.md`:
 

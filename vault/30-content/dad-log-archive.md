@@ -1,9 +1,9 @@
 ---
 title: DAD.LOG archive
-status: canon
+status: draft
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[ruling-12-dad-log-reframe]]", "[[reveal-schedule]]", "[[dad-log-window]]"]
 ---
 
@@ -12,29 +12,34 @@ related: ["[[ruling-12-dad-log-reframe]]", "[[reveal-schedule]]", "[[dad-log-win
 > [!info] Source
 > `content/journal.ts:JOURNAL_ENTRIES`, ten entries; `DADLOG_CHROME`, `visibleJournal(meta)`.
 
-**Not a diary the player keeps.** An archive reader over DAD.VOL, [[dad]]'s own read-only recovered volume, mounted and read file by file, one more file pieced back with every dive attempt. See [[ruling-12-dad-log-reframe]].
+**Not a diary the player keeps.** An archive reader over DAD.VOL, [[dad]]'s own read-only recovered volume, mounted and read file by file, one more file pieced back with every repair the player makes. See [[ruling-12-dad-log-reframe]].
 
 ```ts
-{ id, unlockAtRun, requiresOpened?, kind: "note"|"bill"|"memo",
+{ id, unlockAtRepair, requiresOpened?, kind: "note"|"bill"|"memo",
   filename, doctype, provenance, title, body: string[], benchNote? }
 ```
 
 ## The ten files
 
-| Unlock | File | Doctype | Title | Provenance |
+> [!warning] The unlock column is being re-authored
+> Every row below was keyed to a run number. The triggers shown are the proposed repairs, and the full mapping is [[repairs-and-unlocks]]. One is still unassigned. The order of the rows is not a sequence and the writing must not assume one.
+
+| Trigger | File | Doctype | Title | Provenance |
 |---|---|---|---|---|
-| run 0 | `WILL.SCN` | SCAN | [[entry-will\|THE WILL]] | scanned paper, taped inside the register, folded in four |
-| run 0 | `TICKET_QUERY.LOG` | LOG | [[entry-backroom\|THE BACK ROOM]] | shop system query, bench terminal, day one |
-| run 1 | `SESSION_001.LOG` | LOG | [[entry-failed1\|ANOTHER FAILED RUN]] | tower telemetry, first dive, tonight |
-| run 2 | `NOTICE_07.SCN` | SCAN | [[entry-bills\|FINAL NOTICE]] | scanned paper, bottom drawer, one of eleven filed under W |
-| run 3 | `FRAGMENT_03.REC` | FRAG | [[entry-solder\|SOLDER SMOKE]] | partial recovery, surfaced off a lost dive |
-| run 4 | `RECEIPTS.SCN` | SCAN | [[entry-receipts\|RECEIPTS]] | scanned paper, shoebox, pharmacy on 9th, six years of stubs |
-| run 5 | `CONSULT_SUMMARY.SCN` | SCAN | [[entry-diagnosis\|THE DIAGNOSIS]] | scanned paper, sealed envelope, never opened until now |
-| run 6 | `LEDGER_XREF.QRY` | QUERY | [[entry-notickets\|NO TICKETS]] | ledger cross reference, run twice to be sure |
-| run 8 | `SESSION_SUMMARY.LOG` | LOG | [[entry-grading\|IT IS GRADING ME]] | tower telemetry, aggregate, eight sessions logged |
-| finale win | `PATCH.SYS` | SYS | [[entry-patch\|PATCH]] | full volume unlocked, recovered whole, the morning after |
+| start | `WILL.SCN` | SCAN | [[entry-will\|THE WILL]] | scanned paper, taped inside the register, folded in four |
+| start | `TICKET_QUERY.LOG` | LOG | [[entry-backroom\|THE BACK ROOM]] | shop system query, bench terminal, day one |
+| first attempt | `SESSION_001.LOG` | LOG | [[entry-first-session\|IT SHUT THE DOOR]] | tower telemetry, first dive |
+| the bench drawer | `NOTICE_07.SCN` | SCAN | [[entry-bills\|FINAL NOTICE]] | scanned paper, bottom drawer, one of eleven filed under W |
+| the solder bay | `FRAGMENT_03.REC` | FRAG | [[entry-solder\|SOLDER SMOKE]] | partial recovery, surfaced while rebuilding the bay |
+| storage and shelving | `RECEIPTS.SCN` | SCAN | [[entry-receipts\|RECEIPTS]] | scanned paper, shoebox, pharmacy on 9th, six years of stubs |
+| to be assigned | `CONSULT_SUMMARY.SCN` | SCAN | [[entry-diagnosis\|THE DIAGNOSIS]] | scanned paper, sealed envelope, never opened until now |
+| the ledger terminal | `LEDGER_XREF.QRY` | QUERY | [[entry-notickets\|NO TICKETS]] | ledger cross reference, run twice to be sure |
+| the drive recovery rig | `SESSION_SUMMARY.LOG` | LOG | [[entry-grading\|IT IS GRADING ME]] | tower telemetry, aggregate, every session logged |
+| a win | `PATCH.SYS` | SYS | [[entry-patch\|PATCH]] | full volume unlocked, recovered whole, the morning after |
 
 Locked entries render as `doctype: DAMAGED`, title `????`, provenance "partial recovery, more passes needed".
+
+That fiction gets better under the new key, not worse. A recovery pass used to be an abstraction over failing; it is now literally true, because the player fixed the drive rig, or cleared the shelf, or repaired the bench the thing was sitting under.
 
 ## Three kinds of artifact
 
@@ -60,4 +65,5 @@ Telemetry about the player's own current dives sits on the same volume as Dad's 
 ## See also
 
 - [[dad-log-window]] - the reader
-- [[reveal-schedule]] - the unlock gate
+- [[reveal-schedule]] - the ceiling every entry sits under
+- [[repairs-and-unlocks]] - what turns each one up

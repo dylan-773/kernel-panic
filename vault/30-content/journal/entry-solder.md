@@ -3,15 +3,15 @@ title: SOLDER SMOKE
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[dad-log-archive]]", "[[dad]]", "[[the-player]]"]
 ---
 
 # SOLDER SMOKE
 
-`FRAGMENT_03.REC` · FRAG · **unlockAtRun 3** · kind `memo`
+`FRAGMENT_03.REC` · FRAG · **repair: the solder bay** · kind `memo`
 
-*Provenance: partial recovery, surfaced off a lost dive, tonight.*
+*Provenance: partial recovery, surfaced while rebuilding the bay.*
 
 ## What it carries
 
@@ -21,7 +21,7 @@ The soldering lesson. [[dad]] at the bench with a child.
 
 ## Why it is a FRAG
 
-The only `FRAG` doctype in the archive: partial recovery off damaged storage, surfaced by losing a dive. It is the first entry that arrives **because** the player failed, which is the mechanic the whole story runs on. See [[death-and-run-end]].
+The only `FRAG` doctype in the archive: partial recovery off damaged storage, surfaced by putting the solder bay back together. It used to be the entry that arrived **because the player failed**, which was the mechanic the whole story ran on. It now arrives because the player fixed the bench the lesson happened at, which is a better fit for a memory about cleaning a joint before you solder it. See [[repairs-and-unlocks]].
 
 ## Its real job
 

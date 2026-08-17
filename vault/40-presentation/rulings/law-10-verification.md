@@ -3,11 +3,14 @@ title: Law 10 - Verification
 status: canon
 source: rulings
 owner: ux-agent
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[ui-rulings]]", "[[verification-gate]]", "[[law-9-build-recipe]]"]
 ---
 
 # Law 10 - Verification
+
+> [!info] Scope
+> **KP/OS only.** The checklist measures scrollbars, tiling and type ratios, none of which exist in a room. The scene needs its own: frame time under camera motion, legibility of interactables, and an integer-scale audit if law 5 is kept. The no-dash rule and the frame-timing harness transfer unchanged.
 
 The Chrome extension is often unavailable. **Drive headless Chrome over CDP instead**, which is the better harness anyway because it clicks the demo's own rig and measures real geometry.
 

@@ -3,8 +3,8 @@ title: PATCH
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
-related: ["[[dad-log-archive]]", "[[patch]]", "[[day-10-the-finale]]"]
+updated: 2026-08-16
+related: ["[[dad-log-archive]]", "[[patch]]", "[[the-finale-encounter]]"]
 ---
 
 # PATCH
@@ -14,7 +14,7 @@ related: ["[[dad-log-archive]]", "[[patch]]", "[[day-10-the-finale]]"]
 *Provenance: full volume unlocked, recovered whole, the morning after.*
 
 > [!danger] Finale-gated
-> `unlockAtRun: 0` **plus** `requiresOpened: true`. It is invisible until `machineOpened` is true on `MetaState`, then available immediately regardless of `runCount`. A win on any run delivers it.
+> `requiresOpened: true` and nothing else. It is invisible until `machineOpened` is true on `MetaState`, and a win delivers it whenever that win happens, however little else the player has found.
 
 ## What it carries
 

@@ -3,7 +3,7 @@ title: Title and start screen
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[kp-os]]", "[[save-and-load]]", "[[game-flowchart]]"]
 ---
 
@@ -13,6 +13,9 @@ related: ["[[kp-os]]", "[[save-and-load]]", "[[game-flowchart]]"]
 > `components/os/boot.tsx`, `login.tsx`; `game/version.ts`.
 
 There is no title screen. There is a **boot sequence**.
+
+> [!warning] Does the game still open on a BIOS post?
+> The boot's whole argument was that before you are a player you are someone switching on a terminal. That is still a good argument and it is no longer obviously first: the player is also someone unlocking a shop in the morning. Open question, and it decides what the first ten seconds of the game are. See [[the-shop-floor]].
 
 ## BIOS boot
 
@@ -33,11 +36,11 @@ Boot line 1 ships **name-free**, per a loremaster gate. [[ruling-08-names]] appl
 
 Three save slots. Each is a separate save; each can be **deleted** from the login screen.
 
-Slots are the game's only profile system. `MetaState` including `runCount`, `machineOpened` and `taught` is per slot, so a second slot is a genuinely fresh player who will be taught everything again. See [[save-and-load]].
+Slots are the game's only profile system. Everything permanent is per slot, so a second slot is a genuinely fresh player who will be taught everything again. That is now a much larger object than three flags. See [[save-and-load]].
 
 ## Then the desktop
 
-Login leads to the KP/OS desktop, and on a fresh save the shopfront window auto-opens. See [[kp-os]] and [[game-flowchart]].
+Login leads to the KP/OS desktop, and on a fresh save [[day-sys]] auto-opens. See [[kp-os]] and [[game-flowchart]].
 
 ## See also
 

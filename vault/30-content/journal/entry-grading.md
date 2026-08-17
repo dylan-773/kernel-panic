@@ -3,15 +3,15 @@ title: IT IS GRADING ME
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[dad-log-archive]]", "[[the-machine]]", "[[difficulty-dials]]"]
 ---
 
 # IT IS GRADING ME
 
-`SESSION_SUMMARY.LOG` · LOG · **unlockAtRun 8** · kind `memo`
+`SESSION_SUMMARY.LOG` · LOG · **repair: the drive recovery rig** · kind `memo`
 
-*Provenance: tower telemetry, aggregate, eight sessions logged.*
+*Provenance: tower telemetry, aggregate, every session logged.*
 
 ## What it carries
 
@@ -23,16 +23,16 @@ The player's conclusion:
 
 ## The last entry before the finale
 
-By run 8, knowledge is **complete except for three things**: direct confirmation, [[patch]]'s own voice, and Dad's final message. Everything else is now inferable. See [[reveal-schedule]].
+It is the entry that gets closest to the ceiling without crossing it: three things stay behind the win, and they are direct confirmation, [[patch]]'s own voice, and Dad's final message. Everything else is inferable from here. See [[reveal-schedule]].
 
 ## Restating the seal condition
 
-Run 8 may restate the seal condition as **the player's inference**, having received it at run 5 as Dad's instruction. That is an explicit permission in the reveal rules, and it is the difference between the player being told and the player working it out.
+It may put the seal condition in the player's mouth as **his own inference**, which is permitted where stating it outright is not. That is the difference between being told and working it out, and it is the only shape this reveal is allowed to take now that no artifact may assume another has been read.
 
 ## The telemetry is honest
 
-The aggregate says what the game's own `DAY_CONFIGS` say: horizon rises 0 to 3 across the arc. The tower's grading is not a metaphor laid over the difficulty curve. It **is** the difficulty curve. See [[difficulty-dials]] and [[the-machine]].
+The aggregate says what the game's own difficulty config says: horizon rises 0 to 3 as the work gets harder. The tower's grading is not a metaphor laid over the difficulty curve. It **is** the difficulty curve. See [[difficulty-dials]] and [[the-machine]].
 
 ## See also
 
-- [[entry-patch]] · [[day-8]]
+- [[entry-patch]] · [[the-machine]]

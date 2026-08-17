@@ -3,7 +3,7 @@ title: Juno Vex
 status: canon
 source: lore
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[customers]]", "[[arm-siphon]]"]
 ---
 
@@ -27,4 +27,4 @@ An early-tier siphon job, so it is often a player's first encounter with traps t
 
 ## See also
 
-- [[customers]] · [[day-1]]
+- [[customers]] · [[the-counter]]

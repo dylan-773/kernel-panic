@@ -3,7 +3,7 @@ title: Game controls
 status: derived
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[kp-os]]", "[[turn-structure]]", "[[technical-requirements]]"]
 ---
 
@@ -12,7 +12,10 @@ related: ["[[kp-os]]", "[[turn-structure]]", "[[technical-requirements]]"]
 > [!info] status: derived
 > No controls documentation existed. This is read out of the components.
 
-**Mouse-driven throughout.** There is no keyboard control scheme, no gamepad support, and no documented shortcut set.
+**Mouse-driven throughout KP/OS.** There is no keyboard control scheme, no gamepad support, and no documented shortcut set.
+
+> [!warning] The scene layer forces this open
+> A walkable shop needs a movement input, and mouse-only movement means click to move. That is a real design decision rather than an open question now, and whichever way it goes, the input tables below need a section for walking, interacting, sitting at the bench and going upstairs. See [[the-shop-floor]] and [[the-bench-transition]].
 
 ## Desktop
 
@@ -46,7 +49,7 @@ Drag one [[patch-pieces|piece]] onto another to weld. Illegal partners are rende
 
 - **Reduced motion** is honoured: choreography collapses to the settled state in one frame, sound unaffected. See [[law-7-motion]].
 - Colour is never the only channel for risk. See [[law-1-colour-is-roles]].
-- **No keyboard path exists.** A player who cannot use a mouse cannot play.
+- **No keyboard path exists.** A player who cannot use a mouse cannot play. Adding movement is the moment to fix this rather than the moment to make it worse.
 
 ## Open questions
 

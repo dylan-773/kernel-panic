@@ -3,7 +3,7 @@ title: World overview
 status: canon
 source: lore
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[the-shop]]", "[[intrusions]]", "[[brands-and-glossary]]"]
 ---
 
@@ -17,7 +17,7 @@ Districts, courier drones, lifter exosuits, clinics, pawn shops, night pharmacie
 
 The city exists only as it arrives at the counter. There is no map, no street, no exterior scene. What the player sees of the world is a ticket on a spike and a device on the bench.
 
-That is a deliberate constraint, and it is why the entire game can be an operating system. See [[kp-os]].
+That is a deliberate constraint, and it is why the game can be one room and a terminal. See [[the-shop-floor]] and [[kp-os]].
 
 ## Diving
 

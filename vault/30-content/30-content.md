@@ -3,37 +3,37 @@ title: Content
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
-related: ["[[the-ten-day-arc]]", "[[customers]]", "[[dad-log-archive]]"]
+updated: 2026-08-16
+related: ["[[difficulty-ramp]]", "[[customers]]", "[[dad-log-archive]]"]
 ---
 
 # Content
 
-Everything authored: the arc, the roster, the artifacts, the scenes.
+Everything authored: the place, the roster, the artifacts, the scenes.
 
 ## The world
 
-[[world-overview]] · [[the-shop]] · [[intrusions]]
+[[world-overview]] · [[the-shop]] · [[the-counter]] · [[intrusions]]
 
-## Levels
+## Difficulty
 
-The arc is ten days. Each day is a difficulty config, three job tiers, and a morning line.
+There are no authored days any more. A job's configuration comes from its tier and how deep into the day it arrives.
 
-[[the-ten-day-arc]] - the table and the shape
-
-[[day-1]] · [[day-2]] · [[day-3]] · [[day-4]] · [[day-5]] · [[day-6]] · [[day-7]] · [[day-8]] · [[day-9]] · [[day-10-the-finale]]
+[[difficulty-ramp]] - what replaced the ten-day table
 
 ## Encounters
 
 [[customers]] - twelve regulars, the roster index
 
-[[the-finale-encounter]] - the boss, such as it is
+[[the-finale-encounter]] - the machine in the back room, attemptable on [[sunday]]
 
 ## Story delivery
 
-[[cutscenes-and-scenes]] - openers, enders, day opens, the finale scene
+[[repairs-and-unlocks]] - which repair turns up which piece of him
 
 [[dad-log-archive]] - the ten recovered files
+
+[[cutscenes-and-scenes]] - the opening, the day lines, the Sunday beats, the win
 
 ## What "one wow" means
 
@@ -41,4 +41,4 @@ Every customer job is supposed to carry exactly one memorable thing: a device, a
 
 ## See also
 
-- [[reveal-schedule]] - the gate on what any of this may say
+- [[reveal-schedule]] - the ceiling on what any of this may say

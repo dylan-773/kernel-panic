@@ -1,15 +1,15 @@
 ---
 title: Player inventory
-status: canon
+status: draft
 source: code
 owner: orchestrator
-updated: 2026-08-05
-related: ["[[the-pouch]]", "[[boost-bays]]", "[[loadout-cfg]]"]
+updated: 2026-08-16
+related: ["[[the-pouch]]", "[[the-neural-deck]]", "[[loadout-cfg]]"]
 ---
 
 # Player inventory
 
-Three containers, all capped, all emptied at run end.
+Three containers, all capped. What is in them survives every day the player closes, and only what was earned today is at risk. See [[day-close-and-banking]].
 
 ## The pouch
 
@@ -17,9 +17,9 @@ Up to 5 [[patch-pieces]], held as shaped 4-bit masks. Shape matters as much as c
 
 Managed in [[solder-bay]], where two pieces can be welded into their union.
 
-## Boost bays
+## Deck slots
 
-3 to 5 slots, holding boost [[augments]]. Configs do not occupy bays. At full bays a draft pick becomes a swap. See [[boost-bays]].
+A limited number of slots on [[the-neural-deck]], holding boost [[augments]]. Owning an augment and carrying it are different things: the owned pool is permanent and grows without limit, the slots do not. Reconfiguring is free and reversible.
 
 ## The kit
 
@@ -27,7 +27,7 @@ Not really an inventory: three programs that are always present, each with a tie
 
 ## What there is not
 
-No consumables beyond patch pieces, no equipment slots, no weapons, no crafting materials other than pieces welding into pieces, and no stash. Nothing carries between runs. See [[meta-progression]].
+No consumables beyond patch pieces, no equipment slots, no weapons, and no stash. Salvage is a currency rather than an inventory: it is a number, not a bag of parts. See [[meta-progression]].
 
 ## Why so small
 

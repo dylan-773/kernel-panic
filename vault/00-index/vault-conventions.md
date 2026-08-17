@@ -3,7 +3,7 @@ title: Vault conventions
 status: canon
 source: user
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[home]]", "[[table-of-contents]]"]
 ---
 
@@ -69,11 +69,19 @@ CLAUDE.md iron rule 6 forbids them in game copy. This vault extends that to all 
 | `> [!info] Source` | Where a note was read from |
 | `> [!warning]` | A trap: something that looks like a bug and is not, or a stale claim elsewhere |
 | `> [!question] UNWRITTEN` | The banner on every `status: unwritten` note |
-| `> [!danger] REVISED IN PROTOTYPE` | A design change with the evidence that forced it, carried over from the v2 GDD |
+| `> [!danger] REVISED IN PROTOTYPE` | A design change with the evidence that forced it |
 
 ## Attachments
 
 Images live at `_attachments/`, which symlinks `art` to `pipeline/art/done/`. Embed by **bare filename**, `![[cust-card-juno-portrait.png]]`, and let shortest-path resolution find it through the symlink. Do not copy binaries into the vault; the symlink keeps one copy on disk and lets the art pipeline stay where the crew writes to it.
+
+## Retired designs are deleted, not archived
+
+When a design is replaced, its notes go. There is no `superseded/` folder and no archive tier. An agent reading this vault should never spend context on a model the game no longer uses, and a reader should never have to check a note's date to know whether to believe it.
+
+What survives a cut is the **finding**, not the note: the evidence that forced the change goes into [[design-change-log]] as one dated entry, and any still-true number or lesson is moved into the note that now owns it. Everything else is deleted.
+
+Same rule for [[canon-rulings]]. A ruling the design invalidates is deleted rather than superseded. Surviving rulings keep their numbers so existing citations stay valid, gaps are expected, and a new ruling takes the next free number.
 
 ## What does not belong here
 

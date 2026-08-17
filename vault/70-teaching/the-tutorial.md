@@ -3,8 +3,8 @@ title: The tutorial
 status: canon
 source: code
 owner: tutorial-agent
-updated: 2026-08-05
-related: ["[[tutorial-beats]]", "[[the-ten-day-arc]]", "[[verification-gate]]"]
+updated: 2026-08-16
+related: ["[[tutorial-beats]]", "[[difficulty-ramp]]", "[[verification-gate]]"]
 ---
 
 # The tutorial
@@ -30,7 +30,7 @@ The player reaching the goal does **not** win: it triggers an `opp` win with kin
 >
 > The shipped version makes the outcome **structural**: touching the core slams every port. You are not losing a close fight, you are being shown a door closing.
 
-That distinction matters for the story too. The machine is not beating you. It is grading you and shutting the door. See [[entry-failed1]].
+That distinction matters for the story too. The machine is not beating you. It is grading you and shutting the door. See [[entry-first-session]].
 
 ## The gate
 
@@ -48,7 +48,7 @@ The four `CORE_VERBS` and nothing else: **rotate, scan, defend, attack**. `teach
 
 ## Run 1 only
 
-`opener` to `tutIntro` to `tutorial` to `tutOutro` to `dayOpen`. Later runs go straight to `dayOpen`. See [[game-flowchart]].
+`opener` to `tutIntro` to `tutorial` to `tutOutro` to `dayOpen`, once, at the start of a save. There is no later branch to write: with no runs, the tutorial simply is the opening of the game. See [[game-flowchart]].
 
 ## See also
 

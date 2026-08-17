@@ -3,7 +3,7 @@ title: Program tiers
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[the-kit]]", "[[the-night-shop]]", "[[difficulty-dials]]"]
 ---
 
@@ -12,7 +12,7 @@ related: ["[[the-kit]]", "[[the-night-shop]]", "[[difficulty-dials]]"]
 > [!info] Source
 > `kit.ts:SCAN_RANGE`, `ATTACK_WIDTH`, `DEFEND_WIDTH`, `WARD_RADIUS`, `SIPHON_STEAL`.
 
-`Tier = 1 | 2 | 3`. Each program tiers independently. Tiers are bought one per night at day close, capped at 3. See [[the-night-shop]].
+`Tier = 1 | 2 | 3`. Each program tiers independently. Tiers are bought permanently as [[the-neural-deck|deck]] upgrades, capped at 3.
 
 | Value | Tier 1 | Tier 2 | Tier 3 |
 |---|---|---|---|

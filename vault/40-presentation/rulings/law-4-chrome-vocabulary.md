@@ -3,11 +3,14 @@ title: Law 4 - Chrome vocabulary
 status: canon
 source: rulings
 owner: ux-agent
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[ui-rulings]]", "[[hud-and-ui-design]]"]
 ---
 
 # Law 4 - Chrome vocabulary
+
+> [!info] Scope
+> **KP/OS for the parts bin, both domains for the empty-state rule.** A broken station and a repaired one should occupy the same physical footprint, or the room reflows every time the player upgrades. That is this law's equal-footprint rule in three dimensions and it is the most useful thing here to export.
 
 The shared parts bin. Carried over from v2 unless noted.
 
@@ -23,7 +26,7 @@ The shared parts bin. Carried over from v2 unless noted.
 ## The empty-state rule is the subtle one
 
 > [!info] Build both and check
-> A sparse early-run surface and a full late-run surface must have the same footprint. Sparse states are where maximalist grids fall apart: a layout tuned on a full [[boost-bays|bay]] rack looks broken on day 1 with nothing in it, and a layout tuned on empty reflows the moment it fills.
+> A sparse early-run surface and a full late-run surface must have the same footprint. Sparse states are where maximalist grids fall apart: a layout tuned on a full rack looks broken on an empty one with nothing in it, and a layout tuned on empty reflows the moment it fills.
 
 This also protects the [[law-3-fluid-and-the-height-ceiling|height ceiling]]: a surface that grows as the run progresses would blow its budget exactly when the player has most to read.
 

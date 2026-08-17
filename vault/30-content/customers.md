@@ -3,7 +3,7 @@ title: Customers
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[intrusions]]", "[[encounter-generator]]", "[[inbox]]"]
 ---
 
@@ -34,7 +34,7 @@ Twelve regulars. Every job is an intrusion in a machine somebody loves.
 | [[casimir-bell]] | Ledgerstone pawn vault | 4, 5 | [[lock]] |
 | [[noor-behzadi]] | Polyverb synth brain | 4, 5 | [[purge]] |
 
-All six modes appear twice across the roster, and tier bands overlap so any given day can draw a plausible three.
+All six modes appear twice across the roster, and tier bands overlap, so the draw for any given customer slot has several plausible candidates. What sets the band is the job tier the shop is currently being sent, not the day number. See [[difficulty-ramp]].
 
 ## The "One Wow"
 
@@ -64,7 +64,7 @@ Twelve customers share six portrait assets (`/assets/px/portraits/cust-01..06.pn
 
 ## MOST LETHAL
 
-[[ledger-log]] tracks whichever customer's device has ended the most runs. It is the closest thing the game has to a nemesis, and it is emergent rather than authored. See [[scoring-and-lifetime-stats]].
+[[ledger-log]] tracks whichever customer's device has cost the player the most days. It is the closest thing the game has to a nemesis, and it is emergent rather than authored. See [[scoring-and-lifetime-stats]].
 
 ## See also
 

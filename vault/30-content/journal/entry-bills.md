@@ -3,13 +3,13 @@ title: FINAL NOTICE
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[dad-log-archive]]", "[[ruling-08-names]]", "[[ruling-06-meridian]]"]
 ---
 
 # FINAL NOTICE
 
-`NOTICE_07.SCN` · SCAN · **unlockAtRun 2** · kind `bill`
+`NOTICE_07.SCN` · SCAN · **repair: the bench drawer** · kind `bill`
 
 *Provenance: scanned paper, bottom drawer of the bench, one of eleven filed under W.*
 
@@ -21,7 +21,7 @@ Filed under W. For "whatever".
 
 ## The knowledge ceiling
 
-At run 2 this may surface the illness **as mystery only**. Nothing here may state NF-3, the diagnosis, or that diving caused it: those wait for run 5. See [[reveal-schedule]].
+This may surface the illness **as mystery only**. A billing system prints a balance and a service class; it does not print a diagnosis. That constraint is what keeps this readable at any point, in any order. See [[reveal-schedule]].
 
 ## The names problem, solved
 

@@ -3,7 +3,7 @@ title: The plays
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[the-pipeline]]", "[[the-gates]]", "[[verification-gate]]"]
 ---
 
@@ -24,7 +24,7 @@ User-invoked commands. Each is a skill under `.claude/skills/`.
 
 Plus a workflow, `/kp-balance-loop`: validate, then propose, **no integration**.
 
-## The six iron rules
+## The iron rules
 
 1. **Only the Orchestrator touches `kernel-panic-site/`.** Agents propose JSON; integration is by hand; `typecheck` enforces the schema.
 2. **UI is reviewed before it integrates.** See below.

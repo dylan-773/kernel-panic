@@ -3,7 +3,7 @@ title: The darknet
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[patch-pieces]]", "[[darknet-rate]]", "[[ruling-09-darknet]]"]
 ---
 
@@ -12,14 +12,23 @@ related: ["[[patch-pieces]]", "[[darknet-rate]]", "[[ruling-09-darknet]]"]
 > [!info] Source
 > `run-reducer.ts:buyDarkPatch`, `darkPullPrice`; `patch-cells.ts:darkPatchCost`. Window: [[darknet-lnk]].
 
-The gray market. One blind [[patch-pieces|patch piece]], priced by day.
+The gray market. One blind [[patch-pieces|patch piece]].
 
 ```
 darkPatchCost(day) = 25 + 5 * (day - 1)
 darkPullPrice(run) = darkPatchCost(day) * (darkDiscount ? 0.85 : 1)
 ```
 
-Night phase only.
+> [!warning] The price formula does not survive an open calendar
+> `darkPatchCost` climbs forever with the day number. It needs re-deriving against something bounded.
+
+## It has to be unlocked
+
+The darknet is not available from the start. The player reaches it by **repairing dad's onion router**, which is also one of the artifacts that tells them something about him. Until then [[darknet-lnk]] does not work. See [[repairs-and-unlocks]].
+
+That gate is new, and it is what makes an anonymous gray market make sense: the shop does not have a line to it, dad did.
+
+Evening only, per [[ruling-09-darknet]]: reachable by signal after the shop closes.
 
 ## Blind is the product
 

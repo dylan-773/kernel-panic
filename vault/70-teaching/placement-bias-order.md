@@ -3,7 +3,7 @@ title: Placement bias order
 status: canon
 source: lore
 owner: tutorial-agent
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[teaching-system]]", "[[coachmarks]]", "[[hud-and-ui-design]]"]
 ---
 
@@ -39,6 +39,12 @@ That is the intended lifecycle: a coachmark is a debt against the interface, and
 If a teaching decision needs pixels, the tutorial agent does not design them. It files a `ui-spec` to the [[ux-agent]]. Ten are logged, including `strain-chip-breakdown`, `night-shop-credit-adjacency` and `touch-safe-tooltips`.
 
 That handoff is what keeps teaching from quietly becoming a second, worse design system layered over the first.
+
+## The room is a tier 0 surface
+
+The five tiers put "make the interface say it" first and a coachmark near last. A walkable shop widens tier 0 more than anything else in the game: a solder bay standing there broken teaches its own unlock, an installed upgrade teaches that it is installed, and a customer waiting at the counter teaches that customers wait.
+
+The trap that comes with it is that a physical object teaches **that** something exists and rarely **what it costs you**. Closing the day is the case in point: going to bed is legible, and losing the day's haul by not going to bed is not. Prefer the room where the room can carry it, and do not let it carry consequences.
 
 ## See also
 

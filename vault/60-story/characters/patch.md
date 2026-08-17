@@ -3,13 +3,13 @@ title: Patch - the companion
 status: canon
 source: lore
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[the-machine]]", "[[dad]]", "[[ground-truth]]"]
 ---
 
 # Patch - the companion
 
-> [!danger] The name may not appear before the run-8 ender
+> [!danger] The name may not appear before the player has beaten the machine
 > See [[reveal-schedule]], prohibition 1.
 
 An AI [[dad]] built and trained in the back-room tower. Named under the house naming rule for
@@ -44,16 +44,22 @@ Warm, confident, lightly competitive.
 
 Laughs at the edges the way Dad did.
 
-> [!warning] Before the finale it has no voice at all
-> No content may confirm the occupant speaks, or give it a personality or pronoun beyond the player's "it". Everything in this section is finale-and-after only.
+> [!warning] Before a win it has no voice at all
+> No content may confirm the occupant speaks, or give it a personality or pronoun beyond the player's "it". Everything in this section is after-a-win only.
+
+Opening the machine is not the end of the game, so this personality is not an epilogue. The shop opens again the next morning and Patch is in the back room from then on, which is a large amount of writing nobody has done yet: it has to be present without becoming a narrator, and it has to stay a sparring partner without becoming a difficulty setting.
 
 ## Pronouns in copy
 
-[[rhea]] says **"he"**. The player's own bench notes say **"it"**, even after the finale. Both are correct; the difference is characterization.
+The player's own bench notes say **"it"**, before and after. He does not switch, and nothing in the game switches for him. Patch is the only voice that ever uses "I".
 
 ## After
 
-> Counter is mine, bench is yours, back room is his.
+The closing line used to divide the shop three ways between the son, his sister and his father. With the sister cut and the game continuing past the win, it needs to do a different job: acknowledge that the player is not alone in the building any more, without tying anything off.
+
+> Bench is yours. Back room is his. I am just the one still here.
+
+Provisional. It is the last authored line in the game and it should be argued about.
 
 ## See also
 

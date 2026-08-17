@@ -3,7 +3,7 @@ title: CLEAN RUN
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[neural-strain]]", "[[patch-pieces]]", "[[augments]]"]
 ---
 
@@ -19,3 +19,6 @@ Two payouts, both rewarding precision:
 - **A trap-free [[the-round-cap|cap]] win** pays 15 credits as a consolation.
 
 The only augment that pays out on how well you played rather than what you did.
+
+> [!warning] The name now collides with the vocabulary
+> A "run" is a day. CLEAN RUN is about a single dive and always was. Worth renaming before the copy confuses anyone, and worth noting that the piece it banks is held rather than banked until the day closes.

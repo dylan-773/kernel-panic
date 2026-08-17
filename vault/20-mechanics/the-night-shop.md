@@ -1,9 +1,9 @@
 ---
 title: The night shop
-status: canon
+status: draft
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[economy]]", "[[program-tiers]]", "[[night-sys]]"]
 ---
 
@@ -12,45 +12,46 @@ related: ["[[economy]]", "[[program-tiers]]", "[[night-sys]]"]
 > [!info] Source
 > `run-reducer.ts:chooseUpgrade`, `closeNight`, `buyPatch`, `buySlot`, `buyDarkPatch`, `craftPatch`; `NIGHT_PICKS`.
 
-Day close. One free pick, plus anything you can afford.
+The evening. The day is closed, the haul is banked, and the player spends before sleeping.
 
-## The pick
+> [!warning] Forfeited by a failed day
+> Reaching 0 [[neural-strain]] costs the evening as well as the haul: no spending, no repairs, no configuring. The player rests. That is half of what a blown day costs, and it is the half players will feel. See [[day-close-and-banking]].
 
-`NIGHT_PICKS = ["ram", "scan", "attack", "defend"]`
+## What the evening is for
 
-- **ram** - +1 RAM per turn, cap 9.
-- **scan / attack / defend** - +1 [[program-tiers|tier]] on that program, cap 3.
-
-One per night, free.
-
-## The shop
-
-| Purchase | Cost | Effect |
+| Spend | Currency | Gets |
 |---|---|---|
-| Night patch | `45 + 5 * day` | +12 [[neural-strain]] |
-| [[boost-bays|Boost bay]] | 150, then 300 | 4th and 5th bay |
-| [[the-darknet|Dark pull]] | `25 + 5 * (day - 1)` | one blind [[patch-pieces|piece]] |
+| [[repairs-and-unlocks|A repair]] | credits | a system, a window, and a piece of [[dad]] |
+| A deck upgrade | salvage | RAM, a [[program-tiers|tier]], a mode, a slot. See [[the-neural-deck]] |
+| Night patch | credits | +12 [[neural-strain]] |
+| [[the-darknet|Dark pull]] | credits | one blind [[patch-pieces|piece]] |
 | Weld | free | two pieces become their union |
 
-Also free: +10 strain, applied automatically at day close.
+Also free: +10 strain for having closed at all.
 
-## The night is two-step and reversible
+> [!warning] The free night pick is gone
+> `NIGHT_PICKS` handed out one RAM or tier every single night, which only made sense against a fixed nine-night arc. On an open calendar a free pick per day is unbounded growth. Progression now costs something: credits for the shop, salvage for the deck.
 
-`chooseUpgrade` sets `nightPick` **without ending the night**. `closeNight` commits, and refuses without a pick.
+## The evening is reversible until you sleep
 
-So the shop rows stay spendable after you have chosen your upgrade, and you can change the pick while you shop. This matters because the pick and the purchases trade against each other: taking a RAM tier changes whether you can afford the bay.
+The old night was two-step by construction: `chooseUpgrade` set the pick without ending the night, and `closeNight` committed. That property is worth keeping for a bigger surface, not smaller: with repairs, deck upgrades and patches all competing for the same two currencies, nothing should commit until the player goes upstairs.
 
-`run-sim.ts` asserts both halves: `closeNight` refused without a pick, and choosing does not end the night.
+Sleeping is the commit. See [[the-bedroom]].
 
 ## Fiction
 
-Night Patch is a strain suppressant, and the bible is clear it treats the symptom. Buying your way through the arc on patches is exactly what [[dad]] did. See [[ground-truth]].
+Night Patch is a strain suppressant, and the bible is clear it treats the symptom. Buying your way through on patches instead of fixing anything is exactly what [[dad]] did. See [[ground-truth]].
 
 ## Teaching
 
-Two coachmarks, both on first sight of the upgrade surface: `day-upgrade` (order 70) and `night-shop` (71), the latter covering patches, dark pulls and bays together. See [[coachmarks]].
+`day-upgrade` (order 70) and `night-shop` (71) both fired on first sight of a single upgrade screen. The evening is now a phase across two places, so both need re-siting, and the repair path needs teaching that the old shop never had. See [[coachmarks]].
+
+## Open questions
+
+- [ ] Where does the evening physically happen: at the bench, walking the shop, upstairs, or all three?
+- [ ] Do night patches survive at all, now that credits could be going into permanent repairs instead? They are the only thing left competing with progression, which is an argument for keeping them.
 
 ## See also
 
-- [[night-sys]] - the window this happens in
-- [[economy]]
+- [[night-sys]] - the window that hosted this
+- [[the-shop-floor]] · [[economy]]

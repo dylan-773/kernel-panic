@@ -3,11 +3,14 @@ title: SOLDER.BAY
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[patch-pieces]]", "[[the-pouch]]", "[[game-controls]]"]
 ---
 
 # SOLDER.BAY
+
+> [!info] The window and the bench are the same object
+> Downstairs there is a physical solder bay, broken, one of [[dad]]'s. Repairing it is what makes this window work, and the repair is where the player finds out what he taught them at it. The clearest case in the game of an upgrade existing at two fidelities. See [[repairs-and-unlocks]].
 
 `solder` · `windows/solder.tsx`
 

@@ -3,11 +3,16 @@ title: Law 11 - Panel queue
 status: canon
 source: rulings
 owner: ux-agent
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[ui-rulings]]", "[[40-presentation]]"]
 ---
 
 # Law 11 - Panel queue
+
+> [!warning] The queue predates the redesign and is missing most of the work
+> No rows exist for the shop floor, the bedroom, the counter, the bench transition, the neural deck or day close and banking. The INBOX row describes a surface that has since been split in two: the customer card went to the counter, the DIVE button stayed in the window. Treat the list below as the KP/OS half of a queue that is now roughly twice as long.
+>
+> DIVE.EXE was the only exemption from the window laws. The scene layer is a second one, which is an argument for a law 12 rather than for more exemptions. See [[ui-rulings]].
 
 The worklist. [[loadout-cfg]] (`loadout-eva`) is the reference; the rest are independent.
 

@@ -3,7 +3,7 @@ title: Music and sound
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[player-options]]", "[[ux-agent]]", "[[law-7-motion]]"]
 ---
 
@@ -52,6 +52,10 @@ Generated beds, fetched as mp3 and cached in an `AudioBuffer` map, crossfaded ra
 ## Where sound lives in the crew
 
 With the [[ux-agent]], not a separate audio seat. Sound is feel, and feel is one job: the agent that decides a press state floods inverse video also decides what it sounds like.
+
+## The shop needs a bus
+
+Three buses (`ui`, `game`, `music`) covered a game made of windows. A room has footsteps, door sounds, room tone and diegetic ambience, none of which are UI and none of which are the duel. Either `game` is reinterpreted or there is a fourth bus. See [[the-shop-floor]].
 
 ## See also
 

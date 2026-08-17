@@ -3,7 +3,7 @@ title: Teaching
 status: canon
 source: code
 owner: tutorial-agent
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[teaching-system]]", "[[the-tutorial]]", "[[tutorial-agent]]"]
 ---
 
@@ -15,7 +15,7 @@ How the player learns the game. Owned by the [[tutorial-agent]], enforced by a b
 - [[placement-bias-order]] - the five tiers, and why tier 0 wins
 - [[the-tutorial]] - the unwinnable opening dive
 - [[tutorial-beats]] - the ten scripted beats
-- [[coachmarks]] - the nine one-time callouts
+- [[coachmarks]] - the one-time callouts
 - [[teaching-tips]] - the seven persistent explainers
 - [[mechanic-coverage]] - the inventory, and what "covered" means
 - [[teaching-waivers]] - what is deliberately not taught, and why

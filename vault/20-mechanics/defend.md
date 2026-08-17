@@ -3,7 +3,7 @@ title: DEFEND
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[purge]]", "[[lock]]", "[[ward]]"]
 ---
 
@@ -29,7 +29,7 @@ Width by tier: 1, 2, 3 targets per cast. See [[program-tiers]].
 > [!warning] Defence is not holding ground
 > Under the old shared-board model, defending meant occupying territory to deny approaches. With [[split-boards]] the enemy is never on your board. Defence is entirely **anti-trap and anti-redirect**.
 >
-> This is the design intent behind the whole rewrite. See [[territory-and-claiming]].
+> This is the design intent behind the whole rewrite. See [[design-change-log]] entry 10.
 
 So the three modes map cleanly onto the three things that can be done to you:
 

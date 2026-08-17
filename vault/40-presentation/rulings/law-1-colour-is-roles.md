@@ -3,11 +3,14 @@ title: Law 1 - Colour is roles
 status: canon
 source: rulings
 owner: ux-agent
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[ui-rulings]]", "[[palette-generalization-conflict]]", "[[ruling-14-loadout-palette]]"]
 ---
 
 # Law 1 - Colour is ROLES, not hues
+
+> [!info] Scope
+> **Both domains, in principle.** A lit 2.5D interior cannot be built out of eight UI role tokens, but the shop should be lit in the active scheme's hue so the room and the terminal read as one world. Where the scene shows risk, the law's real rule holds: risk never shares its colour and is never signalled by colour alone.
 
 **Do not hand-pick colours per surface.** Every surface reads the same eight role tokens, and a scheme is a remap of those tokens and nothing else.
 

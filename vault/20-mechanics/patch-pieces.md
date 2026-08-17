@@ -3,7 +3,7 @@ title: Patch pieces
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[the-pouch]]", "[[solder-bay]]", "[[reach-and-placement]]"]
 ---
 
@@ -40,10 +40,12 @@ So a piece is both a bridge across slag and a permanent anchor the enemy cannot 
 
 ## Getting them
 
-1. **Job drops.** Chance per cleared ticket is `DAY_CONFIGS[day].patchDrop + 0.05 * (tier - 1)`. Drop rates fall across the arc, from 0.35 on day 1 to 0.11 on day 9, while slag rises. Scarcity increases exactly as need does.
-2. **[[the-darknet|Dark pulls]].** Blind, priced by day.
+1. **Job drops.** Chance per cleared job is the config's `patchDrop` plus `0.05 * (tier - 1)`. Drop rates fall as slag rises, so scarcity increases exactly as need does. What indexes that curve is now the job tier rather than the day. See [[difficulty-ramp]].
+2. **[[the-darknet|Dark pulls]].** Blind, and gated on repairing the onion router.
 3. **[[clean-run]].** A zero-strain win banks one.
-4. **Crafting.** See below.
+4. **Crafting.** See below. Gated on repairing the [[solder-bay|solder bay]] itself.
+
+Pieces earned today are held, not banked, and a day that ends at zero loses them. See [[day-close-and-banking]].
 
 ## Crafting: the weld
 
@@ -54,6 +56,8 @@ So an I welded to a perpendicular L makes a T. An I welded to a parallel I is il
 > PICK A PARTNER. THE WELD MUST OUTGROW BOTH.
 
 Crafting is free in credits and costs two pieces to make one. It converts quantity into shape. See [[solder-bay]], where illegal partners are rendered physically dead rather than merely rejected.
+
+The bay is one of dad's, and it is broken when the player inherits it. Crafting is unavailable until it is repaired, which is also when the player finds out what he taught them at it. See [[repairs-and-unlocks]] and [[entry-solder]].
 
 ## Drift
 

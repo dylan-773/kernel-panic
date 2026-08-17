@@ -3,13 +3,13 @@ title: THE DIAGNOSIS
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[dad-log-archive]]", "[[ground-truth]]", "[[neural-strain]]"]
 ---
 
 # THE DIAGNOSIS
 
-`CONSULT_SUMMARY.SCN` · SCAN · **unlockAtRun 5** · kind `bill`
+`CONSULT_SUMMARY.SCN` · SCAN · **repair: to be assigned** · kind `bill`
 
 *Provenance: scanned paper, sealed envelope, never opened until now.*
 
@@ -23,7 +23,7 @@ NF-3 neurofilament degradation, **stage three**. 9,000+ logged dive hours.
 
 From here the player can infer the two facts everything else rests on: **Dad built the test, and diving killed him.**
 
-It is also the entry that makes [[neural-strain]] retroactively mean something. The number the player has been spending for five runs is the number that killed the man whose shop they inherited.
+It is also the entry that makes [[neural-strain]] retroactively mean something. The number the player has been spending every day is the number that killed the man whose shop they inherited.
 
 ## "Never opened until now"
 

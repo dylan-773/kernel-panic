@@ -1,22 +1,23 @@
 ---
 title: NIGHT.SYS
-status: canon
+status: draft
 source: code
 owner: orchestrator
-updated: 2026-08-05
-related: ["[[the-night-shop]]", "[[shopfront-exe]]", "[[darknet-lnk]]"]
+updated: 2026-08-16
+related: ["[[the-night-shop]]", "[[day-sys]]", "[[darknet-lnk]]"]
 ---
 
 # NIGHT.SYS
 
-The `upgrade` screen of [[shopfront-exe]] · `windows/night.tsx`
+The `upgrade` screen of [[day-sys]] · `windows/night.tsx`
 
-Day close. The night pick and the shop.
+The evening, at the terminal. The deck, and what money can still buy tonight.
 
 ## What it carries
 
-- One free pick from `NIGHT_PICKS`: **+1 RAM** or **+1 [[program-tiers|tier]]** on one program.
-- The shop: night patch, [[boost-bays|boost bay]], [[the-darknet|dark pull]], weld.
+- The [[the-neural-deck|deck]]: RAM, tiers, modes and slots, bought with salvage.
+- The counter-side spending: night patch, [[the-darknet|dark pull]], weld.
+- What the shop still needs, and what it costs. The repairs themselves happen in the room. See [[repairs-and-unlocks]].
 - The automatic **+10 [[neural-strain|strain]]** for closing the day.
 
 Full economics in [[the-night-shop]].
@@ -26,7 +27,9 @@ Full economics in [[the-night-shop]].
 `chooseUpgrade` sets the pick **without ending the night**; `closeNight` commits and refuses without a pick.
 
 > [!info] Why the interface has to work this way
-> The pick and the purchases trade against each other. Taking a RAM tier changes whether you can afford the bay. If choosing ended the night, the player would be committing to the expensive half of the decision before seeing the cheap half.
+> Everything in the evening trades against everything else, and now across two currencies. Nothing commits until the player goes to bed. See [[the-bedroom]].
+>
+> The free nightly pick is gone: on an open calendar a free upgrade every night is unbounded growth. See [[the-night-shop]].
 >
 > `run-sim.ts` asserts both halves: `closeNight` refused without a pick, and choosing does not end the night.
 

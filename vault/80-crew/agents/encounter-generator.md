@@ -3,7 +3,7 @@ title: Encounter Generator
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[customers]]", "[[intrusions]]"]
 ---
 
@@ -30,7 +30,12 @@ The `dominant` mode is a mechanical commitment, not flavour: it is what the Anal
 
 ## The roster it produced
 
-Twelve regulars, all six modes represented twice, tier bands overlapping so any day can draw a plausible three. See [[customers]].
+Twelve regulars, all six modes represented twice, tier bands overlapping so any slot has several plausible candidates. See [[customers]].
+
+> [!warning] Twelve is not enough for an unbounded calendar
+> A ten-day arc needed 27 encounters. A game with no last day needs a repeat policy, a much larger roster, procedural walk-ins, or all three, and this seat owns that call. Regulars who come back at rising tiers are the cheapest good answer and [[aldous-wick]] is already built that way.
+>
+> The profile shape may also need a field for how a customer appears at [[the-counter]] as a person in a room, rather than only as a portrait on a card.
 
 ## See also
 

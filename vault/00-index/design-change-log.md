@@ -3,15 +3,15 @@ title: Design change log
 status: canon
 source: lore
 owner: orchestrator
-updated: 2026-08-05
-related: ["[[revision-history]]", "[[territory-and-claiming]]"]
+updated: 2026-08-16
+related: ["[[revision-history]]", "[[split-boards]]"]
 ---
 
 # Design change log
 
-Every entry is a design that was replaced, with the evidence that forced it. The v2 GDD carried nine of these as `REVISED IN PROTOTYPE` boxes; the tenth is the split-board rewrite.
+Every entry is a design that was replaced, with the evidence that forced it. The v2 GDD carried the first nine as `REVISED IN PROTOTYPE` boxes; 10 is the split-board rewrite, and 11 to 14 are the 2026-08-16 redesign.
 
-This is the most reusable page in the vault. Each entry is a mistake already paid for.
+This is the most reusable page in the vault. Each entry is a mistake already paid for. It is also, since retired notes are deleted rather than archived, the only surviving record of the models below. See [[vault-conventions]].
 
 ## 1. Mandatory build stop, cut
 
@@ -65,11 +65,57 @@ Random augment unlock also became a curated draft of three. See [[augment-drafts
 > [!danger] REVISED IN PROTOTYPE
 > The shared board made defence mean holding ground, and holding ground is not interesting to play. Each side now owns a grid. Progress splits into two layers: `built` is permanent, `power` is cuttable. Defence now means anti-trap and anti-redirect rather than occupation.
 >
-> Two win conditions died with it: `SEVERED` and gridlock. Removing them also killed a bug class where an `Infinity` blindspot in the planner lost dives that were still winnable.
+> Two win conditions died with it: `SEVERED` and gridlock. Removing them also killed a bug class where an `Infinity` blindspot in the planner lost dives that were still winnable. Under SEVERED, a planner reporting `Infinity` for a route that existed did not merely mislead the AI, it ended a still-winnable dive in an instant loss.
 
-See [[split-boards]] for the current model and [[territory-and-claiming]] for the full record of what was removed.
+What it was: one shared grid, both sides flooding from opposite entries, lighting a chain **claimed** it, and claimed territory was impassable to the enemy. Claims were permanent, so defence meant occupation. Once you had a defensible shape the correct play was to keep it, and keeping it is not a move. The intended feel was a sprint with sabotage; what it produced was a slow squeeze.
+
+| Old | New |
+|---|---|
+| one shared grid | two grids, `DuelState.boards[side]` |
+| claiming, permanent and exclusive | `built`, permanent but non-exclusive |
+| impassability as defence | anti-trap and anti-redirect |
+| SEVERED, gridlock | removed; only `goal`, `cap`, `seal` remain |
+| `MAX_OPENING_CLAIM` | `MAX_OPENING_BUILT` |
+
+See [[split-boards]] for the current model and [[built-and-power]] for the two-layer model that carries the load claiming used to. Still asserting the dead model outside this vault: `lore/bible.md`, `tutorial/ledger.md`, the `gridlockWin` vestige in `run-reducer.ts` and `save.ts`, and the `gridlockChip` waiver in `teaching.ts`.
+
+## 11. The game was only an operating system (2026-08-16)
+
+> [!danger] REVISED IN PROTOTYPE
+> The whole game was KP/OS, and the pillar said so: no world, no camera, no character. It bought real economy and cost the player a place to stand. The game is now two environments, a walkable 2.5D shop plus the terminal on the bench in it, and the pillar reads "the interface is the **core** of the game".
+>
+> The change pays for itself three ways: progress becomes physically visible, story is read where it was found, and the shop's condition is legible without opening a screen. It costs environment art, a camera and a character rig, none of which the art pipeline can currently produce.
+
+See [[the-shop-floor]] and [[the-bench-transition]].
+
+## 12. The ten-day run, replaced by the day (2026-08-16)
+
+> [!danger] REVISED IN PROTOTYPE
+> A run was ten days of three tickets, and strain zero ended all of it. Almost nothing was worth defending because almost nothing survived, and the arc's last third had no build progression left at all: 18 augments against up to 27 cleared tickets meant salvage instead of a card from roughly day 6.
+>
+> The day is now the run. The calendar is open ended, the player closes the shop when they choose, and strain zero costs the day's unbanked haul and the evening. Everything banked is permanent, so acquisition stops being the interesting choice and loadout configuration becomes it.
+
+See [[day-close-and-banking]], [[meta-progression]] and [[the-neural-deck]]. The ten-row `DAY_CONFIGS` table went with it; [[difficulty-ramp]] is what replaces it.
+
+## 13. Losing as the delivery mechanism, cut (2026-08-16)
+
+> [!danger] REVISED IN PROTOTYPE
+> Every reveal was keyed to `runCount`: each failed run released another fragment of the father. With no runs to fail, the key does not exist. Reveals are now hand-authored per shop repair, so the thing you fix is the thing that turns him up.
+>
+> Upgrade order is the player's, so the knowledge ladder is gone with it. Every artifact now stands alone under a single ceiling: nothing before a win states what is inside the machine.
+
+See [[ruling-16-reveals-are-upgrade-keyed]] and [[repairs-and-unlocks]].
+
+## 14. The sister and the padlock, cut (2026-08-16)
+
+> [!danger] REVISED IN PROTOTYPE
+> Rhea held the counter, the virus theory and the doubt arc that measured the player's progress toward the truth. She is cut. The player works both jobs, holds the assumption himself, and has to argue himself out of it, which is harder to write and lands harder. Her three load-bearing beats were re-homed rather than lost: the power-bill arithmetic became a findable artifact, the renunciation became a [[sunday]] scene, and the game's closing line was re-authored for someone alone.
+>
+> The padlock went at the same time and for a different reason: the barrier was always software. The room is simply open.
+
+See [[ruling-17-the-players-own-assumption]] and [[ruling-15-the-seal-is-software]].
 
 ## Still open
 
-- [[meta-progression]] - the draft said unlocked abilities persist across runs while currency resets. v2 removed the mechanic and never replaced the statement, so no document currently says what carries between runs beyond story progress.
-- [[palette-generalization-conflict]] - canon ruling 14 scoped multi-hue to one window and reserved generalization for the user; the UI spec generalized it anyway.
+- [[palette-generalization-conflict]] - canon ruling 14 scoped multi-hue to one window and reserved generalization for the user; the UI spec generalized it anyway, and a second visual domain widens the question.
+- [[monetization]] - nothing decided, and the demo slice can no longer be described as the first three days.

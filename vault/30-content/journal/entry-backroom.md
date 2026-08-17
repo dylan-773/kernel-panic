@@ -3,13 +3,13 @@ title: THE BACK ROOM
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[dad-log-archive]]", "[[the-machine]]", "[[ruling-13-dad-vol-provenance]]"]
 ---
 
 # THE BACK ROOM
 
-`TICKET_QUERY.LOG` · LOG · **unlockAtRun 0** · kind `memo`
+`TICKET_QUERY.LOG` · LOG · **available from the start** · kind `memo`
 
 *Provenance: shop system query, bench terminal, day one.*
 
@@ -30,4 +30,4 @@ Without that ruling the two facts read as contradictory, since the player is rea
 
 ## See also
 
-- [[entry-notickets]] - the same query, run again at run 6, with the ledger
+- [[entry-notickets]] - the same query, run again against the ledger

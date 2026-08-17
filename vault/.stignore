@@ -1,0 +1,17 @@
+// Syncthing ignore rules for the Kernel Panic design vault.
+// See vault/00-index/vault-conventions.md for vault rules proper.
+
+// Symlinks that point outside the vault. They resolve only inside a full
+// repo checkout (pipeline/art/done and .claude/agent-memory), so syncing
+// them standalone would land broken links on every other device.
+/_attachments/art
+/80-crew/memory
+
+// Per-device Obsidian UI state. Syncing these makes two machines fight
+// over pane layout and scroll position on every focus change.
+/.obsidian/workspace.json
+/.obsidian/workspace-mobile.json
+
+// Platform and editor debris.
+.DS_Store
+.trash

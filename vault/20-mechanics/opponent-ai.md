@@ -3,7 +3,7 @@ title: Opponent AI
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[difficulty-dials]]", "[[route-cost-and-par]]", "[[traps-and-telegraphs]]"]
 ---
 
@@ -72,4 +72,4 @@ The AI is the wall-clock cost of the balance harness. `sim.ts` carries `BEAT_MS 
 ## See also
 
 - [[difficulty-dials]] - the values fed in
-- [[the-ten-day-arc]] - how they escalate
+- [[difficulty-ramp]] - how they escalate

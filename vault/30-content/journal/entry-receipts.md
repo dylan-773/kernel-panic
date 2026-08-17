@@ -3,13 +3,13 @@ title: RECEIPTS
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[dad-log-archive]]", "[[neural-strain]]", "[[dad]]"]
 ---
 
 # RECEIPTS
 
-`RECEIPTS.SCN` · SCAN · **unlockAtRun 4** · kind `bill`
+`RECEIPTS.SCN` · SCAN · **repair: storage and shelving** · kind `bill`
 
 *Provenance: scanned paper, shoebox, pharmacy on 9th, six years of stubs.*
 
@@ -27,7 +27,7 @@ The artifact itself says none of that. It is a stack of pharmacy stubs with date
 
 ## Knowledge ceiling
 
-At run 4 the player may know the illness was strain, hidden and long. **Not** the 9,000 hours and not the cease order: those are run 5. See [[reveal-schedule]].
+A shoebox of stubs says the illness was real, hidden and long, and says nothing else. It cannot state the hours or the cease order because a pharmacy receipt does not know them, which is exactly why it is safe to find at any point. See [[reveal-schedule]].
 
 ## See also
 

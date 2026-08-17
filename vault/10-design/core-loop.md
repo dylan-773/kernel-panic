@@ -1,15 +1,15 @@
 ---
 title: Core loop
-status: canon
+status: draft
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-16
 related: ["[[game-flowchart]]", "[[the-duel]]", "[[economy]]"]
 ---
 
 # Core loop
 
-Three nested loops.
+Four nested loops, and the third one is the one that can be lost.
 
 ## The turn loop (seconds)
 
@@ -20,30 +20,29 @@ Three nested loops.
 
 One take-back per turn, spent by a cast. See [[turn-structure]].
 
-## The ticket loop (minutes)
+## The job loop (minutes)
 
-1. Three tickets on the board, any order.
-2. **Analyze**: read the customer, the device, the threat tier and the honest dominant-mode tell.
-3. Optionally reconfigure in [[loadout-cfg]]. It is optional, and diving never waits on it.
+1. A customer comes to [[the-counter]]. Take the job or do not.
+2. **Analyze**: the device, the threat tier and the honest dominant-mode tell, in as much detail as the bench can read.
+3. Reconfigure the [[the-neural-deck|deck]] in [[loadout-cfg]] against what you read. Optional, and diving never waits on it.
 4. **Dive**: one [[the-duel|duel]].
-5. **Result**: pay in, [[neural-strain|strain]] billed, maybe a [[patch-pieces|piece]], and an [[augment-drafts|augment draft]] of three.
+5. **Result**: pay in, [[neural-strain|strain]] billed, maybe a [[patch-pieces|piece]], salvage, and an [[augment-drafts|augment draft]] of three. All of it held, none of it yours yet.
 
 > [!danger] REVISED IN PROTOTYPE
 > The build stop between the board and the dive was mandatory in the draft, and players clicked through it unchanged. Making it an optional window with its own dive button turned it from a speed bump into a choice.
 
-## The day loop (a session)
+## The day loop (a session, and the run)
 
-1. Morning line and any story beat.
-2. Three tickets.
-3. Day close: **+10 strain free**, one upgrade pick, and the shop.
+1. Morning line.
+2. As many jobs as you dare. Every one after the first is a wager on everything already earned.
+3. **Close**, by going upstairs to bed. Everything held becomes permanent, and **+10 strain free**.
+4. The evening: repairs, the deck, patches. See [[the-night-shop]].
 
-Nine of these, then day 10. See [[the-ten-day-arc]].
+Or: strain hits 0 first, and the day pays nothing and the evening does not happen. See [[day-close-and-banking]].
 
-## The run loop (the game)
+## The week (the shape of the game)
 
-A run ends at day 10 or when strain hits 0. Nothing carries but knowledge, story progress and lifetime stats, and each failed run pays out another fragment of the father.
-
-See [[death-and-run-end]] and [[reveal-schedule]].
+Six working days, then [[sunday]]: no customers, the back room if you want it, and the story beats. Then it starts again. There is no last day and no reset, ever. What changes over a long game is the shop, which is also where the story comes from. See [[repairs-and-unlocks]].
 
 ## See also
 

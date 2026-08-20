@@ -17,10 +17,16 @@ purple-black base) and ruled the direction directly.*
 
 ## What it decided
 
-The scene layer's visual register is neon cyberpunk. The operative law is
-[[law-12-scene-art]]: the KP-NEON/16 palette, the lighting rules, and the
-three prompt templates live there. This ruling records that the direction is
-the user's, dated, and settled.
+The scene layer's visual register is neon cyberpunk: industrial, high tech
+yet rundown, urban. The operative law is [[law-12-scene-art]]: the KP-NEON/16
+palette, the materials register, the lighting rules, and the three prompt
+templates live there. This ruling records that the direction is the user's,
+dated, and settled.
+
+Sharpened the same night: the first regeneration kept rustic materials and
+added neon over them, and the user rejected it in exactly those terms.
+Simply making it neon does not make it cyberpunk. Materials carry the
+register; the law's Materials section is part of this ruling's intent.
 
 ## Scope
 

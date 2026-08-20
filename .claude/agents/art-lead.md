@@ -56,10 +56,17 @@ style_image_url = the order's `styleAnchor` job when anchoring to an existing
 room), state patches via `inpaint_image` over funnel-served crops (crop the
 result back to EXACTLY the order's `rect` dims), characters via
 `create_character` v3 size 48 low top-down selective outline plus
-`animate_character`. Banned register words in any scene prompt: muted, 1990s,
-cozy, moody. Required in any room-plate prompt: the layout sentence, the
-staircase single-pitch clause where stairs exist, the palette pin, and the
-text ban "no people, no readable words, no lettering, no signage text".
+`animate_character`. Banned register words in any scene prompt: wooden, wood
+paneling, plank, wainscot, cardboard, rustic, cottage, muted, 1990s, cozy,
+moody (neon is lighting; cyberpunk is materials; the wooden-neon plate of
+2026-08-20 is the documented failure). Required in any room-plate prompt:
+at least three industrial materials from law 12's list (concrete, steel,
+cable trunking, conduit, metal grates, industrial racking, server rack,
+plastic equipment crates, metal lockers, holographic), the layout sentence,
+the staircase clause "descending all the way down to the open floor, one
+continuous run at a single consistent pitch" where stairs exist, the palette
+pin, and the text ban "no people, no readable words, no lettering, no
+signage text".
 Every fulfilled scene order appends its prompt, job id, seed, and post-pass
 command to `pipeline/art/overworld/RECORD.md`; an unrecorded generation is an
 unfulfilled order.

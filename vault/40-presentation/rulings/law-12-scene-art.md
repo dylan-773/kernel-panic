@@ -17,7 +17,17 @@ The overworld scene layer only: painted room plates, repaired-state patches, and
 
 ## Mood
 
-Neon cyberpunk repair shop. Ruled by the user on 2026-08-20 ([[ruling-22-the-shop-goes-neon]]): dense neon signage in magenta, cyan and violet; small holographic panels; shelf interiors backlit with glow; a dark purple-black base; CRT phosphor green on the bench terminals; retro-futuristic, and still a cluttered, lived-in family workshop at night. The failure this law replaces read as the 1990s with the future left out. The register words for scene prompts are neon, holographic, backlit, glowing, retro-futuristic. The banned register words are muted, 1990s, cozy, moody: each one is a documented cause of the muted plate that shipped on 2026-08-19.
+Neon cyberpunk repair shop: industrial, high tech yet rundown, urban. Ruled by the user on 2026-08-20 ([[ruling-22-the-shop-goes-neon]], sharpened the same night): dense neon signage in magenta, cyan and violet; small holographic panels; shelf interiors backlit with glow; a dark purple-black base; CRT phosphor green on the bench terminals; and every SURFACE reads as rundown high tech, never as rustic. The first failure this law replaces read as the 1990s with the future left out. The second failure kept the wood and hung neon on it; the user's correction is the operative sentence: simply making it neon does not make it cyberpunk. Neon is lighting. Cyberpunk is materials.
+
+## Materials
+
+The materials register is a hard constraint with two lists.
+
+Required, at least three named in every room-plate prompt: concrete, steel or metal panel walls, cable trunking, conduit, vents, metal grates, industrial metal racking, server rack, plastic equipment crates, metal lockers, holographic.
+
+Banned in any scene prompt: wooden, wood paneling, plank, wainscot, cardboard, rustic, cottage, plus the era and mood bans muted, 1990s, cozy, moody. The 2026-08-20 wooden-neon plate (job daa98931, superseded same night) is the documented failure this list encodes: its accepted prompt contained "worn dark wooden plank floor" and no law objected.
+
+Surfaces translate, fiction stays: the counter is steel, the shelves are industrial racking, crates are plastic and stackable, the floor is scuffed concrete with embedded grates, the staircase is industrial metal with a steel railing. The shop remains Dad's cluttered, lived-in repair shop; what changes is what everything is made of.
 
 ## The palette: KP-NEON/16
 
@@ -52,7 +62,7 @@ Neon is ambient and architectural: signage on walls, glow inside shelves, city b
 
 Every scene asset is generated from one of these three shapes, palette pin included verbatim. The full per-asset prompts, job ids, and post-pass commands are recorded in `pipeline/art/overworld/RECORD.md`, which is the reproducibility ledger this law makes mandatory.
 
-**Room plate** (`create_image_pro`, gen size recorded per room, shipped dims are `ROOMS[id].width/height` in `world.ts`): the room's fiction and furniture layout sentence stay structurally identical between regenerations so the geometry data survives; only material and light vocabulary changes. Required clauses: the layout sentence naming every station and its wall; for any room with stairs, "drawn as one continuous run at a single consistent stair pitch from the floor to the top edge"; the palette pin "Limited palette anchored to these hexes:" plus the sixteen; and the text ban "no people, no readable words, no lettering, no signage text" (neon signage prompts generate garbled type otherwise; the dither treatment learned the same lesson twice). Prompt length stays between 40 and 220 words.
+**Room plate** (`create_image_pro`, gen size recorded per room, shipped dims are `ROOMS[id].width/height` in `world.ts`): the room's fiction and furniture layout sentence stay structurally identical between regenerations so the geometry data survives; material and light vocabulary carries the restyle. Required clauses: the layout sentence naming every station and its wall; the materials register (at least three required industrial materials, zero banned rustic words); for any room with stairs, "descending all the way down to the open floor, one continuous run at a single consistent pitch" (the stair foot must land ON walkable floor with a visibly clear approach; a foot tucked behind props fails the plate); the palette pin "Limited palette anchored to these hexes:" plus the sixteen; and the text ban "no people, no readable words, no lettering, no signage text" (neon signage prompts generate garbled type otherwise; the dither treatment learned the same lesson twice). Neon reflections on floors stay subtle; the surface itself reads industrial first. Prompt length stays between 40 and 260 words.
 
 **State patch** (`inpaint_image` over a funnel-served crop): "In the masked region only: " plus the repaired object in one sentence, plus "Match the surrounding neon cyberpunk pixel art exactly: same palette, same lighting direction, same pixel density; keep the warm lamp pool. No people, no readable words." Shipped patch dims must equal the `stateOverlays` rect in `world.ts` exactly; the bake is a raw blit.
 

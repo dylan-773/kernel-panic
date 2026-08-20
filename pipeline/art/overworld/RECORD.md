@@ -4,7 +4,49 @@ The reproducibility ledger law 12 makes mandatory (`vault/40-presentation/ruling
 
 All 2026-08-20 prompts pin the KP-NEON/16 palette verbatim from law 12 and end with the text ban "no people, no readable words, no lettering, no signage text."
 
-## 2026-08-20: the neon restyle (ruling 22)
+## 2026-08-20 v2: the industrial materials pass (ruling 22 sharpened)
+
+The v1 neon set below was REJECTED by the user the same night: it kept
+rustic materials (wooden planks, wainscot, wooden crates) and added neon
+lighting over them. Law 12 gained its Materials section from that failure.
+The v2 set replaces materials wholesale: concrete and metal panel walls,
+scuffed concrete floor with embedded grates, steel counter with holographic
+register, industrial metal racking, plastic equipment crates, metal
+lockers, server towers, an industrial metal staircase with a steel railing
+descending all the way to the open floor.
+
+### shop.png v2 (632x456 shipped)
+
+- Tool: `create_image_pro`, 632x400, seed 501, `no_background: false`.
+- Job id: `af3a0be0-8712-41d2-b719-05497f7b7233`. THE STYLE ANCHOR for v2.
+- References: layout = `shop/shop-masked-v2.png` (usage "layout only"), materials/mood = the user's BYTEFIX reference image (usage "materials and mood only, never copy its text, signs or layout").
+- Prompt: the law 12 v2 room-plate template, industrial materials register (see the law; full text recoverable from the job id). Rejected same-prompt variants: seed 502 job `63633ac8` (city breach painted into the void), seed 503 job `c33efa8d` (glyph-heavy signage).
+- Touch-ups: two `inpaint_image` material swaps replacing residual wooden crates and beige computers, west stock (seed 511, job `e710690a`, crop 10,220-200,375 mask 10,10 170x135) and east stock (seed 512, job `d1f3ec22`, crop 390,220-580,370 mask 10,10 170x130); crops pasted back whole (outside-mask pixels identical by construction).
+- Post-pass: void keyed, pasted at y=28 into 632x456 (same recipe as v1).
+- Geometry map (original padded coords): x' = 0.93x + 22, y' = 0.95(y - 28) + 38. The stair returns to the original topology (foot on the open floor), so the original SE geometry transforms directly; occluder rects re-trimmed to the painted props.
+
+### bedroom.png v2 (440x300 shipped, unpadded)
+
+- `create_image_pro`, 440x300, seed 521, job `d52cf58a-8ecb-4a6b-9b2c-1f59932eff59`, layout ref bedroom-masked, style anchor `af3a0be0`. Industrial materials variant of the bedroom prompt.
+
+### backroom.png v2 (400x300 shipped, unpadded)
+
+- `create_image_pro`, 400x300, seed 531, job `11b3d4fd-f2b7-4348-b955-8d9bffb904b2`, layout ref backroom-masked, NO style anchor, prompt hardened to "ALMOST EMPTY" with an explicit no-furniture list. Rejected: seed 522 job `ae7fd11e` (the af3a0be0 style anchor dragged it into a cluttered workshop and destroyed the shrine).
+- Void keyed by corner-color flood (the void generated dark, not white): connected pixels within distance 40 of the corner color.
+
+### states/*.png v2
+
+Same workflow as v1 over the v2 padded plate, mask = the v2 `world.ts` rects, results cropped to exact rect dims, red mask-line pixels healed by neighbor fill, 3px alpha feather.
+
+| patch | rect (padded) | seed | job id |
+|---|---|---|---|
+| solder-fixed | 85,188 115x84 | 541 | `47452b70-7420-4521-82ef-6544f5109a10` |
+| power-fixed | 61,171 32x36 | 542 | `6f17c5b0-6489-47ba-b11b-2b499a29f2ae` |
+| router-fixed | 351,139 69x38 | 543 | `6af84cdd-ad11-48bd-87fb-70023d489716` |
+| shelves-fixed | 186,90 100x99 | 544 | `ac80392c-b25c-4f16-a716-b034350157fc` |
+| drive-fixed | 466,292 78x58 | 545 | `4dfdad61-2569-496b-9b97-3f7b0ff742ab` |
+
+## 2026-08-20 v1: the wooden-neon restyle (SUPERSEDED same night)
 
 Approach: restyle-in-place. Fresh from-scratch generations would not hold the furniture layout (five candidates, seeds 101-105, all failed the geometry overlay gate), so every room was regenerated with `create_image_pro` passing the OLD plate as a `reference_images` entry, usage "the exact room layout, camera angle, wall positions, furniture placement and scale, and open floor area to preserve". Geometry in `world.ts` was then remapped by a fitted per-room affine (edge-map correlation) plus a hand-derived rework of the shop's south east quadrant. Reference images were served over the Tailscale funnel on 8443.
 

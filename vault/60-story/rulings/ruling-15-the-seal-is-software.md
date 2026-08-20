@@ -3,7 +3,7 @@ title: Ruling 15 - THE SEAL IS SOFTWARE
 status: canon
 source: user
 owner: orchestrator
-updated: 2026-08-16
+updated: 2026-08-19
 related: ["[[canon-rulings]]", "[[the-machine]]", "[[the-shop]]"]
 ---
 
@@ -21,4 +21,8 @@ What bars the player is the machine itself: a lock in software, on the drive, he
 
 **Carried from the deleted ruling 7:** **no dust.** The shop is buried in [[dad]]'s clutter because he was a messy genius, and the gap between his death and the first day is **short, days to weeks**. Forbids any "decade of dust" or long post-death framing. What changed is who clears the clutter: the player does, and clearing it is now the core loop. See [[repairs-and-unlocks]].
 
-**Integration:** the shipped opener line "The padlock is the only thing in this shop Dad ever put away properly" loses its subject and needs a new one. The tower itself is the obvious referent.
+**Integration:** the shipped opener line "The padlock is the only thing in this shop Dad ever put away properly" loses its subject and needs a new one. The tower itself is the obvious referent, and is now ruled as the replacement:
+
+> The tower is the only thing in this shop Dad ever put away properly.
+
+[[the-shop]]'s props table already lists "the tower - the only thing in the shop he ever put away properly," so this line brings the shipped opener into line with that note rather than inventing a new fact.

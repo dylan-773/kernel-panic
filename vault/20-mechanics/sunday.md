@@ -1,24 +1,24 @@
 ---
 title: Sunday
-status: draft
-source: none
+status: canon
+source: code
 owner: user
-updated: 2026-08-16
+updated: 2026-08-19
 related: ["[[the-machine]]", "[[cutscenes-and-scenes]]", "[[day-close-and-banking]]"]
 ---
 
 # Sunday
 
-> [!warning] status: draft
-> Settled with the user on 2026-08-16. No code implements it.
-
 Six working days, then the shop is closed. The week is the only fixed structure left in a calendar that otherwise runs forever.
+
+> [!info] As built 2026-08-19
+> Source: `weekdayOf`/`isSunday` in `save.ts`; the sunday phase and `attemptedBackroom` in `day-reducer.ts`; scene scheduling via `ShopState.sundayScenes` in `game-shell.tsx`.
 
 ## What Sunday is for
 
 - **The back room.** The only day the machine can be attempted. See [[the-machine]].
 - **Story.** The major beats play here as scenes, because Sunday is the only time the player is not mid-transaction. See [[cutscenes-and-scenes]].
-- **Whatever else does not fit a working day.** Open: errands, the city, maintenance that takes a whole day, visiting somewhere that is not the shop.
+- **The evening systems without the day.** Repairs, the darknet and the deck are all reachable on a Sunday, so a Sunday not spent on the machine is a maintenance day, not an empty one.
 
 No customers arrive. Nothing is earned. Sunday costs a day of income by existing, which is what makes spending it on the machine a real decision rather than a free retry.
 
@@ -40,12 +40,12 @@ This matters for the story: because attempts are never blocked, the reveals can 
 
 The game continues. Monday arrives, customers arrive, the shop still needs work. Beating the machine is the game's largest reward and not its ending. See [[the-finale-encounter]].
 
-## Open questions
+## The 2026-08-16 open questions, answered as built
 
-- [ ] What does the player do on a Sunday they do not spend on the back room? Right now the day is empty unless a scene is scheduled, and an empty day the player must click through is worse than no day at all.
-- [ ] Does the week start on Monday, and does the player see the day of the week anywhere but the taskbar clock?
-- [ ] Does a failed Sunday attempt cost strain into Monday, or does it resolve like any other lost dive?
-- [ ] Are scenes scheduled by count of story artifacts found, by Sundays elapsed, or hand-placed against specific repairs?
+- **A Sunday off the machine** is spent on the shop: every evening system is open all day, and the scheduled scene (if one is due) plays. The day is never a bare click-through.
+- **The week starts on Monday** (`WEEKDAYS` in `save.ts`), and the weekday sits on the room HUD next to the day number, not only in the terminal.
+- **A failed attempt resolves like any lost dive**: no strain bill, and `attemptedBackroom` marks the week's attempt spent. The cost was the Sunday.
+- **Scenes are scheduled by Sundays elapsed** (`sundayScenes` against `floor(day/7)`), so story cadence is steady regardless of repair order; artifacts stay repair-keyed separately. See [[ruling-16-reveals-are-upgrade-keyed]].
 
 ## See also
 

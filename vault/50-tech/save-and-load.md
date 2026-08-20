@@ -3,7 +3,7 @@ title: Save and load
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-16
+updated: 2026-08-19
 related: ["[[day-close-and-banking]]", "[[title-and-start-screen]]", "[[meta-progression]]"]
 ---
 
@@ -14,52 +14,45 @@ related: ["[[day-close-and-banking]]", "[[title-and-start-screen]]", "[[meta-pro
 
 ## Three slots
 
-Keys `kernel-panic-s<N>-meta-v2` and `kernel-panic-s<N>-run-v3`.
-
 Each slot is a separate player. Progress is per slot, so a second slot is genuinely fresh and will be taught everything again.
 
 Slots are **deletable from the login screen**. See [[title-and-start-screen]].
 
-## The persistence contract is what the redesign changes most
+## Three objects, three lifetimes
 
-> [!warning] status: this section is draft, the rest of the note is canon
-> The shipped schema is two objects on two lifetimes. The design now has three lifetimes, and the middle one is the game.
+> [!info] As built 2026-08-19
+> The 2026-08-16 "second option is safer" ruling shipped: the day is a discardable envelope, so a failed day is a **delete**, never a diff.
+
+Keys per slot: `kernel-panic-s<N>-meta-v2`, `-shop-v1`, `-day-v1`.
 
 | Object | Holds | Lifetime |
 |---|---|---|
 | `MetaState` | `machineOpened`, `sound`, `music`, `taught`, `stats` | forever |
-| Permanent progress | credits, owned augments, tiers, RAM, deck slots, repairs completed, day number | forever |
-| The day | held pay and salvage, pieces and augments earned today, strain, jobs taken, screen | until close, then it merges upward, or until strain 0, then it is discarded |
+| `ShopState` | credits, salvage, repairs, deck (owned boosts + slots), day number, visit counts, `sundayScenes` | forever; written only by `closeShop`, `sleep`, and evening purchases |
+| `DayState` | phase, held pay and salvage, pouch, strain, ticket, arrivals, `attemptedBackroom` | until close (folds upward) or strain 0 (deleted) |
 
-Two ways to build it: promote nearly everything out of `RunState` into a grown `MetaState`, or add a third object so the day stays a discardable envelope. **The second is safer**, because discarding a failed day becomes a delete rather than a diff, and the thing most likely to go wrong here is a failed day quietly keeping something.
-
-`runCount` no longer exists. Nothing keys off it, and the schema version bumps when it goes. See [[meta-progression]].
+`duelKitOf(shop, day)` assembles the dive kit from the slotted deck plus the day's pouch, so nothing duel-facing lives in two places. `migrateLegacySave` deletes the retired `-run-v3` key; the run schema does not migrate, it dies.
 
 ## There are no checkpoints
 
-No save-scumming a day, no restore point, no continue. A day either closes or it does not. See [[day-close-and-banking]].
+No save-scumming a day, no restore point, no continue. A day either closes or it does not. There is exactly one commit point for the haul: closing the shop at the stairs. See [[day-close-and-banking]].
 
-The day being the persistence envelope makes this cheap to enforce: there is exactly one commit point, and it is going to bed.
-
-## Refresh is a safe abort
+## Refresh is a safe abort, and it now costs correctly
 
 > [!info] Transient screens are never resumed into
-> Reloading mid-dive puts the player back at the shop, not into a half-serialized duel. So closing the tab during a losing dive costs the job, never the day's haul, and never corrupts the save.
+> Reloading mid-dive puts the player back on the shop floor, not into a half-serialized duel. The dive's job is lost; the day and its held haul survive, because `DayState` is written at phase boundaries, not mid-duel.
 >
-> That affordance is worth re-examining now. When the day is the run, refreshing out of a dive the player is about to lose protects the whole day's haul, which is exactly the wager the design is built on. Either the abort has to cost the day, or the day has to be committed at the moment a dive starts.
->
-> This is also the only "abandon" affordance in the game, and the ABANDON dialog copy exists to make it explicit rather than a discovered trick.
+> The 2026-08-16 worry (refresh as a free escape from a losing dive) resolves the day-is-the-run way: escaping a dive keeps the held haul but the strain already spent stays spent, the ticket is gone, and the day's arrivals keep counting. Refresh is a worse deal than standing up.
 
 ## The migration ladder
 
 Real, and load-bearing, because saves survive across builds:
 
-- Legacy `patchCells` integer becomes N cross masks.
-- `ramPerTurn` NaN is repaired.
-- Unknown augment ids are **dropped**, so removing an augment from the catalog does not brick an old save.
+- Legacy `-run-v3` saves are deleted on first load; meta survives.
+- Unknown augment ids are **dropped**, so removing a boost from the catalog does not brick an old save.
 - Transient screens are never resumed into.
 
-`run-sim.ts` exercises meta hydration across 40 full runs. What it should exercise instead is a long sequence of days, including failed ones, checking that a failed day leaves the permanent object bit-identical. See [[simulation-harnesses]].
+`run-sim.ts` exercises long careers, including busted days, and asserts the bust property: a failed day leaves `ShopState` bit-identical. See [[verification-gate]].
 
 ## Two things worth knowing
 

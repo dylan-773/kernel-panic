@@ -3,13 +3,13 @@ title: Player character
 status: canon
 source: lore
 owner: orchestrator
-updated: 2026-08-16
-related: ["[[the-player]]", "[[player-skills]]", "[[player-metrics]]"]
+updated: 2026-08-19
+related: ["[[the-player]]", "[[player-skills]]", "[[player-metrics]]", "[[ruling-18-the-players-likeness]]"]
 ---
 
 # Player character
 
-The son. Unnamed, never pictured, never speaks in the third person.
+The son. Unnamed, faceless even where he is seen, never speaks in the third person. See [[ruling-18-the-players-likeness]].
 
 Full character sheet in [[the-player]]. This note is the mechanical side of the same person.
 

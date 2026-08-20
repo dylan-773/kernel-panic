@@ -3,8 +3,8 @@ title: June Aksoy
 status: canon
 source: lore
 owner: orchestrator
-updated: 2026-08-05
-related: ["[[customers]]", "[[ward]]"]
+updated: 2026-08-19
+related: ["[[customers]]", "[[ward]]", "[[ruling-19-six-customer-appearances]]"]
 ---
 
 # June Aksoy
@@ -15,7 +15,7 @@ related: ["[[customers]]", "[[ward]]"]
 
 ## Appearance
 
-Not yet ruled. **Invent nothing without a ruling.**
+*Canon, ruled 2026-08-19, [[ruling-19-six-customer-appearances]].* Night-shift nurse, scrubs under an open coat, badge reel swinging, running on the shift's last coffee.
 
 ## The dive
 

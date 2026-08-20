@@ -1,5 +1,7 @@
 # Memory index
 
+- [Proposal envelope is mandatory, even for narrow asks](proposal-envelope-mandatory.md) — lint hook rejects flat custom-shape JSON; wrap narrow deliverables in agent/brief/items anyway
+- [Ruling 21: artifact payload has three channels](ruling-21-artifact-channels.md) — journal entry, sector, or firstRead vignette; firstRead is keyed per station not per RepairId, which is a live gap at multi-stage stations
 - [KP UI integration cycle](kp-ui-integration-cycle.md) — ui-integration-2026-07-29 context; INTRUSION rename ruling is an open thread to check next; inbox-subject design choices
 - [Demo copy integration practice](demo-copy-integration-practice.md) — read ui-demos/ source not the README summary, mind whose voice a placeholder line is in, follow a brief's bespoke item types, check copy-order status fields
 - [DAD.LOG archive reframe cycle](dadlog-archive-reframe-cycle.md) — ux-2026-07-29-dadlog context: diary to DAD.VOL reframe, ledger rulings 12/13, scope was copy-order-only

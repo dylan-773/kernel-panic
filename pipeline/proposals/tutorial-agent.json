@@ -1,19 +1,39 @@
 {
   "agent": "tutorial-agent",
-  "brief": "ux-2026-07-29-darknet-cli",
-  "notes": "Teaching gate for the approved DARKNET.LNK CLI study (ui-demos/kpos-shell/darknet.html), reviewed ahead of it replacing the shipped button-form DarknetContent (components/os/windows/darknet.tsx). Full reasoning lives in pipeline/gates/tutorial-review.md, this cycle's rewrite; tutorial/ledger.md carries the durable Coverage row update, waiver log note, Open Work bullet, and loop history entry.\n\nFour of five reviewed items are COVERED as studied: the blind-pull mechanic itself (price, blind shape, pouch destination) is taught by the existing darkWebBuy coachmark (night-shop, mounted on NIGHT.SYS, unaffected by this rebuild) plus the CLI's own reveal sequence and always-visible POUCH chip; CLI operation (type or click) needs no new MECHANIC_INVENTORY row, since the always-visible labeled chips fully reach every trade outcome the typed path reaches and typing is a pure accelerator over the same click-a-button verb this game already teaches everywhere, the identical ruling shape as the pieceDragCarry, NOT ADDED precedent (2026-07-29, SOLDER.BAY drag-vs-tap); the three deny states (pouch full, short credits, market offline) are all self-explanatory in-fiction, the offline case doubly covered by DARKNET.LNK's own pre-existing desktop-icon hover hint; and the price-climbs-by-day RULE is taught once, correctly, by the same coachmark, verified against darkPatchCost(day) = 25 + 5 * (day - 1) in patch-cells.ts.\n\nOne real, tier-0 gap: the shipped darknet.tsx states tonight's price permanently on its BUY BLIND ({cost} cr) button label, free, no action required. The approved CLI study drops this from its always-visible header stat-strip (which keeps BAL and POUCH, but not price), gating the number behind HELP, LIST, the HAGGLE easter egg, or an already-committed BUY. This is a recurring number, which the placement-bias table routes to a permanent readout, not a coachmark; the RULE half is already soundly taught and needs no change. The one item below asks for the number's tier-0 home back, the same shape of regression as the jobBoard header loss found 2026-07-29's ui-integration audit.\n\nNo copy order filed: no new coachmark is proposed this cycle, so no new words are owed from the Narrative Director. No MECHANIC_INVENTORY or TEACHING changes proposed either: darkWebBuy's entry and the night-shop coachmark are both unaffected by this rebuild and need no edit.",
+  "brief": "day-is-the-run-2026-08-19",
+  "notes": "Full teaching audit of the integrated day-as-run build. 40 of 42 shipped mechanics re-confirmed COVERED directly against the live room and window components. One waiver (diveLoss) turned out to be false on the shipped surface: DIVE.EXE's loss overlay states 'NEURAL STRAIN ZEROED. THE RUN IS OVER.' on every ordinary ticket loss, contradicting both the reducer (a loss bills no strain, the day continues) and the room's own LossToast. Filed as a tier 0 ui-spec, not a teaching moment, since the fix is making an existing label true. One backroomOppOpens citation corrected (INTRUSION rename drift, substance unaffected) directly in tutorial/ledger.md, no proposal item needed for a citation-only fix. One genuine new mechanic found ungated: strainCarryover (strain persists across days, only partially regenerates via sleep/night patch), currently stated nowhere reliable before day 9. Full verdicts and reasoning: pipeline/gates/tutorial-day-is-the-run-2026-08-19.md. Ledger fully rewritten: tutorial/ledger.md.",
   "items": [
     {
+      "type": "mechanic",
+      "id": "strainCarryover",
+      "label": "Neural Strain persists across days; sleep and night patches only partially restore it",
+      "firstContact": "evening"
+    },
+    {
+      "type": "teaching-moment",
+      "id": "strain-carryover-notice",
+      "teaches": ["strainCarryover"],
+      "surface": "evening",
+      "when": "strainShort",
+      "anchor": "strain",
+      "order": 72,
+      "notBeforeDay": 1,
+      "title": null,
+      "intent": "Strain does not reset when a new day opens. Whatever a day closes at is what tomorrow starts at, minus what sleep or a night patch buys back, so a bad day compounds unless spent down.",
+      "lines": null,
+      "copyOrder": "strain-carryover-notice",
+      "tier": "2, a rule needed once at the moment it starts mattering, not a recurring number: the regen figure itself (+10 from sleep) is already tier 0/1, always visible on NIGHT.SYS's own strain block, so a tip would be redundant. Not tier 0: the fact that strain does NOT reset is a negative claim no label currently makes, and the one place it is stated in flavor text (a Tuesday morning line) cannot appear before day 9 by its own cycling logic, verified against content/story.ts's morningLine().",
+      "engineNote": "Needs a new TeachWhen union member 'strainShort' in content/teaching.ts, firing on day.strain < 100 when NightContent first mounts. Signal is a one-line read at the call site (windows/night.tsx); no reducer change. Also needs a new anchor class kp-teach-strain (existing kp-teach-<anchor> system, not new UI) positioned near NIGHT.SYS's strain block, distinct from night-shop's existing 'patch' anchor."
+    },
+    {
       "type": "ui-spec",
-      "id": "darknet-cli-rate-chip",
-      "status": "integrated",
-      "area": "windows",
-      "spec": "DARKNET.LNK's CLI header stat-strip (the study's #stats block, ROUTE / PEER / BAL / POUCH chips in the kp-chip-pct idiom already used elsewhere in this game's chrome, e.g. shop-os.tsx's footer, loadout.tsx's bay chips) gains a fifth persistent chip, RATE, showing the exact darkPullPrice(run) value formatted as '{cost} cr', at all times the channel is live (market online), positioned adjacent to BAL. This restores at tier 0 what the pre-CLI DarknetContent carried for free on its 'BUY BLIND ({cost} cr)' button label (darknet.tsx:102): tonight's price visible at a glance, with no command, no HELP/LIST/HAGGLE, and no committed spend required. Reuse the existing chip-flash treatment BAL/POUCH already use on change, for visual consistency, though price will not change mid-session in practice. When the market is offline, the chip should read '--' or be omitted, matching BAL/POUCH's own offline treatment (both currently show '--' before the channel dials, per the study's connect()).",
+      "id": "dive-loss-overlay-strain-accuracy",
+      "area": "duel",
+      "spec": "In DIVE.EXE's result overlay (components/game/duel.tsx, the dv-result-bill block), the row currently gated only on `state.phase !== \"won\"` renders 'NEURAL STRAIN' / 'ZEROED. THE RUN IS OVER.' on every loss, including an ordinary ticket loss where day.strain is untouched and the shop day continues normally (day-reducer.ts's duelFinished handler bills no strain on a loss, by design: 'the loss already costs the ticket'). This contradicts the room's own LossToast, which correctly reads 'CORE LOST. NO CHARGE, NO STRAIN.' for the identical event. Fix: distinguish an ordinary ticket loss from a genuine bust (day.strain actually at or heading to zero) and give the ordinary case its own accurate row, matching LossToast's wording (no charge, no strain billed, the ticket goes home unfinished). Reserve 'THE RUN IS OVER' framing only for a state where that is literally true.",
       "acceptance": [
-        "opening DARKNET.LNK while the market is open shows a RATE chip in the header stat-strip reading the exact darkPullPrice(run) value in cr, visible before the player types or clicks anything",
-        "the RATE chip's value matches exactly the price shown by HELP's BUY line, LIST's PRICE row, and the actual amount deducted by a completed BUY",
-        "the RATE chip sits in the same always-visible strip as BAL and POUCH, never gated behind a command or a completed purchase",
-        "when the market is offline, the chip shows no stale or misleading price, matching BAL/POUCH's own offline state"
+        "Losing an ordinary ticket dive (day.ticket was set, the loss is not a strain-zero bust) never renders the words 'ZEROED' or 'THE RUN IS OVER' anywhere in the result overlay.",
+        "The ordinary-loss case's strain row states the true outcome: no strain billed, wording consistent with LossToast's 'CORE LOST. NO CHARGE, NO STRAIN.'",
+        "If any duel outcome can still cause a genuine same-instant bust, that case keeps an accurate 'the day is over' statement; if no such case currently exists in the day-as-run design, the unconditional row is simply removed rather than left reachable through dead logic."
       ]
     }
   ]

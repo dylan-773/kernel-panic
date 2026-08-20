@@ -3,8 +3,8 @@ title: Ines Calloway
 status: canon
 source: lore
 owner: orchestrator
-updated: 2026-08-16
-related: ["[[customers]]", "[[arm-halt]]"]
+updated: 2026-08-19
+related: ["[[customers]]", "[[arm-halt]]", "[[ruling-19-six-customer-appearances]]"]
 ---
 
 # Ines Calloway
@@ -15,7 +15,7 @@ related: ["[[customers]]", "[[arm-halt]]"]
 
 ## Appearance
 
-Not yet ruled. **Invent nothing without a ruling.**
+*Canon, ruled 2026-08-19, [[ruling-19-six-customer-appearances]].* Freight loader, exosuit rig still half strapped on, calloused hands, braced like the suit might move again on its own.
 
 ## The dive
 

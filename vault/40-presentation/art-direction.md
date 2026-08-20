@@ -3,7 +3,7 @@ title: Art direction
 status: canon
 source: rulings
 owner: orchestrator
-updated: 2026-08-16
+updated: 2026-08-19
 related: ["[[law-5-imagery]]", "[[art-lead]]", "[[kp-os]]"]
 ---
 
@@ -35,21 +35,23 @@ See [[law-5-imagery]].
 
 | Tool | Job |
 |---|---|
-| Higgsfield `nano_banana_pro` | the working generator, 2 credits per image |
+| **PixelLab** (paid subscription since 2026-08-19) | rooms, character sprites, walk animations, inpainting: everything the camera moves through |
+| Higgsfield `nano_banana_pro` | window imagery stills, 2 credits per image |
 | `pipeline/tools/dither.py` | 1-bit dither treatments for window imagery |
 | `pipeline/tools/pxpost.py` | the deterministic pixel post-pass for pixel assets |
 | `pipeline/tools/colourise.py` | the FULL COLOUR gradient map |
-
-PixelLab is a nearly empty trial and is not the working generator.
+| `pipeline/tools/customer-sheets.py` | composes walk sheets from PixelLab character zips (the twelve character ids are recorded inside it) |
 
 Palette hexes are pinned in every prompt, which is what keeps a generative pipeline on-model. See [[art-lead]].
 
 ## The finished set
 
-19 images in `pipeline/art/done/`, symlinked into this vault at `_attachments/art`. Customer portraits, device macros, client figures, story stills, and window furniture.
+The KP/OS set: 19 images in `pipeline/art/done/`, symlinked into this vault at `_attachments/art`. Customer portraits, device macros, client figures, story stills, and window furniture.
 
-> [!warning] There is no pipeline for the shop
-> `dither.py`, `pxpost.py` and `colourise.py` produce single dithered stills. Nothing in the toolchain makes environment tiles, props, a character sprite, animation frames or anything a camera can move through, and generation credits are capped. A walkable 2.5D shop is an order of magnitude more art than exists today and it is the largest production risk the redesign creates. See [[art-lead]] and [[the-shop-floor]].
+The overworld set (2026-08-19, in `app/public/assets/overworld/`): three painted isometric rooms (shop, bedroom, back room), five repaired-state patch overlays, the son's walk and idle sheets, and walk sheets for all twelve customers.
+
+> [!info] The 2026-08-16 "no pipeline for the shop" warning is resolved
+> The answer was PixelLab, and the approach was **painted rooms, not tile assembly**: one hero image per room (`create_image_pro`), walkability authored as data over it, repaired states as inpainted patches baked onto the room texture at load, and low top-down character sprites (`create_character` + walk animations) composited on top. See [[the-shop-floor]] and [[technology-stack]].
 
 Examples in [[juno-vex]], [[aldous-wick]], [[sable-okonkwo]], [[wren-tallis]], [[bram-hollander]].
 

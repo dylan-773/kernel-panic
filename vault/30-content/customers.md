@@ -3,8 +3,8 @@ title: Customers
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-16
-related: ["[[intrusions]]", "[[encounter-generator]]", "[[inbox]]"]
+updated: 2026-08-19
+related: ["[[intrusions]]", "[[encounter-generator]]", "[[inbox]]", "[[ruling-19-six-customer-appearances]]"]
 ---
 
 # Customers
@@ -56,11 +56,13 @@ See [[voice-and-copy-laws]].
 
 ## Appearance canon
 
-Only where art has needed it. Ruled for [[juno-vex]], [[sable-okonkwo]], [[aldous-wick]], [[wren-tallis]] and [[bram-hollander]]; [[dex-marlowe]]'s is established by shipped card art.
-
-> [!warning] An unlisted customer has no likeness yet. Invent nothing without a ruling.
+All twelve are now ruled. [[juno-vex]], [[sable-okonkwo]], [[aldous-wick]], [[wren-tallis]] and [[bram-hollander]] were ruled 2026-07-29; [[dex-marlowe]]'s is established by shipped card art; [[june-aksoy]], [[ines-calloway]], [[emeric-snow]], [[vera-stanek]], [[casimir-bell]] and [[noor-behzadi]] were ruled 2026-08-19 in [[ruling-19-six-customer-appearances]], for the walkable shop floor.
 
 Twelve customers share six portrait assets (`/assets/px/portraits/cust-01..06.png`).
+
+## Repeat customers
+
+The twelve are neighborhood regulars, not a roster that runs out. Any of them may return any number of times with a fresh intrusion. See [[ruling-20-regulars-repeat]].
 
 ## MOST LETHAL
 

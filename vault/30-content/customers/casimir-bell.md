@@ -3,8 +3,8 @@ title: Casimir Bell
 status: canon
 source: lore
 owner: orchestrator
-updated: 2026-08-16
-related: ["[[customers]]", "[[lock]]"]
+updated: 2026-08-19
+related: ["[[customers]]", "[[lock]]", "[[ruling-19-six-customer-appearances]]"]
 ---
 
 # Casimir Bell
@@ -15,7 +15,7 @@ related: ["[[customers]]", "[[lock]]"]
 
 ## Appearance
 
-Not yet ruled. **Invent nothing without a ruling.**
+*Canon, ruled 2026-08-19, [[ruling-19-six-customer-appearances]].* Pawnbroker, rings on every finger, jeweler's loupe on a cord, watches hands more than faces out of habit.
 
 ## The dive
 

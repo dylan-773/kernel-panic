@@ -3,8 +3,8 @@ title: Verification gate
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-16
-related: ["[[simulation-harnesses]]", "[[difficulty-ramp]]", "[[the-plays]]"]
+updated: 2026-08-19
+related: ["[[simulation-harnesses]]", "[[difficulty-ramp]]", "[[the-plays]]", "[[save-and-load]]"]
 ---
 
 # Verification gate
@@ -12,12 +12,12 @@ related: ["[[simulation-harnesses]]", "[[difficulty-ramp]]", "[[the-plays]]"]
 **Nothing deploys unless all four are green.** Iron rule 5.
 
 ```bash
-cd /home/lyd0n/Development/kernel-panic/kernel-panic-site/app
+cd /Users/lyd0n/Development/kernel-panic/kernel-panic-site/app
 
 bun run typecheck
-bun run src/game/dev/sim.ts        # tutorial MUST print 0/200
-bun run src/game/dev/run-sim.ts    # run-layer invariants
-bun run src/game/dev/teach-sim.ts  # every mechanic taught or waived
+bun run src/game/dev/sim.ts        # tutorial MUST print 0/200; self-gates the tier bands
+bun run src/game/dev/run-sim.ts    # day-machine invariants incl. the bust property
+bun run src/game/dev/teach-sim.ts  # every mechanic taught or waived; exit 1 names the gap
 ```
 
 > [!warning] `cd` first, always
@@ -28,20 +28,31 @@ bun run src/game/dev/teach-sim.ts  # every mechanic taught or waived
 | Command | Proves |
 |---|---|
 | `typecheck` | the content modules match their schemas. This is the schema enforcer for every hand-integrated proposal |
-| `sim.ts` | the duel is balanced, the planner is honest, and the tutorial is unwinnable |
-| `run-sim.ts` | the run layer's invariants hold across 40 full runs |
-| `teach-sim.ts` | every mechanic is taught or explicitly waived |
+| `sim.ts` | the duel is balanced per tier, the planner is honest, and the tutorial is unwinnable |
+| `run-sim.ts` | the day machine's invariants hold across long synthetic careers, including the bust property |
+| `teach-sim.ts` | every mechanic is taught or explicitly waived, and every waiver's machine-checkable premise still holds |
 
-## The curve to gate
+## The curve to gate: win rate per tier
 
-> [!warning] The shipped curve is nine days plus a finale, and there are no longer nine days
-> Gate the **KITTED** curve `~84 / 93 / 67 / 75 / 56 / 72 / 63 / 52 / 52, finale ~35`, with the kit-less proxy as a floor and nothing more (`94/67/60/46/53/41/32/18/13`, finale 0 by construction under `oppOpens`). Both are indexed on a day number that no longer bounds anything.
->
-> What replaces it has to be **a win rate per job tier** plus a distribution over day lengths, because the player now chooses the difficulty by choosing how far to push. See [[difficulty-ramp]]. Until that exists, the gate has a hole in it and this note says so rather than pretending otherwise.
+> [!info] As built 2026-08-19
+> The old nine-day curve is gone with the run layer. `sim.ts` now gates **win bands per job tier** (`WIN_BANDS` in `sim.ts`), self-enforcing: the harness exits 1 if any kitted tier leaves its band.
 
-Still valid regardless of index: measured `pd` within 2.0 of `pdTarget`, median rounds 3 to 4, `<=2r` under about 40%.
+| Tier | Band | Measured (2026-08-19, kitted stage decks) |
+|---|---|---|
+| 1 | 65 to 95 | 81.5% |
+| 2 | 65 to 95 | 85.5% |
+| 3 | 45 to 75 | 60.0% |
+| 4 | 35 to 70 | 52.5% |
+| 5 | 25 to 70 | 48.5% |
+| backroom | 15 to 60 | 39.5% |
 
-A second gate the new design needs and does not have: **a failed day must leave permanent state unchanged.** That is a property test, not a balance number, and it is the one bug class the redesign invents. See [[save-and-load]].
+The kit-less proxy is a floor and nothing more. The player chooses difficulty by choosing how far to push in a day, so the bands widen with tier: a tier 5 job is a wager, never a wall. See [[difficulty-ramp]] and `tierBandFor` in `content/tiers.ts` for what tiers a day can roll.
+
+Still gated alongside the bands: measured `pd` within 2.0 of `pdTarget` per tier, median rounds 3 to 4, and the backroom's tier-1-equivalent close count at exactly 0.
+
+## The bust property
+
+**A busted day leaves the shop layer untouched.** `run-sim.ts` snapshots the permanent progression before every day and, on bust, asserts the post-bust shop state is identical. This is the one bug class the day-is-the-run design invents, so it is a property test, not a balance number. See [[save-and-load]] and [[day-close-and-banking]].
 
 ## The absolute
 

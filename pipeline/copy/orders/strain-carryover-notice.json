@@ -1,0 +1,15 @@
+{
+  "id": "strain-carryover-notice",
+  "from": "tutorial-agent",
+  "kind": "teaching-moment",
+  "moment": "strain-carryover-notice",
+  "surface": "evening, on NIGHT.SYS, near the strain block",
+  "intent": "The player must come away understanding that Neural Strain does not reset when a new day opens. Whatever it closed at is what tomorrow starts at (plus a flat +10 from sleeping, or more from a paid night patch, capped at 100), so an unmanaged bad day compounds into tomorrow instead of forgiving itself overnight.",
+  "constraints": "2 lines max, 160 chars each, no em or en dashes, terminal voice matching NIGHT.SYS's existing register (see EVENING_COPY and the other night-shop coachmark lines for tone). Do not restate the exact +10 regen number, that already lives permanently on NIGHT.SYS's own strain block; this moment is about the rule, not the figure.",
+  "status": "done",
+  "title": "STRAIN CARRIES OVER",
+  "lines": [
+    "Sleep does not reset Neural Strain. It gives back only a little.",
+    "Whatever tonight leaves unspent carries into tomorrow. Spend on a night patch to buy back more before you sleep."
+  ]
+}

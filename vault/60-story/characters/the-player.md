@@ -3,8 +3,8 @@ title: The player - the son
 status: canon
 source: lore
 owner: orchestrator
-updated: 2026-08-16
-related: ["[[dad]]", "[[patch]]", "[[player-character]]"]
+updated: 2026-08-19
+related: ["[[dad]]", "[[patch]]", "[[player-character]]", "[[ruling-18-the-players-likeness]]"]
 ---
 
 # The player - the son
@@ -33,10 +33,14 @@ Refers to [[patch]] as **"it"** in his own bench notes, before and after. He is 
 
 He also believes, at the start, that the thing in the back room is a virus. Nobody told him. See [[ruling-17-the-players-own-assumption]].
 
+## Appearance
+
+*Canon, ruled 2026-08-19, [[ruling-18-the-players-likeness]].* Young man, worn olive work jacket over a dark hoodie, messy dark hair over his eyes, tired posture, tool pouch at the hip. Seen only room-scale, at [[the-shop-floor]]'s camera distance, and never drawn close enough for the face to resolve.
+
 ## Constraints
 
 - Never named.
-- Never pictured. There is no player portrait asset.
+- Never pictured with a face that resolves. A room-scale, full-body sprite is permitted; see [[ruling-18-the-players-likeness]] for what stays forbidden (portraits, busts, close-ups).
 - Never speaks in the third person.
 - His inferences and reactions belong in bench annotations, never in an artifact's printed body.
 

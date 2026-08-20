@@ -3,8 +3,8 @@ title: Emeric Snow
 status: canon
 source: lore
 owner: orchestrator
-updated: 2026-08-05
-related: ["[[customers]]", "[[purge]]"]
+updated: 2026-08-19
+related: ["[[customers]]", "[[purge]]", "[[ruling-19-six-customer-appearances]]"]
 ---
 
 # Emeric Snow
@@ -15,7 +15,7 @@ related: ["[[customers]]", "[[purge]]"]
 
 ## Appearance
 
-Not yet ruled. **Invent nothing without a ruling.**
+*Canon, ruled 2026-08-19, [[ruling-19-six-customer-appearances]].* Elderly chess club regular, cardigan buttoned off by one, glasses on a chain, unsettled by something he cannot name.
 
 ## The dive
 

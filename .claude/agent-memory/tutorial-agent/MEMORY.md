@@ -1,5 +1,8 @@
 # Memory index
 
+- [Day is the run rebuild](project-day-is-the-run.md) — 2026-08-19: run layer removed, the day is the run; two environments (walkable shop + KP/OS); re-audit before trusting old ledger citations.
+- [Re-read live components, never trust a waiver's own citation](feedback-reread-live-components.md) — waivers and coachmark citations drift silently when a surface is rebuilt; teach-sim cannot catch it, only a direct read can.
+- [Verify carryover/persistence claims against the reducer](feedback-verify-persistence-claims.md) — a resource that "does not fully reset" is the easiest kind of rule to ship untaught, because the old, more generous assumption is what players default to.
 - [Gate-only demo passes](gate_scope_demo_passes.md) — when told "the review file is the deliverable," write only tutorial-review.md, not proposal/copy-order files
 - [Waiver vs new input paradigm](waiver_vs_new_input_paradigm.md) — reused hover/legal-target visual language waives the STATE readout, not the EXISTENCE of a brand-new input gesture like drag
 - [Vague to specific copy raises stakes](vague_to_specific_copy_raises_stakes.md) — a fiction reframe making placeholder text diegetic creates a new accuracy obligation; check dive-vs-run cadence claims against the reducer

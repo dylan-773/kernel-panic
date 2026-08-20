@@ -1,266 +1,39 @@
 {
   "agent": "narrative-director",
-  "brief": "ui-integration-2026-07-29",
-  "notes": "Copy pass for the kpos-shell v2 integration. Grounded against ui-demos/kpos-shell/README.md (all sections), lore/bible.md, lore/ledger.md, content/customers.ts (full 12-customer roster), and content/story.ts for Rhea's shipped voice. This replaces this agent's prior proposal file (deep-balance-2026-07-28 cycle); that content is already integrated and is not resubmitted. Item types used are the two this brief specifies, 'inbox-subject' and 'ui-copy' (bespoke for this integration cycle, distinct from the general kp-contracts schema list), plus one 'ui-copy' item used to carry the INTRUSION-rename ruling request since no dedicated ruling-flag item type exists. Checked pipeline/copy/orders/: all 13 files are already status filled/done/cancelled, none open this cycle, so no teach-copy items are included; nothing owed there right now. No scene, journal, or dayline items included either: this is a pure UI-copy integration pass and I found no gap in the reveal schedule that demands a new story beat, so runOpenerScene/runEndScene/JOURNAL_ENTRIES/DAY_LINES are untouched. No art orders filed: nothing in this cycle's narrative-director scope is a new diegetic story moment (the customer-figure-likeness and BENCH FEED diegetic-claim questions the brief's Gates section raises belong to ux-agent/art-lead, who commissioned that art; I'm not ordering new art against my own scope this cycle). Inbox subjects: one item per customerId (tier field omitted throughout) rather than one per customer-tier pair. A customer's standing complaint reads the same regardless of which difficulty tier serves up that day's ticket (customers.ts does not vary quotes/winLine/lossLine by tier either), so one Rhea line already covers every tier a customer appears at; noted here explicitly as a deliberate choice, not an oversight, in case a future pass wants tier-escalating subjects for recurring customers like Aldous Wick (T1-3) or Ines Calloway (T3-4). Subject format bakes in the brief's own illustrative example ('RE: <device>') as literal leading text, not presentational chrome, since that is the safer default: trivial for the Orchestrator to strip a leading 'RE: ' if the ux-agent spec wants to render it as chrome instead, much harder to retrofit if baked-in text turns out to be wanted. Every subject line is new Rhea-voiced copy, not adopted from the INBOX study's demo-mock subjects (those paraphrase the CUSTOMER's complaint in the customer's own register; the brief is explicit that shipped subjects must read as RHEA routing the order, a different speaker and a different job), built from her established voice (dry, protective, deflects into logistics, per lore/bible.md and the day-open lines in story.ts such as 'The Kestrel courier drone is back. Same customer, new complaint.' and 'The Ledgerstone pawn vault sent someone over again. Good, they pay on time.').",
+  "brief": "loremaster-day-is-the-run-2026-08-19",
+  "notes": "Answers three copy gaps from today's loremaster gate on the day-is-the-run integration (pipeline/gates/loremaster-day-is-the-run-2026-08-19.md), not the UI-only brief currently sitting in pipeline/BRIEF.md. Two firstRead items close the diagBench REVISE/ruling-21 gap the gate flagged: FirstRead currently keys REPAIR_STATION_COPY by station, so diagBench2 and diagBench3 both replay diagBench1's sealed-envelope text. These two items are the new per-repair text; the Orchestrator's engine-side change (keying firstRead by RepairId instead of station for multi-stage stations, per the gate's own recommendation) is a prerequisite for landing them and is out of narrative-director's lane. The third item fulfills the tutorial-agent's open copy order at pipeline/copy/orders/strain-carryover-notice.json, mirrored here and written back to that order file with status done.",
   "items": [
     {
-      "type": "inbox-subject",
-      "id": "subject-juno-vex",
-      "customerId": "juno-vex",
-      "subject": "RE: Hexlight handheld. Juno swears a ghost is beating her high score."
-    },
-    {
-      "type": "inbox-subject",
-      "id": "subject-sable-okonkwo",
-      "customerId": "sable-okonkwo",
-      "subject": "RE: Kestrel courier drone. Her routes keep rewriting themselves mid flight."
-    },
-    {
-      "type": "inbox-subject",
-      "id": "subject-aldous-wick",
-      "customerId": "aldous-wick",
-      "subject": "RE: Meridian ledger terminal. Aldous again. The books are biting back."
-    },
-    {
-      "type": "inbox-subject",
-      "id": "subject-wren-tallis",
-      "customerId": "wren-tallis",
-      "subject": "RE: the studio masters. Something is hiding her tracks. She can hear it breathing."
-    },
-    {
-      "type": "inbox-subject",
-      "id": "subject-bram-hollander",
-      "customerId": "bram-hollander",
-      "subject": "RE: Copperline register. His own till locked him out after eleven years."
-    },
-    {
-      "type": "inbox-subject",
-      "id": "subject-dex-marlowe",
-      "customerId": "dex-marlowe",
-      "subject": "RE: Nocta cram deck. His homework keeps rerouting to the arcade. Convenient."
-    },
-    {
-      "type": "inbox-subject",
-      "id": "subject-june-aksoy",
-      "customerId": "june-aksoy",
-      "subject": "RE: Halcyon clinic gateway. Wards keep locking at shift change. Keep it quiet."
-    },
-    {
-      "type": "inbox-subject",
-      "id": "subject-ines-calloway",
-      "customerId": "ines-calloway",
-      "subject": "RE: Ferrox lifter suit. Servos keep cutting mid lift. Before somebody gets hurt."
-    },
-    {
-      "type": "inbox-subject",
-      "id": "subject-emeric-snow",
-      "customerId": "emeric-snow",
-      "subject": "RE: Ivora chess cabinet. Fifty years in, and now it plays him instead of chess."
-    },
-    {
-      "type": "inbox-subject",
-      "id": "subject-vera-stanek",
-      "customerId": "vera-stanek",
-      "subject": "RE: Apothek dosage safe. It rations her power like pills now. Cold storage too."
-    },
-    {
-      "type": "inbox-subject",
-      "id": "subject-casimir-bell",
-      "customerId": "casimir-bell",
-      "subject": "RE: Ledgerstone pawn vault. It grew a lock nobody bought. He wants it gone."
-    },
-    {
-      "type": "inbox-subject",
-      "id": "subject-noor-behzadi",
-      "customerId": "noor-behzadi",
-      "subject": "RE: Polyverb synth brain. It is playing sets she never wrote. In her sleep."
-    },
-    {
-      "type": "ui-copy",
-      "surface": "LOADOUT.CFG",
-      "id": "ui-copy-loadout-status",
-      "key": "DIVE KIT section label, load/ready status lines, photo tags, ruler tag, strain note, footer line",
+      "type": "firstRead",
+      "id": "diagBench2FirstRead",
+      "repairId": "diagBench2",
+      "replaces": "REPAIR_STATION_COPY.diagBench.firstRead (currently reused verbatim for diagBench2, written for diagBench1's sealed envelope)",
       "lines": [
-        { "key": "sectionLabel", "text": "DIVE KIT", "status": "adopt" },
-        { "key": "statusLoading", "text": "DIVE KIT IS LOADING...", "status": "adopt" },
-        { "key": "statusReady", "text": "DIVE KIT READY.", "status": "adopt" },
-        { "key": "photoTagPlate", "text": "FIG. 01 // BENCH RIG", "status": "adopt" },
-        { "key": "photoTagFeed", "text": "BENCH FEED", "status": "adopt" },
-        { "key": "rulerTag", "text": "USER 01", "status": "adopt" },
-        { "key": "strainNote", "text": "SEVERS AT ZERO.", "status": "adopt" },
-        { "key": "footerLine", "text": ">> TUNE IT WHENEVER. IT HOLDS UNTIL YOU CHANGE IT.", "status": "adopt" }
+        "The deeper pass turns up more than clean readouts. It shakes a sector loose from the bench's own cache, buried under years of noise.",
+        "Damaged, but not gone. It queues itself before you can even reach for it."
       ],
-      "notes": "All eight adopt verbatim from loadout.html; every line already reads clipped and diegetic with no dashes. footerLine was not named explicitly in the README's demo-mock inventory sentence (only 'DIVE KIT', load/ready lines, photo tags, and SEVERS AT ZERO were named), but it is clearly new player-facing copy in the same window and ships, so it is included here for the record per the general instruction to cover every demo-mock string that ships. sectionLabel and strainNote render on screen wrapped in CSS-only '// ' and ' _' decoration (::before/::after); the text content itself is the bare word given here, decoration is presentational and not mine to specify."
+      "notes": "Payload is SECTOR_SCENES[2] (the bench-light-at-night scene), which plays immediately after this vignette and already carries its own RECOVERED SECTOR 2 OF 9 / PLAYBACK FOLLOWS system beat, so this text does not repeat that announcement. Deliberately does not say Filed to DAD.VOL. nothing is filed to DAD.VOL here; that claim belongs only to diagBench1's actual sealed envelope. Does not restate the envelope beat. Diegetic bench voice, no names."
     },
     {
-      "type": "ui-copy",
-      "surface": "SOLDER.BAY",
-      "id": "ui-copy-solder-dialogue",
-      "key": "dialogue-box status lines and SCHEMATIC / WORKPIECE / LAST WELD labels",
+      "type": "firstRead",
+      "id": "diagBench3FirstRead",
+      "repairId": "diagBench3",
+      "replaces": "REPAIR_STATION_COPY.diagBench.firstRead (currently reused verbatim for diagBench3, which per ruling 21 leaves the 480 CR repair with no beat of Dad at all)",
       "lines": [
-        { "key": "idleLine", "text": "PICK A PIECE.", "status": "adopt" },
-        { "key": "heldLine", "text": "PICK A PARTNER. THE WELD MUST OUTGROW BOTH.", "status": "adopt" },
-        { "key": "readyLine", "text": "READY. HIT CRAFT TO WELD.", "status": "adopt" },
-        { "key": "doneLineTemplate", "text": "WELD DONE. ONE {SHAPE} IN THE POUCH.", "status": "adopt" },
-        { "key": "schematicLabel", "text": "SCHEMATIC", "status": "adopt" },
-        { "key": "workpieceLabel", "text": "WORKPIECE", "status": "adopt" },
-        { "key": "lastWeldLabel", "text": "LAST WELD", "status": "adopt" }
+        "Behind the last panel sits a reference rig he built from scratch, no manufacturer stamp on it anywhere.",
+        "Every calibration point is filed by hand, checked twice, logged in his own writing on a card taped to the housing.",
+        "PATIENT WORK READS HONEST, the card says, underlined once. Nothing else on it."
       ],
-      "notes": "All seven adopt verbatim from solder.html. The FOOT_LINE and NO_JOIN_LINE strings in the same file are already shipped patch-cells.ts copy inlined verbatim (not demo-mock) and are out of scope here. PATCH POUCH deck-head label is likewise already-shipped vocabulary shared with LOADOUT.CFG and REPAIR.LOG, out of scope."
+      "notes": "This vignette is diagBench3's sole artifact channel under ruling 21 (channel C, no sector left to assign and no DAD.VOL entry), so it has to carry a genuine beat of Dad on its own. Uses the calibration-rig and handwriting material and echoes the patience theme from SECTOR_SCENES[1] without quoting it. Does not state the seal condition, does not name anyone, does not reference the back room or its occupant."
     },
     {
-      "type": "ui-copy",
-      "surface": "DIVE.EXE",
-      "id": "ui-copy-dive-console",
-      "key": "console strip hint lines (idle, opponent turn, out of RAM, link closed, patch-piece targeting, program targeting)",
+      "type": "teach-copy",
+      "id": "strain-carryover-notice",
+      "title": "STRAIN CARRIES OVER",
       "lines": [
-        { "key": "idleHint", "text": "Your move. Twist a junction in reach, run a program, or end the turn.", "status": "adopt" },
-        { "key": "oppTurnHint", "text": "The intrusion is moving. Watch the line.", "status": "adopt" },
-        { "key": "noRamHint", "text": "No RAM left. E ends the turn.", "status": "adopt" },
-        { "key": "linkClosedHint", "text": "LINK CLOSED.", "status": "adopt" },
-        { "key": "patchPieceReachHint", "text": "PATCH PIECE: pick a slag block within reach. {PLACE_COST} RAM. ESC cancels.", "status": "replace" },
-        { "key": "patchPieceNoneHint", "text": "PATCH PIECE: no slag block in reach. ESC cancels.", "status": "replace" },
-        { "key": "targetingHintTemplate", "text": "{mode label}: pick {n} target{s}. ESC cancels.", "status": "replace" }
-      ],
-      "notes": "idleHint/oppTurnHint/noRamHint/linkClosedHint are new copy for a console strip that has no direct shipped equivalent (the old duel.tsx has no persistent idle status line); all four read well, adopt as proposed. noRamHint is a near-verbatim rework of the shipped deny message 'No RAM left. End the turn.' (duel-reducer.ts:70), changed to name the E key for the new keyboard-first console paradigm; confirming this wording for the record. patchPieceReachHint/patchPieceNoneHint/targetingHintTemplate extend the shipped kp-targetbar lines ('PATCH PIECE: pick a slag block within reach (2 RAM)', 'PATCH PIECE: no slag block in reach', '{label}: pick {n} target{s}') by folding the ESC-cancels hint into the prose itself, since the new console strip is the single authoritative hint surface (the shipped version relied on a separate floating CANCEL (ESC) button for that fact, which DIVE.EXE keeps as a console action button alongside this line, so the reminder is now stated in two places by design, not a duplication to prune). {PLACE_COST}, {mode label}, {n}, {s} are already-live engine values (patch-cells.ts PLACE_COST, ATTACK_MODE_LABEL/DEFEND_MODE_LABEL, targeting.want minus picked.length), not new copy to invent."
-    },
-    {
-      "type": "ui-copy",
-      "surface": "DIVE.EXE",
-      "id": "ui-copy-dive-routes",
-      "key": "telemetry route-row labels and qualitative states",
-      "lines": [
-        { "key": "yourRouteLabel", "text": "YOUR ROUTE", "status": "adopt" },
-        { "key": "itsRouteLabel", "text": "ITS ROUTE", "status": "adopt" },
-        { "key": "stateOpen", "text": "OPEN", "status": "adopt" },
-        { "key": "stateSevered", "text": "SEVERED", "status": "adopt" },
-        { "key": "stateClosing", "text": "CLOSING", "status": "adopt" },
-        { "key": "stateCut", "text": "CUT", "status": "adopt" },
-        { "key": "stateAtCore", "text": "AT THE CORE", "status": "adopt" }
-      ],
-      "notes": "All seven adopt verbatim from dive.ts. These fulfil the study's own NO COUNTDOWN NUMBERS ruling (route distance is qualitative only now); confirming the exact word set for the record so the gate has something to cite. Independent of the INTRUSION-rename item below: these labels say YOUR/ITS, never the opponent's identity noun."
-    },
-    {
-      "type": "ui-copy",
-      "surface": "DIVE.EXE",
-      "id": "ui-copy-dive-threat-banner",
-      "key": "the countless threat banner (both existing lines plus the new no-countdown replacement)",
-      "lines": [
-        { "key": "noRouteBanner", "text": "NO ROUTE FROM YOUR PORT TO THE CORE", "status": "adopt" },
-        { "key": "routeOpenBanner", "text": "ITS ROUTE IS OPEN TO THE CORE", "status": "adopt" },
-        { "key": "closingBanner", "text": "THE INTRUSION IS CLOSING ON THE CORE", "status": "replace" }
-      ],
-      "notes": "noRouteBanner and routeOpenBanner are already shipped verbatim in duel.tsx (lines 624 and 630) and carry over unchanged. closingBanner replaces the shipped countdown line 'INTRUSION {n} ROTATION{S} FROM THE CORE' (duel.tsx:631), per the study's explicit NO COUNTDOWN NUMBERS user ruling recorded in the README; adopting the demo's own replacement text verbatim since it already reads well: urgent, no arithmetic, on voice. Whether removing the exact rotation count still gives the player enough warning is a tutorial-agent/legibility question (their gate scope already names 'BUS.LOG and route-row legibility'), not a wording one; I'm only confirming the words."
-    },
-    {
-      "type": "ui-copy",
-      "surface": "DIVE.EXE (every duel surface: board port tag, turn pair, telemetry heading, entry-node tag, console prose)",
-      "id": "ui-copy-dive-intrusion-identity",
-      "key": "LOREMASTER RULING REQUESTED: opponent identity tag, SIG-0 to INTRUSION",
-      "text": "INTRUSION",
-      "lines": [
-        { "key": "portTagOld", "text": "SIG-0", "status": "current shipped value, duel-board.tsx:186" },
-        { "key": "portTagNew", "text": "INTRUSION", "status": "proposed, per kpos-shell study" },
-        { "key": "turnPairYou", "text": "YOU", "status": "adopt, unaffected" },
-        { "key": "turnPairOpp", "text": "INTRUSION", "status": "proposed" },
-        { "key": "telemetryHeading", "text": "INTRUSION", "status": "proposed" },
-        { "key": "entryTagYou", "text": "YOU", "status": "adopt, unaffected" },
-        { "key": "entryTagOpp", "text": "INTRUSION", "status": "proposed" }
-      ],
-      "notes": "Per the brief's explicit instruction, presenting this as an item for the Loremaster to rule on rather than deciding it myself. Current state: the shipped duel board labels the opposing port SIG-0 (a cold signal id, duel-board.tsx:186); the shipped threat-banner prose already uses 'INTRUSION' as a common noun in running text ('INTRUSION n ROTATIONS FROM THE CORE', duel.tsx:631) but not as the opponent's on-screen identity tag. The kpos-shell study renames every identity-bearing surface to INTRUSION uniformly: board port tag, the YOU|INTRUSION turn-pair toggle, the telemetry rail's h3 heading, and the entry-node tag. My assessment, offered for the ruling, not as a decision: this reads as safe. 'Intrusion' is already the world's own generic term for any AI signal occupying a device that is not yours (lore/bible.md: 'Intrusions are epidemic... Every shop ticket is an intrusion job.'), so labeling the opposing port INTRUSION is the interface using the same technical classification it already uses everywhere else, not naming or personifying an individual character the way Patch is named. It does not touch Patch, grant a pronoun beyond what already exists, or state a truth claim about any specific opponent's nature; it reads as 'what kind of signal is this' the same for Juno Vex's ghost as for anything else DIVE.EXE ever renders. The one case worth the Loremaster's direct eye: back-room/tutorial dives (runs 1 to 12, pre-finale) also route through DIVE.EXE per the brief's integration architecture ('DIVE.EXE replaces the duel presentation wholesale... INTRUSION naming... Finale and tutorial get dressed variants'), meaning the sealed-room opponent, eventually revealed as Patch, would also read INTRUSION on screen throughout. I read this as consistent with the erosion being played honest (ledger: Rhea's virus theory 'was always a reasonable in-world inference,' and the shop's own detection apparatus genuinely cannot yet tell Patch from any other occupant, which is exactly why her guess was reasonable) rather than the interface asserting a claim the story later contradicts; the label is Diagnostic ('this port holds an intrusion-class signal'), not biographical. If the finale's 'dressed variant' of DIVE.EXE is meant to relabel the opponent once revealed, that relabeling is not specified anywhere I could find and should be decided alongside this ruling. Flagging for the record, not asking to gate the whole rename on it: SIG-0 to INTRUSION at duel-board.tsx:186 is the one line the Orchestrator must also change if this rules in favor, since the README notes it 'does not carry over' on its own."
-    },
-    {
-      "type": "ui-copy",
-      "surface": "DIVE.EXE",
-      "id": "ui-copy-dive-buslog",
-      "key": "the whole BUS.LOG vocabulary: boot lines, round dividers, player actions, machine and world events",
-      "lines": [
-        { "key": "bootTapSpliced", "text": "tap spliced. {device, lowercase}", "status": "adopt" },
-        { "key": "bootFirstRound", "text": "== round 01 ==", "status": "adopt" },
-        { "key": "bootBusLive", "text": "bus live. your move.", "status": "adopt" },
-        { "key": "roundDivider", "text": "== round {NN} ==", "status": "adopt" },
-        { "key": "actionTwist", "text": "twist {addr}", "status": "adopt" },
-        { "key": "actionWeld", "text": "patch weld {addr}", "status": "adopt" },
-        { "key": "actionEndTurn", "text": "end of turn", "status": "adopt" },
-        { "key": "actionScan", "text": "scan.exe sweep", "status": "adopt" },
-        { "key": "actionAttack", "text": "{attack mode label, lowercase} {addr list}", "status": "adopt" },
-        { "key": "actionDefend", "text": "{defend mode label, lowercase} {addr list}", "status": "adopt" },
-        { "key": "eventOppCharging", "text": "charging {mode label, lowercase}", "status": "adopt" },
-        { "key": "eventCascadeYou", "text": "cascade x{n}", "status": "adopt" },
-        { "key": "eventCascadeOpp", "text": "cascade x{n}", "status": "adopt" },
-        { "key": "eventRamBankedYou", "text": "+{n} ram banked", "status": "adopt" },
-        { "key": "eventRamBankedOpp", "text": "+{n} ram banked", "status": "adopt" },
-        { "key": "eventTrapSprung", "text": "trap sprung", "status": "adopt" },
-        { "key": "eventSiphoned", "text": "{n} ram siphoned", "status": "adopt" },
-        { "key": "eventTurnLost", "text": "turn lost", "status": "adopt" },
-        { "key": "eventWin", "text": "core seized. link closed.", "status": "adopt" },
-        { "key": "eventLose", "text": "core lost. link closed.", "status": "adopt" },
-        { "key": "eventRedirectHitOpp", "text": "redirect hit", "status": "adopt" },
-        { "key": "eventTwistOpp", "text": "twist", "status": "adopt" },
-        { "key": "eventTrapArmedOpp", "text": "something armed", "status": "adopt" },
-        { "key": "eventRouteTraced", "text": "route traced", "status": "adopt" },
-        { "key": "eventPurgeSweptOpp", "text": "traps swept", "status": "adopt" },
-        { "key": "eventLockOpp", "text": "clamp locked", "status": "adopt" },
-        { "key": "eventWardOpp", "text": "ward raised", "status": "adopt" }
-      ],
-      "notes": "All 26 lines adopt verbatim from dive.ts; this is the full vocabulary, not just the five examples the README's inventory paragraph quotes as representative. Deliberately all lowercase (actor prefix YOU>/INT>/SYS> already carries the caps distinction per the study's own color/weight convention), terminal and clipped, no dashes throughout; reads as a real bus tap, not a narrator. {addr} is the engine's existing hex bus address format (0x plus two uppercase hex digits, e.g. 0x2A), {n} and mode labels are already-live engine values, none of this needs new invention beyond confirming the words. Flagging one register question for the Orchestrator/ux-agent rather than deciding it: dive-report.html's demo REPAIR.LOG dive-log rail uses hand-authored ALL CAPS per-scenario flavor lines ('R01 LINK UP. HEXLIGHT BOOTS TO ATTRACT MODE'), a different case register than this lowercase BUS.LOG. Per the brief's own integration architecture, REPAIR.LOG's dive log is meant to list 'the actual duel events of the finished dive', i.e. a replay of this exact BUS.LOG stream with round-number prefixes, not a separately authored case-log register; I recommend REPAIR.LOG inherit this lowercase vocabulary unchanged (just prefixed with its round number) so a replay reads as literally the same words the player saw live, rather than a re-cased rewrite. If a distinct all-caps 'closed case' register is wanted for REPAIR.LOG specifically, that is a presentation call for ux-agent, not mine, and I can supply an all-caps transposition on request."
-    },
-    {
-      "type": "ui-copy",
-      "surface": "DIVE.EXE",
-      "id": "ui-copy-dive-device-tag",
-      "key": "device cell tag, right rail",
-      "text": "ON THE BENCH // {DEVICE}",
-      "notes": "Adopt verbatim from dive.ts (`ON THE BENCH // ${cust.device.toUpperCase()}`). {DEVICE} is the customer's existing customers.ts device string, uppercased. The diegetic claim this tag makes (the OS shows what the bench is physically tapped into) is named in the brief's Gates section for the Loremaster; that is a diegetic-claim ruling parallel to the BENCH FEED one, not a wording question, so I'm not re-litigating it here, only confirming the tag text."
-    },
-    {
-      "type": "ui-copy",
-      "surface": "DIVE.EXE result overlay",
-      "id": "ui-copy-dive-result-overlay",
-      "key": "hero verdict headers, action buttons, and the new itemized bill rows",
-      "lines": [
-        { "key": "heroWinGridlock", "text": "LINK COLLAPSED", "status": "adopt" },
-        { "key": "heroWinCore", "text": "CORE SEIZED", "status": "adopt" },
-        { "key": "heroLossSevered", "text": "ROUTE SEVERED", "status": "adopt" },
-        { "key": "heroLossCore", "text": "CORE LOST", "status": "adopt" },
-        { "key": "viewBoardButton", "text": "VIEW BOARD", "status": "adopt" },
-        { "key": "newDiveButton", "text": "NEW DIVE", "status": "replace" },
-        { "key": "billRoundsLabel", "text": "ROUNDS", "status": "new" },
-        { "key": "billRotationsLabel", "text": "ROTATIONS", "status": "new" },
-        { "key": "billTrapsLabel", "text": "TRAPS FIRED ON YOU", "status": "new" },
-        { "key": "billStrainChipLabel", "text": "STRAIN CHIP", "status": "new" },
-        { "key": "billNeuralStrainLossValue", "text": "ZEROED. THE RUN IS OVER.", "status": "new" }
-      ],
-      "notes": "heroWinGridlock/heroWinCore/heroLossSevered/heroLossCore/viewBoardButton are already shipped verbatim in the current duel.tsx result overlay; confirming for the record. newDiveButton replaces the shipped 'CONTINUE' button: the standalone study reboots the same scenario with a fresh seed, but read as a control label it also works cleanly as 'this ticket is done, open the next dive', which is the actual production meaning once DIVE.EXE closes back to INBOX/REPAIR.LOG. Recommending NEW DIVE over CONTINUE going forward since 'continue' implied invisible progression inside one screen, and the new windowed-desktop metaphor wants an explicit, diegetic control label like every other action in this redesign; flagging that the exact handoff behavior behind the button (does it literally start a fresh dive, or dismiss back to REPAIR.LOG/INBOX) is an Orchestrator integration decision, not a copy one. The five bill rows are genuinely new: the shipped duel.tsx result overlay currently states strain as one inline sentence ('Neural Strain zeroes. The run is over.'; 'Messy work. Neural Strain -{chip}.') with no itemized breakdown; the study's dv-result-bill splits this into a labeled datarow list. Proposing these five labels for the gate: ROUNDS/ROTATIONS/TRAPS FIRED ON YOU/STRAIN CHIP as bare ALL CAPS datarow labels (matching the .kp-datarow-plain convention ux-agent's kpos-design-language already specifies elsewhere in this cycle), and billNeuralStrainLossValue as the value shown in the NEURAL STRAIN row on a loss, replacing the old inline sentence with a label plus this short value so the row reads as a receipt line, not a sentence fragment."
-    },
-    {
-      "type": "ui-copy",
-      "surface": "REPAIR.LOG / DIVE.EXE boot line",
-      "id": "ui-copy-repairlog-connect-lines",
-      "key": "per-customer connect flavor line, extending the shipped 3-example pattern to the full 12-customer roster",
-      "lines": [
-        { "key": "juno-vex", "text": "HEXLIGHT BOOTS TO ATTRACT MODE", "status": "adopt, already in dive-report.html" },
-        { "key": "sable-okonkwo", "text": "KESTREL ACCEPTS THE HANDSHAKE", "status": "adopt, already in dive-report.html" },
-        { "key": "aldous-wick", "text": "MERIDIAN LEDGER ANSWERS SLOW", "status": "adopt, already in dive-report.html" },
-        { "key": "wren-tallis", "text": "STUDIO MASTERS ANSWER ON THE THIRD PING", "status": "new" },
-        { "key": "bram-hollander", "text": "COPPERLINE HUB CHECKS ITS OWN ID FIRST", "status": "new" },
-        { "key": "dex-marlowe", "text": "NOCTA DECK WAKES MID LESSON", "status": "new" },
-        { "key": "june-aksoy", "text": "HALCYON GATEWAY LOGS YOU IN QUIET", "status": "new" },
-        { "key": "ines-calloway", "text": "FERROX SUIT STIRS UNDER LOAD", "status": "new" },
-        { "key": "emeric-snow", "text": "IVORA CABINET RESETS THE BOARD", "status": "new" },
-        { "key": "vera-stanek", "text": "APOTHEK SAFE HUMS ON BACKUP POWER", "status": "new" },
-        { "key": "casimir-bell", "text": "LEDGERSTONE VAULT CLICKS TWICE THEN WAITS", "status": "new" },
-        { "key": "noor-behzadi", "text": "POLYVERB BRAIN LOOPS A SET NOT HERS", "status": "new" }
-      ],
-      "notes": "Not a hard requirement of the named inventory (only 3 of these existed in the demo, for the mock day-04 tickets); this is the narrative director extending an established grammar to the surfaces it did not cover, per the brief's own instruction to do so. These are an optional richer alternative to the generic 'tap spliced. {device}' BUS.LOG boot line (ui-copy-dive-buslog/bootTapSpliced), one per customer, in the same '{BRAND} {VERB PHRASE}' pattern the shipped 3 already use. Whether these splice into the live BUS.LOG (in which case lowercase them to match that vocabulary's register) or stay a REPAIR.LOG-only case-log flourish (in which case ALL CAPS as given here is consistent with the demo) is the same open register question flagged in ui-copy-dive-buslog; I'm supplying both the words and the fork, not picking a side."
-    },
-    {
-      "type": "ui-copy",
-      "surface": "INBOX",
-      "id": "ui-copy-inbox-footer",
-      "key": "footer hint",
-      "text": "UP, DOWN: select ticket | CLICK AGAIN: file it away",
-      "notes": "Adopt verbatim from inbox.html. Reads clean in terminal voice with no dashes; 'file it away' is a nice diegetic touch matching the shop's existing paperwork vocabulary (ticket spike, ledger, register)."
+        "Sleep does not reset Neural Strain. It gives back only a little.",
+        "Whatever tonight leaves unspent carries into tomorrow. Spend on a night patch to buy back more before you sleep."
+      ]
     }
   ]
 }

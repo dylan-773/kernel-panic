@@ -3,8 +3,8 @@ title: Vera Stanek
 status: canon
 source: lore
 owner: orchestrator
-updated: 2026-08-16
-related: ["[[customers]]", "[[arm-siphon]]"]
+updated: 2026-08-19
+related: ["[[customers]]", "[[arm-siphon]]", "[[ruling-19-six-customer-appearances]]"]
 ---
 
 # Vera Stanek
@@ -15,7 +15,7 @@ related: ["[[customers]]", "[[arm-siphon]]"]
 
 ## Appearance
 
-Not yet ruled. **Invent nothing without a ruling.**
+*Canon, ruled 2026-08-19, [[ruling-19-six-customer-appearances]].* Night pharmacist, white coat over street clothes, keys on a coiled wrist strap, counts under her breath out of habit.
 
 ## The dive
 

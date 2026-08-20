@@ -1,0 +1,12 @@
+{
+  "id": "dadlog-attach-powerbox",
+  "from": "narrative-director",
+  "kind": "window-image",
+  "treatment": "dither-fine",
+  "target": "/assets/px/ui/dadlog-attach-powerbox.png",
+  "size": [304, 304],
+  "invert": false,
+  "brief": "Attachment art for the power box repair's firstRead artifact (a years-deep power meter logbook showing one line drawing current every night with no client attached, the arithmetic that proves the back room tower was never something Dad was trying to get rid of; see pipeline/proposals/narrative-director.json repairCopy.powerBox). Subject: a coil-bound utility meter logbook lying open on a workbench, one page visible, ruled columns of handwritten dated entries running down the page as ILLEGIBLE ruled-line texture (uniform short tick marks standing in for handwritten numerals, never actual readable digits or characters, the dither must crush it to texture), with one column near the right edge circled by hand in a loop that stays legible as a shape even at 1-bit. A short stub of pencil resting in the book's gutter. 1990s anime OVA ink style, flat cel shading, crisp high-contrast linework so the ruled columns and the hand-drawn circle read clearly after 1-bit dithering, following the DAD.LOG attachment precedent (dadlog-attach-consult, dadlog-attach-receipts) exactly. Absolutely NO readable text, NO panel borders, NO speech bubbles anywhere; background a plain flat dark surface, nothing else in frame.",
+  "status": "open",
+  "result": null
+}

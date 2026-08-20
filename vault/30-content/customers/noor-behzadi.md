@@ -3,8 +3,8 @@ title: Noor Behzadi
 status: canon
 source: lore
 owner: orchestrator
-updated: 2026-08-05
-related: ["[[customers]]", "[[purge]]"]
+updated: 2026-08-19
+related: ["[[customers]]", "[[purge]]", "[[ruling-19-six-customer-appearances]]"]
 ---
 
 # Noor Behzadi
@@ -15,7 +15,7 @@ related: ["[[customers]]", "[[purge]]"]
 
 ## Appearance
 
-Not yet ruled. **Invent nothing without a ruling.**
+*Canon, ruled 2026-08-19, [[ruling-19-six-customer-appearances]].* Touring musician, kit bag never fully unpacked, undercut and smudged eyeliner, talks about the theft like she is reviewing a show.
 
 ## The dive
 

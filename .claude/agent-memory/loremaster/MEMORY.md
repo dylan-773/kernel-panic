@@ -1,5 +1,9 @@
 # Memory index
 
+- [Cite any canon-status vault note, not just the big four](cite-any-canon-status-note.md) — REVISE citations can quote any vault note marked status:canon, e.g. per-entry notes under vault/30-content/journal/, not only ground-truth/reveal-schedule/canon-rulings/rulings
+- [2026-08-16 redesign: day is the run](2026-08-16-redesign.md) — sister cut, seal is software, reveals repair-keyed; ground truth in vault/60-story/, journal.ts has exactly ten repair-keyed DAD.VOL entries (no "power" entry)
+- [Re-gate as an appended dated section](re-gate-appends-dont-rewrite.md) — when asked to re-check specific fixed items, append a dated "Re-gate" section to the existing verdict file rather than rewriting it
+- [2026-08-19 day-is-the-run gate](2026-08-19-day-is-the-run-gate.md) — 4 REVISEs (sector 6 seal condition, Patch pronoun, receipts body, diagBench3 no payload) + ruling 21 added; all fixed and re-gated clean same day
 - [Verify unchanged-copy claims](feedback_verify_unchanged_claims.md) — grep/Read shipped source for any "byte-identical"/"unchanged" claim before gating on it.
 - [Canon closure style](feedback_canon_closure_style.md) — user prefers hard excision/rewrite of shipped copy over reconciling readings.
 - [Canon gap gate pattern](canon_gap_gate_pattern.md) — a proposal resting on an undecided world fact: rule it into bible/ledger first, then gate against it.

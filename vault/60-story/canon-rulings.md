@@ -3,13 +3,13 @@ title: Canon rulings
 status: canon
 source: lore
 owner: orchestrator
-updated: 2026-08-16
+updated: 2026-08-19
 related: ["[[60-story]]", "[[the-gates]]", "[[ground-truth]]"]
 ---
 
 # Canon rulings
 
-Fifteen numbered, standing decisions. **Cited by number** from the gate files, the copy orders and the agent memories, so the numbering is a stable public key.
+Nineteen numbered, standing decisions. **Cited by number** from the gate files, the copy orders and the agent memories, so the numbering is a stable public key.
 
 > [!warning] Numbers are never reused
 > A ruling's number is its identity. New rulings take the next free number. A ruling the design invalidates is **deleted**, and its number retires with it: the gaps below are real and mean the ruling is gone, not moved. Never renumber to close a gap, because that silently invalidates every citation elsewhere.
@@ -31,6 +31,10 @@ Fifteen numbered, standing decisions. **Cited by number** from the gate files, t
 | 15 | [[ruling-15-the-seal-is-software]] | 2026-08-16 | **user directive** |
 | 16 | [[ruling-16-reveals-are-upgrade-keyed]] | 2026-08-16 | **user directive** |
 | 17 | [[ruling-17-the-players-own-assumption]] | 2026-08-16 | **user directive** |
+| 18 | [[ruling-18-the-players-likeness]] | 2026-08-19 | gate |
+| 19 | [[ruling-19-six-customer-appearances]] | 2026-08-19 | gate |
+| 20 | [[ruling-20-regulars-repeat]] | 2026-08-19 | gate |
+| 21 | [[ruling-21-artifact-payload-channels]] | 2026-08-19 | gate |
 
 ## Two rulings were deleted by the redesign
 
@@ -42,7 +46,7 @@ Each carries what it **permits** and what it **forbids**. The forbids clause is 
 
 Two origins:
 - **User calls and directives** (1, 3 to 6, 8, 12, 14 to 17) - decided by the user, sometimes recorded verbatim.
-- **Gate rulings** (9, 10, 11, 13) - the [[loremaster]] closing a gap a cycle exposed. Permitted by its charter: if a proposal exposes a genuine gap in canon, decide it, add the ruling, then gate against it.
+- **Gate rulings** (9, 10, 11, 13, 18 to 21) - the [[loremaster]] closing a gap a cycle exposed. Permitted by its charter: if a proposal exposes a genuine gap in canon, decide it, add the ruling, then gate against it.
 
 ## Defects corrected in migration
 

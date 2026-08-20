@@ -1,18 +1,18 @@
 ---
 title: The shop floor
-status: draft
-source: none
+status: canon
+source: code
 owner: user
-updated: 2026-08-16
-related: ["[[the-shop]]", "[[the-bench-transition]]", "[[repairs-and-unlocks]]"]
+updated: 2026-08-19
+related: ["[[the-shop]]", "[[the-bench-transition]]", "[[repairs-and-unlocks]]", "[[technology-stack]]"]
 ---
 
 # The shop floor
 
-> [!warning] status: draft
-> The largest new surface in the game and the one with the least decided. Settled with the user on 2026-08-16: it is walkable, it is 2.5D, the shop is downstairs and the bedroom upstairs, and installed upgrades are physically present in it.
-
 A room the player walks, in 2.5D. Downstairs is the shop. Upstairs is [[the-bedroom]]. For what is canonically in the room and what each prop carries, see [[the-shop]]; this note is about how it is presented and operated.
+
+> [!info] As built 2026-08-19
+> Shipped as a Phaser scene over painted isometric rooms. Source: `src/game/overworld/` (`world.ts` holds the geometry, `scene.ts` the engine layer, `bridge.ts` the React seam); rooms and sprites are PixelLab work, see [[art-direction]].
 
 ## What it is for
 
@@ -30,7 +30,7 @@ Three things, and it should not acquire a fourth:
 | The bench | sit down into KP/OS. See [[the-bench-transition]] |
 | The back room | [[the-machine]], on [[sunday]] |
 | The repairables | each is an interactable that shows its state, its price, and once fixed, what it turned up |
-| The stairs | up to [[the-bedroom]] |
+| The stairs | up to [[the-bedroom]]; going up while the shop is open is how the day closes |
 
 ## What the room is not
 
@@ -38,24 +38,17 @@ Three things, and it should not acquire a fourth:
 
 **Not a second interface.** Anything that is a decision about a machine belongs in KP/OS. See [[kp-os]] for the division.
 
-## Presentation, provisionally
+## How it is presented (the 2026-08-16 open questions, answered as built)
 
-The room is a **scene layer**, and the KP/OS laws do not automatically govern it. Two of them break outright if applied here: law 5's 1:1 never-downscaled pixel mapping cannot survive a camera, and law 7's ban on ambient motion would produce a dead room. See the scope section of [[ui-rulings]].
+The room is a **scene layer**, and the KP/OS laws do not govern it; what carries across is the declared look order, equal footprint for broken and fixed states, and diegetic-or-not-at-all.
 
-What should carry across:
-
-- **Declared look order.** Law 2's principle without its type ratio: state what the eye finds first, second, third on entering, and compose for it.
-- **Equal footprint.** Law 4's empty-state rule in three dimensions. A broken station and a repaired one occupy the same space, or the room reflows every time the player upgrades.
-- **Diegetic or not at all.** Law 5's best half, which the room satisfies by construction.
-
-## Open questions
-
-- [ ] **Camera.** Fixed per room, following, or rails? This decides whether law 5's integer scaling can be kept at all.
-- [ ] **Movement.** Direct control, click to move, or station to station? Direct control forces a keyboard scheme the game has never had. See [[game-controls]].
-- [ ] **Does the CRT glass cover the room?** See [[law-6-the-tube]] and [[the-bench-transition]]. The strong answer is no: the glass is the terminal, and it arriving as you sit is the transition.
-- [ ] **How is it produced?** The art pipeline dithers 1-bit stills. It has no path for backgrounds, props, a character or animation frames. See [[art-direction]].
-- [ ] **Does the layout itself change?** The user raised rearranging the shop as a possible system. Attractive, and a large amount of art.
-- [ ] **Is there a HUD here**, and does the strain alarm reach it? See [[hud-and-ui-design]].
+- **Camera.** Fixed per room at **integer zoom only** (`max(2, floor(fit))` in `scene.ts`); the camera centers when the room fits the viewport and follows the player with bounds when it does not. Law 5's integer scaling survives the camera because the zoom is never fractional.
+- **Movement.** Both: direct control (WASD/arrows) and click-to-move over a BFS pathfinder on a fine nav grid. Interaction is one prompt key (E/Enter/Space), and walking to a station via click ends in its interaction. See [[game-controls]].
+- **Rooms are paintings, not tilemaps.** One hero image per room, obstacles and walk polygons authored as data in `world.ts` over it. Occluding props are texture frames depth-sorted against the actors' feet.
+- **Progress is baked into the room.** Each repaired state is a patch image composited onto the room texture at load (`room-<id>-live` canvas texture), so a fixed power feed or stocked shelves are simply part of the room, at equal footprint with their broken states.
+- **The CRT glass does not cover the room.** The glass is the terminal and arrives with the sit. See [[the-bench-transition]].
+- **There is a HUD**, four facts only: strain (with the alarm), the day and weekday, credits, and the held haul; plus a counter chip when someone is waiting. See [[hud-and-ui-design]].
+- **The layout does not change.** Rearranging the shop stayed out; repairs change the state of fixed furniture, never its footprint.
 
 ## See also
 

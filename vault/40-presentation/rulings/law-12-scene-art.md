@@ -17,7 +17,7 @@ The overworld scene layer only: painted room plates, repaired-state patches, and
 
 ## Mood
 
-Neon cyberpunk repair shop: industrial, high tech yet rundown, urban. Ruled by the user on 2026-08-20 ([[ruling-22-the-shop-goes-neon]], sharpened the same night): dense neon signage in magenta, cyan and violet; small holographic panels; shelf interiors backlit with glow; a dark purple-black base; CRT phosphor green on the bench terminals; and every SURFACE reads as rundown high tech, never as rustic. The first failure this law replaces read as the 1990s with the future left out. The second failure kept the wood and hung neon on it; the user's correction is the operative sentence: simply making it neon does not make it cyberpunk. Neon is lighting. Cyberpunk is materials.
+Neon cyberpunk repair shop: industrial, high tech yet rundown, urban. Ruled by the user on 2026-08-20 ([[ruling-22-the-shop-goes-neon]], sharpened the same night): dense neon signage in magenta, cyan and violet; small holographic panels; shelf interiors backlit with glow; a dark purple-black base; CRT phosphor green on the bench terminals; and every SURFACE reads as rundown high tech, never as rustic. The register words for scene prompts are neon, holographic, backlit, glowing, retro-futuristic. The first failure this law replaces read as the 1990s with the future left out. The second failure kept the wood and hung neon on it; the user's correction is the operative sentence: simply making it neon does not make it cyberpunk. Neon is lighting. Cyberpunk is materials.
 
 ## Materials
 
@@ -25,7 +25,7 @@ The materials register is a hard constraint with two lists.
 
 Required, at least three named in every room-plate prompt: concrete, steel or metal panel walls, cable trunking, conduit, vents, metal grates, industrial metal racking, server rack, plastic equipment crates, metal lockers, holographic.
 
-Banned in any scene prompt: wooden, wood paneling, plank, wainscot, cardboard, rustic, cottage, plus the era and mood bans muted, 1990s, cozy, moody. The 2026-08-20 wooden-neon plate (job daa98931, superseded same night) is the documented failure this list encodes: its accepted prompt contained "worn dark wooden plank floor" and no law objected.
+Banned in any scene prompt: wooden, wood paneling, plank, wainscot, cardboard, rustic, cottage, plus the era and mood bans muted, 1990s, cozy, moody. A banned material word may appear only inside an "instead of" replacement clause, where it names what is being removed; anywhere else it is a violation. The 2026-08-20 wooden-neon plate (job daa98931, superseded same night) is the documented failure this list encodes: its accepted prompt contained "worn dark wooden plank floor" and no law objected.
 
 Surfaces translate, fiction stays: the counter is steel, the shelves are industrial racking, crates are plastic and stackable, the floor is scuffed concrete with embedded grates, the staircase is industrial metal with a steel railing. The shop remains Dad's cluttered, lived-in repair shop; what changes is what everything is made of.
 

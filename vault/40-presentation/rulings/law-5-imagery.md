@@ -3,14 +3,14 @@ title: Law 5 - Imagery
 status: canon
 source: rulings
 owner: ux-agent
-updated: 2026-08-16
-related: ["[[ui-rulings]]", "[[art-direction]]", "[[art-lead]]"]
+updated: 2026-08-20
+related: ["[[ui-rulings]]", "[[art-direction]]", "[[art-lead]]", "[[law-12-scene-art]]"]
 ---
 
 # Law 5 - Imagery
 
-> [!warning] Scope: this law and the scene layer are in direct conflict
-> **KP/OS only, as written.** A sprite at depth under a moving camera is a downscale, so exact pixel mapping cannot survive perspective or free zoom. Either the shop camera locks to integer scales, or the scene gets its own art law and this one stays a window rule.
+> [!note] Scope: resolved 2026-08-20
+> **KP/OS only, as written.** The conflict this box used to carry is settled both ways at once: the shop camera locks to integer scales (`layoutCamera` in `scene.ts`), and the scene has its own art law, [[law-12-scene-art]]. This law stays a window rule.
 >
 > The half that transfers untouched is **diegetic or not at all**, which the room satisfies by construction.
 

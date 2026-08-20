@@ -332,8 +332,8 @@ One file per order at `pipeline/art/orders/<id>.json`:
 ```json
 {
   "id": "kebab-case", "from": "narrative-director | ux-agent",
-  "kind": "portrait | still | icon | wallpaper | window-image",
-  "treatment": "pixel | dither-fine | dither-heavy | dither-bayer",
+  "kind": "portrait | still | icon | wallpaper | window-image | room-plate | state-patch | walk-character",
+  "treatment": "pixel | dither-fine | dither-heavy | dither-bayer | scene",
   "target": "/assets/px/portraits/cust-07.png",
   "size": [64, 64],
   "invert": false,
@@ -343,13 +343,26 @@ One file per order at `pipeline/art/orders/<id>.json`:
 }
 ```
 
+`treatment: "scene"` orders (the overworld: room plates, state patches, walk
+characters) add these fields: `room` (shop | bedroom | backroom), `genSize`
+(the PixelLab canvas), `shipSize` (the shipped dims, which for a state patch
+MUST equal its `stateOverlays` rect in `world.ts`), `styleAnchor` (the
+PixelLab job id whose download URL anchors the room set's style), `rect`
+(state patches only, the world.ts overlay rect), and `record` (the entry path
+in `pipeline/art/overworld/RECORD.md`). The governing law is
+`vault/40-presentation/rulings/law-12-scene-art.md`.
+
 Art-lead updates `status` to `done` and sets `result` to the finished PNG path under `pipeline/art/done/`. `treatment: "pixel"` sizes in play: portraits 64x64, stills 192x128, wallpaper 320x180, icons 16x16/32x32. Dither orders carry the destination cell's EXACT inner CSS pixel size in `size` (one dither dot = one CSS pixel; the Orchestrator or the spec supplies it), and `invert: true` only for schematic plates (luminous lines on void).
 
 ## Palette and asset conventions
 
 The KP/OS v3 look (**spec: `ui-demos/RULINGS.md`, read it before specifying any surface**; reference build `ui-demos/loadout-eva/`): a void base plus EIGHT ROLE TOKENS that carry state rather than one accent that carries everything - `--r-struct` chrome, `--r-note` annotation, `--r-line` live data, `--r-data` hot values, `--r-ok` nominal, `--r-warn` risk, `--r-aux` camera imagery, `--r-hazard` structural red - remapped wholesale by a `data-scheme` attribute (NERV, TOKYO NIGHT) and collapsing back onto the v2 single accent by default. Risk never shares its colour, and is never signalled by colour alone: it also floods inverse video and moves, while ambient chrome never moves. Window imagery is DIEGETIC-ONLY (the OS needs an in-fiction reason to show a picture), strict 1-bit dithered monochrome, ink-tinted live by the app - so dither-treatment art is generated as pure black-and-white (1990s anime OVA ink style, flat cel shading, no text/bubbles/frames) and dithered by `pipeline/tools/dither.py` at the exact cell size.
 
-`treatment: "pixel"` prompts still pin the legacy hexes (the `--kp-*` tokens): bg0 `#101218`, bg1 `#14171e`, panel `#1a1e27`, line `#2b313d`, text `#e8ebf2`, dim `#8f97a8`, rose `#e94f6d`, rose-hot `#ff6d88`, signal `#ffe9c4`, crimson `#cf4b45`, gold `#d9a53f`, steel `#9fb2cc`; `pipeline/tools/pxpost.py` snaps them to a real pixel grid and palette. Asset paths are absolute from the public root: `/assets/px/portraits/...`, `/assets/px/stills/...`, `/assets/px/ui/...`, `/assets/sfx/music/...`.
+`treatment: "pixel"` prompts still pin the legacy hexes (the `--kp-*` tokens): bg0 `#101218`, bg1 `#14171e`, panel `#1a1e27`, line `#2b313d`, text `#e8ebf2`, dim `#8f97a8`, rose `#e94f6d`, rose-hot `#ff6d88`, signal `#ffe9c4`, crimson `#cf4b45`, gold `#d9a53f`, steel `#9fb2cc`; this twelve-hex list (with rose-hot) is the authoritative one, and `.claude/agents/art-lead.md` quotes it. `pipeline/tools/pxpost.py` snaps them to a real pixel grid and palette. These hexes are KP/OS-scoped; they are NOT the scene palette.
+
+`treatment: "scene"` prompts pin KP-NEON/16, quoted verbatim from `vault/40-presentation/rulings/law-12-scene-art.md` (the single source of truth): `#101218 #14171e #1a1e27 #2b313d #1c1430 #2d2150 #4a3b78 #ff2d95 #ff6d88 #b44cff #00e5ff #9df3ff #33ff66 #ffe9c4 #d9a53f #e8ebf2`. Neon cyberpunk repair shop, dark bases roughly 65 percent, neons at most 20 percent, warm work-surface pools kept; banned register words muted, 1990s, cozy, moody; required text ban "no people, no readable words, no lettering, no signage text". Scene assets ship to `/assets/overworld/...`.
+
+Asset paths are absolute from the public root: `/assets/px/portraits/...`, `/assets/px/stills/...`, `/assets/px/ui/...`, `/assets/overworld/...`, `/assets/sfx/music/...`.
 
 ## Engine invariants the sims enforce
 

@@ -3,14 +3,16 @@ title: Palette generalization conflict
 status: unwritten
 source: none
 owner: user
-updated: 2026-08-05
-related: ["[[ruling-14-loadout-palette]]", "[[law-1-colour-is-roles]]", "[[kp-os]]"]
+updated: 2026-08-20
+related: ["[[ruling-14-loadout-palette]]", "[[law-1-colour-is-roles]]", "[[kp-os]]", "[[ruling-22-the-shop-goes-neon]]"]
 ---
 
 # Palette generalization conflict
 
-> [!question] UNWRITTEN
+> [!question] UNWRITTEN, but narrowed
 > Canon reserved this question for you. The UI spec answered it anyway. Both are in the repo, and they disagree.
+>
+> Narrowed 2026-08-20: the SCENE LAYER half is settled. [[ruling-22-the-shop-goes-neon]] is you exercising the reserved multi-hue authority for the overworld (palette in [[law-12-scene-art]]). What remains open below is the KP/OS half only: general law versus LOADOUT.CFG exception, and which hex set is authoritative.
 
 ## The two positions
 

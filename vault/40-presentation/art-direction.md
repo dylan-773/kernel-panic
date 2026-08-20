@@ -3,8 +3,8 @@ title: Art direction
 status: canon
 source: rulings
 owner: orchestrator
-updated: 2026-08-19
-related: ["[[law-5-imagery]]", "[[art-lead]]", "[[kp-os]]"]
+updated: 2026-08-20
+related: ["[[law-5-imagery]]", "[[law-12-scene-art]]", "[[art-lead]]", "[[kp-os]]"]
 ---
 
 # Art direction
@@ -42,7 +42,11 @@ See [[law-5-imagery]].
 | `pipeline/tools/colourise.py` | the FULL COLOUR gradient map |
 | `pipeline/tools/customer-sheets.py` | composes walk sheets from PixelLab character zips (the twelve character ids are recorded inside it) |
 
-Palette hexes are pinned in every prompt, which is what keeps a generative pipeline on-model. See [[art-lead]].
+Palette hexes are pinned in every prompt, which is what keeps a generative pipeline on-model. KP/OS pixel prompts pin the `--kp-*` hexes (see [[art-lead]]); scene prompts pin KP-NEON/16 (see [[law-12-scene-art]]).
+
+## The scene layer
+
+The overworld's visual language is not this document's to state: mood, palette, lighting, and the three prompt templates live in [[law-12-scene-art]], ruled by [[ruling-22-the-shop-goes-neon]]. What belongs here is the pipeline fact: every scene generation records its prompt, job id, seed, and post-pass in `pipeline/art/overworld/RECORD.md`, and an unrecorded generation is treated as unreproducible and regenerated. The 2026-08-19 set shipped without such a record, which is why the record is now mandatory.
 
 ## The finished set
 

@@ -51,7 +51,7 @@ Notes retired by the 2026-08-16 redesign are gone rather than archived, so nothi
 
 **Windows** - [[day-sys]] · [[inbox]] · [[repair-log]] · [[loadout-cfg]] · [[solder-bay]] · [[manual-txt]] · [[dad-log-window]] · [[ledger-log]] · [[darknet-lnk]] · [[night-sys]] · [[backroom-lck]] · [[dive-exe]]
 
-**UI rulings** - [[ui-rulings]] · [[law-1-colour-is-roles]] · [[law-2-hierarchy]] · [[law-3-fluid-and-the-height-ceiling]] · [[law-4-chrome-vocabulary]] · [[law-5-imagery]] · [[law-6-the-tube]] · [[law-7-motion]] · [[law-8-the-cuts-discipline]] · [[law-9-build-recipe]] · [[law-10-verification]] · [[law-11-panel-queue]]
+**UI rulings** - [[ui-rulings]] · [[law-1-colour-is-roles]] · [[law-2-hierarchy]] · [[law-3-fluid-and-the-height-ceiling]] · [[law-4-chrome-vocabulary]] · [[law-5-imagery]] · [[law-6-the-tube]] · [[law-7-motion]] · [[law-8-the-cuts-discipline]] · [[law-9-build-recipe]] · [[law-10-verification]] · [[law-11-panel-queue]] · [[law-12-scene-art]]
 
 ## 50 Tech
 
@@ -63,7 +63,7 @@ Notes retired by the 2026-08-16 redesign are gone rather than archived, so nothi
 
 **Characters** - [[the-player]] · [[dad]] · [[patch]] · [[the-machine]]
 
-**Canon rulings** - [[canon-rulings]] · [[ruling-01-the-mother]] · [[ruling-03-sectors-8-and-9]] · [[ruling-04-finale-mechanism]] · [[ruling-05-nature-of-intrusions]] · [[ruling-06-meridian]] · [[ruling-08-names]] · [[ruling-09-darknet]] · [[ruling-10-overtime-billing]] · [[ruling-11-opponent-identity-tag]] · [[ruling-12-dad-log-reframe]] · [[ruling-13-dad-vol-provenance]] · [[ruling-14-loadout-palette]] · [[ruling-15-the-seal-is-software]] · [[ruling-16-reveals-are-upgrade-keyed]] · [[ruling-17-the-players-own-assumption]]
+**Canon rulings** - [[canon-rulings]] · [[ruling-01-the-mother]] · [[ruling-03-sectors-8-and-9]] · [[ruling-04-finale-mechanism]] · [[ruling-05-nature-of-intrusions]] · [[ruling-06-meridian]] · [[ruling-08-names]] · [[ruling-09-darknet]] · [[ruling-10-overtime-billing]] · [[ruling-11-opponent-identity-tag]] · [[ruling-12-dad-log-reframe]] · [[ruling-13-dad-vol-provenance]] · [[ruling-14-loadout-palette]] · [[ruling-15-the-seal-is-software]] · [[ruling-16-reveals-are-upgrade-keyed]] · [[ruling-17-the-players-own-assumption]] · [[ruling-18-the-players-likeness]] · [[ruling-19-six-customer-appearances]] · [[ruling-20-regulars-repeat]] · [[ruling-21-artifact-payload-channels]] · [[ruling-22-the-shop-goes-neon]]
 
 ## 70 Teaching
 

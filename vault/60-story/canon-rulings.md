@@ -35,6 +35,7 @@ Nineteen numbered, standing decisions. **Cited by number** from the gate files, 
 | 19 | [[ruling-19-six-customer-appearances]] | 2026-08-19 | gate |
 | 20 | [[ruling-20-regulars-repeat]] | 2026-08-19 | gate |
 | 21 | [[ruling-21-artifact-payload-channels]] | 2026-08-19 | gate |
+| 22 | [[ruling-22-the-shop-goes-neon]] | 2026-08-20 | **user directive** |
 
 ## Two rulings were deleted by the redesign
 

@@ -4,7 +4,7 @@ status: draft
 source: none
 owner: user
 updated: 2026-08-31
-related: ["[[elevator-pitch]]", "[[design-pillars]]", "[[monetization]]"]
+related: ["[[elevator-pitch]]", "[[design-pillars]]"]
 ---
 
 # Game goals
@@ -38,8 +38,8 @@ Four commitments, each of which is a real constraint rather than a slogan. See [
 
 ## What success looks like
 
-- [ ] **Undefined.** Player numbers, completion rate, a portfolio piece, a course grade, a commercial product? [[monetization]] is unwritten and this is the same question upstream of it.
+- [ ] **Undefined.** Player numbers, completion rate, a portfolio piece, a course grade, a commercial product? Commercial intent is undecided and this is the same question upstream of it.
 
 ## See also
 
-- [[design-pillars]] · [[marketing-plan]] · [[monetization]]
+- [[design-pillars]]

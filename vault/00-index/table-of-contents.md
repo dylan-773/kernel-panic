@@ -73,6 +73,3 @@ Every note in the vault. Area maps carry the same lists with commentary; this pa
 
 **Agents** - [[orchestrator]] · [[loremaster]] · [[narrative-director]] · [[encounter-generator]] · [[ability-agent]] · [[arc-composer]] · [[validation]] · [[tutorial-agent]] · [[ux-agent]] · [[art-lead]]
 
-## 90 Business
-
-[[90-business]] · [[marketing-plan]] · [[clip-queue]] · [[monetization]]

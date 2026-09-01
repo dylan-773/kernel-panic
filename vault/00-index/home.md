@@ -40,7 +40,6 @@ Build `0.7.0`, dated 2026-07-29 (`app/src/game/version.ts`).
 - **[[60-story]]** - ground truth, characters, the reveal schedule, canon rulings, voice.
 - **[[70-teaching]]** - the teaching system, the tutorial, coverage, waivers.
 - **[[80-crew]]** - the nine agents, the pipeline, the gates, the plays.
-- **[[90-business]]** - marketing, monetization.
 
 ## How to read a note
 
@@ -59,7 +58,6 @@ Full rules in [[vault-conventions]].
 
 Notes carrying `status: unwritten` are the live edges of the design. Currently:
 
-- [[monetization]] - nothing decided.
 - [[palette-generalization-conflict]] - canon ruling 14 reserved this for you; the UI spec answered it anyway.
 - [[meta-progression]] - v2 removed the old carry-between-runs mechanic and never replaced the statement.
 

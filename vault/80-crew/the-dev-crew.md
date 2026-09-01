@@ -3,7 +3,7 @@ title: The dev crew
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-31
 related: ["[[the-pipeline]]", "[[the-gates]]", "[[token-budget]]"]
 ---
 
@@ -47,7 +47,7 @@ flowchart TB
 
 **Agents run at dev time, never at runtime.** The shipped game contains no model calls. Everything the crew produces is baked into content modules before the build.
 
-**Structured artifacts only. Prose handoffs are banned.** Agents write JSON to fixed paths. An agent that "explains" its proposal in a message has produced nothing.
+**Structured artifacts only, but structure is not a muzzle.** Agents write JSON to fixed paths; a proposal delivered as chat prose integrates nothing. Since 2026-08-31 every schema includes a `suggestion` item type: the legal home for ideas beyond the brief, missing things noticed en route, and doc lines an agent disputes. The wrong move is not filing structured output; the wrong move is noticing something and filing nothing. See [[the-gates]] for the CHALLENGE verdict this feeds.
 
 **The Orchestrator is the sole code owner.** Only it writes to `kernel-panic-site/`. Agents propose; integration is by hand; `bun run typecheck` is the schema enforcer.
 

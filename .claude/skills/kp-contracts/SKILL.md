@@ -11,10 +11,11 @@ You are part of the Kernel Panic dev crew. Your output is only "game-ready" when
 ## Iron rules
 
 1. You never write into `kernel-panic-site/` (the game repo). The Orchestrator is the sole code owner. You write proposals and reports to the `pipeline/` paths assigned to your role.
-2. Structured artifacts only. Prose goes in `notes`/`rationale` fields, never as a free-form handoff.
+2. Structured artifacts only. Prose goes in `notes`/`rationale` fields, never as a free-form handoff. But structure is not a muzzle: an idea that fits no schema goes in a `suggestion` item (see below), which is always legal. The only wrong move is noticing something and filing nothing.
 3. Player-facing copy NEVER contains em dashes or en dashes. Use periods, commas, or "..." instead. This is a hard style law of the game's voice.
-4. Canon lives in the design vault at `vault/60-story/` (ground truth, characters, the reveal schedule, and fourteen numbered rulings under `rulings/`). If your output contradicts it, it will be rejected at the Loremaster gate. Read it before writing anything a player will see. The wider design document is `vault/`, indexed at `vault/00-index/home.md`.
+4. Canon lives in the design vault at `vault/60-story/` (ground truth, characters, the reveal schedule, and numbered rulings under `rulings/`). Read it before writing anything a player will see. Canon is presumed CURRENT, not presumed CORRECT: if your output contradicts it and you believe canon is right, revise your output; if you believe canon is stale or wrong, say so explicitly in `notes` or a `suggestion` item, quoting the line you dispute, and propose what the doc should say instead. The gate answers a flagged dispute with a CHALLENGE verdict for the user to rule on; only an UNFLAGGED contradiction gets bounced as a defect. The wider design document is `vault/`, indexed at `vault/00-index/home.md`.
 5. Teaching coverage lives in `tutorial/ledger.md`. Anything you add that the player must understand, a mechanic, a stat, a screen, a resource, a purchase, passes the Tutorial gate as well as the Loremaster gate. Say so in `notes` when you know your item introduces something new to learn.
+6. Be additive. You are a designer, not a form-filler: every proposal should carry at least one `suggestion` item, e.g. an adjacent improvement ("the split-board mechanic could also..."), a missing feature or asset you noticed, or a doc line that looks wrong or outdated. Suggestions are exempt from lane fences and gates, and the Orchestrator surfaces every one to the user.
 
 ## Proposal envelope
 
@@ -23,15 +24,33 @@ Every proposal file `pipeline/proposals/<your-agent-name>.json` uses this envelo
 ```json
 {
   "agent": "<your-agent-name>",
-  "brief": "<id of the brief you are answering, from pipeline/BRIEF.md>",
+  "brief": "<id of the brief you are answering: pipeline/BRIEF.md if a cycle is live, else an id from your spawn prompt>",
   "notes": "optional overall commentary",
   "items": [ { "id": "...", "type": "..." } ]
 }
 ```
 
-Every item needs `id` and `type`. Item schemas by type follow. See `examples.md` in this skill's directory for one gold example of each.
+A live `pipeline/BRIEF.md` describes the OPEN cycle only; if the file is absent or describes a closed cycle (its demo/report already shipped), your spawn prompt is the brief. Every item needs `id` and `type`. Item schemas by type follow. See `examples.md` in this skill's directory for one gold example of each.
 
 ## Item schemas
+
+### type: "suggestion"  (ANY agent, any lane)
+
+The legal home for everything the other schemas cannot hold: an idea beyond
+the brief, a missing feature or asset you noticed, a doc line you believe is
+wrong or stale, a cross-lane observation. Never gated, never bounced for
+being out of scope; the Orchestrator lists every suggestion in the cycle
+report for the user.
+
+```json
+{
+  "type": "suggestion", "id": "kebab-case",
+  "area": "duel | economy | story | teaching | ui | art | doc | other",
+  "idea": "the observation or proposal, concrete",
+  "why": "what it improves or what breaks without it",
+  "disputes": "optional: the exact doc line this challenges, quoted, with its file"
+}
+```
 
 ### type: "customer"  (encounter-generator)
 
@@ -85,7 +104,7 @@ Mirrors `AugmentDef` in `content/kit.ts`.
 }
 ```
 
-Settable keys: `grid [w,h]`, `oppRam`, `greed` (0-1), `abilityFreq` (0-1), `minCost`, `headStart`, `jobTiers [t,t,t]`. Days 1-9; the finale and tutorial configs are separate and change only with explicit user sign-off.
+Settable keys mirror `DayConfig` in `content/arc.ts` (read it for the current shape; do not trust this list over the code): `grid [w,h]`, `oppRam`, `greed` (0-1), `abilityFreq` (0-1), `pdTarget` (route-cost target, asserted by sim.ts within `PD_TOLERANCE`), `minPd`, `headStart`, `parFlat`, `horizon` (0-3), `focus` (0-1), `slag`, `patchDrop`, `jobTiers [t,t,t]`. Days 1-9; the finale and tutorial configs are separate and change only with explicit user sign-off.
 
 ### type: "journal"  (narrative-director)
 
@@ -347,7 +366,7 @@ Art-lead updates `status` to `done` and sets `result` to the finished PNG path u
 
 ## Palette and asset conventions
 
-The KP/OS v3 look (**spec: `ui-demos/RULINGS.md`, read it before specifying any surface**; reference build `ui-demos/loadout-eva/`): a void base plus EIGHT ROLE TOKENS that carry state rather than one accent that carries everything - `--r-struct` chrome, `--r-note` annotation, `--r-line` live data, `--r-data` hot values, `--r-ok` nominal, `--r-warn` risk, `--r-aux` camera imagery, `--r-hazard` structural red - remapped wholesale by a `data-scheme` attribute (NERV, TOKYO NIGHT) and collapsing back onto the v2 single accent by default. Risk never shares its colour, and is never signalled by colour alone: it also floods inverse video and moves, while ambient chrome never moves. Window imagery is DIEGETIC-ONLY (the OS needs an in-fiction reason to show a picture), strict 1-bit dithered monochrome, ink-tinted live by the app - so dither-treatment art is generated as pure black-and-white (1990s anime OVA ink style, flat cel shading, no text/bubbles/frames) and dithered by `pipeline/tools/dither.py` at the exact cell size.
+The KP/OS v3 look is specced in ONE place: **`ui-demos/RULINGS.md`, read it before specifying any surface** (reference build `ui-demos/loadout-eva/`, approved and integrated). Do not work from a remembered summary of the laws; the spec supersedes anything here. The operational bits for art: window imagery is DIEGETIC-ONLY (the OS needs an in-fiction reason to show a picture), strict 1-bit dithered monochrome, ink-tinted live by the app - so dither-treatment art is generated as pure black-and-white (1990s anime OVA ink style, flat cel shading, no text/bubbles/frames) and dithered by `pipeline/tools/dither.py` at the exact cell size.
 
 `treatment: "pixel"` prompts still pin the legacy hexes (the `--kp-*` tokens): bg0 `#101218`, bg1 `#14171e`, panel `#1a1e27`, line `#2b313d`, text `#e8ebf2`, dim `#8f97a8`, rose `#e94f6d`, rose-hot `#ff6d88`, signal `#ffe9c4`, crimson `#cf4b45`, gold `#d9a53f`, steel `#9fb2cc`; `pipeline/tools/pxpost.py` snaps them to a real pixel grid and palette. Asset paths are absolute from the public root: `/assets/px/portraits/...`, `/assets/px/stills/...`, `/assets/px/ui/...`, `/assets/sfx/music/...`.
 
@@ -363,7 +382,7 @@ Content that breaks any of these is bounced back to its author:
 3. Augment ids are unique; config augments carry `attackMode` or `defendMode`; the draft never re-offers owned augments.
 4. `DAY_LINES` has at least 9 entries; opener and ender scenes resolve for run numbers 1-12; the finale scene has at least 5 beats.
 5. The tutorial config posts 0 wins in 200 seeds. Always.
-6. The day curve (kit-less proxy) stays near: D1 82, D2 77, D3 74, D4 56, D5 58, D6 56, D7 49, D8 42, D9 39, finale 25 percent, unless the current brief says to move it.
+6. The day curve stays near its targets, which live in ONE place: `vault/50-tech/verification-gate.md`. The gated curve is the KITTED one; the kit-less proxy is a floor only (finale 0 by construction). Design from the latest `pipeline/validation/report.md` numbers, never from remembered targets.
 7. Every mechanic in `content/teaching.ts`'s inventory is covered by a moment, a beat, or a tip, or carries a written waiver; every moment lands on a surface a real run reaches; no surface carries more than two unconditional callouts; and every blanket waiver's `waiverPremise` still holds against the content it covers. A new mechanic with none of these is a red build.
 
 ## The tier trap

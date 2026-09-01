@@ -3,7 +3,7 @@ title: Day 5
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-31
 related: ["[[the-ten-day-arc]]", "[[day-4]]", "[[day-6]]"]
 ---
 
@@ -22,7 +22,7 @@ related: ["[[the-ten-day-arc]]", "[[day-4]]", "[[day-6]]"]
 | parFlat | 4 |
 | slag / patchDrop | 0.21 / 0.18 |
 | Job tiers | 2, 3, 3 |
-| Target kitted win rate | ~56% |
+| Target kitted win rate | see [[verification-gate]] |
 
 ## minPd arrives
 

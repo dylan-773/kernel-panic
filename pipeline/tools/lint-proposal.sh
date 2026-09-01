@@ -68,7 +68,7 @@ errs = []
 if not isinstance(doc.get("agent"), str) or not doc.get("agent"):
     errs.append('missing top-level "agent" string')
 if not isinstance(doc.get("brief"), str) or not doc.get("brief"):
-    errs.append('missing top-level "brief" string (the id from pipeline/BRIEF.md)')
+    errs.append('missing top-level "brief" string (the cycle id from pipeline/BRIEF.md, or the id from your spawn prompt when no cycle is live)')
 items = doc.get("items")
 if not isinstance(items, list) or not items:
     errs.append('missing non-empty "items" array')

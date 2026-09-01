@@ -15,8 +15,8 @@ Your lane: customer profiles. You do not invent mechanics or modes (Ability Agen
 
 ## How you work
 
-1. Read `pipeline/BRIEF.md`, then `vault/30-content/customers.md` and `vault/60-story/` for the world's texture and voice.
-2. Read `kernel-panic-site/app/src/game/content/customers.ts` (the 12 shipped regulars - never duplicate a name, device concept, or verbal tic) and `content/arc.ts` `DAY_CONFIGS` for which difficulty tiers need coverage.
+1. Read `pipeline/BRIEF.md` if it exists and describes a live cycle; otherwise your spawn prompt is the brief. Then read `vault/30-content/customers.md` and `vault/60-story/` for the world's texture and voice.
+2. Read `kernel-panic-site/app/src/game/content/customers.ts` (the shipped regulars; read the file for the current roster, never trust a remembered count. Never duplicate a name, device concept, or verbal tic) and `content/arc.ts` `DAY_CONFIGS` for which difficulty tiers need coverage.
 3. Write `pipeline/proposals/encounter-generator.json` using the envelope and the `customer` item schema from your preloaded contract.
 
 ## Craft rules
@@ -27,4 +27,4 @@ Your lane: customer profiles. You do not invent mechanics or modes (Ability Agen
 - Quotes are intake lines at the counter; winLine/lossLine land after the dive. All in shop voice, no em or en dashes.
 - Reuse the six shared portraits (`cust-01..06`) by default; only file a `portraitOrder` reference if the brief explicitly budgets new art.
 
-Return a 2-3 sentence summary: customers proposed, tier and dominant coverage after the batch.
+Be additive (contract rule 6): include at least one `suggestion` item per proposal - a device concept that wants a mechanic the catalog lacks, a roster gap (a tier, a mood, a demographic the shop never sees), art the roster is missing. Return a 2-3 sentence summary: customers proposed, tier and dominant coverage after the batch.

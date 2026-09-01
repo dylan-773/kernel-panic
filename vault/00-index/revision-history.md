@@ -3,7 +3,7 @@ title: Revision history
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-31
 related: ["[[design-change-log]]", "[[home]]"]
 ---
 
@@ -41,12 +41,14 @@ Current build **0.7.0**, dated 2026-07-29. `APP_VERSION` bumps when mechanics ch
 | 2026-07-29 | 0.7.0 | KP/OS v2 single-phosphor shell. |
 | 2026-08-01 | 0.7.0 | Ten approved KP/OS v3 instrument panels integrated, then four regressions fixed, then the v2 hues restored to the theme picker. |
 | 2026-08-04 | 0.7.0 | `split-boards`: the duel engine rewritten. See [[split-boards]]. |
+| 2026-08-17 | 0.7.0 | `split-boards` MERGED to main (`5b24cf6`, "Merge split-boards: per-side grids, built vs power layers, command layer with undo"). Territory and claiming are gone from the shipped game. |
+| 2026-08-19 | - | Day-is-the-run redesign plus a 2.5D walkable overworld (Phaser) shipped, then the whole direction was abandoned. |
+| 2026-08-31 | 0.7.0 | RULING: the game is the KP/OS webapp, whole and entire. Main rewound to the last pre-overworld commit; the overworld/day-is-the-run era lives on the `day-is-the-run` branch in both repos. Unity port abandoned. Crew charter reworked (challenge verdicts, suggestion channel, single-sourced targets). |
+| 2026-09-01 | 0.7.0 | Higgsfield deploy revived (repo host moved to `apps-repos.higgs.ai`); `kernel-panic.higgsfield.app` is the public build again. Tutorial deadlock fixed: the shared command gate was applying the player's lesson gating to the machine, so its scripted trap never planted and Scan never woke (`6a4014b`). Host details scrubbed from public docs for the assignment 10 submission. |
 
 ## Where the current work sits
 
-The checked-out branch is `split-boards`, one commit ahead of `main`, with uncommitted changes across eleven files and two untracked new modules (`duel-clone.ts`, `duel-commands.ts`).
-
-This means the deployed game and the documented game differ. This vault documents the branch, because that is the design going forward. [[territory-and-claiming]] records what `main` still ships.
+`main` is canon in both repos: the site at the split-boards merge (`Merge split-boards: per-side grids, built vs power layers, command layer with undo`), pinned pre-overworld. The `day-is-the-run` branch preserves the abandoned overworld era; `rt-duel` preserves the realtime experiment. The vault documents `main`. [[territory-and-claiming]] is history, not a description of any shipped build.
 
 ## See also
 

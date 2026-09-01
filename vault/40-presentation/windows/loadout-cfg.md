@@ -3,7 +3,7 @@ title: LOADOUT.CFG
 status: canon
 source: code
 owner: ux-agent
-updated: 2026-08-05
+updated: 2026-08-31
 related: ["[[the-kit]]", "[[ui-rulings]]", "[[ruling-14-loadout-palette]]"]
 ---
 
@@ -37,7 +37,7 @@ Its glance order uses three hero numerals at ~83px against 19px body, the 2.2x r
 
 ## Its status
 
-**Still `awaiting` final approval.** The system it established is settled and is what other panels build to; the panel itself has not been signed off. See [[ui-rulings]].
+**Approved and integrated** (manifest: `approved` then `complete`, 2026-08-01). The system it established is settled and is what other panels build to. See [[ui-rulings]].
 
 ## The palette question starts here
 

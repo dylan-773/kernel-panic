@@ -3,7 +3,7 @@ title: The plays
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-31
 related: ["[[the-pipeline]]", "[[the-gates]]", "[[verification-gate]]"]
 ---
 
@@ -21,6 +21,7 @@ User-invoked commands. Each is a skill under `.claude/skills/`.
 | `/kp-ui integrate the approved UI demos` | lands approved demos |
 | `/kp-art` | fulfils open art orders |
 | `/kp-canonize` | rebuilds canon from what shipped |
+| `/kp-audit` | hunts gaps: missing features and assets, copy that lies, doc-vs-code drift (added 2026-08-31) |
 
 Plus a workflow, `/kp-balance-loop`: validate, then propose, **no integration**.
 

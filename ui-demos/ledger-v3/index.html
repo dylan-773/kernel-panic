@@ -1,0 +1,1130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>KP demo: LEDGER.LOG (instrument panel)</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=VT323&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" />
+<link rel="stylesheet" href="../_shared/kp.css" />
+<link rel="stylesheet" href="../_shared/system.css" />
+<style>
+/* LEDGER.LOG rebuilt as a KP/OS v3 instrument panel
+ * (cycle ux-2026-08-31-ledger-v3, spec item ledger-v3-instrument-panel).
+ * Closes the RULINGS.md law-11 queue alongside manual-v3.
+ *
+ * Table-shaped, answered without a pager: LEDGER's row count is fixed by
+ * the component itself (6 THIS RUN rows + 6 LIFETIME rows + two focal
+ * cells), so unlike MANUAL's open-ended catalog nothing here can ever
+ * outgrow the frame. What it takes from the siblings instead is law 4's
+ * equal footprint applied to RUN STATES: four states, one grid, identical
+ * window height, with NO ACTIVE RUN rendering every row at full height
+ * with the house "--" placeholder rather than collapsing.
+ *
+ * The one alarm is NEURAL STRAIN, on the exact shipped band (<= 35 risk,
+ * > 70 nominal; STRAIN_ALARM_AT / RISK_BAND both = 35 in the app), using
+ * loadout-eva's composited difference-blend blink. Ambient hazard chrome
+ * never animates.
+ *
+ * MOST LETHAL fixes a confirmed law-5 violation (ledger.tsx:155 serves an
+ * 880x880-attributed img that styles.css:5107 squashes to 170px): here the
+ * native print (304 or 880) sits inside a fixed 172x172 crop window at
+ * 1:1, framed per customer, never resampled. FULL COLOUR is not offered:
+ * no colourised card portraits exist and this cycle's art budget is zero,
+ * so the switch carries the two honest treatments only.
+ *
+ * Every player-facing string transcribed verbatim from the CURRENT
+ * working-tree ledger.tsx and its imported constants. Nothing reworded.
+ */
+
+/* ---------- ROLE TOKENS: copied from loadout-eva, not re-derived ---------- */
+
+:root {
+  --r-struct: var(--ch-dim);
+  --r-line: var(--ch);
+  --r-data: var(--ch-hot);
+  --r-ok: var(--ch);
+  --r-warn: var(--ch);
+  --r-aux: var(--ch);
+  --r-hazard: var(--ch);
+  --r-note: var(--ch-dim);
+  --r-ok-glow: var(--px-glow);
+  --r-warn-glow: var(--px-glow);
+}
+
+:root[data-scheme="nerv"] {
+  --px-void: #0a0603;
+  --ch: #ff9a1f;
+  --ch2: #c2431a;
+  --ch-hot: #ffe9c4;
+  --r-struct: #a86a22;
+  --r-line: #ff9a1f;
+  --r-data: #ffe9c4;
+  --r-ok: #8dff3a;
+  --r-warn: #ff2a17;
+  --r-aux: #23d3ff;
+  --r-hazard: #d1381a;
+  --r-note: #6ea8ff;
+  --r-ok-glow: color-mix(in srgb, #8dff3a 45%, transparent);
+  --r-warn-glow: color-mix(in srgb, #ff2a17 60%, transparent);
+}
+
+:root[data-scheme="tokyo"] {
+  --px-void: #16161e;
+  --ch: #7aa2f7;
+  --ch2: #414868;
+  --ch-hot: #c0caf5;
+  --r-struct: #414868;
+  --r-line: #7aa2f7;
+  --r-data: #c0caf5;
+  --r-ok: #9ece6a;
+  --r-warn: #f7768e;
+  --r-aux: #7dcfff;
+  --r-hazard: #ff9e64;
+  --r-note: #bb9af7;
+  --r-ok-glow: color-mix(in srgb, #9ece6a 45%, transparent);
+  --r-warn-glow: color-mix(in srgb, #f7768e 55%, transparent);
+}
+
+body {
+  overflow: auto;
+  display: block;
+  height: auto;
+  min-height: 100%;
+  padding: 26px 16px 40px;
+}
+
+/* ---------- the viewport rig (loadout-eva, verbatim) ---------- */
+
+.lo-fit { transform-origin: top left; }
+.lo-fitwrap { margin: 0 auto; }
+.lo-stage {
+  position: relative;
+  overflow: hidden;
+  background: var(--px-void);
+  border: 1px solid var(--ch-faint);
+}
+.lo-warp { position: absolute; inset: 0; display: flex; flex-direction: column; }
+.lo-overscan { position: absolute; inset: 0; display: flex; flex-direction: column; }
+.lo-desk {
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-conic-gradient(color-mix(in srgb, var(--ch) 4%, transparent) 0% 25%, transparent 0% 50%),
+    radial-gradient(120% 90% at 50% 0%, color-mix(in srgb, var(--ch) 5%, transparent), transparent 70%);
+  background-size: 8px 8px, auto;
+}
+.lo-deskwrap {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 22px 0 0;
+  min-height: 0;
+}
+.lo-free {
+  position: absolute;
+  top: 30px;
+  bottom: 14px;
+  border: 2px dashed var(--ch-faint);
+  opacity: 0.5;
+  display: flex;
+  align-items: flex-end;
+  padding: 6px 8px;
+  pointer-events: none;
+}
+.lo-free span {
+  font-family: var(--kp-display);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: var(--ch-faint);
+}
+.lo-free span::before { content: "// "; }
+.lo-stage-bar {
+  height: 44px;
+  flex: none;
+  position: relative;
+  background: var(--ch);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+}
+.lo-stage-bar span {
+  font-family: var(--kp-display);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: var(--px-void);
+}
+.lo-stage-bar i {
+  display: block;
+  width: 10px;
+  height: 10px;
+  background: var(--px-void);
+  opacity: 0.55;
+}
+.lo-stage-bar .lo-bar-sp { flex: 1; background: none; opacity: 1; }
+
+/* ---------- CRT glass (six layers, FLAT / OFF) ---------- */
+
+.lo-stage.crt-on { border-radius: 18px; }
+.lo-stage.crt-on .lo-glass {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 40;
+  border-radius: 16px / 20px;
+  overflow: hidden;
+}
+.lo-glass > i { position: absolute; inset: 0; display: block; }
+.lo-glass .g-scan {
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.55) 0 1px,
+    rgba(0, 0, 0, 0.12) 1px 2px,
+    rgba(255, 255, 255, 0.03) 2px 3px);
+  mix-blend-mode: multiply;
+  opacity: 0.85;
+}
+.lo-glass .g-mask {
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(255, 0, 0, 0.05) 0 1px,
+    rgba(0, 255, 0, 0.05) 1px 2px,
+    rgba(0, 0, 255, 0.05) 2px 3px);
+  mix-blend-mode: screen;
+  opacity: 0.7;
+}
+.lo-glass .g-bloom {
+  background: radial-gradient(130% 95% at 50% 42%, var(--px-glow) 0%, transparent 62%);
+  opacity: 0.14;
+  mix-blend-mode: screen;
+}
+.lo-glass .g-spec {
+  background:
+    radial-gradient(58% 42% at 26% 14%, rgba(255, 255, 255, 0.11) 0%, transparent 70%),
+    linear-gradient(163deg, rgba(255, 255, 255, 0.055) 0%, transparent 34%);
+  mix-blend-mode: screen;
+}
+.lo-glass .g-vig {
+  background:
+    radial-gradient(102% 86% at 50% 48%, transparent 52%, rgba(0, 0, 0, 0.55) 82%, rgba(0, 0, 0, 0.92) 100%);
+  box-shadow:
+    inset 0 0 46px 12px rgba(0, 0, 0, 0.75),
+    inset 0 0 130px 40px rgba(0, 0, 0, 0.45);
+}
+.lo-glass .g-bezel {
+  border-radius: 16px / 20px;
+  box-shadow:
+    inset 0 0 0 3px rgba(0, 0, 0, 0.9),
+    inset 0 2px 2px 3px rgba(255, 255, 255, 0.07),
+    inset 0 -3px 3px 3px rgba(0, 0, 0, 0.6);
+}
+
+/* ---------- the window frame ---------- */
+
+.term {
+  width: var(--lg-win, 760px);
+  flex: none;
+  border: 3px solid var(--r-hazard);
+  background: var(--px-void);
+  position: relative;
+  z-index: 5;
+  filter:
+    drop-shadow(9px 9px 0 rgba(0, 0, 0, 0.8))
+    drop-shadow(0 0 26px color-mix(in srgb, var(--ch) 25%, transparent));
+}
+.term-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--ch);
+  padding: 7px 12px 7px 14px;
+}
+.term-bar h1 {
+  font-family: var(--kp-display);
+  font-size: 13px;
+  letter-spacing: 0.16em;
+  color: var(--px-void);
+  font-weight: 400;
+}
+.term-glyphs { display: flex; gap: 7px; align-items: center; }
+.term-glyphs i { display: block; background: var(--px-void); }
+.term-glyphs i:nth-child(1) { width: 11px; height: 3px; margin-top: 9px; }
+.term-glyphs i:nth-child(2) { width: 11px; height: 11px; background: transparent; border: 3px solid var(--px-void); }
+.term-glyphs i:nth-child(3) { width: 11px; height: 11px; }
+.term-body { position: relative; padding: 12px 14px; }
+.term-body::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: repeating-conic-gradient(color-mix(in srgb, var(--ch) 5%, transparent) 0% 25%, transparent 0% 50%);
+  background-size: 4px 4px;
+}
+.term-body > * { position: relative; }
+
+/* ---------- the container ---------- */
+
+.lg-wrap { container-type: inline-size; container-name: lg; }
+
+.lg-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  --lg-fs-body: clamp(19px, calc(1cqi + 17px), 21px);
+  --lg-fs-label: clamp(9px, calc(0.6cqi + 8px), 11px);
+  --lg-fs-mast: clamp(22px, 4cqi, 34px);
+  --lg-fs-hero: clamp(64px, 22cqi, 108px);
+  --lg-fs-chip: clamp(9px, calc(0.5cqi + 8.5px), 10.5px);
+  --lg-fs-val: clamp(13px, calc(0.9cqi + 11px), 16px);
+}
+
+/* ---------- masthead: 2nd glance ---------- */
+
+.lg-mast { display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; }
+.lg-title {
+  font-family: var(--kp-display);
+  font-size: var(--lg-fs-mast);
+  line-height: 1;
+  letter-spacing: 0.04em;
+  color: var(--ch-hot);
+  text-shadow: 0 0 18px var(--px-glow);
+  min-height: 1em;
+}
+.lg-chip {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 5px 10px;
+  border: 2px dashed var(--r-struct);
+  background: var(--px-void);
+  white-space: nowrap;
+}
+.lg-chip span { font-family: var(--kp-display); font-size: var(--lg-fs-chip); letter-spacing: 0.14em; color: var(--r-note); }
+.lg-chip span::before { content: "// "; opacity: 0.7; }
+.lg-chip em { font-style: normal; font-family: var(--kp-mono); font-size: 13px; font-weight: 600; color: var(--ch); }
+/* BACK ROOM OPEN is a NOMINAL state: --r-ok inverse, a second channel via
+ * the solid-vs-dashed border, never a hero-weight treatment */
+.lg-chip.lg-chip-open { border: 2px solid var(--r-ok); background: var(--r-ok); }
+.lg-chip.lg-chip-open span, .lg-chip.lg-chip-open em { color: var(--px-void); }
+
+/* ---------- the band strips ---------- */
+
+.lg-strip {
+  font-family: var(--kp-display);
+  font-size: var(--lg-fs-label);
+  letter-spacing: 0.2em;
+  color: var(--r-note);
+}
+
+.lg-band { display: grid; grid-template-columns: 1fr 232px; gap: 9px 12px; align-items: stretch; }
+
+/* ---------- the rails: 3rd / 4th glance ---------- */
+
+.lg-rows { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.lg-row {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 4px 10px;
+  border: 1px solid var(--ch-faint);
+  background: color-mix(in srgb, var(--ch) 3%, var(--px-void));
+  min-height: 30px;
+}
+.lg-row > span {
+  font-family: var(--kp-display);
+  font-size: var(--lg-fs-label);
+  letter-spacing: 0.14em;
+  color: var(--r-note);
+  white-space: nowrap;
+}
+.lg-row > span::before { content: "// "; opacity: 0.7; }
+.lg-row > em {
+  font-style: normal;
+  font-family: var(--kp-mono);
+  font-size: var(--lg-fs-val);
+  font-weight: 600;
+  color: var(--r-line);
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* the strain row: the surface's ONE alarm */
+.lg-strainval { display: inline-flex; align-items: center; gap: 8px; position: relative; }
+.lg-seg { display: inline-flex; gap: 2px; }
+.lg-seg i { width: 7px; height: 12px; background: var(--ch-faint); }
+.lg-seg i.on { background: var(--r-line); box-shadow: 0 0 6px var(--px-glow); }
+/* the band class rides the STRAIN ROW ONLY: risk may never touch any
+ * other readout on the surface (law 1's one-owner rule) */
+.lg-strain-ok .lg-seg i.on { background: var(--r-ok); box-shadow: 0 0 6px var(--r-ok-glow); }
+.lg-strain-ok .lg-strainval > em { color: var(--r-ok); }
+.lg-strain-low .lg-seg i.on { background: var(--r-warn); box-shadow: 0 0 6px var(--r-warn-glow); }
+.lg-strain-low .lg-strainval > em { background: var(--r-warn); color: var(--px-void); padding: 0 4px; }
+.lg-riskflash {
+  position: absolute;
+  inset: -3px;
+  background: var(--r-warn);
+  mix-blend-mode: difference;
+  opacity: 0;
+  pointer-events: none;
+  will-change: opacity;
+}
+.lg-strain-low .lg-riskflash { animation: lg-risk-blink 1.2s steps(2) infinite; }
+@keyframes lg-risk-blink { 0%, 100% { opacity: 0; } 50% { opacity: 1; } }
+
+/* ---------- the CREDITS cell: 1st glance, the focal element ---------- */
+
+.lg-credit {
+  position: relative;
+  border: 1px solid var(--ch-faint);
+  background: color-mix(in srgb, var(--ch) 4%, var(--px-void));
+  padding: 10px 12px 9px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.lg-bracket, .lg-bracket > i { position: absolute; pointer-events: none; }
+.lg-bracket { inset: -1px; }
+.lg-bracket > i { inset: 0; }
+.lg-bracket::before, .lg-bracket::after,
+.lg-bracket > i::before, .lg-bracket > i::after {
+  content: "";
+  position: absolute;
+  width: 22px;
+  height: 22px;
+}
+.lg-bracket::before { top: 0; left: 0; border-top: 4px solid var(--r-hazard); border-left: 4px solid var(--r-hazard); }
+.lg-bracket::after { top: 0; right: 0; border-top: 4px solid var(--r-hazard); border-right: 4px solid var(--r-hazard); }
+.lg-bracket > i::before { bottom: 0; left: 0; border-bottom: 4px solid var(--r-hazard); border-left: 4px solid var(--r-hazard); }
+.lg-bracket > i::after { bottom: 0; right: 0; border-bottom: 4px solid var(--r-hazard); border-right: 4px solid var(--r-hazard); }
+
+.lg-eyebrow {
+  font-family: var(--kp-display);
+  font-size: var(--lg-fs-label);
+  letter-spacing: 0.18em;
+  color: var(--r-note);
+}
+.lg-heronum {
+  font-family: var(--kp-term);
+  font-size: var(--lg-fs-hero);
+  line-height: 0.8;
+  color: var(--r-data);
+  text-shadow: 0 0 24px var(--px-glow);
+  font-variant-numeric: tabular-nums;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.lg-heronum i {
+  font-style: normal;
+  font-family: var(--kp-display);
+  font-size: var(--lg-fs-label);
+  letter-spacing: 0.16em;
+  color: var(--r-note);
+}
+.lg-pips { display: flex; align-items: center; gap: 8px; }
+.lg-pips > span {
+  font-family: var(--kp-display);
+  font-size: var(--lg-fs-label);
+  letter-spacing: 0.14em;
+  color: var(--r-note);
+  min-width: 46px;
+}
+.lg-piprow { display: inline-flex; gap: 4px; }
+.lg-piprow i { width: 12px; height: 12px; border: 2px solid var(--r-struct); background: transparent; }
+.lg-piprow i.on { background: var(--r-line); border-color: var(--r-line); box-shadow: 0 0 6px var(--px-glow); }
+
+/* ---------- the LIFETIME divider: the one zone boundary ---------- */
+
+.lg-div { display: flex; align-items: center; gap: 9px; }
+.lg-div i { flex: 1; height: 8px; background: repeating-linear-gradient(45deg, var(--r-hazard) 0 3px, transparent 3px 7px); }
+.lg-div span {
+  font-family: var(--kp-display);
+  font-size: var(--lg-fs-label);
+  letter-spacing: 0.2em;
+  color: var(--ch-dim);
+  flex: none;
+}
+
+/* ---------- MOST LETHAL: the dossier cell ---------- */
+
+.lg-lethal {
+  border: 1px solid var(--ch-faint);
+  background: color-mix(in srgb, var(--ch) 3%, var(--px-void));
+  padding: 9px 12px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+.lg-lethal .lg-eyebrow { align-self: flex-start; }
+/* the crop window: the native print (304 or 880) inside a FIXED 172x172
+ * box at 1:1, offsets framing the face; never a CSS resample */
+#lethalcell { display: contents; }
+.lg-mug {
+  display: block;
+  position: relative;
+  width: 172px;
+  height: 172px;
+  flex: none;
+  overflow: hidden;
+  border: 2px solid var(--r-struct);
+  background: var(--px-void);
+}
+.lg-mug img {
+  position: absolute;
+  display: block;
+  image-rendering: pixelated;
+  filter: grayscale(1) contrast(1.15) brightness(1.05);
+}
+.lg-mug .tint {
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-conic-gradient(rgba(0, 0, 0, 0.28) 0% 25%, transparent 0% 50%),
+    var(--r-aux);
+  background-size: 2px 2px, auto;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+.lg-mug[data-feed="true"] .tint { display: none; }
+.lg-mug-fade { opacity: 0; }
+.lg-mug-in { animation: lg-mug-in 90ms steps(3) forwards; }
+@keyframes lg-mug-in { to { opacity: 1; } }
+.lg-hole {
+  width: 172px;
+  height: 172px;
+  flex: none;
+  border: 2px dashed var(--r-struct);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.lg-hole span { font-family: var(--kp-term); font-size: var(--lg-fs-body); color: var(--ch-dim); }
+.lg-lethal-tag {
+  font-family: var(--kp-display);
+  font-size: var(--lg-fs-label);
+  letter-spacing: 0.12em;
+  color: var(--r-line);
+  min-height: 1em;
+  text-align: center;
+}
+
+/* ---------- the footer print furniture: ambient ---------- */
+
+.lg-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.lg-dots { display: grid; grid-template-columns: repeat(32, 4px); gap: 3px; }
+.lg-dots i { width: 4px; height: 4px; background: var(--r-line); opacity: 0; animation: lg-dot-in 1ms steps(1) both; }
+.lg-dots i:nth-child(3n) { background: var(--ch-faint); }
+@keyframes lg-dot-in { to { opacity: 1; } }
+.lg-hex {
+  font-family: var(--kp-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: var(--r-note);
+}
+.lg-brand { display: flex; align-items: center; gap: 8px; }
+.lg-batt { display: inline-flex; gap: 2px; }
+.lg-batt i { width: 4px; height: 10px; background: var(--r-struct); }
+.lg-brand span:last-child {
+  font-family: var(--kp-display);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: var(--r-note);
+}
+
+/* ---------- narrow tier: tiling fallback only ---------- */
+
+@container lg (max-width: 699.98px) {
+  .lg-band { grid-template-columns: 1fr; }
+  .lg-mug, .lg-hole { width: 140px; height: 140px; }
+}
+
+/* ---------- demo rig ---------- */
+
+.rig { top: auto; right: auto; bottom: 12px; left: 12px; }
+.rig em { font-style: normal; color: #ffd75e; }
+.rig .rig-meas { font-family: var(--kp-mono); font-size: 10px; color: #999; }
+.rig .rig-over { color: #ff6b6b; }
+
+@media (prefers-reduced-motion: reduce) {
+  .lg-strain-low .lg-riskflash { animation: none; opacity: 0; }
+  .lg-mug-in, .lg-dots i, .lg-grid .kp-slot-anim { animation: none; opacity: 1; }
+  .lg-mug-fade { opacity: 1; }
+}
+</style>
+</head>
+<body>
+
+<div class="lo-fitwrap" id="fitwrap">
+  <div class="lo-fit" id="fit">
+    <div class="lo-stage crt-on" id="stage">
+     <div class="lo-warp">
+      <div class="lo-overscan">
+      <div class="lo-desk" aria-hidden="true"></div>
+      <div class="lo-deskwrap">
+        <div class="lo-free" id="free" aria-hidden="true"><span id="freelabel">FREE DESK</span></div>
+
+        <div class="term" id="term">
+          <header class="term-bar">
+            <h1>LEDGER.LOG</h1>
+            <span class="term-glyphs"><i></i><i></i><i></i></span>
+          </header>
+          <div class="term-body">
+            <div class="lg-wrap">
+              <div class="lg-grid" id="grid">
+
+                <div class="lg-mast">
+                  <span class="lg-title" id="masthead"></span>
+                  <span class="lg-chip" id="backroom"><span>BACK ROOM</span><em id="backroomval">SEALED</em></span>
+                </div>
+
+                <span class="lg-strip">// THIS RUN _</span>
+                <div class="lg-band">
+                  <div class="lg-rows" id="runrows"></div>
+                  <div class="lg-credit">
+                    <i class="lg-bracket" aria-hidden="true"><i></i></i>
+                    <span class="lg-eyebrow">CREDITS</span>
+                    <div class="lg-heronum"><b id="credits">0</b><i id="crunit">cr</i></div>
+                    <div class="lg-pips"><span>POUCH</span><span class="lg-piprow" id="pouchpips"></span></div>
+                    <div class="lg-pips"><span>BAYS</span><span class="lg-piprow" id="baypips"></span></div>
+                  </div>
+                </div>
+
+                <div class="lg-div" aria-hidden="true"><i></i><span>RUN // LIFETIME</span><i></i></div>
+
+                <span class="lg-strip">// LIFETIME _</span>
+                <div class="lg-band">
+                  <div class="lg-rows" id="liferows"></div>
+                  <div class="lg-lethal" id="lethal">
+                    <span class="lg-eyebrow">MOST LETHAL</span>
+                    <span id="lethalcell"></span>
+                    <span class="lg-lethal-tag" id="lethaltag"></span>
+                  </div>
+                </div>
+
+                <div class="lg-foot">
+                  <span class="lg-dots" id="dots" aria-hidden="true"></span>
+                  <span class="lg-hex" id="hex"></span>
+                  <span class="lg-brand">
+                    <span class="lg-batt" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+                    <span>KP/OS REPAIR BENCH v9.2</span>
+                  </span>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="lo-stage-bar">
+        <span>KP/OS</span>
+        <i></i>
+        <span>LEDGER.LOG</span>
+        <span class="lo-bar-sp"></span>
+        <span id="barclock">22:41</span>
+      </div>
+      </div>
+     </div>
+
+      <div class="lo-glass" id="glass" aria-hidden="true">
+        <i class="g-scan"></i>
+        <i class="g-mask"></i>
+        <i class="g-bloom"></i>
+        <i class="g-spec"></i>
+        <i class="g-vig"></i>
+        <i class="g-bezel"></i>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="rig">
+  <strong>DEMO RIG</strong>
+  <span>Scheme</span>
+  <div class="rig-row" id="schemerow"></div>
+  <span>CRT</span>
+  <div class="rig-row" id="crtrow"></div>
+  <span>Viewport</span>
+  <div class="rig-row" id="vprow"></div>
+  <span>Run state</span>
+  <div class="rig-row" id="staterow"></div>
+  <span>Most lethal image</span>
+  <div class="rig-row" id="feedrow"></div>
+  <div class="rig-row"><button id="replay">REPLAY PRINT</button></div>
+  <span class="rig-meas" id="meas"></span>
+  <span>LEDGER.LOG as a v3 instrument panel: the shop's statement, printed fresh on every open. The CREDITS numeral is the one focal element; NEURAL STRAIN is the one alarm, on the shipped 35/70 band, blinking on a composited difference plate. MOST LETHAL serves the native 1-bit print inside a fixed 1:1 crop window, fixing the shipped CSS downscale. All four run states share one grid and one window height; NO ACTIVE RUN prints the full statement with -- placeholders rather than collapsing. FULL COLOUR is not offered: no colourised card portraits exist and this cycle's art budget is zero.</span>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ================= shipped constants, transcribed =================
+   * ledger.tsx + arc.ts FINAL_DAY=10, patch-cells.ts PATCH_POUCH_MAX=5,
+   * run-reducer.ts BOOST_SLOTS_MAX=5, kit.ts AUGMENTS (14 boosts),
+   * MODE_LABEL; strain band STRAIN_ALARM_AT/RISK_BAND = 35, nominal > 70. */
+
+  var FINAL_DAY = 10;
+  var POUCH_MAX = 5;
+  var BAYS_MAX = 5;
+  var BOOSTS_TOTAL = 14;
+  var RISK_BAND = 35;
+  var NOMINAL_ABOVE = 70;
+
+  /* the four run states. Demo mock values in shipped shapes; MOST LETHAL
+   * uses the two native print sizes on file (304 and 880). */
+  var STATES = {
+    day1: {
+      label: "DAY 1 OPENER",
+      run: { runNumber: 1, day: 1, ram: 5, kit: "S1 A1 D1", augs: 0, strain: 100, credits: 0, pouch: 0, bays: 3 },
+      meta: { runCount: 1, won: 0, cleared: 0, lost: 0, scans: 0, mode: null, lethal: null, open: false }
+    },
+    mid: {
+      label: "MID RUN",
+      run: { runNumber: 7, day: 4, ram: 6, kit: "S2 A1 D2", augs: 2, strain: 84, credits: 210, pouch: 2, bays: 3 },
+      meta: { runCount: 7, won: 0, cleared: 23, lost: 6, scans: 61, mode: { label: "REDIRECT", n: 38 },
+        lethal: { name: "JUNO VEX", n: 3, src: "art/card-juno-vex-portrait.png", w: 304, h: 304, top: -34, left: -66 },
+        open: true }
+    },
+    day9: {
+      label: "DAY 9 STRAINED",
+      run: { runNumber: 9, day: 9, ram: 8, kit: "S3 A2 D2", augs: 5, strain: 21, credits: 55, pouch: 1, bays: 4 },
+      meta: { runCount: 9, won: 0, cleared: 41, lost: 9, scans: 88, mode: { label: "PURGE", n: 51 },
+        lethal: { name: "DEX MARLOWE", n: 4, src: "art/card-dex-marlowe-portrait.png", w: 880, h: 880, top: -230, left: -374 },
+        open: true }
+    },
+    none: {
+      label: "NO ACTIVE RUN",
+      run: null,
+      meta: { runCount: 7, won: 0, cleared: 23, lost: 6, scans: 61, mode: { label: "REDIRECT", n: 38 },
+        lethal: { name: "JUNO VEX", n: 3, src: "art/card-juno-vex-portrait.png", w: 304, h: 304, top: -34, left: -66 },
+        open: false }
+    }
+  };
+
+  /* ================= helpers ================= */
+
+  var REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var timers = [];
+  function later(fn, ms) {
+    if (REDUCED) { fn(); return; }
+    timers.push(setTimeout(fn, ms));
+  }
+  function clearTimers() {
+    timers.forEach(function (t) { clearTimeout(t); clearInterval(t); });
+    timers = [];
+  }
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+  function $(id) { return document.getElementById(id); }
+
+  var runTokens = {};
+  function typeIn(node, text, delay, key) {
+    var token = (runTokens[key] = (runTokens[key] || 0) + 1);
+    if (REDUCED) { node.textContent = text; return; }
+    node.textContent = "";
+    later(function () {
+      if (runTokens[key] !== token) return;
+      var i = 0;
+      var iv = setInterval(function () {
+        if (runTokens[key] !== token) { clearInterval(iv); return; }
+        i += 1;
+        node.textContent = text.slice(0, i);
+        if (i >= text.length) clearInterval(iv);
+      }, 18);
+      timers.push(iv);
+    }, delay);
+  }
+
+  function countUp(node, target, delay, interval) {
+    if (REDUCED) { node.textContent = String(target); return; }
+    node.textContent = "0";
+    var step = Math.max(1, Math.round(target / 26));
+    later(function () {
+      var v = 0;
+      var iv = setInterval(function () {
+        v = Math.min(target, v + step);
+        node.textContent = String(v);
+        if (v >= target) clearInterval(iv);
+      }, interval || 22);
+      timers.push(iv);
+    }, delay);
+  }
+
+  function seeded(id) {
+    var s = 0;
+    for (var i = 0; i < id.length; i++) s = ((s * 31 + id.charCodeAt(i)) >>> 0);
+    return function () {
+      s = ((Math.imul(s, 1664525) + 1013904223) >>> 0);
+      return s;
+    };
+  }
+
+  /* ================= sound: the ledger print beat, approximated =================
+   * playLedgerPrint (audio.ts): six ledgerTick strikes at a 32ms stagger
+   * with randomized rate, then ledgerSettle at 240ms. At integration the
+   * shipped presets replace this WebAudio sketch. Fires ONCE per mount /
+   * REPLAY PRINT, never on a run-state switch. */
+
+  var AC = null;
+  var interacted = false;
+  document.addEventListener("pointerdown", function () { interacted = true; }, true);
+  document.addEventListener("keydown", function () { interacted = true; }, true);
+  function blip(freq, dur, vol, at, type) {
+    if (!interacted || !AC) return;
+    var t = AC.currentTime + (at || 0);
+    var o = AC.createOscillator();
+    o.type = type || "square";
+    o.frequency.setValueAtTime(freq, t);
+    var g = AC.createGain();
+    g.gain.setValueAtTime(vol, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+    o.connect(g); g.connect(AC.destination);
+    o.start(t); o.stop(t + dur + 0.02);
+  }
+  function playPrint() {
+    if (!interacted) return;
+    try {
+      if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)();
+      if (AC.state === "suspended") AC.resume();
+      for (var i = 0; i < 6; i++) blip(760 * (0.9 + Math.random() * 0.3), 0.03, 0.12, i * 0.032);
+      blip(180, 0.09, 0.16, 0.24, "triangle");
+    } catch (e) { /* sound is never load bearing */ }
+  }
+
+  /* ================= render ================= */
+
+  var stateId = "mid";
+  var S = STATES[stateId];
+  var DASH = "--";
+
+  function row(label, valueNode) {
+    var r = el("div", "lg-row");
+    r.appendChild(el("span", null, label));
+    if (typeof valueNode === "string") r.appendChild(el("em", null, valueNode));
+    else r.appendChild(valueNode);
+    return r;
+  }
+
+  function strainValue(run) {
+    var wrap = el("em", null, "");
+    var box = el("span", "lg-strainval");
+    var seg = el("span", "lg-seg");
+    var SEGN = 16;
+    var lit = run ? Math.round(SEGN * run.strain / 100) : 0;
+    for (var i = 0; i < SEGN; i++) {
+      var d = el("i", i < lit ? "on" : "");
+      seg.appendChild(d);
+    }
+    box.appendChild(seg);
+    var em = el("em", null, run ? run.strain + "/100" : DASH);
+    em.style.fontStyle = "normal";
+    em.style.fontFamily = "var(--kp-mono)";
+    em.style.fontSize = "var(--lg-fs-val)";
+    em.style.fontWeight = "600";
+    box.appendChild(em);
+    var flash = el("i", "lg-riskflash");
+    flash.setAttribute("aria-hidden", "true");
+    box.appendChild(flash);
+    wrap.appendChild(box);
+    return { node: wrap, box: box };
+  }
+
+  function pipRow(host, filled, total) {
+    host.textContent = "";
+    for (var i = 0; i < total; i++) host.appendChild(el("i", i < filled ? "on" : ""));
+  }
+
+  function renderRows(stagger) {
+    var runrows = $("runrows");
+    runrows.textContent = "";
+    var r = S.run;
+    var strain = strainValue(r);
+    var defs = [
+      ["ATTEMPT", r ? String(r.runNumber) : DASH],
+      ["DAY", r ? Math.min(r.day, FINAL_DAY) + "/10" : DASH],
+      ["RAM / TURN", r ? String(r.ram) : DASH],
+      ["KIT TIERS", r ? r.kit : DASH],
+      ["AUGMENTS", r ? r.augs + "/" + BOOSTS_TOTAL : DASH],
+      ["NEURAL STRAIN", strain.node]
+    ];
+    var strainRow = null;
+    defs.forEach(function (d, i) {
+      var rw = row(d[0], d[1]);
+      if (d[0] === "NEURAL STRAIN") strainRow = rw;
+      if (!REDUCED && stagger) {
+        rw.classList.add("kp-slot-anim");
+        rw.style.animationDelay = (300 + i * 70) + "ms";
+      }
+      runrows.appendChild(rw);
+    });
+    /* the alarm band: the EXACT shipped thresholds, one owner, and the
+     * class lands on the strain row alone so no other value can take it */
+    if (r && strainRow) {
+      if (r.strain > NOMINAL_ABOVE) strainRow.classList.add("lg-strain-ok");
+      else if (r.strain <= RISK_BAND) strainRow.classList.add("lg-strain-low");
+    }
+
+    /* the credits cell */
+    if (r) {
+      countUp($("credits"), r.credits, 260);
+      $("crunit").style.display = "";
+    } else {
+      $("credits").textContent = DASH;
+      $("crunit").style.display = "none";
+    }
+    pipRow($("pouchpips"), r ? r.pouch : 0, POUCH_MAX);
+    pipRow($("baypips"), r ? r.bays : 0, BAYS_MAX);
+
+    var liferows = $("liferows");
+    liferows.textContent = "";
+    var m = S.meta;
+    var ldefs = [
+      ["ATTEMPTS", String(m.runCount)],
+      ["MACHINE BEATEN", String(m.won)],
+      ["JOBS CLEARED", String(m.cleared)],
+      ["DIVES LOST", String(m.lost)],
+      ["SCANS RUN", String(m.scans)],
+      ["MOST USED MODE", m.mode ? m.mode.label + " x" + m.mode.n : "none yet"]
+    ];
+    ldefs.forEach(function (d, i) {
+      var rw = row(d[0], d[1]);
+      if (!REDUCED && stagger) {
+        rw.classList.add("kp-slot-anim");
+        rw.style.animationDelay = (620 + i * 70) + "ms";
+      }
+      liferows.appendChild(rw);
+    });
+
+    /* the dossier cell */
+    var cell = $("lethalcell");
+    cell.textContent = "";
+    if (m.lethal) {
+      var mug = el("span", "lg-mug");
+      mug.dataset.feed = feedMode;
+      var img = document.createElement("img");
+      img.src = m.lethal.src;
+      img.alt = "";
+      img.width = m.lethal.w;
+      img.height = m.lethal.h;
+      img.style.top = m.lethal.top + "px";
+      img.style.left = m.lethal.left + "px";
+      mug.appendChild(img);
+      var tint = el("i", "tint");
+      tint.setAttribute("aria-hidden", "true");
+      mug.appendChild(tint);
+      mug.classList.add("lg-mug-fade");
+      if (stagger) {
+        later(function () { mug.classList.add("lg-mug-in"); }, 1050);
+      } else {
+        mug.classList.add("lg-mug-in");
+      }
+      cell.appendChild(mug);
+      $("lethaltag").textContent = m.lethal.name + " x" + m.lethal.n;
+    } else {
+      var hole = el("span", "lg-hole");
+      hole.appendChild(el("span", null, "nobody yet"));
+      cell.appendChild(hole);
+      /* a non-breaking space keeps the tag's line box, so the absent state
+       * matches the present state to the pixel (law 4) */
+      $("lethaltag").textContent = " ";
+    }
+
+    /* the back room chip */
+    $("backroomval").textContent = m.open ? "OPEN" : "SEALED";
+    $("backroom").classList.toggle("lg-chip-open", m.open);
+
+    measure();
+  }
+
+  function renderFoot(stagger) {
+    var dots = $("dots");
+    dots.textContent = "";
+    for (var i = 0; i < 64; i++) {
+      var d = el("i");
+      d.style.animationDelay = stagger && !REDUCED ? (1150 + i * 4.5) + "ms" : "0ms";
+      dots.appendChild(d);
+    }
+    var next = seeded("ledger-" + S.meta.runCount);
+    var hex = [];
+    for (var h = 0; h < 4; h++) hex.push((next() % 0xffff).toString(16).toUpperCase().padStart(4, "0"));
+    $("hex").textContent = hex.join(" - ");
+  }
+
+  /* full print: masthead types, hero counts to the print beat, rows slot
+   * in, the portrait develops, the foot prints last. Once per mount. */
+  function printSweep() {
+    clearTimers();
+    typeIn($("masthead"), "LEDGER №" + S.meta.runCount, 0, "mast");
+    playPrint();
+    renderRows(true);
+    renderFoot(true);
+  }
+
+  /* a run-state switch updates cells only: no second print, no masthead
+   * retype (unless runCount changed, which retypes just that) */
+  var lastCount = null;
+  function applyState() {
+    clearTimers();
+    if (S.meta.runCount !== lastCount) {
+      typeIn($("masthead"), "LEDGER №" + S.meta.runCount, 0, "mast");
+      lastCount = S.meta.runCount;
+    }
+    renderRows(false);
+    renderFoot(false);
+  }
+
+  /* ================= the demo rig ================= */
+
+  function radioRow(rowId, opts, initial, onPick) {
+    var row = $(rowId);
+    row.textContent = "";
+    opts.forEach(function (o) {
+      var b = el("button", o.id === initial ? "rig-on" : "", o.label);
+      b.addEventListener("click", function () {
+        row.querySelectorAll("button").forEach(function (x) { x.className = ""; });
+        b.className = "rig-on";
+        onPick(o);
+      });
+      row.appendChild(b);
+    });
+  }
+
+  var glassLayers = Array.prototype.slice.call($("glass").children);
+  function setCrt(mode) {
+    $("stage").classList.toggle("crt-on", mode !== "off");
+    var glass = $("glass");
+    glass.textContent = "";
+    if (mode !== "off") glassLayers.forEach(function (l) { glass.appendChild(l); });
+  }
+
+  radioRow("schemerow", [
+    { id: "nerv", label: "NERV" },
+    { id: "tokyo", label: "TOKYO NIGHT" }
+  ], "nerv", function (o) { document.documentElement.dataset.scheme = o.id; });
+
+  radioRow("crtrow", [
+    { id: "flat", label: "FLAT" },
+    { id: "off", label: "OFF" }
+  ], "flat", function (o) { setCrt(o.id); measure(); });
+
+  var VIEWPORTS = [
+    { id: "169", label: "16:9", w: 1366, h: 768 },
+    { id: "219", label: "21:9", w: 2560, h: 1080 },
+    { id: "laptop", label: "LAPTOP 1280x800", w: 1280, h: 800 }
+  ];
+  var VP = VIEWPORTS[0];
+  var WIN = 760; /* one frame width at every supported viewport: LEDGER is
+                  * the small table-shaped window (law 11) */
+
+  radioRow("vprow", VIEWPORTS, "169", function (o) { applyViewport(o); });
+
+  radioRow("staterow", [
+    { id: "day1", label: "DAY 1 OPENER" },
+    { id: "mid", label: "MID RUN" },
+    { id: "day9", label: "DAY 9 STRAINED" },
+    { id: "none", label: "NO ACTIVE RUN" }
+  ], "mid", function (o) {
+    stateId = o.id;
+    S = STATES[stateId];
+    applyState();
+  });
+
+  var feedMode = "ink";
+  radioRow("feedrow", [
+    { id: "ink", label: "INK TINT" },
+    { id: "true", label: "TRUE 1-BIT" }
+  ], "ink", function (o) {
+    feedMode = o.id;
+    var mug = document.querySelector(".lg-mug");
+    if (mug) mug.dataset.feed = feedMode;
+  });
+
+  $("replay").addEventListener("click", function () {
+    lastCount = S.meta.runCount;
+    printSweep();
+  });
+
+  /* ================= fit + measure ================= */
+
+  function applyViewport(v) {
+    VP = v;
+    var stage = $("stage");
+    stage.style.width = v.w + "px";
+    stage.style.height = v.h + "px";
+    $("term").style.setProperty("--lg-win", WIN + "px");
+    fit();
+    measure();
+  }
+
+  function fit() {
+    var availW = Math.max(320, window.innerWidth - 300);
+    var availH = Math.max(320, window.innerHeight - 90);
+    var k = Math.min(1, availW / VP.w, availH / VP.h);
+    $("fit").style.transform = "scale(" + k + ")";
+    $("fitwrap").style.width = Math.round(VP.w * k) + "px";
+    $("fitwrap").style.height = Math.round(VP.h * k) + "px";
+    return k;
+  }
+
+  function measure() {
+    var k = fit() || 1;
+    var term = $("term");
+    var h = Math.round(term.getBoundingClientRect().height / k);
+    var free = $("free");
+    var slack = VP.w - WIN;
+    if (slack > 220) {
+      free.style.display = "flex";
+      free.style.right = "0px";
+      free.style.width = Math.round(slack / 2 - 24) + "px";
+      $("freelabel").textContent = "FREE DESK " + Math.round(slack / 2 - 24) + "PX";
+    } else {
+      free.style.display = "none";
+    }
+    var m = $("meas");
+    m.innerHTML = "";
+    m.appendChild(document.createTextNode("WINDOW " + WIN + "px / " + STATES[stateId].label));
+    m.appendChild(document.createElement("br"));
+    var hs = el("span", h > 700 ? "rig-over" : "", "HEIGHT " + h + "px / target 700px");
+    m.appendChild(hs);
+  }
+
+  var resizeRaf = 0;
+  window.addEventListener("resize", function () {
+    cancelAnimationFrame(resizeRaf);
+    resizeRaf = requestAnimationFrame(function () { fit(); measure(); });
+  });
+
+  /* ================= the stage bar clock ================= */
+
+  var clockSec = 22 * 3600 + 41 * 60 + 7;
+  setInterval(function () {
+    clockSec = (clockSec + 1) % 86400;
+    var hh = String(Math.floor(clockSec / 3600)).padStart(2, "0");
+    var mm = String(Math.floor((clockSec % 3600) / 60)).padStart(2, "0");
+    var bar = hh + ":" + mm;
+    if ($("barclock").textContent !== bar) $("barclock").textContent = bar;
+  }, 1000);
+
+  /* ================= go ================= */
+
+  document.documentElement.dataset.scheme = "nerv";
+  setCrt("flat");
+  applyViewport(VP);
+  lastCount = S.meta.runCount;
+  printSweep();
+})();
+</script>
+</body>
+</html>

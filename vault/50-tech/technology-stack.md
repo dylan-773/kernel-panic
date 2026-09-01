@@ -3,7 +3,7 @@ title: Technology stack
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-31
 related: ["[[technical-requirements]]", "[[performance-budget]]", "[[kp-os]]"]
 ---
 
@@ -24,7 +24,7 @@ A browser app. No engine, no build target beyond the web.
 | Audio | custom **sfxr** synthesis, no audio library. See [[music-and-sound]] |
 | Art | 1-bit dithered PNG. See [[art-direction]] |
 | Persistence | `localStorage`. See [[save-and-load]] |
-| Hosting | Higgsfield, website id `ce0a9c8c-bae7-418c-909a-84648abdcf17` |
+| Hosting | Public at `https://kernel-panic.higgsfield.app` (Higgsfield website hosting, repo host `apps-repos.higgs.ai`); also self-hosted on the Raspberry Pi over Tailscale on :8445, tailnet only. See [[verification-gate]] Deploy. |
 
 > [!danger] REVISED IN PROTOTYPE
 > **Unity was cut**, along with the purchased asset packs. The game ships as a browser app, which is what makes the whole KP/OS conceit cheap: an operating system is a much easier thing to render in a browser than a world is.

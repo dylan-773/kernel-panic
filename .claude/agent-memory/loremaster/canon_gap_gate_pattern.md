@@ -9,10 +9,12 @@ aliases: [canon-gap-gate-pattern]
 
 When a gated proposal rests on a world fact the bible/ledger never ruled
 on (not a contradiction, an absence), the fix is not APPROVE-by-default or
-a REVISE with no citation. Decide the gap, write ONE new ruling into
-`lore/ledger.md`'s Resolved rulings list (append, do not renumber past
-rulings) or into `lore/bible.md` directly if it is a world/character fact
-rather than a story event, then gate the item against that new ruling in
+a REVISE with no citation. Decide the gap (since 2026-08-31: PREFER adopting the proposal's implied
+answer when it contradicts nothing existing, and flag the fresh ruling in
+the review so the user can veto), write ONE new numbered ruling into
+`vault/60-story/rulings/` (append, never renumber) or the relevant
+`vault/60-story/` note directly if it is a world/character fact rather
+than a story event, then gate the item against that new ruling in
 the same pass. Say in the gate file that this is what happened, and why
 it's a ruling rather than a REVISE (no prior line existed to contradict).
 

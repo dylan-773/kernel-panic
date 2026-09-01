@@ -3,7 +3,7 @@ title: Home
 status: canon
 source: none
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-31
 related: ["[[table-of-contents]]", "[[vault-conventions]]", "[[revision-history]]"]
 ---
 
@@ -11,7 +11,7 @@ related: ["[[table-of-contents]]", "[[vault-conventions]]", "[[revision-history]
 
 A turn-based cyberpunk roguelike about inheriting your father's computer repair business and the machine in the back room he never let you touch.
 
-Playable prototype: [kernel-panic.higgsfield.app](https://kernel-panic.higgsfield.app)
+Playable build (public): [kernel-panic.higgsfield.app](https://kernel-panic.higgsfield.app). A second deploy serves the tailnet from the Pi; see [[verification-gate]].
 Build `0.7.0`, dated 2026-07-29 (`app/src/game/version.ts`).
 
 > [!warning] The duel changed

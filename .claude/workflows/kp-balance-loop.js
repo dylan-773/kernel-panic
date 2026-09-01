@@ -41,11 +41,11 @@ phase('Propose')
 log(`Verdict ${report.verdict}; worst: ${report.worst.join('; ')}`)
 const proposals = await parallel([
   () => agent(
-    `A fresh validation report is at pipeline/validation/report.md (verdict: ${report.verdict}; worst deviations: ${report.worst.join('; ')}). Follow your instructions: read the report and pipeline/BRIEF.md, then write pipeline/proposals/ability-agent.json. Return how many items you proposed and a one-line summary.`,
+    `A fresh validation report is at pipeline/validation/report.md (verdict: ${report.verdict}; worst deviations: ${report.worst.join('; ')}). Follow your instructions: read the report and pipeline/BRIEF.md if a cycle brief is live, then write pipeline/proposals/ability-agent.json. Return how many items you proposed and a one-line summary.`,
     { agentType: 'ability-agent', label: 'ability proposals', phase: 'Propose', schema: SUMMARY_SCHEMA },
   ),
   () => agent(
-    `A fresh validation report is at pipeline/validation/report.md (verdict: ${report.verdict}; worst deviations: ${report.worst.join('; ')}). Follow your instructions: read the report and pipeline/BRIEF.md, then write pipeline/proposals/arc-composer.json. Return how many items you proposed and a one-line summary.`,
+    `A fresh validation report is at pipeline/validation/report.md (verdict: ${report.verdict}; worst deviations: ${report.worst.join('; ')}). Follow your instructions: read the report and pipeline/BRIEF.md if a cycle brief is live, then write pipeline/proposals/arc-composer.json. Return how many items you proposed and a one-line summary.`,
     { agentType: 'arc-composer', label: 'arc proposals', phase: 'Propose', schema: SUMMARY_SCHEMA },
   ),
 ])

@@ -8,17 +8,20 @@ aliases: [project-gate-precedents]
 ---
 
 Accumulated rulings-about-rulings, distinct from the actual canon (which
-lives only in `lore/bible.md` and `lore/ledger.md`):
+lives in `vault/60-story/`, rulings under `vault/60-story/rulings/`):
 
-- **Brief vs. existing ruling:** when a brief instruction collides with an
-  existing Resolved ruling (e.g. `story-retune-1`'s brief asked enders 9+
-  to keep advancing toward sector 9, which ledger Resolved ruling 3
-  forbids), the ruling wins and the brief is wrong, not the other way
-  around. An agent that deviates from the brief on its own initiative to
-  hold a ruling, and flags the deviation loudly instead of either silently
-  complying or silently doing what it thinks is right, is doing exactly
-  the right thing; say so explicitly in the gate rather than just
-  approving quietly.
+- **Brief vs. existing ruling: escalate, never auto-side.** (Rewritten
+  2026-08-31 on user direction; the old form of this precedent said "the
+  ruling wins and the brief is wrong," which trained blind doc-compliance
+  and is exactly what the user does not want.) When a brief or user
+  request collides with an existing ruling, neither side wins by default:
+  the collision is a CHALLENGE verdict, stating the ruling's quoted line,
+  what the brief wants instead, and a recommendation for which should
+  bend, so the user decides. Canon is presumed current, not presumed
+  correct; a ruling can be stale, and the user updating it is a normal
+  outcome, not a defeat. What stays true from the old precedent: never
+  silently comply and never silently do what you think is right - flag
+  the conflict loudly, on the record.
 - **Post-renunciation "virus":** after Rhea's run-8 renunciation, bible
   voice law allows her to reference the word only ironically ("Some
   virus."). A line only clears that bar if the irony is legible on its

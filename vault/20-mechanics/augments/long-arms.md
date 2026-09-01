@@ -3,7 +3,7 @@ title: LONG ARMS
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-31
 related: ["[[reach-and-placement]]", "[[cascades-and-surge]]", "[[augments]]"]
 ---
 
@@ -11,7 +11,7 @@ related: ["[[reach-and-placement]]", "[[cascades-and-surge]]", "[[augments]]"]
 
 **Boost** · `longArms`
 
-> Rotate open junctions up to 4 steps from your territory instead of 2, and place patch pieces just as far. Bigger setups, bigger cascades.
+> Rotate open junctions up to 4 steps from your built ground instead of 2, and place patch pieces just as far. Bigger setups, bigger cascades.
 
 `reachOf` returns `BASE_REACH + 2` when owned. Applies to both rotation and [[patch-pieces|patch]] placement, since `canPlace` uses the same reach walk.
 

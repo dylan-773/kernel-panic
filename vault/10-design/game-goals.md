@@ -3,7 +3,7 @@ title: Game goals
 status: draft
 source: none
 owner: user
-updated: 2026-08-05
+updated: 2026-08-31
 related: ["[[elevator-pitch]]", "[[design-pillars]]", "[[monetization]]"]
 ---
 
@@ -14,7 +14,7 @@ related: ["[[elevator-pitch]]", "[[design-pillars]]", "[[monetization]]"]
 
 ## What
 
-A finished, playable browser roguelike: tutorial, nine-day arc, finale, story, sound and saves, all live at kernel-panic.higgsfield.app. Build 0.7.0.
+A finished, playable browser roguelike: tutorial, nine-day arc, finale, story, sound and saves. Build 0.7.0, self-hosted tailnet-only (see [[technology-stack]] for hosting).
 
 It is also, in its second life, the artifact of a multi-agent development experiment. See [[the-dev-crew]] and [[token-budget]].
 

@@ -3,7 +3,7 @@ title: Day 9
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-31
 related: ["[[the-ten-day-arc]]", "[[day-8]]", "[[day-10-the-finale]]"]
 ---
 
@@ -22,7 +22,7 @@ related: ["[[the-ten-day-arc]]", "[[day-8]]", "[[day-10-the-finale]]"]
 | parFlat | **1** |
 | slag / patchDrop | **0.25** / **0.11** |
 | Job tiers | **4, 4, 5** |
-| Target kitted win rate | ~52% |
+| Target kitted win rate | see [[verification-gate]] |
 
 ## The hardest paying day
 

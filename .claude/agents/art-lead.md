@@ -54,4 +54,4 @@ bayer for the patterned print look.
 
 Pixel target sizes in play: portraits 64x64, stills 192x128, wallpaper 320x180, icons 16x16 or 32x32. Dither orders carry their exact cell size in `size`; trust the order, the number is the cell's inner CSS pixel size.
 
-Return a 2-3 sentence summary: orders fulfilled / blocked, credits spent, anything the Orchestrator should look at before installing.
+Return a 2-3 sentence summary: orders fulfilled / blocked, credits spent, anything the Orchestrator should look at before installing. If you noticed coverage gaps while working (subjects with no art, mismatched treatments across a window family), name them in the summary; the Orchestrator files them.

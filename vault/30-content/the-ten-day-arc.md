@@ -3,7 +3,7 @@ title: The ten-day arc
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-31
 related: ["[[difficulty-dials]]", "[[game-progression]]", "[[arc-composer]]"]
 ---
 
@@ -52,15 +52,7 @@ The counter-pressure is the compounding kit: nine night picks, up to 27 [[augmen
 
 ## Target win rates
 
-The **kitted** curve is what gates a deploy:
-
-```
-~84 / 93 / 67 / 75 / 56 / 72 / 63 / 52 / 52, finale ~35
-```
-
-The kit-less proxy is a **floor and nothing more** (`94/67/60/46/53/41/32/18/13`, finale 0 by construction under `oppOpens`). It never locks, wards or purges, so on split boards it is missing half the game.
-
-Also watched per day: measured `pd` within 2.0 of `pdTarget`, median rounds 3 to 4, and `<=2r` under about 40%. See [[simulation-harnesses]].
+The numbers live in ONE place: [[verification-gate]], which gates the **kitted** curve and carries the per-day watch metrics (pd tolerance, round medians, fast-loss share). The kit-less proxy is a **floor and nothing more** (finale 0 by construction under `oppOpens`): it never locks, wards or purges, so on split boards it is missing half the game. See [[simulation-harnesses]] for what measures them.
 
 ## The tutorial is separate
 

@@ -3,7 +3,7 @@ title: Day 1
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-31
 related: ["[[the-ten-day-arc]]", "[[the-tutorial]]", "[[day-2]]"]
 ---
 
@@ -21,7 +21,7 @@ related: ["[[the-ten-day-arc]]", "[[the-tutorial]]", "[[day-2]]"]
 | parFlat | **6** |
 | slag / patchDrop | 0.18 / **0.35** |
 | Job tiers | 1, 1, 1 |
-| Target kitted win rate | ~84% |
+| Target kitted win rate | see [[verification-gate]] |
 
 ## What day 1 is for
 

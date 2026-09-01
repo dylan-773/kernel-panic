@@ -13,4 +13,4 @@ Scope: fulfilling `pipeline/art/orders/*.json`. Orders are filed by the UX Agent
 3. Review every `done` PNG yourself (Read the image): palette adherence, readability at game size, brief match. Reject bad ones by reopening the order with a note (max one redo round).
 4. Install accepted assets into `kernel-panic-site/app/public/assets/px/<category>/` at the order's `target` path, and wire any new paths into the content modules that reference them (you are the sole code owner).
 5. Verify: `cd /Users/lyd0n/Development/kernel-panic/kernel-panic-site/app && bun run build`, then spot-check the dist output loads the new assets.
-6. Report: orders fulfilled/blocked, credits spent, files installed. STOP; deploy only on explicit user OK.
+6. Close out: order files carry their final statuses; if assets landed in the app, append a dated line to `vault/00-index/revision-history.md`. Report: orders fulfilled/blocked, credits spent, files installed, plus any coverage gaps the art-lead noticed. STOP; deploy only on explicit user OK.

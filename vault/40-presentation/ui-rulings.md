@@ -3,7 +3,7 @@ title: UI rulings
 status: canon
 source: rulings
 owner: ux-agent
-updated: 2026-08-05
+updated: 2026-08-31
 related: ["[[kp-os]]", "[[law-1-colour-is-roles]]", "[[ux-agent]]"]
 ---
 
@@ -12,7 +12,7 @@ related: ["[[kp-os]]", "[[law-1-colour-is-roles]]", "[[ux-agent]]"]
 The KP/OS **v3 instrument panel** laws. Every surface obeys them.
 
 > [!info] Status
-> Established by the `ux-2026-07-31-loadout-eva` cycle over five review rounds. [[loadout-cfg]] is the reference implementation and is **still `awaiting` final approval**; the system itself is settled and is what other panels build to.
+> Established by the `ux-2026-07-31-loadout-eva` cycle over five review rounds. [[loadout-cfg]] is the reference implementation, **approved and integrated 2026-08-01**; the system is settled and is what other panels build to.
 >
 > Cited elsewhere **by law number**, so the numbering is a stable public key.
 

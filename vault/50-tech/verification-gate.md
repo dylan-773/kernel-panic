@@ -3,7 +3,7 @@ title: Verification gate
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-31
 related: ["[[simulation-harnesses]]", "[[the-ten-day-arc]]", "[[the-plays]]"]
 ---
 
@@ -50,10 +50,10 @@ Also per day: measured `pd` within 2.0 of `pdTarget`, median rounds 3 to 4, `<=2
 
 ## Deploy
 
-Orchestrator only, on explicit user OK. Commit in `kernel-panic-site/`, push to main, then `deploy_website`, then verify live markers.
+Orchestrator only, on explicit user OK. Two deploys: public at `https://kernel-panic.higgsfield.app` (push main to the Higgsfield apps repo via fresh `website_repo_access` credentials, then `deploy_website`), and tailnet-only from the Raspberry Pi on :8445 (systemd user unit `kernel-panic.service`, serve wrapper at `~/Development/kp-deploy/serve.ts` on the Pi; host details in private notes). Ship to the Pi: commit in `kernel-panic-site/`, push to GitHub (personal remote only), then on the Pi: `git pull`, `bun install`, `bun run build`, `systemctl --user restart kernel-panic`.
 
-> [!warning] Live-site checks need `curl --compressed` and about 20s of CDN settle
-> Grep all JS chunks for marker strings.
+> [!warning] Live-site checks need `curl --compressed`
+> Grep all JS chunks for marker strings; the served bundle is hashed per build.
 
 ## The UI has its own gate
 

@@ -16,17 +16,18 @@ stands. Established by the `ux-2026-07-31-loadout-eva` cycle
 in each demo folder's `NOTES.md`; `loadout-eva/NOTES.md` is the worked
 example and is worth reading before building anything to this spec.
 
-**Status:** LOADOUT.CFG is the reference implementation and is still
-`awaiting` final approval. The SYSTEM below is settled and is what other
-panels build to. If the reference demo changes, this file changes with it.
+**Status:** LOADOUT.CFG is the reference implementation, approved and
+integrated 2026-08-01 (manifest: `complete`). The SYSTEM below is settled
+and is what other panels build to. If the reference demo changes, this
+file changes with it.
 
 ---
 
 ## 1. Colour is ROLES, not hues
 
 The v2 law was one ink accent doing everything, danger as inverse video,
-never a second hue. **That is superseded** (user ruling, `lore/ledger.md`
-ruling 14). Colour now carries state.
+never a second hue. **That is superseded** (user ruling; canon ruling 14,
+`vault/60-story/rulings/`). Colour now carries state.
 
 Do NOT hand-pick colours per surface. Every surface reads the same eight
 role tokens, and a scheme is a remap of those tokens and nothing else. If
@@ -304,19 +305,24 @@ the settled state in one frame.
 
 ## 11. Panel queue
 
-LOADOUT.CFG (`loadout-eva`) is the reference. Remaining, each independent:
+LOADOUT.CFG (`loadout-eva`) is the reference. Status as of 2026-08-31
+(reconciled against `ui-demos/manifest.json`, the durable record; seven of
+nine converted in the 2026-08-01 v3 burst):
 
-| panel | shipped component | notes |
-|---|---|---|
-| INBOX | `windows/inbox.tsx` | fronts the day loop; owns the CUSTOMER.REC card and the DIVE button. Two focal candidates, so the glance order needs deciding first. |
-| REPAIR.LOG | `windows/report.tsx` | dive result; already dense. The verdict is the obvious focal element; the ECG strain trace is a natural `--r-warn` surface. |
-| SOLDER.BAY | `windows/solder.tsx` | drag-to-craft; interaction-heavy, so the motion budget matters most here. |
-| DAD.LOG | `windows/dadlog.tsx` | archive reader, integrated 2026-07-29. Long documents, so paging discipline (law 8) is the constraint. |
-| DARKNET.LNK | `windows/darknet.tsx` | deliberately the odd one out via stepped-notch chrome, not colour. Keep that. |
-| MANUAL.TXT | `windows/manual.tsx` | tabbed reference; the 18-card AUGMENTS page is the hard case. |
-| NIGHT.SYS | `windows/night.tsx` | small surface; a candidate for proving the system at low density. |
-| LEDGER | `windows/ledger.tsx` | small, table-shaped. |
-| DIVE.EXE | full-screen duel | LAST. Full-screen, real-time, and the machine's two-beat telegraph must stay readable; it does not follow the window rules. |
+| panel | shipped component | status | notes |
+|---|---|---|---|
+| INBOX | `windows/inbox.tsx` | CONVERTED (`inbox-v3`, complete 2026-08-01) | fronts the day loop; owns the CUSTOMER.REC card and the DIVE button. |
+| REPAIR.LOG | `windows/report.tsx` | CONVERTED (`repair-log-v3`, complete 2026-08-01) | dive result; the verdict is the focal element. |
+| SOLDER.BAY | `windows/solder.tsx` | CONVERTED (`solder-v3`, complete 2026-08-01) | drag-to-craft; motion budget was the constraint. |
+| DAD.LOG | `windows/dadlog.tsx` | CONVERTED (`dadlog-v3`, complete 2026-08-01) | archive reader; paging discipline (law 8). |
+| DARKNET.LNK | `windows/darknet.tsx` | CONVERTED (`darknet-v3`, complete 2026-08-01) | the odd one out via stepped-notch chrome, not colour. Keep that. |
+| MANUAL.TXT | `windows/manual.tsx` | **REMAINING** | tabbed reference; the 18-card AUGMENTS page is the hard case. |
+| NIGHT.SYS | `windows/night.tsx` | CONVERTED (`night-v3`, complete 2026-08-01) | proved the system at low density. |
+| LEDGER | `windows/ledger.tsx` | **REMAINING** | small, table-shaped. |
+| DIVE.EXE | full-screen duel | CONVERTED (`dive-v3`, complete 2026-08-01) | full-screen; the machine's two-beat telegraph stayed readable. |
+
+MANUAL.TXT and LEDGER are the last two pre-v3 windows on the shipped
+desktop. When one converts, update its row here IN THE SAME CHANGE.
 
 ---
 

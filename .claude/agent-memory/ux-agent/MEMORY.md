@@ -12,3 +12,4 @@
 - [KP/OS channel and pip design](kpos_channel_and_pip_design.md) — accent-channel-per-surface assignment (magenta/phosphor/indigo vs default), glow discipline, square-vs-diamond pip vocabulary; the per-window livery it describes was later KILLED, see lore ruling 14
 - [KP/OS window sizing law](kpos_window_sizing_law.md) — no-scrollbar law numbers, kill list, when to page/tab vs just widen
 - [KP/OS redesign scope](kpos_redesign_scope.md) — demo-only process, carry-forward pattern across brief boundaries, duel out of scope, art-budget-none means zero orders
+- [MANUAL.TXT v3 paged-reference patterns](manual_v3_paged_reference_patterns.md) — DAD.LOG paginator generalized row-by-row to a card grid; law 8 step 5 doesn't block a WIDE-tier catalog pager; two nav levels (PAGE vs SET) stay distinct; both r-warn+r-aux can go unowned; cut a 3rd reuse of an asset rather than re-crop it

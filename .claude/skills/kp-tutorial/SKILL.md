@@ -29,8 +29,10 @@ You are the Orchestrator: the sole code owner. Run these in order.
      affordance change. A clearer readout beats a coachmark every time.
    - **Tiers 1 and 2**: already in the tutorial agent's proposal as
      `teaching-moment` items. Nothing to route.
-   - **Tier 3**: hand to `narrative-director` as a scene request, not a
-     coachmark.
+   - **Tier 3** (interactive beat): yours to integrate; the beat ladder is
+     code, so budget it like any reducer-adjacent change.
+   - **Tier 4** (scripted scene): hand to `narrative-director` as a scene
+     request, not a coachmark.
 
 4. **Copy.** Spawn `narrative-director` to fulfill every open order under
    `pipeline/copy/orders/`. It fills `title` and `lines` in place and mirrors
@@ -51,6 +53,11 @@ You are the Orchestrator: the sole code owner. Run these in order.
    `teach-sim` failure means a mechanic is still uncovered: author the moment
    or write the waiver. Never loosen the harness to make it pass.
 
-8. **Report and stop.** Summarize: mechanics newly covered, waivers retired
-   or renewed, tier 0 fixes made instead of coachmarks, and the harness line.
+8. **Close the cycle.** Archive `pipeline/BRIEF.md` to `pipeline/briefs/<id>.md`,
+   mark proposal item outcomes, append a dated line to
+   `vault/00-index/revision-history.md`.
+
+9. **Report and stop.** Summarize: mechanics newly covered, waivers retired
+   or renewed, tier 0 fixes made instead of coachmarks, and the harness line,
+   plus every CHALLENGE and every `suggestion` item verbatim.
    Then STOP. Deploy only on explicit user OK.

@@ -2,7 +2,7 @@
 
 Ground truth for what the player has been taught, where, and why. Owned by
 the **tutorial-agent**. Durable: this file is never cleared between cycles,
-the same way `lore/` is never cleared.
+the same way `vault/60-story/` is never cleared.
 
 The rule this file exists to enforce: **every player-facing mechanic either
 has a teaching moment or carries a written waiver.** A mechanic with neither

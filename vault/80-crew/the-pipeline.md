@@ -3,7 +3,7 @@ title: The pipeline
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-31
 related: ["[[the-dev-crew]]", "[[the-gates]]", "[[the-plays]]"]
 ---
 
@@ -13,7 +13,9 @@ related: ["[[the-dev-crew]]", "[[the-gates]]", "[[the-plays]]"]
 
 | Path | Holds |
 |---|---|
-| `BRIEF.md` | what this cycle is for. Every agent reads it first |
+| `BRIEF.md` | the OPEN cycle's assignment. Live only while a cycle runs; archived to `briefs/<id>.md` at cycle close. No file = no open cycle: agents take direction from their spawn prompt |
+| `briefs/<id>.md` | closed cycles' briefs, kept as history |
+| `audits/` | `/kp-audit` reports, kept as history |
 | `proposals/<agent>.json` | one file per agent, its only output |
 | `gates/loremaster-review.md` | canon verdicts |
 | `gates/tutorial-review.md` | teaching verdicts |
@@ -24,7 +26,7 @@ related: ["[[the-dev-crew]]", "[[the-gates]]", "[[the-plays]]"]
 
 ## Why it is not in this vault
 
-It is process residue. Dated verdicts, per-cycle proposals and cleared briefs are not knowledge; they are the exhaust of producing knowledge.
+It is process residue. Dated verdicts and per-cycle proposals are not knowledge; they are the exhaust of producing knowledge. Briefs and audit reports are the exception: they archive to `briefs/` and `audits/` at close instead of being cleared.
 
 What is durable **was** lifted out: the fourteen [[canon-rulings]], the [[standing-lessons]], and the waiver rationales in [[teaching-waivers]].
 

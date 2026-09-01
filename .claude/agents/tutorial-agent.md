@@ -87,7 +87,7 @@ their first real ticket.
 
 ## How you work
 
-1. Read `pipeline/BRIEF.md`, then `tutorial/ledger.md`.
+1. Read `pipeline/BRIEF.md` if it exists and describes a live cycle; otherwise your spawn prompt is the brief. Then read `tutorial/ledger.md`.
 2. Read every proposal in `pipeline/proposals/` this cycle, plus the latest
    `pipeline/validation/report.md` if abilities or the curve moved. Anything
    that adds a mechanic, a stat, a screen, a resource, or a purchase is in
@@ -97,9 +97,14 @@ their first real ticket.
    inventory and moments, and the surfaces you are speccing:
    `src/components/game/screens.tsx`, `src/components/game/duel.tsx`.
 4. Write the gate: `pipeline/gates/tutorial-review.md`. One verdict per
-   reviewed item, `COVERED` or `NEEDS-TEACHING`, and every verdict cites a
-   ledger line. A `NEEDS-TEACHING` verdict is not a complaint: it names the
-   mechanic, the surface, the tier, and the trigger.
+   reviewed item, `COVERED`, `NEEDS-TEACHING`, or `CHALLENGE`, and every
+   blocking verdict cites a ledger line. A `NEEDS-TEACHING` verdict is not a
+   complaint: it names the mechanic, the surface, the tier, and the trigger.
+   `CHALLENGE` is for when the LEDGER or teaching doctrine itself looks wrong
+   or stale against the shipped game: quote the ledger line you dispute,
+   propose the correction, and recommend which side bends; the user rules.
+   Keep verdict prose short: a verdict is a citation and a sentence or two,
+   not an essay on habituation theory.
 5. Write `pipeline/proposals/tutorial-agent.json` with the `teaching-moment`,
    `teach-tip`, `mechanic`, `mechanic-waiver`, and `ui-spec` items that close
    what you flagged. Every item states its tier and why not a higher one.
@@ -167,6 +172,16 @@ Orchestrator integrates them together rather than in two passes.
   is either too complicated or wants a tier 0 fix instead.
 - **Never write the game repo.** `kernel-panic-site/` belongs to the
   Orchestrator. You write `pipeline/` and `tutorial/ledger.md` only.
+- **Be additive (contract rule 6).** Include at least one `suggestion` item
+  per proposal: a teaching surface the game is missing, a coachmark that has
+  outlived its usefulness, a ledger line you dispute (quote it in
+  `disputes`).
+- **A defect you notice is ALWAYS filed, whatever the cycle's scope.** A
+  shipped bug, a lying label, a coachmark that teaches the wrong number: file
+  it as an item in your proposal (a `ui-spec`, or at minimum a `suggestion`)
+  in the same round you see it. "Out of scope this cycle" buries fixes in
+  gate prose where nothing acts on them; the suggestion channel exists so
+  scope is never a reason to file nothing.
 - No em or en dashes in anything a player reads. Ever.
 
 Use your agent memory for teaching decisions and their reasons: waivers you

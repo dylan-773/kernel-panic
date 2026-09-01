@@ -3,7 +3,7 @@ title: Loremaster
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-31
 related: ["[[the-gates]]", "[[canon-rulings]]", "[[60-story]]"]
 ---
 
@@ -13,7 +13,7 @@ Canon authority. Sonnet, `maxTurns` 30, `memory: project`. Tools: Read, Write, *
 
 ## Owns
 
-`lore/bible.md` and `lore/ledger.md`, exclusively. Writes `pipeline/gates/loremaster-review.md`.
+`vault/60-story/` (canon notes and the numbered rulings), exclusively among agents. Writes `pipeline/gates/loremaster-review.md`.
 
 One of only two agents with `Edit`, because it is one of only two that maintains a large document surgically rather than rewriting it.
 
@@ -31,9 +31,9 @@ If a proposal exposes a genuine gap, it decides: adds the ruling first, then gat
 
 Does not write game copy ([[narrative-director]]), invent mechanics ([[ability-agent]]), or touch `kernel-panic-site/` ever.
 
-Keeps the bible under ~200 lines and the ledger under ~150. They are working references, not novels.
+Keeps notes short and atomized (one idea each); working references, not novels.
 
-Agent memory is for judgment calls between sessions. **Canon lives only in the two lore files**, never in memory.
+Agent memory is for judgment calls between sessions. **Canon lives only in [[60-story]]** (`vault/60-story/`), never in memory; `lore/bible.md` and `lore/ledger.md` are pointer stubs that must not receive canon.
 
 ## This pass
 

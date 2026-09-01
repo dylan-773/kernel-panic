@@ -3,7 +3,7 @@ title: Mechanics
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-31
 related: ["[[home]]", "[[the-duel]]", "[[economy]]"]
 ---
 
@@ -61,13 +61,10 @@ Resources: [[ram]] · [[neural-strain]] · [[credits]] · [[patch-pieces]] · [[
 
 ## Known drift
 
-Three places where shipped copy disagrees with shipped rules. Recorded, not patched, because this vault does not edit the game.
+Shipped copy vs shipped rules. The Orchestrator swept this on 2026-08-31: the 2-RAM patch coachmark now says 4, the SCAN/LONG ARMS "territory" vocabulary reads "built ground", MANUAL.TXT's HOW A DIVE WORKS page was rewritten to the split-board rules (including four-or-more corrected to three), and the last claim/territory strings in `kit.ts` descriptions and `teaching.ts` labels were replaced (the cascade-bank coachmark had been fixed earlier). One row remains:
 
 | Where | Says | Actually |
 |---|---|---|
-| `teaching.ts` coachmark `patch-cell-use` | placing a piece costs 2 RAM | `PLACE_COST = 4` (`patch-cells.ts`) |
-| `teaching.ts` coachmark `cascade-bank` | pays from four nodes | `cascadeRam` pays from three (`kit.ts`) |
-| `run-reducer.ts`, `save.ts` | `gridlockWin` is carried and persisted | `DuelEndKind` has no gridlock case; both sims hardcode `false` |
-| `kit.ts:142` (`scanDesc`), `kit.ts:221` ([[long-arms]]) | "within N of **your territory**" | there is no territory. It means built ground. Also in the comments at `kit.ts:16` and `kit.ts:51` |
+| `run-reducer.ts`, `save.ts` | `gridlockWin` is carried and persisted | `DuelEndKind` has no gridlock case; both sims hardcode `false`. Removing it is a save-schema change; deferred deliberately. |
 
-That last one is **player-facing copy in two places**: the SCAN description and the LONG ARMS augment card, both rendered in [[manual-txt]] and [[loadout-cfg]]. It is the deleted model's vocabulary still on screen. The accurate word is "built ground" or "your line". See [[built-and-power]].
+When a row here gets fixed in the game, delete the row in the same change. A drift ledger nobody consumes is how the 2-RAM lie shipped for 26 days; the [[verification-gate]] audit play (`/kp-audit`) now sweeps copy vs constants so this table cannot silently grow.

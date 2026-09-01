@@ -20,7 +20,8 @@ line to REVISE" sense.
 a REVISE needs a bible/ledger line to cite; a design LAW the user is
 directly overriding cannot be cited back at them as a reason to hold the
 work. What was actually owed: (1) write the directive into
-`lore/ledger.md` as a numbered Resolved ruling, quoting the user's own
+`vault/60-story/rulings/` as a numbered ruling (the canon home since the
+vault migration), quoting the user's own
 words, the way ruling 12 (DAD.LOG reframe) was recorded; (2) name the
 exact lines in `CLAUDE.md` and `ui-demos/RULINGS.md` that go stale if
 the direction ships, so the Orchestrator's integration pass does not

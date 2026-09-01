@@ -3,14 +3,14 @@ title: Customers
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-31
 related: ["[[intrusions]]", "[[encounter-generator]]", "[[inbox]]"]
 ---
 
 # Customers
 
 > [!info] Source
-> `content/customers.ts:CUSTOMERS`, twelve `CustomerProfile` entries; `lore/bible.md` roster.
+> `content/customers.ts:CUSTOMERS`, twelve `CustomerProfile` entries; the `vault/60-story/` character notes.
 
 Twelve regulars. Every job is an intrusion in a machine somebody loves.
 

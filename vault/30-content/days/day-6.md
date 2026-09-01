@@ -3,7 +3,7 @@ title: Day 6
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-31
 related: ["[[the-ten-day-arc]]", "[[augments]]", "[[day-7]]"]
 ---
 
@@ -23,7 +23,7 @@ related: ["[[the-ten-day-arc]]", "[[augments]]", "[[day-7]]"]
 | parFlat | 3 |
 | slag / patchDrop | 0.22 / 0.16 |
 | Job tiers | **3, 3, 3** |
-| Target kitted win rate | ~72% |
+| Target kitted win rate | see [[verification-gate]] |
 
 ## The augment pool runs dry
 

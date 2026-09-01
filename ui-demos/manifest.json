@@ -3054,6 +3054,406 @@
         "x": 0,
         "y": 0
       }
+    },
+    {
+      "id": "manual-v3",
+      "title": "MANUAL.TXT (INSTRUMENT PANEL)",
+      "dir": "manual-v3",
+      "entry": "index.html",
+      "cycle": "ux-2026-08-31-manual-v3",
+      "summary": "MANUAL.TXT rebuilt on the v3 role-token system: the section letterhead at hero scale, a fixed-height frame every tab shares, and a measure-then-pack SET pager that pages the 18-card AUGMENTS catalog (and KIT) instead of scrolling or shrinking. All copy transcribed verbatim from the corrected split-board manual.",
+      "notes": "NOTES.md",
+      "spec": {
+        "file": "pipeline/proposals/ux-agent.json",
+        "item": "manual-v3-instrument-panel"
+      },
+      "status": "awaiting",
+      "note": null,
+      "history": [
+        {
+          "status": "awaiting",
+          "date": "2026-08-31",
+          "note": "first pass against ui-demos/RULINGS.md; one of the last two pre-v3 windows (law 11 queue)"
+        }
+      ],
+      "variations": [
+        {
+          "id": "scheme",
+          "label": "SCHEME",
+          "default": "nerv",
+          "options": [
+            {
+              "id": "nerv",
+              "label": "NERV",
+              "apply": {
+                "click": [
+                  "#schemerow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "tokyo",
+              "label": "TOKYO NIGHT",
+              "apply": {
+                "click": [
+                  "#schemerow button:nth-of-type(2)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "crt",
+          "label": "CRT",
+          "default": "flat",
+          "options": [
+            {
+              "id": "flat",
+              "label": "FLAT",
+              "apply": {
+                "click": [
+                  "#crtrow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "off",
+              "label": "OFF",
+              "apply": {
+                "click": [
+                  "#crtrow button:nth-of-type(2)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "viewport",
+          "label": "VIEWPORT",
+          "default": "169",
+          "options": [
+            {
+              "id": "169",
+              "label": "16:9 1366x768",
+              "apply": {
+                "click": [
+                  "#vprow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "219",
+              "label": "21:9 2560x1080",
+              "apply": {
+                "click": [
+                  "#vprow button:nth-of-type(2)"
+                ]
+              }
+            },
+            {
+              "id": "laptop",
+              "label": "LAPTOP 1280x800",
+              "apply": {
+                "click": [
+                  "#vprow button:nth-of-type(3)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "section",
+          "label": "SECTION",
+          "default": "dive",
+          "options": [
+            {
+              "id": "dive",
+              "label": "DIVE",
+              "apply": {
+                "click": [
+                  "#sectionrow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "kit",
+              "label": "KIT",
+              "apply": {
+                "click": [
+                  "#sectionrow button:nth-of-type(2)"
+                ]
+              }
+            },
+            {
+              "id": "patches",
+              "label": "PATCHES",
+              "apply": {
+                "click": [
+                  "#sectionrow button:nth-of-type(3)"
+                ]
+              }
+            },
+            {
+              "id": "augments",
+              "label": "AUGMENTS",
+              "apply": {
+                "click": [
+                  "#sectionrow button:nth-of-type(4)"
+                ]
+              }
+            },
+            {
+              "id": "bays",
+              "label": "BAYS",
+              "apply": {
+                "click": [
+                  "#sectionrow button:nth-of-type(5)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "auglayout",
+          "label": "AUGMENTS LAYOUT",
+          "default": "grid",
+          "options": [
+            {
+              "id": "grid",
+              "label": "CARD GRID",
+              "apply": {
+                "click": [
+                  "#layoutrow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "list",
+              "label": "COMPACT LIST",
+              "apply": {
+                "click": [
+                  "#layoutrow button:nth-of-type(2)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "augpager",
+          "label": "AUGMENTS PAGER",
+          "default": "step",
+          "options": [
+            {
+              "id": "step",
+              "label": "STEP",
+              "apply": {
+                "click": [
+                  "#pagerrow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "dots",
+              "label": "DOTS",
+              "apply": {
+                "click": [
+                  "#pagerrow button:nth-of-type(2)"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "desktop": {
+        "mountable": false,
+        "default": false,
+        "frameW": 0,
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "ledger-v3",
+      "title": "LEDGER.LOG (INSTRUMENT PANEL)",
+      "dir": "ledger-v3",
+      "entry": "index.html",
+      "cycle": "ux-2026-08-31-ledger-v3",
+      "summary": "LEDGER.LOG rebuilt on the v3 role-token system: the CREDITS numeral as the one focal element, NEURAL STRAIN as the one alarm on the shipped 35/70 band, MOST LETHAL served at native 1:1 in a fixed crop window (fixing the shipped CSS downscale), and four run states sharing one exact window height, with NO ACTIVE RUN printing the full statement in -- placeholders.",
+      "notes": "NOTES.md",
+      "spec": {
+        "file": "pipeline/proposals/ux-agent.json",
+        "item": "ledger-v3-instrument-panel"
+      },
+      "status": "awaiting",
+      "note": null,
+      "history": [
+        {
+          "status": "awaiting",
+          "date": "2026-08-31",
+          "note": "first pass against ui-demos/RULINGS.md; with manual-v3 this closes the law-11 queue"
+        }
+      ],
+      "variations": [
+        {
+          "id": "scheme",
+          "label": "SCHEME",
+          "default": "nerv",
+          "options": [
+            {
+              "id": "nerv",
+              "label": "NERV",
+              "apply": {
+                "click": [
+                  "#schemerow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "tokyo",
+              "label": "TOKYO NIGHT",
+              "apply": {
+                "click": [
+                  "#schemerow button:nth-of-type(2)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "crt",
+          "label": "CRT",
+          "default": "flat",
+          "options": [
+            {
+              "id": "flat",
+              "label": "FLAT",
+              "apply": {
+                "click": [
+                  "#crtrow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "off",
+              "label": "OFF",
+              "apply": {
+                "click": [
+                  "#crtrow button:nth-of-type(2)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "viewport",
+          "label": "VIEWPORT",
+          "default": "169",
+          "options": [
+            {
+              "id": "169",
+              "label": "16:9 1366x768",
+              "apply": {
+                "click": [
+                  "#vprow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "219",
+              "label": "21:9 2560x1080",
+              "apply": {
+                "click": [
+                  "#vprow button:nth-of-type(2)"
+                ]
+              }
+            },
+            {
+              "id": "laptop",
+              "label": "LAPTOP 1280x800",
+              "apply": {
+                "click": [
+                  "#vprow button:nth-of-type(3)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "runstate",
+          "label": "RUN STATE",
+          "default": "mid",
+          "options": [
+            {
+              "id": "day1",
+              "label": "DAY 1 OPENER",
+              "apply": {
+                "click": [
+                  "#staterow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "mid",
+              "label": "MID RUN",
+              "apply": {
+                "click": [
+                  "#staterow button:nth-of-type(2)"
+                ]
+              }
+            },
+            {
+              "id": "day9",
+              "label": "DAY 9 STRAINED",
+              "apply": {
+                "click": [
+                  "#staterow button:nth-of-type(3)"
+                ]
+              }
+            },
+            {
+              "id": "none",
+              "label": "NO ACTIVE RUN",
+              "apply": {
+                "click": [
+                  "#staterow button:nth-of-type(4)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "lethalimg",
+          "label": "MOST LETHAL IMAGE",
+          "default": "ink",
+          "options": [
+            {
+              "id": "ink",
+              "label": "INK TINT",
+              "apply": {
+                "click": [
+                  "#feedrow button:nth-of-type(1)"
+                ]
+              }
+            },
+            {
+              "id": "true",
+              "label": "TRUE 1-BIT",
+              "apply": {
+                "click": [
+                  "#feedrow button:nth-of-type(2)"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "desktop": {
+        "mountable": false,
+        "default": false,
+        "frameW": 0,
+        "x": 0,
+        "y": 0
+      }
     }
   ]
 }

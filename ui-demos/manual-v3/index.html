@@ -1,0 +1,1304 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>KP demo: MANUAL.TXT (instrument panel)</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=VT323&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" />
+<link rel="stylesheet" href="../_shared/kp.css" />
+<link rel="stylesheet" href="../_shared/system.css" />
+<style>
+/* MANUAL.TXT rebuilt as a KP/OS v3 instrument panel
+ * (cycle ux-2026-08-31-manual-v3, spec item manual-v3-instrument-panel).
+ *
+ * The one hard case on this surface (RULINGS.md law 11): the 18-card
+ * AUGMENTS catalog, which cannot render on one page under the height
+ * ceiling at any density. Answered with DAD.LOG's measure-then-pack
+ * paginator generalized from prose blocks to whole grid ROWS, behind an
+ * in-frame SET n/N pager that never shares a noun with the footer's
+ * PAGE n/5 (PAGE counts sections, SET counts card sets).
+ *
+ * Equal footprint across tabs: the content frame is one fixed-height box,
+ * so DIVE's two paragraphs and AUGMENTS' densest page produce the same
+ * window height. Short tabs keep their dead space; that is instrument-panel
+ * spacing, not an oversight (spec point 4).
+ *
+ * The shipped PATCHES bench diagram is CUT, not re-cropped: it was a live
+ * law 5 violation (304x304 dither forced to 180x128) and a third reuse of
+ * an asset LOADOUT.CFG and DAD.LOG already show. This page is deliberately
+ * all type; --r-warn and --r-aux are UNOWNED here by decision (no alarm
+ * state, no imagery), so neither token appears in any rule below.
+ *
+ * Every player-facing string is transcribed verbatim from the CURRENT
+ * working-tree manual.tsx / kit.ts / patch-cells.ts (post the 2026-08-31
+ * split-board copy corrections). Nothing is reworded.
+ */
+
+/* ---------- ROLE TOKENS: copied from loadout-eva, not re-derived ---------- */
+
+:root {
+  --r-struct: var(--ch-dim);
+  --r-line: var(--ch);
+  --r-data: var(--ch-hot);
+  --r-ok: var(--ch);
+  --r-warn: var(--ch);
+  --r-aux: var(--ch);
+  --r-hazard: var(--ch);
+  --r-note: var(--ch-dim);
+  --r-ok-glow: var(--px-glow);
+  --r-warn-glow: var(--px-glow);
+}
+
+:root[data-scheme="nerv"] {
+  --px-void: #0a0603;
+  --ch: #ff9a1f;
+  --ch2: #c2431a;
+  --ch-hot: #ffe9c4;
+  --r-struct: #a86a22;
+  --r-line: #ff9a1f;
+  --r-data: #ffe9c4;
+  --r-ok: #8dff3a;
+  --r-warn: #ff2a17;
+  --r-aux: #23d3ff;
+  --r-hazard: #d1381a;
+  --r-note: #6ea8ff;
+  --r-ok-glow: color-mix(in srgb, #8dff3a 45%, transparent);
+  --r-warn-glow: color-mix(in srgb, #ff2a17 60%, transparent);
+}
+
+:root[data-scheme="tokyo"] {
+  --px-void: #16161e;
+  --ch: #7aa2f7;
+  --ch2: #414868;
+  --ch-hot: #c0caf5;
+  --r-struct: #414868;
+  --r-line: #7aa2f7;
+  --r-data: #c0caf5;
+  --r-ok: #9ece6a;
+  --r-warn: #f7768e;
+  --r-aux: #7dcfff;
+  --r-hazard: #ff9e64;
+  --r-note: #bb9af7;
+  --r-ok-glow: color-mix(in srgb, #9ece6a 45%, transparent);
+  --r-warn-glow: color-mix(in srgb, #f7768e 55%, transparent);
+}
+
+body {
+  overflow: auto;
+  display: block;
+  height: auto;
+  min-height: 100%;
+  padding: 26px 16px 40px;
+}
+
+/* ---------- the viewport rig: true-resolution stage, scaled to fit ----------
+ * Copied from loadout-eva. Transforms do not change layout size, so every
+ * container query inside resolves against the real window width. */
+
+.lo-fit { transform-origin: top left; }
+.lo-fitwrap { margin: 0 auto; }
+
+.lo-stage {
+  position: relative;
+  overflow: hidden;
+  background: var(--px-void);
+  border: 1px solid var(--ch-faint);
+}
+.lo-warp { position: absolute; inset: 0; display: flex; flex-direction: column; }
+.lo-overscan { position: absolute; inset: 0; display: flex; flex-direction: column; }
+
+.lo-desk {
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-conic-gradient(color-mix(in srgb, var(--ch) 4%, transparent) 0% 25%, transparent 0% 50%),
+    radial-gradient(120% 90% at 50% 0%, color-mix(in srgb, var(--ch) 5%, transparent), transparent 70%);
+  background-size: 8px 8px, auto;
+}
+
+.lo-deskwrap {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 22px 0 0;
+  min-height: 0;
+}
+
+.lo-free {
+  position: absolute;
+  top: 30px;
+  bottom: 14px;
+  border: 2px dashed var(--ch-faint);
+  opacity: 0.5;
+  display: flex;
+  align-items: flex-end;
+  padding: 6px 8px;
+  pointer-events: none;
+}
+.lo-free span {
+  font-family: var(--kp-display);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: var(--ch-faint);
+}
+.lo-free span::before { content: "// "; }
+
+.lo-stage-bar {
+  height: 44px;
+  flex: none;
+  position: relative;
+  background: var(--ch);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+}
+.lo-stage-bar span {
+  font-family: var(--kp-display);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: var(--px-void);
+}
+.lo-stage-bar i {
+  display: block;
+  width: 10px;
+  height: 10px;
+  background: var(--px-void);
+  opacity: 0.55;
+}
+.lo-stage-bar .lo-bar-sp { flex: 1; background: none; opacity: 1; }
+
+/* ---------- CRT glass: the six layers, verbatim; FLAT / OFF only ---------- */
+
+.lo-stage.crt-on { border-radius: 18px; }
+.lo-stage.crt-on .lo-glass {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 40;
+  border-radius: 16px / 20px;
+  overflow: hidden;
+}
+.lo-glass > i { position: absolute; inset: 0; display: block; }
+.lo-glass .g-scan {
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.55) 0 1px,
+    rgba(0, 0, 0, 0.12) 1px 2px,
+    rgba(255, 255, 255, 0.03) 2px 3px);
+  mix-blend-mode: multiply;
+  opacity: 0.85;
+}
+.lo-glass .g-mask {
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(255, 0, 0, 0.05) 0 1px,
+    rgba(0, 255, 0, 0.05) 1px 2px,
+    rgba(0, 0, 255, 0.05) 2px 3px);
+  mix-blend-mode: screen;
+  opacity: 0.7;
+}
+.lo-glass .g-bloom {
+  background: radial-gradient(130% 95% at 50% 42%, var(--px-glow) 0%, transparent 62%);
+  opacity: 0.14;
+  mix-blend-mode: screen;
+}
+.lo-glass .g-spec {
+  background:
+    radial-gradient(58% 42% at 26% 14%, rgba(255, 255, 255, 0.11) 0%, transparent 70%),
+    linear-gradient(163deg, rgba(255, 255, 255, 0.055) 0%, transparent 34%);
+  mix-blend-mode: screen;
+}
+.lo-glass .g-vig {
+  background:
+    radial-gradient(102% 86% at 50% 48%, transparent 52%, rgba(0, 0, 0, 0.55) 82%, rgba(0, 0, 0, 0.92) 100%);
+  box-shadow:
+    inset 0 0 46px 12px rgba(0, 0, 0, 0.75),
+    inset 0 0 130px 40px rgba(0, 0, 0, 0.45);
+}
+.lo-glass .g-bezel {
+  border-radius: 16px / 20px;
+  box-shadow:
+    inset 0 0 0 3px rgba(0, 0, 0, 0.9),
+    inset 0 2px 2px 3px rgba(255, 255, 255, 0.07),
+    inset 0 -3px 3px 3px rgba(0, 0, 0, 0.6);
+}
+
+/* ---------- the window frame ---------- */
+
+.term {
+  width: var(--mn-win, 1040px);
+  flex: none;
+  border: 3px solid var(--r-hazard);
+  background: var(--px-void);
+  position: relative;
+  z-index: 5;
+  filter:
+    drop-shadow(9px 9px 0 rgba(0, 0, 0, 0.8))
+    drop-shadow(0 0 26px color-mix(in srgb, var(--ch) 25%, transparent));
+}
+
+.term-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--ch);
+  padding: 7px 12px 7px 14px;
+}
+.term-bar h1 {
+  font-family: var(--kp-display);
+  font-size: 13px;
+  letter-spacing: 0.16em;
+  color: var(--px-void);
+  font-weight: 400;
+}
+.term-glyphs { display: flex; gap: 7px; align-items: center; }
+.term-glyphs i { display: block; background: var(--px-void); }
+.term-glyphs i:nth-child(1) { width: 11px; height: 3px; margin-top: 9px; }
+.term-glyphs i:nth-child(2) { width: 11px; height: 11px; background: transparent; border: 3px solid var(--px-void); }
+.term-glyphs i:nth-child(3) { width: 11px; height: 11px; }
+
+.term-body { position: relative; padding: 12px 14px; }
+.term-body::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: repeating-conic-gradient(color-mix(in srgb, var(--ch) 5%, transparent) 0% 25%, transparent 0% 50%);
+  background-size: 4px 4px;
+}
+.term-body > * { position: relative; }
+
+/* ---------- the container that drives everything ---------- */
+
+.mn-wrap { container-type: inline-size; container-name: mn; }
+
+.mn-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  --mn-fs-hero: clamp(46px, 8cqi, 84px);
+  --mn-fs-body: clamp(19px, calc(1cqi + 17px), 21px);
+  --mn-fs-label: clamp(9px, calc(0.6cqi + 8px), 11px);
+  --mn-fs-name: clamp(12px, calc(0.8cqi + 10px), 15px);
+  --mn-fs-chip: clamp(9px, calc(0.5cqi + 8.5px), 10.5px);
+  /* the equal-footprint law made literal: one fixed frame height for every
+   * tab, tuned against the 700px window target and reported by the rig */
+  --mn-frame-h: 508px;
+}
+
+/* ---------- 3rd glance: the tab strip ---------- */
+
+.mn-tabs { display: flex; gap: 5px; }
+.mn-tab {
+  position: relative;
+  flex: 1;
+  font-family: var(--kp-display);
+  font-size: var(--mn-fs-label);
+  letter-spacing: 0.14em;
+  white-space: nowrap;
+  padding: 9px 6px;
+  background: transparent;
+  color: var(--r-note);
+  border: 2px solid var(--r-struct);
+}
+.mn-tab:hover:not([aria-selected="true"]) { color: var(--ch); border-color: var(--ch); }
+/* the active tab is the surface's one NOMINAL state: inverse fill plus the
+ * corner-tick reticle, a second channel beyond colour */
+.mn-tab[aria-selected="true"] {
+  background: var(--r-ok);
+  color: var(--px-void);
+  border-color: var(--r-ok);
+}
+.mn-tab[aria-selected="true"]::before,
+.mn-tab[aria-selected="true"]::after {
+  content: "";
+  position: absolute;
+  width: 8px;
+  height: 8px;
+}
+.mn-tab[aria-selected="true"]::before { top: -4px; left: -4px; border-top: 2px solid var(--r-ok); border-left: 2px solid var(--r-ok); }
+.mn-tab[aria-selected="true"]::after { bottom: -4px; right: -4px; border-bottom: 2px solid var(--r-ok); border-right: 2px solid var(--r-ok); }
+
+/* the one zone boundary: tab furniture above, document below */
+.mn-div { display: flex; align-items: center; gap: 9px; }
+.mn-div i { flex: 1; height: 8px; background: repeating-linear-gradient(45deg, var(--r-hazard) 0 3px, transparent 3px 7px); }
+.mn-div span {
+  font-family: var(--kp-display);
+  font-size: var(--mn-fs-label);
+  letter-spacing: 0.2em;
+  color: var(--ch-dim);
+  flex: none;
+}
+
+/* ---------- the content frame: focal zone, fixed height ---------- */
+
+.mn-frame {
+  position: relative;
+  height: var(--mn-frame-h);
+  border: 1px solid var(--ch-faint);
+  background: color-mix(in srgb, var(--ch) 3%, var(--px-void));
+  padding: 14px 16px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* heavy corner brackets, scoped to the ONE focal zone on this surface */
+.mn-bracket, .mn-bracket > i { position: absolute; pointer-events: none; }
+.mn-bracket { inset: -1px; }
+.mn-bracket > i { inset: 0; }
+.mn-bracket::before, .mn-bracket::after,
+.mn-bracket > i::before, .mn-bracket > i::after {
+  content: "";
+  position: absolute;
+  width: 24px;
+  height: 24px;
+}
+.mn-bracket::before { top: 0; left: 0; border-top: 4px solid var(--r-hazard); border-left: 4px solid var(--r-hazard); }
+.mn-bracket::after { top: 0; right: 0; border-top: 4px solid var(--r-hazard); border-right: 4px solid var(--r-hazard); }
+.mn-bracket > i::before { bottom: 0; left: 0; border-bottom: 4px solid var(--r-hazard); border-left: 4px solid var(--r-hazard); }
+.mn-bracket > i::after { bottom: 0; right: 0; border-bottom: 4px solid var(--r-hazard); border-right: 4px solid var(--r-hazard); }
+
+/* 1st glance: WHICH PAGE OF THE MANUAL THIS IS */
+.mn-hero {
+  font-family: var(--kp-display);
+  font-size: var(--mn-fs-hero);
+  line-height: 0.9;
+  letter-spacing: 0.03em;
+  color: var(--r-data);
+  text-shadow: 0 0 24px var(--px-glow);
+  min-height: 0.9em;
+  flex: none;
+}
+.mn-subrow { display: flex; align-items: center; gap: 10px; flex: none; min-height: 30px; }
+.mn-subrow-sp { flex: 1; }
+.mn-pagerhost { display: inline-flex; }
+.mn-sub {
+  font-family: var(--kp-display);
+  font-size: var(--mn-fs-label);
+  letter-spacing: 0.18em;
+  color: var(--r-note);
+  min-height: 1em;
+  flex: none;
+}
+.mn-sub::before { content: "// "; opacity: 0.7; }
+
+/* 2nd glance: the section body */
+.mn-page {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.mn-page p {
+  font-family: var(--kp-term);
+  font-size: var(--mn-fs-body);
+  line-height: 1.22;
+  color: var(--ch);
+  max-width: 72ch;
+}
+.mn-dim { color: var(--ch-dim); }
+
+/* KIT: three stacked program rows, SCAN/ATTACK/DEFEND top to bottom, with
+ * each program's modes as columns INSIDE its row. The 3-column trinity was
+ * built first and measured 486 to 606px of content against a ~404px budget
+ * (mode descriptions wrap deep in third-width columns), so the layout
+ * transposed: a program row costs the height of its tallest mode, not the
+ * sum of all three. */
+.mn-trinity { display: flex; flex-direction: column; gap: 9px; }
+.mn-prog {
+  border: 1px solid var(--r-struct);
+  background: color-mix(in srgb, var(--ch) 2%, transparent);
+  padding: 9px 11px 8px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.mn-progmodes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px 12px; align-items: start; }
+.mn-modecell { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.mn-modecell b {
+  font-family: var(--kp-display);
+  font-size: var(--mn-fs-label);
+  letter-spacing: 0.1em;
+  color: var(--r-line);
+  font-weight: 400;
+}
+.mn-proghead { display: flex; align-items: baseline; gap: 8px; }
+.mn-proghead strong {
+  font-family: var(--kp-display);
+  font-size: var(--mn-fs-name);
+  letter-spacing: 0.1em;
+  color: var(--r-data);
+  font-weight: 400;
+}
+.mn-proghead em {
+  font-style: normal;
+  font-family: var(--kp-display);
+  font-size: var(--mn-fs-label);
+  letter-spacing: 0.12em;
+  color: var(--r-note);
+  text-transform: uppercase;
+}
+.mn-modecell span, .mn-prog > span {
+  font-family: var(--kp-term);
+  font-size: var(--mn-fs-body);
+  line-height: 1.15;
+  color: var(--ch);
+}
+/* the closing "Upgrades..." line rides the header row: a full paragraph
+ * row cost each program ~34px, which is what pushed KIT to 3 sets */
+.mn-prognote {
+  font-family: var(--kp-term);
+  font-size: var(--mn-fs-body);
+  line-height: 1;
+  color: var(--ch-dim);
+  margin-left: 6px;
+}
+
+/* AUGMENTS: the catalog. A nested container so column math resolves
+ * against the frame, not the window. */
+.mn-cat { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 9px; container-type: inline-size; }
+.mn-catrail { flex: 1; min-height: 0; overflow: hidden; }
+
+.mn-augpage { display: flex; flex-direction: column; gap: 10px; }
+.mn-augrow3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; align-items: stretch; }
+
+.mn-aug-card {
+  border: 1px solid var(--r-struct);
+  background: color-mix(in srgb, var(--ch) 2%, transparent);
+  padding: 8px 10px 8px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.mn-ahead { display: flex; align-items: center; gap: 7px; min-width: 0; }
+.mn-ahead .kp-pip-sq-sm { border-color: var(--r-struct); }
+.mn-ahead .kp-pip-sq-sm.kp-pip-on { background: var(--r-line); border-color: var(--r-line); box-shadow: 0 0 6px var(--px-glow); }
+.mn-aname {
+  font-family: var(--kp-display);
+  font-size: var(--mn-fs-name);
+  letter-spacing: 0.08em;
+  color: var(--r-data);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mn-atag {
+  margin-left: auto;
+  font-family: var(--kp-display);
+  font-size: var(--mn-fs-label);
+  letter-spacing: 0.12em;
+  color: var(--r-note);
+  text-transform: uppercase;
+  flex: none;
+}
+.mn-adesc {
+  font-family: var(--kp-term);
+  font-size: var(--mn-fs-body);
+  line-height: 1.1;
+  color: var(--ch);
+}
+.mn-areq {
+  font-family: var(--kp-display);
+  font-size: var(--mn-fs-label);
+  letter-spacing: 0.1em;
+  color: var(--r-note);
+  text-transform: uppercase;
+}
+.mn-areq::before { content: "// "; opacity: 0.7; }
+
+/* COMPACT LIST: one strip per augment, spec-sheet register */
+.mn-augrow {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 5px 4px;
+  border-top: 1px solid var(--ch-faint);
+  border-bottom: 1px solid var(--ch-faint);
+  margin-top: -1px;
+  min-width: 0;
+}
+.mn-augrow .mn-ahead { flex: none; width: 210px; align-items: baseline; }
+.mn-augrow .mn-aname { white-space: normal; overflow: visible; text-overflow: clip; }
+.mn-augrow .mn-adesc { flex: 1; min-width: 0; }
+.mn-augrow .mn-areq { flex: none; }
+
+/* the SET pager: rides the letterhead row of any paged section, so the
+ * rail below gets the frame's full remaining height. Never confusable
+ * with the footer's PAGE n/5: PAGE counts sections, SET counts card sets. */
+.mn-cardpager { display: inline-flex; align-items: center; gap: 7px; flex: none; }
+.mn-cardpager[data-single="1"] .mn-pgbtn { visibility: hidden; }
+.mn-pgbtn {
+  font-family: var(--kp-display);
+  font-size: var(--mn-fs-chip);
+  letter-spacing: 0.1em;
+  padding: 4px 8px;
+  background: transparent;
+  color: var(--ch);
+  border: 2px solid var(--r-struct);
+}
+.mn-pgbtn:hover:not(:disabled) { border-color: var(--ch); }
+.mn-pgbtn:disabled { color: var(--ch-faint); border-style: dashed; border-color: var(--ch-faint); cursor: not-allowed; }
+.mn-setchip {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 5px 10px;
+  border: 2px solid var(--r-struct);
+  background: var(--px-void);
+  white-space: nowrap;
+}
+.mn-setchip span { font-family: var(--kp-display); font-size: var(--mn-fs-chip); letter-spacing: 0.14em; color: var(--r-note); }
+.mn-setchip span::before { content: "// "; opacity: 0.7; }
+.mn-setchip em { font-style: normal; font-family: var(--kp-mono); font-size: 13px; font-weight: 600; color: var(--ch-hot); }
+.mn-dots { display: inline-flex; gap: 5px; align-items: center; }
+.mn-dots i { width: 12px; height: 12px; border: 2px solid var(--r-struct); background: transparent; }
+.mn-dots i.on { background: var(--r-line); border-color: var(--r-line); box-shadow: 0 0 6px var(--px-glow); }
+.mn-pager-spacer { flex: 1; }
+
+/* the measuring pass: same styles, zero visibility, no layout impact */
+.mn-measure {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  visibility: hidden;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* ---------- ambient: the footer ---------- */
+
+.mn-foot { display: flex; align-items: center; gap: 9px; }
+.mn-foot .kp-btn2 { font-size: var(--mn-fs-chip); padding: 9px 14px; }
+.mn-foot-spacer { flex: 1; }
+.mn-pagechip {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 5px 10px;
+  border: 2px solid var(--r-struct);
+  background: var(--px-void);
+}
+.mn-pagechip span { font-family: var(--kp-display); font-size: var(--mn-fs-chip); letter-spacing: 0.14em; color: var(--r-note); }
+.mn-pagechip span::before { content: "// "; opacity: 0.7; }
+.mn-pagechip em { font-style: normal; font-family: var(--kp-mono); font-size: 13px; font-weight: 600; color: var(--ch-hot); }
+
+/* ---------- narrow tier: tiling fallback only ---------- */
+
+@container mn (max-width: 699.98px) {
+  .mn-tabs { flex-wrap: wrap; }
+  .mn-tab { flex: 1 1 30%; }
+  .mn-progmodes { grid-template-columns: 1fr; }
+  .mn-augrow3 { grid-template-columns: repeat(2, 1fr); }
+  .mn-augrow .mn-ahead { width: 150px; }
+}
+
+/* ---------- demo rig ---------- */
+
+.rig { top: auto; right: auto; bottom: 12px; left: 12px; }
+.rig em { font-style: normal; color: #ffd75e; }
+.rig .rig-meas { font-family: var(--kp-mono); font-size: 10px; color: #999; }
+.rig .rig-over { color: #ff6b6b; }
+
+@media (prefers-reduced-motion: reduce) {
+  .mn-frame.kp-page-flip, .mn-grid .kp-slot-anim { animation: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="lo-fitwrap" id="fitwrap">
+  <div class="lo-fit" id="fit">
+    <div class="lo-stage crt-on" id="stage">
+     <div class="lo-warp">
+      <div class="lo-overscan">
+      <div class="lo-desk" aria-hidden="true"></div>
+      <div class="lo-deskwrap">
+        <div class="lo-free" id="free" aria-hidden="true"><span id="freelabel">FREE DESK</span></div>
+
+        <div class="term" id="term">
+          <header class="term-bar">
+            <h1>MANUAL.TXT</h1>
+            <span class="term-glyphs"><i></i><i></i><i></i></span>
+          </header>
+          <div class="term-body">
+            <div class="mn-wrap">
+              <div class="mn-grid" id="grid">
+
+                <div class="mn-tabs" id="tabs" role="tablist"></div>
+
+                <div class="mn-div" aria-hidden="true"><i></i><span>// SHOP REFERENCE</span><i></i></div>
+
+                <div class="mn-frame" id="frame">
+                  <i class="mn-bracket" aria-hidden="true"><i></i></i>
+                  <div class="mn-hero" id="hero"></div>
+                  <div class="mn-subrow">
+                    <div class="mn-sub" id="sub"></div>
+                    <span class="mn-subrow-sp"></span>
+                    <span class="mn-pagerhost" id="pagerhost"></span>
+                  </div>
+                  <div class="mn-page" id="page"></div>
+                </div>
+
+                <div class="mn-foot">
+                  <button type="button" class="kp-btn2 kp-btn2-ghost" id="prev">PREV</button>
+                  <button type="button" class="kp-btn2 kp-btn2-ghost" id="next">NEXT</button>
+                  <span class="mn-foot-spacer"></span>
+                  <span class="mn-pagechip"><span>PAGE</span><em id="pagechip">1/5</em></span>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="lo-stage-bar">
+        <span>KP/OS</span>
+        <i></i>
+        <span>MANUAL.TXT</span>
+        <span class="lo-bar-sp"></span>
+        <span id="barclock">22:41</span>
+      </div>
+      </div>
+     </div>
+
+      <div class="lo-glass" id="glass" aria-hidden="true">
+        <i class="g-scan"></i>
+        <i class="g-mask"></i>
+        <i class="g-bloom"></i>
+        <i class="g-spec"></i>
+        <i class="g-vig"></i>
+        <i class="g-bezel"></i>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="rig">
+  <strong>DEMO RIG</strong>
+  <span>Scheme</span>
+  <div class="rig-row" id="schemerow"></div>
+  <span>CRT</span>
+  <div class="rig-row" id="crtrow"></div>
+  <span>Viewport</span>
+  <div class="rig-row" id="vprow"></div>
+  <span>Section</span>
+  <div class="rig-row" id="sectionrow"></div>
+  <span>Augments layout</span>
+  <div class="rig-row" id="layoutrow"></div>
+  <span>Augments pager</span>
+  <div class="rig-row" id="pagerrow"></div>
+  <div class="rig-row"><button id="replay">REPLAY LOAD</button></div>
+  <span class="rig-meas" id="meas"></span>
+  <span>MANUAL.TXT as a v3 instrument panel. The hero letterhead is the focal element: it names which page of the manual is open. PAGE counts the five sections; SET counts the AUGMENTS catalog's own card pages, packed row by row against the fixed frame so no scrollbar can ever exist. The frame height is identical on every tab (equal footprint). No imagery and no alarm state by decision: --r-aux and --r-warn are unowned on this surface.</span>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ================= shipped copy, transcribed verbatim =================
+   * Sources: kernel-panic-site/app/src/components/os/windows/manual.tsx,
+   * src/game/content/kit.ts (tier-1 desc calls, matching the shipped
+   * component), src/game/patch-cells.ts PATCH_POUCH_MAX = 5.
+   * Current working tree, post the 2026-08-31 split-board copy fixes. */
+
+  var DIVE_P = [
+    "Two boards, one CORE each: yours and theirs. Click a junction to rotate it a quarter turn (1 RAM). Your signal floods live from YOUR port through every aligned pipe on your own board. One good rotation can cascade a whole chain. First signal to route power to its CORE wins the job.",
+    "You can rotate junctions you have built and any open junction within TWO steps of your built ground: set up a chain, then trip it. Ground you have lit stays built even when its power gets cut. Cascades of three or more BANK bonus RAM for your next turn. ATTACK is the one program that reaches their board; DEFEND guards yours. The intrusion works its own board under the same rules, on its own RAM. Losing a duel zeroes Neural Strain and ends the run. Sloppy wins chip it."
+  ];
+
+  var KIT = {
+    sub: "THE KIT: three programs, 1 RAM, once per turn each",
+    programs: [
+      {
+        name: "SCAN.EXE", tag: "always 1 RAM",
+        modes: null,
+        body: "Expose every armed node within 3 of your built ground, permanently. Always 1 RAM.",
+        note: "Upgrades widen the sweep. Scan before you walk; every trap it finds stays found."
+      },
+      {
+        name: "ATTACK.EXE", tag: "configurable",
+        modes: [
+          { label: "REDIRECT", desc: "Twist any enemy or open junction anywhere on the board a quarter turn, no reach limit. Cuts power to everything downstream." },
+          { label: "ARM: HALT", desc: "Plant a halt trap on an open junction. When their signal powers it, they lose a full turn." },
+          { label: "ARM: SIPHON", desc: "Plant a siphon trap on an open junction. When it fires, 2 RAM drains from their next turn into yours." }
+        ],
+        note: "Upgrades hit more nodes per cast."
+      },
+      {
+        name: "DEFEND.EXE", tag: "configurable",
+        modes: [
+          { label: "PURGE", desc: "Disarm one revealed trap. Scan first; you cannot defuse what you cannot see." },
+          { label: "LOCK", desc: "Freeze a junction for 2 rounds: nothing rotates or redirects it. Bolt down your line, or a junction it needs." },
+          { label: "WARD", desc: "Ward a junction and everything within 1 of it for 2 rounds: no new traps land there, and REDIRECT cannot touch it." }
+        ],
+        note: "Upgrades cover more nodes per cast."
+      }
+    ]
+  };
+
+  var PATCHES_P = [
+    "Slag blocks used to take a flat cell. Now they take a shaped piece: straight, elbow, tee, or cross. Whatever arms a piece rolls on pickup are the arms it keeps, nothing rotates once it is in your pouch, and a placed piece is welded where it lands.",
+    "Craft two pieces at the bench into the union of their arms. Legal only when the result is strictly bigger than both pieces you started with; equal or smaller, the bench will not make the join.",
+    "Three ways into the pouch: buy blind off the darknet, pull one from a cleared job, or bank a random piece on a clean win. 5 pieces, pouch capped."
+  ];
+
+  /* AUGMENTS, kit.ts array order, all 18. req strings resolved exactly as
+   * manual.tsx's own req prop logic resolves them. */
+  var AUGMENTS = [
+    { name: "HALT DRIVER", kind: "config", desc: "ATTACK config: plant halt traps. A sprung trap costs the intrusion its whole next turn." },
+    { name: "SIPHON DRIVER", kind: "config", desc: "ATTACK config: plant siphon traps. A sprung trap drains RAM from its next turn into yours, more at higher ATTACK tiers, and more again when you are the one springing it." },
+    { name: "CLAMP DRIVER", kind: "config", desc: "DEFEND config: freeze junctions for 2 rounds against rotation and redirects." },
+    { name: "WARD DRIVER", kind: "config", desc: "DEFEND config: ward an area so no new traps can land in it, and REDIRECT cannot touch anything inside it either, for the full duration on both sides." },
+    { name: "LONG ARMS", kind: "boost", desc: "Rotate open junctions up to 4 steps from your built ground instead of 2, and place patch pieces just as far. Bigger setups, bigger cascades." },
+    { name: "DEEP SIPHON", kind: "boost", desc: "Your siphon traps steal 1 extra RAM.", req: "Needs SIPHON DRIVER." },
+    { name: "TRIPWIRE", kind: "boost", desc: "Your halt traps also burn 3 RAM off the victim's next active turn.", req: "Needs HALT DRIVER." },
+    { name: "CHEAP SHOT", kind: "boost", desc: "Your first ATTACK each dive costs 0 RAM." },
+    { name: "HOT BOOT", kind: "boost", desc: "Start every dive with +1 RAM on your first turn." },
+    { name: "TAP LINE", kind: "boost", desc: "SCAN also traces the intrusion's planned route to the core, visible for 2 rounds." },
+    { name: "ECHO TAP", kind: "boost", desc: "Whenever one of your traps fires, gain 2 RAM on your next turn." },
+    { name: "JAM ANCHOR", kind: "boost", desc: "Your REDIRECT also freezes the junction it twists through the reply and into your next turn. Nothing rotates or redirects it back while it holds." },
+    { name: "SWEEP CREDIT", kind: "boost", desc: "PURGE refunds 1 RAM per trap it defuses, up to 3 per cast." },
+    { name: "CLEAN RUN", kind: "boost", desc: "Win a dive with zero strain billed and bank one random patch piece. A trap-free win that only misses at the round cap pays 15 credits instead." },
+    { name: "SPLICE REFUND", kind: "boost", desc: "Placing a patch piece refunds its full RAM cost the instant it lands. The pouch still spends the piece itself.", req: "Needs a piece in the pouch." },
+    { name: "FIRST FAULT", kind: "boost", desc: "The first trap that fires on you each dive bills zero Neural Strain. Every trap after that costs full." },
+    { name: "OVERTIME CLAUSE", kind: "boost", desc: "Cap wins pay 75 percent of the ticket instead of 50. The client eats every hour past the deadline, not half." },
+    { name: "DARKNET RATE", kind: "boost", desc: "Dark web patch piece pulls cost 15 percent less. The vendor still only takes credits and the roll stays blind." }
+  ];
+
+  var BAYS_P = [
+    "Boosts install into bays, three of them to start. Configs are not boosts and never count against the cap.",
+    "A full bay does not block a new boost, it swaps one: take the drop or keep what is already installed. Buy more bays at day close. First one runs 150 cr, the next 300."
+  ];
+  var BAYS_DIM = "Every cleared job offers a draft of augments; every closed day offers +1 RAM or a program tier. Everything resets when the run ends. Only you remember.";
+
+  var TABS = ["DIVE", "KIT", "PATCHES", "AUGMENTS", "BAYS"];
+  var SUBS = {
+    DIVE: "HOW A DIVE WORKS",
+    KIT: KIT.sub,
+    PATCHES: "PATCH PIECES",
+    AUGMENTS: "THE CATALOG: 18 AUGMENTS, DRAFTED 1 OF 3 PER CLEARED JOB",
+    BAYS: "BOOST BAYS"
+  };
+
+  /* ================= helpers ================= */
+
+  var REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var timers = [];
+  function later(fn, ms) {
+    if (REDUCED) { fn(); return; }
+    timers.push(setTimeout(fn, ms));
+  }
+  function clearTimers() {
+    timers.forEach(function (t) { clearTimeout(t); clearInterval(t); });
+    timers = [];
+  }
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+  function $(id) { return document.getElementById(id); }
+
+  /* per-element-scoped typewriter (law 7): switching tabs restarts only the
+   * remounted frame's own text, never anything else */
+  var runTokens = {};
+  function typeIn(node, text, delay, key) {
+    var token = (runTokens[key] = (runTokens[key] || 0) + 1);
+    if (REDUCED) { node.textContent = text; return; }
+    node.textContent = "";
+    later(function () {
+      if (runTokens[key] !== token) return;
+      var i = 0;
+      var iv = setInterval(function () {
+        if (runTokens[key] !== token) { clearInterval(iv); return; }
+        i += 1;
+        node.textContent = text.slice(0, i);
+        if (i >= text.length) clearInterval(iv);
+      }, 6);
+      timers.push(iv);
+    }, delay);
+  }
+
+  /* ================= sound: the shipped pageFlip, approximated =================
+   * One preset only, reused for tab switches AND SET pages: both are
+   * literally "turn a page" on the same in-fiction object. No new voices. */
+
+  var AC = null;
+  var interacted = false;
+  document.addEventListener("pointerdown", function () { interacted = true; }, true);
+  document.addEventListener("keydown", function () { interacted = true; }, true);
+  function pageFlip() {
+    if (!interacted) return;
+    try {
+      if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)();
+      if (AC.state === "suspended") AC.resume();
+      var t = AC.currentTime;
+      var len = Math.ceil(AC.sampleRate * 0.09);
+      var buf = AC.createBuffer(1, len, AC.sampleRate);
+      var d = buf.getChannelData(0);
+      for (var i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+      var src = AC.createBufferSource();
+      src.buffer = buf;
+      var hf = AC.createBiquadFilter();
+      hf.type = "highpass";
+      hf.frequency.value = 1400;
+      var g = AC.createGain();
+      g.gain.setValueAtTime(0.2, t);
+      g.gain.exponentialRampToValueAtTime(0.001, t + 0.09);
+      src.connect(hf); hf.connect(g); g.connect(AC.destination);
+      src.start(t); src.stop(t + 0.11);
+    } catch (e) { /* sound is never load bearing */ }
+  }
+
+  /* ================= augment card builders ================= */
+
+  function augCard(a, asRow) {
+    var card = el("div", asRow ? "mn-augrow" : "mn-aug-card");
+    var head = el("div", "mn-ahead");
+    head.appendChild(el("i", "kp-pip-sq kp-pip-sq-sm" + (a.kind === "config" ? " kp-pip-on" : "")));
+    head.appendChild(el("span", "mn-aname", a.name));
+    head.appendChild(el("span", "mn-atag", a.kind));
+    card.appendChild(head);
+    card.appendChild(el("p", "mn-adesc", a.desc));
+    if (a.req) card.appendChild(el("span", "mn-areq", a.req));
+    return card;
+  }
+
+  /* the row builders. The packer is section-agnostic: any section too tall
+   * for the frame renders as packed SET pages of whole rows. KIT measured
+   * 514 to 539px of content against a ~375px budget at every supported
+   * width (the mode columns wrap deep), so it pages exactly like AUGMENTS
+   * rather than clipping or scrolling. */
+  function buildKitRows() {
+    return KIT.programs.map(function (pr) {
+      var card = el("div", "mn-prog");
+      var head = el("div", "mn-proghead");
+      head.appendChild(el("strong", null, pr.name));
+      head.appendChild(el("em", null, pr.tag));
+      card.appendChild(head);
+      if (pr.modes) {
+        var grid = el("div", "mn-progmodes");
+        pr.modes.forEach(function (m) {
+          var cell = el("div", "mn-modecell");
+          cell.appendChild(el("b", null, m.label));
+          cell.appendChild(el("span", null, m.desc));
+          grid.appendChild(cell);
+        });
+        card.appendChild(grid);
+      } else {
+        card.appendChild(el("span", null, pr.body));
+      }
+      head.appendChild(el("span", "mn-prognote", pr.note));
+      return card;
+    });
+  }
+
+  function buildAugRows(asRow) {
+    var rows = [];
+    if (asRow) {
+      AUGMENTS.forEach(function (a) {
+        var r = el("div");
+        r.appendChild(augCard(a, true));
+        rows.push(r);
+      });
+    } else {
+      for (var i = 0; i < AUGMENTS.length; i += 3) {
+        var r = el("div", "mn-augrow3");
+        AUGMENTS.slice(i, i + 3).forEach(function (a) { r.appendChild(augCard(a, false)); });
+        rows.push(r);
+      }
+    }
+    return rows;
+  }
+
+  /* measure-then-pack (dadlog-v3's paginate(), generalized to grid rows):
+   * every row renders in a hidden same-width measuring pass, then rows pack
+   * greedily against the live rail height. A row is never split. */
+  var augLayout = "grid";
+  var augPagerStyle = "step";
+  var augPages = [];
+  var augPageIdx = 0;
+  var ROW_GAP = 10;
+
+  function currentRows() {
+    if (active === "KIT") return buildKitRows();
+    return buildAugRows(augLayout === "list");
+  }
+
+  function paginateAugments(railH, railWidthHost) {
+    var probe = el("div", "mn-measure");
+    var cat = el("div", "mn-cat");
+    var rail = el("div", "mn-catrail");
+    var pageBox = el("div", "mn-augpage");
+    var rows = currentRows();
+    rows.forEach(function (r) { pageBox.appendChild(r); });
+    rail.appendChild(pageBox);
+    cat.appendChild(rail);
+    probe.appendChild(cat);
+    railWidthHost.appendChild(probe);
+    var pages = [];
+    var cur = [];
+    var used = 0;
+    rows.forEach(function (r) {
+      /* offsetHeight is layout px, unaffected by the fit transform; a
+       * rect here would be scaled by the rig and over-pack every page */
+      var h = r.offsetHeight + 1;
+      var need = cur.length ? h + ROW_GAP : h;
+      if (cur.length && used + need > railH) {
+        pages.push(cur);
+        cur = [];
+        used = h;
+      } else {
+        used += need;
+      }
+      cur.push(r);
+    });
+    if (cur.length) pages.push(cur);
+    probe.remove();
+    return pages;
+  }
+
+  /* ================= section rendering ================= */
+
+  var active = "DIVE";
+  var frame = $("frame");
+  var pageEl = $("page");
+
+  function renderPager(host) {
+    var pager = el("div", "mn-cardpager");
+    if (augPages.length <= 1) pager.dataset.single = "1";
+    var prev = el("button", "mn-pgbtn", "PREV");
+    prev.type = "button";
+    prev.disabled = augPageIdx <= 0;
+    prev.addEventListener("click", function () { setAugPage(augPageIdx - 1); });
+    var next = el("button", "mn-pgbtn", "NEXT");
+    next.type = "button";
+    next.disabled = augPageIdx >= augPages.length - 1;
+    next.addEventListener("click", function () { setAugPage(augPageIdx + 1); });
+    pager.appendChild(prev);
+    pager.appendChild(next);
+    pager.appendChild(el("span", "mn-pager-spacer"));
+    if (augPagerStyle === "dots") {
+      var dots = el("span", "mn-dots");
+      for (var i = 0; i < augPages.length; i++) {
+        var d = el("i", i === augPageIdx ? "on" : "");
+        dots.appendChild(d);
+      }
+      pager.appendChild(dots);
+    }
+    var chip = el("span", "mn-setchip");
+    chip.appendChild(el("span", null, "SET"));
+    chip.appendChild(el("em", null, (augPageIdx + 1) + "/" + augPages.length));
+    pager.appendChild(chip);
+    host.appendChild(pager);
+  }
+
+  function renderAugPage(flip) {
+    var cat = pageEl.querySelector(".mn-cat");
+    if (!cat) return;
+    var rail = cat.querySelector(".mn-catrail");
+    rail.textContent = "";
+    var box = el("div", "mn-augpage");
+    (augPages[augPageIdx] || []).forEach(function (r, i) {
+      if (!REDUCED && flip) {
+        r.classList.add("kp-slot-anim");
+        r.style.animationDelay = (i * 70) + "ms";
+      } else {
+        r.classList.remove("kp-slot-anim");
+        r.style.animationDelay = "";
+      }
+      box.appendChild(r);
+    });
+    rail.appendChild(box);
+    var host = $("pagerhost");
+    host.textContent = "";
+    renderPager(host);
+    measure();
+  }
+
+  function setAugPage(n) {
+    if (n < 0 || n >= augPages.length) return;
+    augPageIdx = n;
+    pageFlip();
+    if (!REDUCED) {
+      frame.classList.remove("kp-page-flip");
+      void frame.offsetWidth;
+      frame.classList.add("kp-page-flip");
+    }
+    renderAugPage(true);
+  }
+
+  function repaginate(keepPage) {
+    var cat = pageEl.querySelector(".mn-cat");
+    if (!cat) return;
+    var rail = cat.querySelector(".mn-catrail");
+    /* the pager takes real height off the rail, so it must exist before
+     * the rail is measured or every page packs ~40px too tall */
+    /* a few px of safety absorbs sub-pixel row heights the int measures drop */
+    var railH = rail.clientHeight - 4;
+    augPages = paginateAugments(railH, pageEl);
+    if (!keepPage) augPageIdx = 0;
+    augPageIdx = Math.min(augPageIdx, augPages.length - 1);
+    renderAugPage(!!repaginate._choreo);
+    repaginate._choreo = false;
+  }
+
+  function renderSection(tab, choreo) {
+    pageEl.textContent = "";
+    if (tab !== "KIT" && tab !== "AUGMENTS") $("pagerhost").textContent = "";
+    var delay = choreo ? 260 : 0;
+
+    if (tab === "DIVE") {
+      DIVE_P.forEach(function (t, i) {
+        var p = el("p");
+        pageEl.appendChild(p);
+        typeIn(p, t, delay + i * 420, "body" + i);
+      });
+    } else if (tab === "KIT" || tab === "AUGMENTS") {
+      var cat = el("div", "mn-cat");
+      cat.appendChild(el("div", "mn-catrail"));
+      pageEl.appendChild(cat);
+      /* pack after layout settles so the rail height is real */
+      repaginate._choreo = choreo;
+      requestAnimationFrame(function () { repaginate(false); });
+    } else if (tab === "PATCHES") {
+      PATCHES_P.forEach(function (t, i) {
+        var p = el("p");
+        pageEl.appendChild(p);
+        typeIn(p, t, delay + i * 380, "body" + i);
+      });
+    } else {
+      BAYS_P.forEach(function (t, i) {
+        var p = el("p");
+        pageEl.appendChild(p);
+        typeIn(p, t, delay + i * 380, "body" + i);
+      });
+      var dim = el("p", "mn-dim");
+      pageEl.appendChild(dim);
+      typeIn(dim, BAYS_DIM, delay + 760, "bodydim");
+    }
+  }
+
+  function setTab(tab, silent) {
+    if (tab === active && !silent) return;
+    active = tab;
+    if (!silent) pageFlip();
+    document.querySelectorAll(".mn-tab").forEach(function (b) {
+      b.setAttribute("aria-selected", String(b.dataset.tab === tab));
+    });
+    var idx = TABS.indexOf(tab);
+    $("pagechip").textContent = (idx + 1) + "/" + TABS.length;
+    $("prev").disabled = idx <= 0;
+    $("next").disabled = idx >= TABS.length - 1;
+    if (!REDUCED && !silent) {
+      frame.classList.remove("kp-page-flip");
+      void frame.offsetWidth;
+      frame.classList.add("kp-page-flip");
+    }
+    typeIn($("hero"), tab, 0, "hero");
+    typeIn($("sub"), SUBS[tab], 120, "sub");
+    renderSection(tab, true);
+    syncRig(tab);
+    measure();
+  }
+
+  /* ================= the tab strip ================= */
+
+  var tabsHost = $("tabs");
+  TABS.forEach(function (t, i) {
+    var b = el("button", "mn-tab", t);
+    b.type = "button";
+    b.dataset.tab = t;
+    b.setAttribute("role", "tab");
+    b.setAttribute("aria-selected", String(t === active));
+    b.addEventListener("click", function () { setTab(t); });
+    if (!REDUCED) {
+      b.classList.add("kp-slot-anim");
+      b.style.animationDelay = (i * 60) + "ms";
+    }
+    tabsHost.appendChild(b);
+  });
+
+  $("prev").addEventListener("click", function () {
+    var i = TABS.indexOf(active);
+    if (i > 0) setTab(TABS[i - 1]);
+  });
+  $("next").addEventListener("click", function () {
+    var i = TABS.indexOf(active);
+    if (i < TABS.length - 1) setTab(TABS[i + 1]);
+  });
+
+  /* ================= the demo rig ================= */
+
+  function radioRow(rowId, opts, initial, onPick) {
+    var row = $(rowId);
+    row.textContent = "";
+    opts.forEach(function (o) {
+      var b = el("button", o.id === initial ? "rig-on" : "", o.label);
+      b.addEventListener("click", function () {
+        row.querySelectorAll("button").forEach(function (x) { x.className = ""; });
+        b.className = "rig-on";
+        onPick(o);
+      });
+      row.appendChild(b);
+    });
+  }
+  function syncRig(tab) {
+    var row = $("sectionrow");
+    row.querySelectorAll("button").forEach(function (b) {
+      b.className = b.textContent === tab ? "rig-on" : "";
+    });
+  }
+
+  var glassLayers = Array.prototype.slice.call($("glass").children);
+  function setCrt(mode) {
+    $("stage").classList.toggle("crt-on", mode !== "off");
+    var glass = $("glass");
+    glass.textContent = "";
+    if (mode !== "off") glassLayers.forEach(function (l) { glass.appendChild(l); });
+  }
+
+  radioRow("schemerow", [
+    { id: "nerv", label: "NERV" },
+    { id: "tokyo", label: "TOKYO NIGHT" }
+  ], "nerv", function (o) { document.documentElement.dataset.scheme = o.id; });
+
+  radioRow("crtrow", [
+    { id: "flat", label: "FLAT" },
+    { id: "off", label: "OFF" }
+  ], "flat", function (o) { setCrt(o.id); measure(); });
+
+  var VIEWPORTS = [
+    { id: "169", label: "16:9", w: 1366, h: 768, win: 1040 },
+    { id: "219", label: "21:9", w: 2560, h: 1080, win: 1100 },
+    { id: "laptop", label: "LAPTOP 1280x800", w: 1280, h: 800, win: 940 }
+  ];
+  var VP = VIEWPORTS[0];
+
+  radioRow("vprow", VIEWPORTS, "169", function (o) { applyViewport(o); });
+
+  radioRow("sectionrow", TABS.map(function (t) { return { id: t, label: t }; }), "DIVE", function (o) { setTab(o.id); });
+
+  radioRow("layoutrow", [
+    { id: "grid", label: "CARD GRID" },
+    { id: "list", label: "COMPACT LIST" }
+  ], "grid", function (o) {
+    augLayout = o.id;
+    if (active === "AUGMENTS") { pageFlip(); repaginate(false); }
+  });
+
+  radioRow("pagerrow", [
+    { id: "step", label: "STEP" },
+    { id: "dots", label: "DOTS" }
+  ], "step", function (o) {
+    augPagerStyle = o.id;
+    if (active === "AUGMENTS" || active === "KIT") renderAugPage(false);
+  });
+
+  $("replay").addEventListener("click", function () {
+    clearTimers();
+    setTab(active, true);
+    if (!REDUCED) {
+      frame.classList.remove("kp-page-flip");
+      void frame.offsetWidth;
+      frame.classList.add("kp-page-flip");
+    }
+  });
+
+  /* ================= fit + measure ================= */
+
+  var fitScale = 1;
+  function applyViewport(v) {
+    VP = v;
+    var stage = $("stage");
+    stage.style.width = v.w + "px";
+    stage.style.height = v.h + "px";
+    $("term").style.setProperty("--mn-win", v.win + "px");
+    fit();
+    if (active === "AUGMENTS" || active === "KIT") requestAnimationFrame(function () { repaginate(true); });
+    measure();
+  }
+
+  function fit() {
+    var availW = Math.max(320, window.innerWidth - 300);
+    var availH = Math.max(320, window.innerHeight - 90);
+    var k = Math.min(1, availW / VP.w, availH / VP.h);
+    fitScale = k;
+    $("fit").style.transform = "scale(" + k + ")";
+    $("fitwrap").style.width = Math.round(VP.w * k) + "px";
+    $("fitwrap").style.height = Math.round(VP.h * k) + "px";
+    return k;
+  }
+
+  function measure() {
+    var k = fit() || 1;
+    var term = $("term");
+    var h = Math.round(term.getBoundingClientRect().height / k);
+    var free = $("free");
+    var slack = VP.w - VP.win;
+    if (slack > 220) {
+      free.style.display = "flex";
+      free.style.right = "0px";
+      free.style.width = Math.round(slack / 2 - 24) + "px";
+      $("freelabel").textContent = "FREE DESK " + Math.round(slack / 2 - 24) + "PX";
+    } else {
+      free.style.display = "none";
+    }
+    var tier = VP.win - 34 >= 700 ? "WIDE" : "NARROW";
+    var m = $("meas");
+    m.innerHTML = "";
+    m.appendChild(document.createTextNode("WINDOW " + VP.win + "px / " + tier + " tier / " + active));
+    m.appendChild(document.createElement("br"));
+    var hs = el("span", h > 700 ? "rig-over" : "", "HEIGHT " + h + "px / target 700px");
+    m.appendChild(hs);
+    if ((active === "AUGMENTS" || active === "KIT") && augPages.length) {
+      m.appendChild(document.createElement("br"));
+      m.appendChild(document.createTextNode("SETS " + augPages.length + " (" + augLayout + ")"));
+    }
+  }
+
+  var resizeRaf = 0;
+  window.addEventListener("resize", function () {
+    cancelAnimationFrame(resizeRaf);
+    resizeRaf = requestAnimationFrame(function () {
+      fit();
+      if (active === "AUGMENTS" || active === "KIT") repaginate(true);
+      measure();
+    });
+  });
+
+  /* ================= the stage bar clock ================= */
+
+  var clockSec = 22 * 3600 + 41 * 60 + 7;
+  setInterval(function () {
+    clockSec = (clockSec + 1) % 86400;
+    var h = String(Math.floor(clockSec / 3600)).padStart(2, "0");
+    var m = String(Math.floor((clockSec % 3600) / 60)).padStart(2, "0");
+    var bar = h + ":" + m;
+    if ($("barclock").textContent !== bar) $("barclock").textContent = bar;
+  }, 1000);
+
+  /* ================= go ================= */
+
+  document.documentElement.dataset.scheme = "nerv";
+  setCrt("flat");
+  applyViewport(VP);
+  setTab("DIVE", true);
+})();
+</script>
+</body>
+</html>

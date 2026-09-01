@@ -26,7 +26,7 @@ These are shaped exactly like accepted output. Copy the structure, not the conte
 {
   "type": "augment", "id": "grapnel",
   "name": "GRAPNEL", "kind": "boost",
-  "desc": "Once per dive, your first REDIRECT also claims the junction it twists if that completes your chain.",
+  "desc": "Once per dive, your first REDIRECT refunds its RAM if it cuts power to at least one enemy junction downstream.",
   "synergy": "redirect config, cascade banking, LONG ARMS setups",
   "counter": "lock (a locked junction cannot be redirected), ward does not help",
   "engineNote": "needs a small hook in applyCast redirect branch plus a per-dive used flag on SideEcon"
@@ -118,7 +118,7 @@ These are shaped exactly like accepted output. Copy the structure, not the conte
   "intent": "The player is carrying a bought cell and does not know it is spent by clicking a slag block mid dive, or that it is single use.",
   "lines": null,
   "copyOrder": "copy-patch-cell-use",
-  "tier": "1. Not tier 0: the pouch counter can show that a cell exists but cannot show that a slag block is the target. Not tier 2: nothing is blocked if they never spend it."
+  "tier": "2. Not tier 0: the pouch counter can show that a cell exists but cannot show that a slag block is the target. Not tier 1: this is a rule needed once, at the moment it first matters, not reference to re-read. Not tier 3: nothing is blocked if they never spend it."
 }
 ```
 
@@ -195,5 +195,39 @@ A blanket waiver over a whole content type carries a machine-checked premise:
   "brief": "An open workbench drawer seen from above, hand tools and labeled spare parts, one folded handwritten note catching warm signal-colored light from a desk lamp, everything else in shop shadow tones.",
   "status": "open",
   "result": null
+}
+```
+
+## Suggestion (any agent)
+
+```json
+{
+  "type": "suggestion", "id": "ward-visual-language",
+  "area": "duel",
+  "idea": "Wards and locks read identically at a glance (both grey the junction). Give wards their own ring treatment so DEFEND choices are legible mid-cascade.",
+  "why": "Two mechanics sharing one visual state hides the counter-play the catalog is built on.",
+  "disputes": "optional; quote the exact doc line if this challenges one, e.g. from ui-demos/RULINGS.md or a vault note"
+}
+```
+
+## Mechanic (tutorial-agent)
+
+```json
+{
+  "type": "mechanic", "id": "boostSwap",
+  "label": "Swapping a boost bay after a cleared job",
+  "firstContact": "result"
+}
+```
+
+## Music brief (ux-agent)
+
+```json
+{
+  "type": "music-brief", "id": "night-bed",
+  "track": "desk",
+  "mood": "closing time, low tube hum, patient",
+  "tempo": "slow, no percussion",
+  "notes": "60 to 90 second seamless loop, sits under NIGHT.SYS without fighting the sfx bus"
 }
 ```

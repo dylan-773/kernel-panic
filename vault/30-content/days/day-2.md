@@ -3,7 +3,7 @@ title: Day 2
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-31
 related: ["[[the-ten-day-arc]]", "[[day-1]]", "[[day-3]]"]
 ---
 
@@ -21,7 +21,7 @@ related: ["[[the-ten-day-arc]]", "[[day-1]]", "[[day-3]]"]
 | parFlat | 5 |
 | slag / patchDrop | 0.18 / 0.35 |
 | Job tiers | 1, 1, 2 |
-| Target kitted win rate | ~93% |
+| Target kitted win rate | see [[verification-gate]] |
 
 ## The first real change
 
@@ -31,7 +31,7 @@ related: ["[[the-ten-day-arc]]", "[[day-1]]", "[[day-3]]"]
 
 The day line does the teaching the interface does not: **strain carries over**. It is the first statement that the run is a resource arc rather than a series of independent jobs.
 
-The highest target win rate of the arc, at ~93%. Day 2 is where the player should feel competent.
+The highest target win rate of the arc. Day 2 is where the player should feel competent.
 
 ## See also
 

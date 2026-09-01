@@ -3,7 +3,7 @@ title: Day 8
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-31
 related: ["[[the-ten-day-arc]]", "[[day-7]]", "[[day-9]]"]
 ---
 
@@ -22,7 +22,7 @@ related: ["[[the-ten-day-arc]]", "[[day-7]]", "[[day-9]]"]
 | parFlat | 2 |
 | slag / patchDrop | 0.24 / 0.12 |
 | Job tiers | **4, 4, 4** |
-| Target kitted win rate | ~52% |
+| Target kitted win rate | see [[verification-gate]] |
 
 ## horizon 3
 

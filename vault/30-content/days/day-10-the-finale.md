@@ -3,7 +3,7 @@ title: Day 10 - the finale
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-31
 related: ["[[the-finale-encounter]]", "[[the-machine]]", "[[the-ten-day-arc]]"]
 ---
 
@@ -29,7 +29,7 @@ No job board. The back room settles up.
 | Opponent kit | **all 3 attack, all 3 defend**, `oppTier: 3` |
 | dominant | redirect |
 | **`oppOpens`** | **true** |
-| Target kitted win rate | ~35% |
+| Target kitted win rate | see [[verification-gate]] |
 
 ## No fumbles
 

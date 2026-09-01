@@ -3,7 +3,7 @@ title: SCAN
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-08-31
 related: ["[[the-kit]]", "[[traps-and-telegraphs]]", "[[purge]]"]
 ---
 
@@ -14,7 +14,7 @@ related: ["[[the-kit]]", "[[traps-and-telegraphs]]", "[[purge]]"]
 
 Information. 1 RAM, once per turn, acts on your own board.
 
-Exposes every armed node within range of your territory, **permanently**.
+Exposes every armed node within range of your built ground, **permanently**.
 
 | Tier | Range |
 |---|---|

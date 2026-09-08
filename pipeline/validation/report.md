@@ -330,3 +330,51 @@ re-baselined reference: BIT-IDENTICAL on all 11 rows.
 
 No anomalies. The deep-balance open items above carry forward unchanged
 into the next balance cycle; nothing in this cycle touched them.
+
+
+---
+
+# Cycle final-cut-2026-09-08 (balance pass, orchestrator)
+
+Date: 2026-09-08. Assignment 10 final cut. Gate run by the Orchestrator
+directly. Targets are the KITTED bands in `vault/50-tech/verification-gate.md`.
+
+## Verdict: PASS
+
+1. `bun run typecheck` - PASS
+2. `bun run src/game/dev/sim.ts` - tutorial 0/200 PASS; plan honesty 360/360
+3. `bun run src/game/dev/run-sim.ts` - PASS (40 full runs, 1256 dispatches)
+4. `bun run src/game/dev/teach-sim.ts` - PASS (38 mechanics, 25 taught, 13 waived)
+
+## Integrated from the 2026-09-01 proposals (committed 2026-09-04 as `98bd2e7`)
+
+- arc-composer `day-3`: greed 0.88 to 0.84 (as proposed)
+- arc-composer `day-5`: greed 0.94 to 0.97 (as proposed), which moved day 5
+  only one point, so the orchestrator added abilityFreq 0.55 to 0.65 on the
+  same day; 0.65 keeps day 4 (0.6) below day 5 below day 6 (0.78)
+- ability-agent retunes (longArms, jamAnchor, tripwire, cfgArmSiphon): NOT
+  integrated. Days 4, 6, 7, 8 and 9 already sit within one point of target,
+  and every one of those levers is live on those days
+- finale: untouched, per the agent's own lane fence (explicit user sign-off)
+
+## Kitted curve, 200 seeds
+
+| day | target | before | after | delta to target |
+|---|---|---|---|---|
+| 1 | 84 | 81.5 | 81.5 | -2.5 |
+| 2 | 93 | 93.0 | 93.0 | 0.0 |
+| 3 | 67 | 61.5 | 65.5 | -1.5 |
+| 4 | 75 | 74.5 | 74.5 | -0.5 |
+| 5 | 56 | 61.5 | 58.0 | +2.0 |
+| 6 | 72 | 73.0 | 73.0 | +1.0 |
+| 7 | 63 | 62.5 | 62.5 | -0.5 |
+| 8 | 52 | 52.5 | 52.5 | +0.5 |
+| 9 | 52 | 52.5 | 52.5 | +0.5 |
+| finale | 35 | 39.5 | 39.5 | +4.5 (needs sign-off) |
+
+Every day within 2.0 of its pdTarget; finale close t1 = 0.
+
+## Open item
+
+Finale +4.5 over target. Greed is at 1.0 there, so the next lever is
+abilityFreq (0.9) or headStart (1). Waiting on the user.

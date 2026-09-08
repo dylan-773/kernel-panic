@@ -3067,13 +3067,18 @@
         "file": "pipeline/proposals/ux-agent.json",
         "item": "manual-v3-instrument-panel"
       },
-      "status": "awaiting",
-      "note": null,
+      "status": "archived",
+      "note": "Superseded by the pixel desktop rebuild of 2026-09-04; never integrated.",
       "history": [
         {
           "status": "awaiting",
           "date": "2026-08-31",
           "note": "first pass against ui-demos/RULINGS.md; one of the last two pre-v3 windows (law 11 queue)"
+        },
+        {
+          "status": "archived",
+          "date": "2026-09-08",
+          "note": "superseded: the pixel desktop rebuild restyled the shipped window directly; demo kept for the record"
         }
       ],
       "variations": [
@@ -3284,13 +3289,18 @@
         "file": "pipeline/proposals/ux-agent.json",
         "item": "ledger-v3-instrument-panel"
       },
-      "status": "awaiting",
-      "note": null,
+      "status": "archived",
+      "note": "Superseded by the pixel desktop rebuild of 2026-09-04; never integrated.",
       "history": [
         {
           "status": "awaiting",
           "date": "2026-08-31",
           "note": "first pass against ui-demos/RULINGS.md; with manual-v3 this closes the law-11 queue"
+        },
+        {
+          "status": "archived",
+          "date": "2026-09-08",
+          "note": "superseded: the pixel desktop rebuild restyled the shipped window directly; demo kept for the record"
         }
       ],
       "variations": [

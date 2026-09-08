@@ -3,7 +3,7 @@ title: Art direction
 status: canon
 source: rulings
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-09-08
 related: ["[[law-5-imagery]]", "[[art-lead]]", "[[kp-os]]"]
 ---
 
@@ -12,6 +12,9 @@ related: ["[[law-5-imagery]]", "[[art-lead]]", "[[kp-os]]"]
 ## The rule
 
 **1-bit dithered imagery, at 1:1 pixel mapping, never downscaled.**
+
+> [!info] Ruling 2026-09-04 (user, via the pixel desktop rebuild)
+> Customer faces are the exception: the twelve `cust-01` to `cust-12` portraits ship in full colour at native 256px everywhere the OS shows a client (the user was "not a fan of the monochrome customer images"). Device macros, scans, stills and window furniture keep the treatments below. The six faces added 2026-09-08 (`cust-07` to `cust-12`) were generated on PixelLab with a shipped portrait as the style reference, so no two customers share a face. See [[pixel-desktop]].
 
 Browser downscaling mushes the dots into grey noise. To show less, **crop**; to show more, crop wider. Integer upscaling is acceptable; downscaling never is.
 

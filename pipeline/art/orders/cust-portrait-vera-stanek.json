@@ -1,0 +1,17 @@
+{
+  "id": "cust-portrait-vera-stanek",
+  "from": "orchestrator",
+  "kind": "portrait",
+  "treatment": "full-color-pixel",
+  "target": "/assets/px/portraits/cust-11.png",
+  "size": [
+    256,
+    256
+  ],
+  "invert": false,
+  "brief": "Full-color 256px bust portrait for vera-stanek (customers.ts: Apothek dosage safe). The pixel desktop shows customer faces in original color everywhere (CUSTOMER.REC, REPAIR.LOG, ticket header), and the roster shipped twelve customers on six shared faces, so each second-of-pair customer gets a face of their own. Reads as a middle-aged pharmacist in a white lab coat with an ID badge, grey-streaked braid, half-moon glasses, exhausted night-shift stare. Same framing, palette and shading as the existing cust-01 to cust-06 set (style reference passed to the generator), dark navy ground, no text.",
+  "status": "done",
+  "result": "pipeline/art/done/cust-portrait-vera-stanek.png",
+  "generation": "PixelLab create_image_pro (job aaf4e538-f78a-493c-99d9-3f77359342be), 1 attempt, 20 generations on the subscription allowance, style reference one of the shipped cust-0N portraits. Quantized to 64 colors with pxpost-equivalent nearest-color reduction, no resampling (native 256x256).",
+  "installed": "kernel-panic-site/app/public/assets/px/portraits/cust-11.png"
+}

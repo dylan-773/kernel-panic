@@ -21,7 +21,7 @@ Every chain below is checkable by diffing the proposal against the shipped modul
 | Inbox subjects, UI copy | `pipeline/proposals/narrative-director.json` | `kernel-panic-site/app/src/components/os/windows/inbox.tsx` (byte-identical) |
 | Teaching copy | `pipeline/copy/orders/*.json` (14 orders) | `kernel-panic-site/app/src/game/content/teaching.ts` (verbatim) |
 | Sound design (21 sfx presets) | `pipeline/proposals/ux-agent*.json` | `kernel-panic-site/app/src/game/audio.ts` |
-| Pixel art (18 work orders, credits logged per order) | `pipeline/art/orders/*.json` → `pipeline/art/done/` | `kernel-panic-site/app/public/assets/px/` via `roster-art.ts` asset maps |
+| Pixel art (24 work orders, generator and cost logged per order) | `pipeline/art/orders/*.json` → `pipeline/art/done/` | `kernel-panic-site/app/public/assets/px/` via `roster-art.ts` asset maps |
 | UI window redesigns | `pipeline/proposals/ux-agent*.json` → `ui-demos/<id>/` | `kernel-panic-site/app/src/components/os/windows/` (`ui-demos/manifest.json` is the durable approval record) |
 
 ## Running it yourself

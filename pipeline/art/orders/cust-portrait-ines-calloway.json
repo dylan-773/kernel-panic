@@ -1,0 +1,17 @@
+{
+  "id": "cust-portrait-ines-calloway",
+  "from": "orchestrator",
+  "kind": "portrait",
+  "treatment": "full-color-pixel",
+  "target": "/assets/px/portraits/cust-09.png",
+  "size": [
+    256,
+    256
+  ],
+  "invert": false,
+  "brief": "Full-color 256px bust portrait for ines-calloway (customers.ts: Ferrox lifter exosuit). The pixel desktop shows customer faces in original color everywhere (CUSTOMER.REC, REPAIR.LOG, ticket header), and the roster shipped twelve customers on six shared faces, so each second-of-pair customer gets a face of their own. Reads as a dock worker in a powered exosuit harness with padded straps and an arm brace, cropped hair under a sweatband, tired steady eyes. Same framing, palette and shading as the existing cust-01 to cust-06 set (style reference passed to the generator), dark navy ground, no text.",
+  "status": "done",
+  "result": "pipeline/art/done/cust-portrait-ines-calloway.png",
+  "generation": "PixelLab create_image_pro (job 215c0ea6-b513-492f-9065-2dc6deaa716f), 1 attempt, 20 generations on the subscription allowance, style reference one of the shipped cust-0N portraits. Quantized to 64 colors with pxpost-equivalent nearest-color reduction, no resampling (native 256x256).",
+  "installed": "kernel-panic-site/app/public/assets/px/portraits/cust-09.png"
+}

@@ -3,7 +3,7 @@ title: Revision history
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-31
+updated: 2026-09-08
 related: ["[[design-change-log]]", "[[home]]"]
 ---
 
@@ -24,7 +24,7 @@ The v2 PDF is a stale render of the v2 HTML: its token table is missing the Tuto
 
 ## Build history
 
-Current build **0.7.0**, dated 2026-07-29. `APP_VERSION` bumps when mechanics change, `BUILD_DATE` on every deploy.
+Current build **0.8.0**, dated 2026-09-08. `APP_VERSION` bumps when mechanics change, `BUILD_DATE` on every deploy.
 
 | Date | Build | What landed |
 |---|---|---|
@@ -45,6 +45,8 @@ Current build **0.7.0**, dated 2026-07-29. `APP_VERSION` bumps when mechanics ch
 | 2026-08-19 | - | Day-is-the-run redesign plus a 2.5D walkable overworld (Phaser) shipped, then the whole direction was abandoned. |
 | 2026-08-31 | 0.7.0 | RULING: the game is the KP/OS webapp, whole and entire. Main rewound to the last pre-overworld commit; the overworld/day-is-the-run era lives on the `day-is-the-run` branch in both repos. Unity port abandoned. Crew charter reworked (challenge verdicts, suggestion channel, single-sourced targets). |
 | 2026-09-01 | 0.7.0 | Higgsfield deploy revived (repo host moved to `apps-repos.higgs.ai`); `kernel-panic.higgsfield.app` is the public build again. Tutorial deadlock fixed: the shared command gate was applying the player's lesson gating to the machine, so its scripted trap never planted and Scan never woke (`6a4014b`). Host details scrubbed from public docs for the assignment 10 submission. |
+| 2026-09-04 | 0.7.0 | The pixel desktop: the user commissioned a ground-up pixel-art rebuild of the KP/OS shell in a Codex session (bitmap font, framebuffer wallpaper, resizable windows, START menu and taskbar, CRT overlay modes, full-colour customer faces). Left uncommitted in the working tree. Same day, a `/kp-balance` test run wrote fresh ability and arc proposals (`98bd2e7`). See [[pixel-desktop]]. |
+| 2026-09-08 | 0.8.0 | Assignment 10 final cut. The pixel desktop reviewed in a headless walk and committed, with two fixes: DARKNET.LNK collapsed to a single column (a legacy container query was re-tiling it) and the dive right rail no longer overruns a 900px desk. Six new full-colour portraits so all twelve customers have their own face. Balance pass integrated the arc-composer deltas (day 3 greed 0.88 to 0.84, day 5 greed 0.94 to 0.97) plus day 5 abilityFreq 0.55 to 0.65: kitted day 3 61.5 to 65.5, day 5 61.5 to 58.0, every other day unchanged, finale still 39.5 pending sign-off. The manual-v3 and ledger-v3 demos archived as superseded. Version 0.8.0. |
 
 ## Where the current work sits
 

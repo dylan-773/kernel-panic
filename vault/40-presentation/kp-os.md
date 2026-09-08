@@ -3,8 +3,8 @@ title: KP/OS
 status: canon
 source: code
 owner: orchestrator
-updated: 2026-08-05
-related: ["[[ui-rulings]]", "[[design-pillars]]", "[[title-and-start-screen]]"]
+updated: 2026-09-08
+related: ["[[pixel-desktop]]", "[[ui-rulings]]", "[[design-pillars]]", "[[title-and-start-screen]]"]
 ---
 
 # KP/OS
@@ -13,6 +13,8 @@ related: ["[[ui-rulings]]", "[[design-pillars]]", "[[title-and-start-screen]]"]
 > `components/os/shop-os.tsx` (provider and desktop), `wm.tsx`, `desk.tsx`, `boot.tsx`, `login.tsx`, `icons.tsx`, `kp-ui.tsx`.
 
 The shop terminal's retro pixel desktop. **The game does not have an interface. The interface is the game.**
+
+> [!info] Since 2026-09-04 the shell is the [[pixel-desktop]]: bitmap font, framebuffer wallpaper, resizable windows, START menu and taskbar, CRT overlay modes. The window set below is unchanged; that note describes the furniture.
 
 ## Why this is a design pillar and not a skin
 
@@ -34,6 +36,8 @@ That decision buys enormous economy: no environment art, no camera, no character
 Windows are genuinely tiled and genuinely movable, which is why the 700px height ceiling exists: a window that fills the desk cannot be tiled, and untileable windows are what made window management feel rough. See [[law-3-fluid-and-the-height-ceiling]].
 
 ## Themes
+
+The pixel desktop ships one palette (`pixel-ui.css` tokens) with the CRT mode and strength as the display options; see [[pixel-desktop]]. The v2 and v3 theme pickers below are what the legacy layer still declares.
 
 `THEMES` offers three hues (LAVENDER, MAGENTA, PHOSPHOR) and two schemes (NERV, TOKYO NIGHT). Hues are the v2 single-phosphor system; schemes are the v3 role-token remap. Both ship. See [[player-options]] and [[law-1-colour-is-roles]].
 

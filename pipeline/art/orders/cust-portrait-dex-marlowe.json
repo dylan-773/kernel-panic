@@ -1,0 +1,17 @@
+{
+  "id": "cust-portrait-dex-marlowe",
+  "from": "orchestrator",
+  "kind": "portrait",
+  "treatment": "full-color-pixel",
+  "target": "/assets/px/portraits/cust-07.png",
+  "size": [
+    256,
+    256
+  ],
+  "invert": false,
+  "brief": "Full-color 256px bust portrait for dex-marlowe (customers.ts: Nocta cram deck). The pixel desktop shows customer faces in original color everywhere (CUSTOMER.REC, REPAIR.LOG, ticket header), and the roster shipped twelve customers on six shared faces, so each second-of-pair customer gets a face of their own. Reads as a teenage student in a knit beanie and oversized hoodie, earbuds around the neck, holding a battered cram deck, tired sly half-smile. Same framing, palette and shading as the existing cust-01 to cust-06 set (style reference passed to the generator), dark navy ground, no text.",
+  "status": "done",
+  "result": "pipeline/art/done/cust-portrait-dex-marlowe.png",
+  "generation": "PixelLab create_image_pro (job 341a23ed-8958-4b81-8e64-0ca74809764c), 1 attempt, 20 generations on the subscription allowance, style reference one of the shipped cust-0N portraits. Quantized to 64 colors with pxpost-equivalent nearest-color reduction, no resampling (native 256x256).",
+  "installed": "kernel-panic-site/app/public/assets/px/portraits/cust-07.png"
+}

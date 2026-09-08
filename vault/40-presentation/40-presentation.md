@@ -3,7 +3,7 @@ title: Presentation
 status: canon
 source: rulings
 owner: orchestrator
-updated: 2026-08-05
+updated: 2026-09-08
 related: ["[[kp-os]]", "[[ui-rulings]]", "[[art-direction]]"]
 ---
 
@@ -14,6 +14,7 @@ The largest gap in the old GDD, which gave the entire interface 108 words for a 
 ## The system
 
 [[kp-os]] - the desktop, the frame, the thesis
+[[pixel-desktop]] - the shipped shell since 2026-09-04: bitmap font, resizable windows, CRT overlay
 [[hud-and-ui-design]] - information hierarchy across surfaces
 [[game-controls]] - the input scheme
 [[title-and-start-screen]] - BIOS boot and the three-slot login

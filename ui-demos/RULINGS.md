@@ -324,6 +324,14 @@ nine converted in the 2026-08-01 v3 burst):
 MANUAL.TXT and LEDGER are the last two pre-v3 windows on the shipped
 desktop. When one converts, update its row here IN THE SAME CHANGE.
 
+**2026-09-08:** the queue closed a different way. The pixel desktop rebuild
+(`vault/40-presentation/pixel-desktop.md`, commissioned by the user on
+2026-09-04) restyled every window on the desktop, MANUAL.TXT and LEDGER.LOG
+included, through the unlayered `pixel-ui.css` sheet. The `manual-v3` and
+`ledger-v3` demos are archived in the manifest as superseded; nothing
+remains in this queue. Laws 1 to 10 still describe the window internals
+the pixel sheet dresses.
+
 ---
 
 ## Process
